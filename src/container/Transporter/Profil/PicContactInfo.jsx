@@ -1,44 +1,125 @@
+import { useState } from "react";
+
+import PropTypes from "prop-types";
+
 import { Alert } from "@/components/Alert/Alert";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
+import { FormContainer, FormLabel } from "@/components/Form/Form";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { toast } from "@/lib/toast";
 
-// --- Mock Data for PIC Contacts ---
-const picData = [
+// Pastikan komponen Modal diimpor
+
+// --- Mock Data Awal ---
+const initialPicData = [
   {
-    id: 1,
-    name: "Tralalero Tralala",
-    role: "Staff Marketing",
-    phone: "081234561111",
-  },
-  {
-    id: 2,
-    name: "Bombardino Crocodilo",
-    role: "Staff Marketing",
-    phone: "081234562222",
-  },
-  {
-    id: 3,
-    name: "Tung Sahur",
-    role: "Staff Customer Service",
-    phone: "081234563333",
+    id: "8543241f-54d0-42f2-a9a7-74b187c31579",
+    picOrder: 1,
+    picName: "Ahmad Budiman",
+    picPosition: "Operations Manager",
+    phoneNumber: "628064749070",
+    isActive: true,
   },
 ];
 
-/**
- * Renders a single striped row for a PIC contact in a table-like format.
- * @param {object} props
- * @param {number} props.index - The index of the PIC for numbering.
- * @param {object} props.pic - The PIC data object.
- * @param {boolean} props.isStriped - Determines if the row has a background color.
- */
-const PicContactRow = ({ index, pic, isStriped }) => (
+// --- Confirmation Modal (Tidak perlu diubah) ---
+const modalConfig = {
+  confirmSave: {
+    text: "Apakah kamu yakin ingin menyimpan perubahan?",
+    yesButtonVariant: "muattrans-primary",
+    noButtonVariant: "muattrans-primary-secondary",
+  },
+  confirmCancel: {
+    text: "Apakah kamu yakin ingin membatalkan perubahan?",
+    yesButtonVariant: "muattrans-primary-secondary",
+    noButtonVariant: "muattrans-primary",
+  },
+};
+
+const ConfirmationModal = ({
+  open,
+  onOpenChange,
+  type = "confirmSave",
+  onConfirm,
+  onCancel,
+}) => {
+  const currentConfig = modalConfig[type];
+
+  return (
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent className="w-modal-small" type="muatparts">
+        <ModalHeader size="small" />
+        <div className="flex flex-col items-center gap-y-6 px-6 pb-9 pt-8">
+          <p className="text-center text-base font-medium text-neutral-900">
+            {currentConfig.text}
+          </p>
+          <div className="flex w-full items-center justify-center gap-x-2">
+            <Button
+              variant={currentConfig.noButtonVariant}
+              onClick={onCancel}
+              className="w-[195px]"
+              type="muatparts"
+            >
+              Tidak
+            </Button>
+            <Button
+              variant={currentConfig.yesButtonVariant}
+              onClick={onConfirm}
+              className="w-[195px]"
+              type="muatparts"
+            >
+              Ya
+            </Button>
+          </div>
+        </div>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+ConfirmationModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onOpenChange: PropTypes.func.isRequired,
+  type: PropTypes.oneOf(["confirmSave", "confirmCancel"]),
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};
+
+// --- Helper Functions (Tidak perlu diubah) ---
+const ensureThreePICData = (existingData) => {
+  const picArray = [];
+  for (let i = 0; i < 3; i++) {
+    const existingPic = existingData.find((pic) => pic.picOrder === i + 1);
+    if (existingPic) {
+      picArray.push({ ...existingPic });
+    } else {
+      picArray.push({
+        id: `temp-${i + 1}`,
+        picOrder: i + 1,
+        picName: "",
+        picPosition: "",
+        phoneNumber: "",
+        isActive: true,
+      });
+    }
+  }
+  return picArray;
+};
+
+const showSuccessCopyToast = () => {
+  toast.success("Kontak PIC Berhasil disalin");
+};
+
+// --- Sub-components (Tidak perlu diubah) ---
+const PicContactRow = ({ index, pic }) => (
   <div
     className={`grid grid-cols-[1fr,2fr,2fr,2fr,auto] items-center gap-x-4 px-9 py-4 ${
-      isStriped ? "bg-neutral-100" : "bg-white"
+      index % 2 === 0 ? "bg-neutral-100" : "bg-white"
     }`}
   >
-    {/* PIC Number and Icon */}
     <div className="flex items-center gap-3 text-sm font-medium text-neutral-600">
       <IconComponent
         src="/icons/user16.svg"
@@ -48,16 +129,19 @@ const PicContactRow = ({ index, pic, isStriped }) => (
       />
       <span>PIC {index + 1}</span>
     </div>
-
-    {/* PIC Details */}
-    <span className="text-sm font-semibold text-neutral-900">{pic.name}</span>
-    <span className="text-sm font-medium text-neutral-600">{pic.role}</span>
-    <span className="text-sm font-medium text-neutral-900">{pic.phone}</span>
-
-    {/* Action Icons */}
+    <span className="text-sm font-semibold text-neutral-900">
+      {pic.picName}
+    </span>
+    <span className="text-sm font-medium text-neutral-600">
+      {pic.picPosition}
+    </span>
+    <span className="text-sm font-medium text-neutral-900">
+      {pic.phoneNumber}
+    </span>
     <div className="me-7 flex items-center justify-end gap-4">
       <button
-        aria-label={`Copy phone number for ${pic.name}`}
+        onClick={showSuccessCopyToast}
+        aria-label={`Copy phone number for ${pic.picName}`}
         className="text-primary-700 transition-opacity hover:opacity-80"
       >
         <IconComponent
@@ -68,7 +152,7 @@ const PicContactRow = ({ index, pic, isStriped }) => (
         />
       </button>
       <button
-        aria-label={`Contact ${pic.name} on WhatsApp`}
+        aria-label={`Contact ${pic.picName} on WhatsApp`}
         className="text-primary-700 transition-opacity hover:opacity-80"
       >
         <IconComponent
@@ -82,13 +166,285 @@ const PicContactRow = ({ index, pic, isStriped }) => (
   </div>
 );
 
-/**
- * A card component displaying a list of PIC Transporter contacts in a structured table.
- */
+const PICFormSection = ({
+  index,
+  pic,
+  handleInputChange,
+  isRequired,
+  className,
+  validationErrors = {},
+}) => (
+  <div className={`px-9 py-4 ${className}`}>
+    <div className="grid grid-cols-1 gap-6">
+      <FormContainer>
+        <FormLabel required={isRequired}>{`Nama PIC ${index + 1}`}</FormLabel>
+        <Input
+          name="picName"
+          value={pic.picName}
+          onChange={(e) => handleInputChange(index, e)}
+          placeholder={`Nama PIC ${index + 1}`}
+          status={validationErrors[`${index}-picName`] ? "error" : "default"}
+          errorMessage={validationErrors[`${index}-picName`]}
+        />
+      </FormContainer>
+      <FormContainer>
+        <FormLabel
+          required={isRequired}
+        >{`Jabatan PIC ${index + 1}`}</FormLabel>
+        <Input
+          name="picPosition"
+          value={pic.picPosition}
+          onChange={(e) => handleInputChange(index, e)}
+          placeholder={`Jabatan PIC ${index + 1}`}
+          status={
+            validationErrors[`${index}-picPosition`] ? "error" : "default"
+          }
+          errorMessage={validationErrors[`${index}-picPosition`]}
+        />
+      </FormContainer>
+      <FormContainer>
+        <FormLabel required={isRequired}>{`No. HP PIC ${index + 1}`}</FormLabel>
+        <Input
+          name="phoneNumber"
+          value={pic.phoneNumber}
+          onChange={(e) => handleInputChange(index, e)}
+          placeholder={index === 0 ? "081234567891" : "Contoh : 08xxxxxxxxxx"}
+          status={
+            validationErrors[`${index}-phoneNumber`] ? "error" : "default"
+          }
+          errorMessage={validationErrors[`${index}-phoneNumber`]}
+        />
+      </FormContainer>
+    </div>
+  </div>
+);
+
+// --- Main Component (MODIFIED) ---
 const PicContactInfo = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [pics, setPics] = useState(initialPicData);
+  const [formState, setFormState] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // --- ⬇️ TAMBAHAN: State untuk Modal ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("confirmSave");
+
+  // Validasi Form (Tidak diubah)
+  const validateForm = (formData) => {
+    const errors = {};
+    const pic1 = formData[0];
+    if (!pic1.picName.trim()) {
+      errors["0-picName"] = "Nama PIC 1 wajib diisi";
+    }
+    if (!pic1.picPosition.trim()) {
+      errors["0-picPosition"] = "Jabatan PIC 1 wajib diisi";
+    }
+    if (!pic1.phoneNumber.trim()) {
+      errors["0-phoneNumber"] = "No. HP PIC 1 wajib diisi";
+    }
+
+    formData.forEach((pic, index) => {
+      if (index > 0) {
+        const hasName = pic.picName.trim() !== "";
+        const hasPosition = pic.picPosition.trim() !== "";
+        const hasPhone = pic.phoneNumber.trim() !== "";
+
+        if (hasName || hasPosition || hasPhone) {
+          if (!hasName)
+            errors[`${index}-picName`] = `Nama PIC ${index + 1} wajib diisi`;
+          if (!hasPosition)
+            errors[`${index}-picPosition`] =
+              `Jabatan PIC ${index + 1} wajib diisi`;
+          if (!hasPhone)
+            errors[`${index}-phoneNumber`] =
+              `No. HP PIC ${index + 1} wajib diisi`;
+        }
+      }
+    });
+
+    const pic2 = formData[1];
+    const pic3 = formData[2];
+    const isPic2Empty =
+      !pic2.picName.trim() &&
+      !pic2.picPosition.trim() &&
+      !pic2.phoneNumber.trim();
+    const isPic3Filled =
+      pic3.picName.trim() || pic3.picPosition.trim() || pic3.phoneNumber.trim();
+
+    if (isPic3Filled && isPic2Empty) {
+      const errorMessage = "PIC 2 harus diisi sebelum mengisi PIC 3";
+      errors["1-picName"] = errorMessage;
+      errors["1-picPosition"] = errorMessage;
+      errors["1-phoneNumber"] = errorMessage;
+    }
+
+    return errors;
+  };
+
+  const handleEdit = () => {
+    const picDataForEditing = ensureThreePICData(pics);
+    setFormState(picDataForEditing);
+    setValidationErrors({});
+    setIsEditing(true);
+  };
+
+  // --- ⬇️ MODIFIKASI: Fungsi untuk menangani aksi dari modal ---
+  const executeCancel = () => {
+    setFormState(null);
+    setValidationErrors({});
+    setIsEditing(false);
+    setIsModalOpen(false); // Tutup modal
+  };
+
+  const executeSave = () => {
+    const errors = validateForm(formState);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setIsModalOpen(false); // Tetap tutup modal meskipun validasi gagal
+      return;
+    }
+    setValidationErrors({});
+
+    const filledPicData = formState
+      .filter(
+        (pic) =>
+          pic.picName.trim() !== "" ||
+          pic.picPosition.trim() !== "" ||
+          pic.phoneNumber.trim() !== ""
+      )
+      .map((pic) => {
+        if (pic.id.startsWith("temp-")) {
+          return {
+            ...pic,
+            id: `new-${Date.now()}-${pic.picOrder}`,
+          };
+        }
+        return pic;
+      });
+
+    setPics(filledPicData);
+    setIsEditing(false);
+    setFormState(null);
+    setIsModalOpen(false); // Tutup modal
+    toast.success("Data PIC berhasil diperbarui!");
+  };
+
+  // --- ⬇️ MODIFIKASI: Handler tombol yang sekarang hanya membuka modal ---
+  const handleCancelClick = () => {
+    setModalType("confirmCancel");
+    setIsModalOpen(true);
+  };
+
+  const handleSaveClick = () => {
+    setModalType("confirmSave");
+    setIsModalOpen(true);
+  };
+
+  // --- ⬇️ TAMBAHAN: Handler untuk konfirmasi modal ---
+  const handleConfirmAction = () => {
+    if (modalType === "confirmSave") {
+      executeSave();
+    } else {
+      // 'confirmCancel'
+      executeCancel();
+    }
+  };
+
+  const handleFormInputChange = (index, event) => {
+    const { name, value } = event.target;
+    const updatedFormState = formState.map((pic, i) =>
+      i === index ? { ...pic, [name]: value } : pic
+    );
+    setFormState(updatedFormState);
+
+    const errorKey = `${index}-${name}`;
+    if (validationErrors[errorKey]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[errorKey];
+        return newErrors;
+      });
+    }
+  };
+
+  // Tampilan Edit Form
+  if (isEditing) {
+    return (
+      <>
+        {" "}
+        {/* ⬇️ Gunakan Fragment agar bisa merender modal */}
+        <Card className="max-h-fit border-neutral-400 bg-white p-0">
+          <div className="flex items-end justify-between gap-3 border-b border-neutral-200 p-6">
+            <div className="">
+              <h1 className="text-xl font-bold text-neutral-900">
+                Data Kontak PIC Transporter
+              </h1>
+              <Alert
+                variant="warning"
+                className="-ms-2 mt-2 flex items-center bg-transparent text-xs text-neutral-600"
+              >
+                <IconComponent
+                  src="/icons/megaphone.svg"
+                  alt="Information Icon"
+                  width={16}
+                  height={16}
+                  className="text-yellow-500"
+                />
+                <span className="text-xs text-neutral-800">
+                  Data PIC Transporter akan ditampilkan pada profilmu di
+                  pengguna lainnya untuk menghubungi kamu
+                </span>
+              </Alert>
+            </div>
+            <div className="flex shrink-0 gap-3">
+              {/* ⬇️ onClick diubah ke handleCancelClick */}
+              <Button
+                variant="muattrans-primary-secondary"
+                className="w-28"
+                onClick={handleCancelClick}
+              >
+                Batal
+              </Button>
+              {/* ⬇️ onClick diubah ke handleSaveClick */}
+              <Button
+                variant="muattrans-warning"
+                className="text-muat-trans-secondary-900"
+                onClick={handleSaveClick}
+              >
+                Simpan Data
+              </Button>
+            </div>
+          </div>
+          <div>
+            {formState.map((pic, index) => (
+              <PICFormSection
+                key={`pic-form-${index}`}
+                index={index}
+                pic={pic}
+                handleInputChange={handleFormInputChange}
+                isRequired={index === 0}
+                className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                validationErrors={validationErrors}
+              />
+            ))}
+          </div>
+        </Card>
+        {/* ⬇️ TAMBAHAN: Render komponen modal */}
+        <ConfirmationModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          type={modalType}
+          onConfirm={handleConfirmAction}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      </>
+    );
+  }
+
+  // Tampilan Display Card (Default)
   return (
     <Card className="max-h-fit border-neutral-400 bg-white p-0">
-      {/* Header Section */}
       <div className="flex items-start justify-between p-6">
         <div className="flex flex-col gap-2">
           <h2 className="text-xl font-bold text-neutral-900">
@@ -111,20 +467,17 @@ const PicContactInfo = () => {
             </span>
           </Alert>
         </div>
-        <Button variant="muattrans-primary" className="flex-shrink-0 px-8 py-2">
+        <Button
+          onClick={handleEdit}
+          variant="muattrans-primary"
+          className="flex-shrink-0 px-8 py-2"
+        >
           Ubah Data
         </Button>
       </div>
-
-      {/* Contacts Table Section */}
       <div className="mt-2 border-t border-neutral-200">
-        {picData.map((pic, index) => (
-          <PicContactRow
-            key={pic.id}
-            index={index}
-            pic={pic}
-            isStriped={index % 2 === 0} // Apply striping to odd rows (1, 3, 5...)
-          />
+        {pics.map((pic, index) => (
+          <PicContactRow key={pic.id} index={index} pic={pic} />
         ))}
       </div>
     </Card>

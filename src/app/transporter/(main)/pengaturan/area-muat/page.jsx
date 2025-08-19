@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { isEqual } from "lodash";
 import { ChevronDown, Info } from "lucide-react";
 
 import { Alert } from "@/components/Alert/Alert";
@@ -137,7 +136,7 @@ export default function Page() {
 
   const handleRemoveProvince = (province) => {
     const selectedProvinces = provinceData.filter((p) =>
-      p.cities.some((c) => c.isSelected)
+      p.kota.some((c) => c.isSelected)
     );
 
     if (selectedProvinces.length <= 1) {
@@ -151,8 +150,8 @@ export default function Page() {
     }
 
     const updatedData = provinceData.map((p) =>
-      p.province === province.province
-        ? { ...p, cities: p.cities.map((c) => ({ ...c, isSelected: false })) }
+      p.provinceId === province.id
+        ? { ...p, kota: p.kota.map((c) => ({ ...c, isSelected: false })) }
         : p
     );
 
@@ -223,7 +222,7 @@ export default function Page() {
 
   const handleSave = () => {
     const isAnyCitySelected = provinceData.some((p) =>
-      p.cities.some((c) => c.isSelected)
+      p.kota.some((c) => c.isSelected)
     );
 
     if (!isAnyCitySelected) {
@@ -294,305 +293,304 @@ export default function Page() {
     province.kota.some((city) => city.isSelected)
   );
 
-  if (!isInitialized || isLoading || isLoadingMasterProvinces) {
-    const simpanButton = (
-      <Button
-        size="lg"
-        className="w-full md:w-auto"
-        onClick={handleSave}
-        isLoading={isMutating}
-      >
-        Simpan
-      </Button>
-    );
+  const simpanButton = (
+    <Button
+      size="lg"
+      className="w-full md:w-auto"
+      onClick={handleSave}
+      isLoading={isMutating}
+    >
+      Simpan
+    </Button>
+  );
 
-    return (
-      <>
-        <LayoutOverlayButton button={simpanButton}>
-          <div className="mx-auto py-6">
-            <BreadCrumb data={BREADCRUMB} />
-            <div className="mt-4 flex items-center gap-2">
-              <PageTitle withBack={true} onClick={handleLeavePage}>
-                Atur Area Muat
-              </PageTitle>
+  return (
+    <>
+      <LayoutOverlayButton button={simpanButton}>
+        <div className="mx-auto py-6">
+          <BreadCrumb data={BREADCRUMB} />
+          <div className="mt-4 flex items-center gap-2">
+            <PageTitle withBack={true} onClick={handleLeavePage}>
+              Atur Area Muat
+            </PageTitle>
 
-              <InfoTooltip
-                className="w-80"
-                side="right"
-                trigger={
-                  <button className="-mt-4 flex text-neutral-600 hover:text-neutral-800">
-                    <Info size={18} />
-                  </button>
-                }
-              >
-                Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
-                dan efisien, muatrans hanya menawarkan permintaan jasa angkut
-                dengan lokasi pick up didalam area kerjamu
-              </InfoTooltip>
-            </div>
+            <InfoTooltip
+              className="w-80"
+              side="right"
+              trigger={
+                <button className="-mt-4 flex text-neutral-600 hover:text-neutral-800">
+                  <Info size={18} />
+                </button>
+              }
+            >
+              Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
+              dan efisien, muatrans hanya menawarkan permintaan jasa angkut
+              dengan lokasi pick up didalam area kerjamu
+            </InfoTooltip>
+          </div>
 
-            <Card className="mt-6 !border-none">
-              <CardContent className="p-6">
-                <SelectedProvinces
-                  className="mb-6"
-                  provinces={provinceData.filter((province) =>
+          <Card className="mt-6 !border-none">
+            <CardContent className="p-6">
+              <SelectedProvinces
+                className="mb-6"
+                provinces={provinceData
+                  .filter((province) =>
                     province.kota.some((city) => city.isSelected)
-                  )}
-                  onRemove={handleRemoveProvince}
-                  onAdd={handleAddProvince}
-                />
+                  )
+                  .map((province) => ({
+                    id: province.provinceId,
+                    province: province.provinceName,
+                  }))}
+                onRemove={handleRemoveProvince}
+                onAdd={handleAddProvince}
+              />
 
-                <div className="mb-6 flex items-center">
-                  <div className="me-4">
-                    <Input
-                      placeholder="Cari Kota/Kabupaten"
-                      icon={{ left: "/icons/search.svg" }}
-                      value={searchCity}
-                      onChange={(e) => setSearchCity(e.target.value)}
-                      className="w-[262px] text-sm"
-                      clear={() => setSearchCity("")}
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Checkbox
-                      checked={showSelectedOnly}
-                      onChange={(e) => setShowSelectedOnly(e.checked)}
-                      label=""
-                      className="!gap-0"
-                      disabled={
+              <div className="mb-6 flex items-center">
+                <div className="me-4">
+                  <Input
+                    placeholder="Cari Kota/Kabupaten"
+                    icon={{ left: "/icons/search.svg" }}
+                    value={searchCity}
+                    onChange={(e) => setSearchCity(e.target.value)}
+                    className="w-[262px] text-sm"
+                    clear={() => setSearchCity("")}
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    checked={showSelectedOnly}
+                    onChange={(e) => setShowSelectedOnly(e.checked)}
+                    label=""
+                    className="!gap-0"
+                    disabled={
+                      !hasSelectedCities || searchFilteredProvinces.length === 0
+                    }
+                  >
+                    <span
+                      className={`ms-2 text-sm font-normal leading-[16.8px] ${
                         !hasSelectedCities ||
                         searchFilteredProvinces.length === 0
-                      }
+                          ? "text-neutral-500"
+                          : "text-neutral-900"
+                      }`}
                     >
-                      <span
-                        className={`ms-2 text-sm font-normal leading-[16.8px] ${
-                          !hasSelectedCities ||
-                          searchFilteredProvinces.length === 0
-                            ? "text-neutral-500"
-                            : "text-neutral-900"
-                        }`}
-                      >
-                        Tampilkan yang terpilih saja
-                      </span>
-                    </Checkbox>
-                  </div>
-                </div>
-
-                {isLoading ? (
-                  <div className="flex h-[200px] items-center justify-center">
-                    <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
-                      Loading...
+                      Tampilkan yang terpilih saja
                     </span>
-                  </div>
-                ) : finalProvinces.length === 0 ? (
-                  <DataNotFound
-                    title={
-                      searchCity
-                        ? "Keyword tidak ditemukan"
-                        : "Belum ada area muat terpilih"
-                    }
-                    image={
-                      searchCity
-                        ? "/icons/data-not-found.svg"
-                        : "/img/empty-state/area-muat.png"
-                    }
-                  />
-                ) : (
-                  <div className="flex flex-col gap-y-[18px]">
-                    {finalProvinces.map((province) => {
-                      const isCollapsible =
-                        province.kota.length > 16 && !showSelectedOnly;
-                      const isExpanded =
-                        !!expandedProvinces[province.provinceId];
-                      const visibleCities =
-                        isCollapsible && !isExpanded
-                          ? province.kota.slice(0, 16)
-                          : province.kota;
+                  </Checkbox>
+                </div>
+              </div>
 
-                      const actualSelectedCount = showSelectedOnly
-                        ? visibleCities.length
-                        : visibleCities.filter((city) => city.isSelected)
-                            .length;
+              {!isInitialized || isLoading || isLoadingMasterProvinces ? (
+                <div className="flex h-[200px] items-center justify-center">
+                  <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
+                    Loading...
+                  </span>
+                </div>
+              ) : finalProvinces.length === 0 ? (
+                <DataNotFound
+                  title={
+                    searchCity
+                      ? "Keyword tidak ditemukan"
+                      : "Belum ada area muat terpilih"
+                  }
+                  image={
+                    searchCity
+                      ? "/icons/data-not-found.svg"
+                      : "/img/empty-state/area-muat.png"
+                  }
+                />
+              ) : (
+                <div className="flex flex-col gap-y-[18px]">
+                  {finalProvinces.map((province) => {
+                    const isCollapsible =
+                      province.kota.length > 16 && !showSelectedOnly;
+                    const isExpanded = !!expandedProvinces[province.provinceId];
+                    const visibleCities =
+                      isCollapsible && !isExpanded
+                        ? province.kota.slice(0, 16)
+                        : province.kota;
 
-                      return (
-                        <div
-                          key={province.provinceId}
-                          className="rounded-lg border border-neutral-200 p-6"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
-                              {province.provinceName}{" "}
-                              <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
-                                ({actualSelectedCount} Terpilih)
-                              </span>
-                            </h3>
-                          </div>
+                    const actualSelectedCount = showSelectedOnly
+                      ? visibleCities.length
+                      : visibleCities.filter((city) => city.isSelected).length;
 
-                          <div className="mb-4 flex items-center gap-3">
-                            <Checkbox
-                              checked={
-                                visibleCities.length > 0 &&
-                                visibleCities.every((city) => city.isSelected)
-                              }
-                              onChange={(e) =>
-                                handleSelectAllProvince(
-                                  province.provinceId,
-                                  e.checked
-                                )
-                              }
-                              label=""
-                              className="!gap-0"
-                            />
-                            <span className="text-sm font-medium leading-[16.8px] text-neutral-900">
-                              Pilih Semua Kota/Kabupaten
+                    return (
+                      <div
+                        key={province.provinceId}
+                        className="rounded-lg border border-neutral-200 p-6"
+                      >
+                        <div className="mb-4 flex items-center justify-between">
+                          <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
+                            {province.provinceName}{" "}
+                            <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
+                              ({actualSelectedCount} Terpilih)
                             </span>
-                          </div>
+                          </h3>
+                        </div>
 
-                          <div className="ms-5 space-y-4">
-                            {Array.from(
-                              { length: Math.ceil(visibleCities.length / 4) },
-                              (_, rowIndex) => {
-                                const startIndex = rowIndex * 4;
-                                const rowCities = visibleCities.slice(
-                                  startIndex,
-                                  startIndex + 4
-                                );
+                        <div className="mb-4 flex items-center gap-3">
+                          <Checkbox
+                            checked={
+                              visibleCities.length > 0 &&
+                              visibleCities.every((city) => city.isSelected)
+                            }
+                            onChange={(e) =>
+                              handleSelectAllProvince(
+                                province.provinceId,
+                                e.checked
+                              )
+                            }
+                            label=""
+                            className="!gap-0"
+                          />
+                          <span className="text-sm font-medium leading-[16.8px] text-neutral-900">
+                            Pilih Semua Kota/Kabupaten
+                          </span>
+                        </div>
 
-                                return (
-                                  <div key={rowIndex}>
-                                    <div className="grid grid-cols-4 gap-4">
-                                      {rowCities.map((city) => (
-                                        <div
-                                          key={city.cityId}
-                                          className="flex items-center gap-3"
-                                        >
-                                          <Checkbox
-                                            checked={city.isSelected}
-                                            onChange={(e) =>
-                                              handleCitySelect(
-                                                province.provinceId,
-                                                city.cityId,
-                                                e.checked
-                                              )
-                                            }
-                                            label=""
-                                            className="!gap-0"
-                                          />
-                                          <span className="text-sm font-normal leading-[16.8px] text-neutral-900">
-                                            {city.cityName}
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    {rowIndex <
-                                      Math.ceil(visibleCities.length / 4) -
-                                        1 && (
-                                      <div className="mt-4 border-b border-neutral-200"></div>
-                                    )}
+                        <div className="ms-5 space-y-4">
+                          {Array.from(
+                            { length: Math.ceil(visibleCities.length / 4) },
+                            (_, rowIndex) => {
+                              const startIndex = rowIndex * 4;
+                              const rowCities = visibleCities.slice(
+                                startIndex,
+                                startIndex + 4
+                              );
+
+                              return (
+                                <div key={rowIndex}>
+                                  <div className="grid grid-cols-4 gap-4">
+                                    {rowCities.map((city) => (
+                                      <div
+                                        key={city.cityId}
+                                        className="flex items-center gap-3"
+                                      >
+                                        <Checkbox
+                                          checked={city.isSelected}
+                                          onChange={(e) =>
+                                            handleCitySelect(
+                                              province.provinceId,
+                                              city.cityId,
+                                              e.checked
+                                            )
+                                          }
+                                          label=""
+                                          className="!gap-0"
+                                        />
+                                        <span className="text-sm font-normal leading-[16.8px] text-neutral-900">
+                                          {city.cityName}
+                                        </span>
+                                      </div>
+                                    ))}
                                   </div>
-                                );
-                              }
-                            )}
-                          </div>
-
-                          {isCollapsible && (
-                            <div className="mt-4 text-center">
-                              <button
-                                onClick={() =>
-                                  handleToggleExpand(province.provinceId)
-                                }
-                                className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
-                              >
-                                {isExpanded
-                                  ? "Lihat Lebih Sedikit"
-                                  : "Lihat Selengkapnya"}
-                                <ChevronDown
-                                  size={16}
-                                  className={`transform transition-transform duration-200 ${
-                                    isExpanded ? "rotate-180" : ""
-                                  }`}
-                                />
-                              </button>
-                            </div>
+                                  {rowIndex <
+                                    Math.ceil(visibleCities.length / 4) - 1 && (
+                                    <div className="mt-4 border-b border-neutral-200"></div>
+                                  )}
+                                </div>
+                              );
+                            }
                           )}
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+
+                        {isCollapsible && (
+                          <div className="mt-4 text-center">
+                            <button
+                              onClick={() =>
+                                handleToggleExpand(province.provinceId)
+                              }
+                              className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
+                            >
+                              {isExpanded
+                                ? "Lihat Lebih Sedikit"
+                                : "Lihat Selengkapnya"}
+                              <ChevronDown
+                                size={16}
+                                className={`transform transition-transform duration-200 ${
+                                  isExpanded ? "rotate-180" : ""
+                                }`}
+                              />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </LayoutOverlayButton>
+
+      {alert.show && (
+        <Alert
+          variant={alert.type === "success" ? "secondary" : "error"}
+          className="fixed bottom-4 right-4 z-50"
+        >
+          <div className="flex items-center">
+            <IconComponent src={alertIcons[alert.type]} className="mr-2" />
+            {alert.message}
+            <button
+              onClick={() => setAlert({ ...alert, show: false })}
+              className="ml-4"
+            >
+              <IconComponent src="/icons/close-circle.svg" />
+            </button>
           </div>
-        </LayoutOverlayButton>
+        </Alert>
+      )}
 
-        {alert.show && (
-          <Alert
-            variant={alert.type === "success" ? "secondary" : "error"}
-            className="fixed bottom-4 right-4 z-50"
-          >
-            <div className="flex items-center">
-              <IconComponent src={alertIcons[alert.type]} className="mr-2" />
-              {alert.message}
-              <button
-                onClick={() => setAlert({ ...alert, show: false })}
-                className="ml-4"
-              >
-                <IconComponent src="/icons/close-circle.svg" />
-              </button>
-            </div>
-          </Alert>
-        )}
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        setIsOpen={setIsConfirmModalOpen}
+        title={{
+          text: "Apakah kamu yakin menyimpan data ini?",
+          className: "text-sm font-medium text-center",
+        }}
+        confirm={{
+          text: "Simpan",
+          onClick: confirmSave,
+          isLoading: isMutating,
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => setIsConfirmModalOpen(false),
+        }}
+      />
 
-        <ConfirmationModal
-          isOpen={isConfirmModalOpen}
-          setIsOpen={setIsConfirmModalOpen}
-          title={{
-            text: "Apakah kamu yakin menyimpan data ini?",
-            className: "text-sm font-medium text-center",
-          }}
-          confirm={{
-            text: "Simpan",
-            onClick: confirmSave,
-            isLoading: isMutating,
-          }}
-          cancel={{
-            text: "Batal",
-            onClick: () => setIsConfirmModalOpen(false),
-          }}
-        />
+      <ConfirmationModal
+        isOpen={isLeaveModalOpen}
+        setIsOpen={setIsLeaveModalOpen}
+        title={{
+          text: "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini",
+          className: "text-sm font-medium text-center",
+        }}
+        cancel={{
+          text: "Ya",
+          variant: "destructive",
+          onClick: () => {
+            localStorage.removeItem("areaMuatProvinces");
+            router.back();
+          },
+        }}
+        confirm={{
+          text: "Batal",
+          onClick: () => setIsLeaveModalOpen(false),
+        }}
+      />
 
-        <ConfirmationModal
-          isOpen={isLeaveModalOpen}
-          setIsOpen={setIsLeaveModalOpen}
-          title={{
-            text: "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini",
-            className: "text-sm font-medium text-center",
-          }}
-          cancel={{
-            text: "Ya",
-            variant: "destructive",
-            onClick: () => {
-              localStorage.removeItem("areaMuatProvinces");
-              router.back();
-            },
-          }}
-          confirm={{
-            text: "Batal",
-            onClick: () => setIsLeaveModalOpen(false),
-          }}
-        />
-
-        <ProvinceSelectionModal
-          isOpen={isProvinceModalOpen}
-          onClose={() => setIsProvinceModalOpen(false)}
-          onSave={handleSaveProvinces}
-          title="Tambah Provinsi"
-          provinces={masterProvinces}
-          isLoading={isLoadingMasterProvinces}
-          onSearch={searchProvinces}
-          saveContext="area-muat"
-        />
-      </>
-    );
-  }
+      <ProvinceSelectionModal
+        isOpen={isProvinceModalOpen}
+        onClose={() => setIsProvinceModalOpen(false)}
+        onSave={handleSaveProvinces}
+        title="Tambah Provinsi"
+        provinces={masterProvinces}
+        isLoading={isLoadingMasterProvinces}
+        onSearch={searchProvinces}
+        saveContext="area-muat"
+      />
+    </>
+  );
 }

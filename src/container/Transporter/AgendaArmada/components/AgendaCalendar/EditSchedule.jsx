@@ -1,228 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
-import { cn } from "@/lib/utils";
 
-import LocationPoint from "./LocationPoint";
-import InfoPopover from "./PopoverAgenda";
+// import { formatDate } from "@/lib/utils/dateFormat";
 
-const cardEstimationStyles = {
-  BERTUGAS: "bg-primary-50",
-  PENGIRIMAN_SELESAI: "bg-neutral-200",
-  NON_AKTIF: "bg-neutral-100",
-  MENUNGGU_JAM_MUAT: "bg-warning-100",
-  DIJADWALKAN: "bg-warning-100",
-  SOS: "bg-error-50",
-};
-
-const cardAdditionalStyles = {
-  BERTUGAS: "bg-primary-100",
-  PENGIRIMAN_SELESAI: "bg-neutral-200",
-  NON_AKTIF: "bg-neutral-100",
-  MENUNGGU_JAM_MUAT: "bg-warning-200",
-  DIJADWALKAN: "bg-warning-200",
-  SOS: "bg-error-100",
-};
-
-const cardBorderStyles = {
-  BERTUGAS: "border-primary-700",
-  PENGIRIMAN_SELESAI: "border-neutral-400",
-  NON_AKTIF: "border-neutral-400",
-  MENUNGGU_JAM_MUAT: "border-warning-900",
-  DIJADWALKAN: "border-warning-900",
-  SOS: "border-error-400",
-};
-
-const titleStyles = {
-  BERTUGAS: "text-primary-700",
-  PENGIRIMAN_SELESAI: "text-neutral-600",
-  NON_AKTIF: "text-neutral-900",
-  MENUNGGU_JAM_MUAT: "text-warning-900",
-  DIJADWALKAN: "text-warning-900",
-  SOS: "text-error-400",
-};
-
-export const CardItem = (props) => {
-  const {
-    statusCode = "BERTUGAS",
-
-    distanceRemaining = 121,
-    dataMuat = {
-      title: "Lokasi Muat",
-      subtitle: "Kota Surabaya, Kec. Tegalsari",
-    },
-    dataBongkar = {
-      title: "Lokasi Bongkar",
-      subtitle: "Kab. Malang, Kec. Singosari",
-    },
-    scheduled = 2,
-    additional = 0,
-    position = 0,
-    hasSosIssue = false,
-    cellWidth,
-  } = props;
-
-  const cellConfig = useMemo(() => {
-    const total = scheduled + additional;
-    let left = scheduled;
-    let right = additional;
-
-    if (total === 1) {
-      right = 0.32;
-      left = 1 - right;
-    } else if (additional === 0 && total % 2 === 0) {
-      left = total / 2;
-      right = total / 2;
-    } else if (additional === 0 && total % 2 !== 0) {
-      left = (total + 1) / 2;
-      right = (total - 1) / 2;
-    }
-
-    return { left, right, total };
-  }, [additional, scheduled]);
-
-  return (
-    <div
-      className={cn("absolute h-full overflow-hidden p-0.5")}
-      style={{
-        width: `${(scheduled + additional) * cellWidth - 1.5}px`,
-        left: `${position * cellWidth}px`,
-      }}
-    >
-      <div
-        className={cn(
-          "box-border flex h-full w-full overflow-hidden rounded-[4px] border",
-          hasSosIssue ? cardBorderStyles.SOS : cardBorderStyles[statusCode],
-          hasSosIssue
-            ? cardAdditionalStyles.SOS
-            : additional > 0
-              ? cardAdditionalStyles[statusCode]
-              : cardEstimationStyles[statusCode]
-        )}
-      >
-        <div
-          className={cn(
-            "flex flex-col justify-between rounded-l-[4px] p-2",
-            hasSosIssue
-              ? cardEstimationStyles.SOS
-              : cardEstimationStyles[statusCode],
-            !dataBongkar || cellConfig.total === 1 ? "rounded-[4px]" : ""
-          )}
-          style={{
-            width: `${cellConfig.total === 1 ? 1 * cellWidth : cellConfig.left * cellWidth}px`,
-          }}
-        >
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "text-xs font-semibold",
-                hasSosIssue ? titleStyles.SOS : titleStyles[statusCode]
-              )}
-            >
-              {StatusArmadaTypeEnum[statusCode]}
-            </span>
-
-            {hasSosIssue && (
-              <span className="rounded-md bg-error-400 px-2 py-1 text-xs font-semibold leading-none text-white">
-                SOS
-              </span>
-            )}
-
-            <InfoPopover data={props} />
-          </div>
-
-          {dataMuat && (
-            <div
-              className="relative"
-              style={{ width: `${cellConfig.total * cellWidth}px` }}
-            >
-              <div
-                className="flex items-center gap-4"
-                style={{
-                  width: `${cellConfig.left * cellWidth - 16}px`,
-                }}
-              >
-                <LocationPoint
-                  type="muat"
-                  title={dataMuat.title}
-                  isEdit={true}
-                  subtitle={dataMuat.subtitle}
-                  className="basis-1/2"
-                />
-                <div className="relative basis-1/2">
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-nowrap rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold leading-none text-neutral-900">
-                    Est. {distanceRemaining} km
-                  </span>
-                  <hr className="w-full border-dashed border-neutral-400" />
-                </div>
-              </div>
-
-              {dataBongkar && (
-                <LocationPoint
-                  type="bongkar"
-                  title={dataBongkar.title}
-                  isEdit={true}
-                  subtitle={dataBongkar.subtitle}
-                  className="absolute top-1/2 -translate-y-1/2"
-                  style={{
-                    width: `${cellConfig.right * cellWidth - 16}px`,
-                    left: `${cellConfig.right >= 1 ? cellConfig.left * cellWidth : cellConfig.left * cellWidth - 8}px`,
-                  }}
-                />
-              )}
-            </div>
-          )}
-        </div>
-
-        {additional > 0 && (
-          <div
-            className="pt-1.5 text-center text-[10px] font-medium text-neutral-500"
-            style={{
-              width: `${cellConfig.right * cellWidth - 16}px`,
-              left: `${cellConfig.left * cellWidth + 8}px`,
-            }}
-          >
-            Estimasi Waktu Bongkar
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+import CardDetail from "./CardDetail";
+import { getDynamicDates } from "./getDynamicDates";
+import { useDateNavigator } from "./use-date-navigator";
 
 // --- Main Component ---
 
-const getStaticDates = (startOffset = 0) => {
-  const baseDates = [
-    { day: "Minggu", date: 17 },
-    { day: "Senin", date: 18 },
-    { day: "Selasa", date: 19 },
-    { day: "Rabu", date: 20 },
-    { day: "Kamis", date: 21 },
-    { day: "Jumat", date: 22 },
-    { day: "Sabtu", date: 23 },
-    { day: "Minggu", date: 24 },
-    { day: "Senin", date: 25 },
-    { day: "Selasa", date: 26 },
-  ];
+const EditSchedule = ({ cardData }) => {
+  const { dateRange } = useDateNavigator();
 
-  // Always show 5 dates starting from startOffset
-  const selectedDates = baseDates.slice(startOffset, startOffset + 5);
+  const [days, setDays] = useState(cardData?.additional || 0);
 
-  return selectedDates.map((item) => `${item.day}, ${item.date}`);
-};
-
-const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
-  const [days, setDays] = useState(
-    defaultEstimate || cardData?.additional || 0
-  );
   const [dateOffset, setDateOffset] = useState(0);
   const scheduleContainerWidth = 860;
   const scheduledDays = cardData?.scheduled || 1;
-  const DATES = getStaticDates(dateOffset);
+
+  // Calculate dates based on dateRange.start and cardData.position
+  const DATES = getDynamicDates(
+    dateRange.start,
+    cardData?.position || 0,
+    dateOffset
+  );
   const cellWidth = scheduleContainerWidth / DATES.length;
 
   // Calculate if there's overflow
@@ -277,12 +81,12 @@ const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
         className="relative overflow-hidden rounded-md border border-neutral-400"
         style={{ width: `${scheduleContainerWidth}px` }}
       >
-        <div className="grid h-14 grid-cols-5 items-center border-b border-neutral-200 text-center">
+        <div className="grid h-14 grid-cols-5 items-center border-b text-center">
           {DATES.map((date, index) => (
             <div
               key={date}
               className={`text-sm font-semibold text-neutral-900 ${
-                index < DATES.length - 1 ? "border-r border-neutral-200" : ""
+                index < DATES.length - 1 ? "border-neutral-200" : ""
               }`}
             >
               {date}
@@ -324,39 +128,27 @@ const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
           </div>
         </div>
 
-        <div className="relative h-[68px] overflow-visible">
-          <CardItem
+        <div className="relative grid h-[68px] grid-cols-5 overflow-visible border-r">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="border-r border-neutral-200"></div>
+          ))}
+
+          <CardDetail
             key={`card-${days}-${scheduledDays}`}
             cellWidth={cellWidth}
-            statusCode={cardData?.statusCode || "BERTUGAS"}
-            driverName={cardData?.driverName || "Ahmad Maulana"}
-            currentLocation={cardData?.currentLocation || "Rest Area KM 50"}
-            estimation={cardData?.estimation || "est. 30km (1jam 30menit)"}
+            statusCode={cardData?.agendaStatus}
+            firstDestinationName={cardData?.firstDestinationName}
+            lastDestinationName={cardData?.lastDestinationName}
             scheduled={cardData?.scheduled || 1}
             additional={days}
             position={cardPosition}
-            distanceRemaining={cardData?.distanceRemaining || 121}
-            dataMuat={
-              cardData?.dataMuat || {
-                title: "Lokasi Muat",
-                subtitle: "Kota Surabaya, Kec. Tegalsari",
-              }
-            }
-            dataBongkar={
-              cardData?.dataBongkar || {
-                title: "Lokasi Bongkar",
-                subtitle: "Kab. Malang, Kec. Singosari",
-              }
-            }
+            distanceRemaining={cardData?.estimatedTotalDistanceKm}
             hasSosIssue={cardData?.hasSosIssue || false}
-            viewType={cardData?.viewType || "armada"}
-            truckType={cardData?.truckType}
-            showEditButton={false} // Hide the recursive "Ubah" button
           />
         </div>
       </div>
       <div className="flex justify-center">
-        <Button className="w-[120px]">Simpan</Button>
+        <Button className="w-[112px]">Simpan</Button>
       </div>
     </div>
   );
