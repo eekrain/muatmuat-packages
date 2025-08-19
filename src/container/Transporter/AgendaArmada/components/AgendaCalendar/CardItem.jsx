@@ -2,28 +2,12 @@ import { useMemo } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
 import EditSchedule from "./EditSchedule";
 import LocationPoint from "./LocationPoint";
 import InfoPopover from "./PopoverAgenda";
-
-// Map CardItem status to PopoverAgenda status
-const statusMapping = {
-  BERTUGAS: "Bertugas",
-  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
-  NON_AKTIF: "Non Aktif",
-  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
-  DIJADWALKAN: "Dijadwalkan",
-};
-
-const TitleEnum = {
-  BERTUGAS: "Bertugas",
-  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
-  NON_AKTIF: "Non Aktif",
-  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
-  DIJADWALKAN: "Dijadwalkan",
-};
 
 const cardEstimationStyles = {
   BERTUGAS: "bg-primary-50",
@@ -178,7 +162,7 @@ export const CardItem = (props) => {
                 hasSosIssue ? titleStyles.SOS : titleStyles[statusCode]
               )}
             >
-              {TitleEnum[statusCode]}
+              {StatusArmadaTypeEnum[statusCode]}
             </span>
 
             {hasSosIssue && (
@@ -309,7 +293,24 @@ export const CardItem = (props) => {
                 </div>
               </div>{" "}
               <div className="p-6">
-                <EditSchedule />
+                <EditSchedule
+                  cardData={{
+                    statusCode,
+                    driverName,
+                    currentLocation,
+                    estimation,
+                    distanceRemaining,
+                    dataMuat,
+                    dataBongkar,
+                    scheduled,
+                    additional,
+                    position,
+                    hasSosIssue,
+                    cellWidth,
+                    viewType,
+                    truckType,
+                  }}
+                />
               </div>
             </ModalContent>
           </Modal>

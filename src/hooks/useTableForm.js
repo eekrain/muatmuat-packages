@@ -71,11 +71,34 @@ export const useTableForm = (config) => {
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
+    if (!checked) {
+      // When unchecking, clear all selections immediately
+      setSelectedRowIndex([]);
+    }
   };
 
   const handleSelectRow = (selectedRows) => {
     setSelectedRowIndex(selectedRows);
   };
+
+  // Auto-update selectAll when all items are manually selected/deselected
+  useEffect(() => {
+    const totalItems = fields.length;
+    const selectedItems = selectedRowIndex.length;
+
+    if (totalItems > 0) {
+      const shouldSelectAll = selectedItems === totalItems;
+      if (selectAll !== shouldSelectAll) {
+        setSelectAll(shouldSelectAll);
+      }
+    } else {
+      // If no items, ensure selectAll is false
+      if (selectAll) {
+        setSelectAll(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRowIndex.length, fields.length]);
 
   const handleCellValueChange = (rowIndex, fieldPath, value) => {
     // Use custom handler if provided, otherwise use default
@@ -165,14 +188,17 @@ export const useTableForm = (config) => {
     }
   };
 
-  // Auto-select all effect
+  // Auto-select all effect - only when selectAll is explicitly toggled
   useEffect(() => {
-    if (selectAll) {
+    if (
+      selectAll &&
+      selectedRowIndex.length !== fields.length &&
+      fields.length > 0
+    ) {
       setSelectedRowIndex(fields.map((_, index) => index));
-    } else {
-      setSelectedRowIndex([]);
     }
-  }, [selectAll, fields]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectAll]);
 
   return {
     // Form methods

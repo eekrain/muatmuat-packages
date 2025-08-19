@@ -24,6 +24,7 @@ const LocationPoint = ({
   className,
   style,
   type = "muat",
+  isEdit = false,
 }) => {
   return (
     <div
@@ -49,7 +50,12 @@ const LocationPoint = ({
       />
 
       <div className="flex flex-col gap-0.5">
-        <span className="line-clamp-1 break-all text-[8px] font-medium leading-none text-[#000000]">
+        <span
+          className={cn(
+            "line-clamp-1 break-all font-medium leading-none",
+            isEdit ? "text-xxs text-neutral-600" : "text-[8px] text-[#000000]"
+          )}
+        >
           {title}
         </span>
         <span className="line-clamp-1 break-all text-xxs font-semibold leading-none text-[#000000]">

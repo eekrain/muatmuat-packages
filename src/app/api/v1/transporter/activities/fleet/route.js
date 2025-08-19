@@ -109,7 +109,7 @@ export async function GET(req) {
           fleet.licensePlate.toLowerCase().includes(search.toLowerCase()) ||
           fleet.truckType.toLowerCase().includes(search.toLowerCase()) ||
           fleet.currentLocation.toLowerCase().includes(search.toLowerCase()) ||
-          fleet.activeOrderCode.toLowerCase().includes(search.toLowerCase())
+          fleet.invoiceNumber.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -145,8 +145,8 @@ export async function GET(req) {
           bValue = b.licensePlate;
           break;
         case "dbt_mt_order.orderCode":
-          aValue = a.activeOrderCode;
-          bValue = b.activeOrderCode;
+          aValue = a.invoiceNumber;
+          bValue = b.invoiceNumber;
           break;
         case "dbm_mt_fleet.fleetStatus":
           aValue = a.status;

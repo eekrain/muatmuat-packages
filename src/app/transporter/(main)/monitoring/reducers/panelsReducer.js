@@ -13,6 +13,8 @@ export const PANEL_ACTIONS = {
   HIDE_PILIH_ARMADA: "HIDE_PILIH_ARMADA",
   SHOW_RIWAYAT_SOS: "SHOW_RIWAYAT_SOS",
   HIDE_RIWAYAT_SOS: "HIDE_RIWAYAT_SOS",
+  SHOW_POSISI_ARMADA: "SHOW_POSISI_ARMADA",
+  HIDE_POSISI_ARMADA: "HIDE_POSISI_ARMADA",
 };
 
 // Initial panels state
@@ -121,6 +123,25 @@ export function panelsReducer(state = initialPanelsState, action) {
         showRiwayatSOS: false,
         isBottomExpanded: true,
         isFullscreen: false,
+      };
+
+    case PANEL_ACTIONS.SHOW_POSISI_ARMADA:
+      return {
+        ...state,
+        showLeftPanel: true,
+        leftPanelMode: "posisi",
+        isBottomExpanded: false,
+        showLacakArmada: false, // Close right panel
+        isFullscreen: true, // Enter fullscreen for better map view
+      };
+
+    case PANEL_ACTIONS.HIDE_POSISI_ARMADA:
+      return {
+        ...state,
+        showLeftPanel: false,
+        leftPanelMode: "armada", // Reset to default mode
+        isBottomExpanded: true, // Show bottom panel again
+        isFullscreen: false, // Exit fullscreen
       };
 
     default:

@@ -2,7 +2,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   // Nanti disesuaikan Lagi
@@ -25,27 +25,47 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
           <h1 className="text-xl font-bold text-neutral-900">Detail Pesanan</h1>
         </div>
         <div className="flex items-center gap-x-3">
-          {/* https://www.figma.com/design/3M23e9bqxbGkzyTzuhJ1AJ/-Transporter--Real-Time-Monitoring---Web?node-id=1994-691502&t=koiFV6Df3fMS25BC-0 */}
-          {/* LDN-351 */}
-          {dataOrderDetail?.orderStatus === OrderStatusEnum.SCHEDULED_FLEET ? (
-            <>
-              <Button
-                variant="muattrans-primary-secondary"
-                iconLeft="/icons/download16.svg"
-                onClick={() => {}}
-              >
-                Unduh DO
-              </Button>
-              {isMonitoring && (
-                <Button variant="muatparts-error-secondary" onClick={() => {}}>
-                  Batalkan Pesanan
-                </Button>
-              )}
-            </>
+          {[
+            // Referensi: LDN-351
+            ORDER_STATUS.SCHEDULED_FLEET,
+            // Referensi: LDN-334
+            ORDER_STATUS.NEED_ASSIGN_FLEET,
+            // Referensi: LDN-336
+            ORDER_STATUS.NEED_CONFIRMATION_READY,
+            // Referensi: LDN-337
+            ORDER_STATUS.NEED_CHANGE_RESPONSE,
+            // Referensi: LDN-92
+            ORDER_STATUS.LOADING,
+            // Referensi : LDZ
+            ORDER_STATUS.UNLOADING,
+            // Referensi: LDG-7
+            ORDER_STATUS.COMPLETED,
+          ].includes(dataOrderDetail?.orderStatus) ? (
+            <Button
+              variant="muattrans-primary-secondary"
+              iconLeft="/icons/download16.svg"
+              onClick={() => {}}
+            >
+              Unduh DO
+            </Button>
           ) : null}
+          {[
+            // Referensi: LDN-333
+            ORDER_STATUS.SCHEDULED_FLEET,
+            // Referensi: LDN-334
+            ORDER_STATUS.NEED_ASSIGN_FLEET,
+            // Referensi: LDN-336
+            ORDER_STATUS.NEED_CONFIRMATION_READY,
+            // Referensi: LDN-337
+            ORDER_STATUS.NEED_CHANGE_RESPONSE,
+          ].includes(dataOrderDetail?.orderStatus) && (
+            <Button variant="muatparts-error-secondary" onClick={() => {}}>
+              Batalkan Pesanan
+            </Button>
+          )}
         </div>
       </div>
-      {isMonitoring && (
+      {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
         <div
           className={
             "mt-4 flex items-center gap-[2px] rounded-lg bg-secondary-100 px-6 py-4 text-xs font-medium text-neutral-900"

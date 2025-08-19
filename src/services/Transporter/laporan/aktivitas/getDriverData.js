@@ -262,8 +262,8 @@ export const getDriverData = async (params = {}) => {
   const {
     limit = 10,
     page = 1,
-    sort = "name",
-    order = "desc",
+    sort,
+    order,
     search = "",
     status = "",
     startDate = "",

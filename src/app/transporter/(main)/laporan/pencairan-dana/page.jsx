@@ -10,6 +10,7 @@ import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import LaporanPencairanDanaTable from "@/components/Report/LaporanPencairanDanaTable/LaporanPencairanDanaTable";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetWithdrawalList } from "@/services/Transporter/laporan/pencairan-dana/getWithdrawalList";
 
 export default function Page() {
   const { t } = useTranslation();
@@ -74,6 +75,8 @@ export default function Page() {
       format: "year",
     },
   ];
+
+  const { withdrawals } = useGetWithdrawalList();
 
   // Table data
   const tableData = [
@@ -226,6 +229,7 @@ export default function Page() {
   };
 
   const handleFilter = (newFilters) => {
+    console.log(newFilters);
     setFilters(newFilters);
     setCurrentPage(1);
   };

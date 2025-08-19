@@ -9,6 +9,8 @@ export const URL_MASTER_PROVINCES = "/v1/transporter/settings/provinces";
 export const URL_AREA_MUAT_MANAGE = "/v1/transporter/settings/area-muat/manage";
 export const URL_AREA_MUAT = "/v1/transporter/settings/area-muat";
 export const URL_AREA_MUAT_STATUS = "/v1/transporter/settings/area-muat/status";
+export const URL_CITIES_BY_PROVINCES =
+  "/v1/transporter/settings/master/kota-kabupaten";
 // Mock API results for development/testing
 export const mockMasterProvinces = {
   data: {
@@ -1202,6 +1204,33 @@ export const useGetAreaMuatManage = (params) => {
     navigation: data?.navigation || {},
     query: data?.query || {},
     raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const getAreaMuatCities = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+
+  const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+  const result = await fetcherMuatrans.get(
+    `${URL_CITIES_BY_PROVINCES}${query}`
+  );
+
+  return {
+    cities: result?.data?.Data?.cities || [],
+    raw: result,
+  };
+};
+
+export const useGetAreaMuatCities = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getAreaMuatData/${paramsString}`,
+    getAreaMuatCities
+  );
+  return {
+    cities: data?.cities || [],
     isLoading,
     isError: !!error,
   };
