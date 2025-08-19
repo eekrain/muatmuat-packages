@@ -37,6 +37,9 @@ const DaftarArmada = ({
   const [selectedFleetForResponse, setSelectedFleetForResponse] =
     useState(null);
 
+  // State untuk mengontrol buka/tutup popover filter
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   const {
     data: fleetData,
     isLoading,
@@ -50,10 +53,14 @@ const DaftarArmada = ({
   });
 
   const fleets = fleetData?.fleets || [];
-  const totalFleets = fleetData?.totalFleets || fleets.length;
+  const totalFleets = fleetData?.pagination?.totalFleets || fleets.length;
   const sosCount = fleetData?.filter?.sos || 0;
   const hasFilterData = fleetData?.filter;
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
+
+  // Variabel boolean untuk menentukan apakah ada filter yang aktif
+  const isFilterActive =
+    truckStatusFilter.length > 0 || orderStatusFilter.length > 0;
 
   // ACK handler untuk tombol "Mengerti"
   const handleAcknowledge = async (fleet) => {
@@ -71,14 +78,14 @@ const DaftarArmada = ({
     }
   };
 
-  // Show SOS notification when new alert arrives
+  // Menampilkan notifikasi SOS saat ada alert baru
   useEffect(() => {
     if (latestSosAlert) {
       setShowSosNotification(true);
     }
   }, [latestSosAlert]);
 
-  // Expand the selected fleet when selectedFleetId changes
+  // Membuka detail armada yang dipilih
   useEffect(() => {
     if (selectedFleetId) {
       setExpandedId(selectedFleetId);
@@ -117,23 +124,26 @@ const DaftarArmada = ({
     setSelectedFleet(null);
   };
 
+  // Fungsi ini menerapkan filter dan menutup popover
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
-    refetchFleets(); // Trigger a refetch with new filters
+    refetchFleets(); // Memicu pengambilan data ulang dengan filter baru
+    setIsPopoverOpen(false); // Menutup popover setelah filter diterapkan
   };
 
   const handleFleetCardClick = (fleet) => {
-    // Focus map on this fleet
+    // Fokus peta pada armada ini
     if (onFleetClick) {
       onFleetClick(fleet);
     }
-    // Also update the selected fleet ID
+    // Update juga ID armada yang dipilih
     if (onFleetSelect) {
       onFleetSelect(fleet.fleetId);
     }
   };
 
+  // Filter data di sisi client berdasarkan keyword pencarian dan tab aktif
   const filteredData = fleets.filter((fleet) => {
     const searchMatch =
       fleet.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,8 +168,6 @@ const DaftarArmada = ({
 
       <div className="px-4">
         <div className="pb-3">
-          {" "}
-          {/* div flex-nya sudah tidak diperlukan lagi */}
           <h2 className="text-[14px] font-bold text-gray-900">
             Daftar Armada{" "}
             <span className="font-semibold">({totalFleets} Armada)</span>
@@ -182,6 +190,9 @@ const DaftarArmada = ({
             <FilterPopoverArmada
               onApplyFilter={handleApplyFilter}
               filterCounts={fleetData?.filter}
+              isPopoverOpen={isPopoverOpen}
+              onOpenChange={setIsPopoverOpen}
+              isFilterActive={isFilterActive}
             />
           )}
         </div>
@@ -199,6 +210,7 @@ const DaftarArmada = ({
             onClick={() => setActiveTab("sos")}
           >
             SOS ({sosCount})
+            {/* Notifikasi dot bisa ditambahkan logika tambahan jika diperlukan */}
             <NotificationDot
               size="sm"
               color="red"
@@ -254,8 +266,7 @@ const DaftarArmada = ({
             {filteredData.map((fleet) => {
               const isSOSVisual =
                 fleet.hasSOSAlert &&
-                (fleet.detailSOS?.sosStatus ??
-                  (fleet.hasSOSAlert ? "NEW" : "ACKNOWLEDGED")) === "NEW";
+                (fleet.detailSOS?.sosStatus ?? "NEW") === "NEW";
 
               return (
                 <div
@@ -303,6 +314,7 @@ const DaftarArmada = ({
           }}
           changeData={
             selectedFleetForResponse.activeOrder?.changeDetails || {
+              // Data dummy jika tidak ada di API
               oldLoadTime: "10 Jan 2025, 08:00 WIB",
               newLoadTime: "11 Jan 2025, 10:00 WIB",
               oldDistance: "150 km",
