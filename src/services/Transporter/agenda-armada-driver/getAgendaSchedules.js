@@ -1,253 +1,90 @@
-import {
-  STATUS_CODES,
-  driverNames,
-  locations,
-  randomEmail,
-  randomPhoneNumber,
-  truckTypes,
-} from "./getAgendaSchedules.data";
+import xior from "xior";
 
-// Hardcoded license plates and driver names for consistent autocomplete
-export const HARDCODED_PLATES = [
-  "B 1234 ABC",
-  "L 5678 XYZ",
-  "D 9999 DEF",
-  "W 1111 GHI",
-  "F 2222 JKL",
-  "B 3333 MNO",
-  "L 4444 PQR",
-  "D 5555 STU",
-];
+const useMockData = true;
 
-export const HARDCODED_DRIVERS = [
-  "John Doe",
-  "Jane Smith",
-  "Ahmad Rahman",
-  "Siti Nurhaliza",
-  "Budi Santoso",
-  "Maria Santos",
-  "Ridwan Kamil",
-  "Dewi Sartika",
-];
+/**
+ * @typedef {Object} Estimation
+ * @property {string} currentLocation - Nama lokasi terakhir armada berada.
+ * @property {number} nextDistance - Jarak ke destinasi berikutnya (km).
+ * @property {number} nextTime - Perkiraan waktu tempuh ke destinasi berikutnya (menit).
+ */
 
-const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const getRandomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+/**
+ * @typedef {Object} ScheduleItem
+ * @property {string} id - ID unik schedule.
+ * @property {string} orderID - ID pesanan terkait schedule.
+ * @property {string} fleetID - ID armada (fleet) yang ditugaskan.
+ * @property {string} driverID - ID pengemudi yang ditugaskan.
+ * @property {string} scheduleDate - Tanggal mulai schedule (ISO string).
+ * @property {string} scheduleEndDate - Tanggal selesai schedule (ISO string).
+ * @property {string} additionalUnloadTimeStart - Tambahan waktu bongkar mulai (ISO string).
+ * @property {string} additionalUnloadTimeEnd - Tambahan waktu bongkar selesai (ISO string).
+ * @property {string} scheduledStartTime - Waktu mulai penjadwalan (ISO string).
+ * @property {string} scheduledEndTime - Waktu selesai penjadwalan (ISO string).
+ * @property {string} agendaStatus - Status agenda (misalnya: "BERTUGAS").
+ * @property {number} position - Urutan schedule dalam daftar.
+ * @property {number} scheduled - Jumlah tugas utama.
+ * @property {number} additional - Jumlah tugas tambahan.
+ * @property {boolean} hasSosIssue - Apakah armada memiliki masalah SOS.
+ * @property {boolean} isConflicted - Apakah jadwal bertabrakan.
+ * @property {Estimation} estimation - Estimasi jarak & waktu perjalanan.
+ * @property {string} firstDestinationName - Nama tujuan pertama.
+ * @property {number} estimatedTotalDistanceKm - Estimasi total jarak perjalanan (km).
+ * @property {string} lastDestinationName - Nama tujuan terakhir.
+ * @property {string|null} driverName - Nama pengemudi, bisa null.
+ * @property {string|null} licensePlate - Nomor polisi kendaraan, bisa null.
+ * @property {string|null} truckType - Jenis truk, bisa null.
+ */
 
-const generatePlateNumber = () => {
-  return getRandomElement(HARDCODED_PLATES);
-};
+/**
+ * @typedef {Object} Schedule
+ * @property {string} licensePlate - Nomor polisi kendaraan.
+ * @property {string} truckType - Jenis truk.
+ * @property {string|null} driverName - Nama pengemudi.
+ * @property {string|null} driverPhone - Nomor telepon pengemudi.
+ * @property {string|null} driverEmail - Email pengemudi.
+ * @property {ScheduleItem[]} schedule - Daftar jadwal untuk armada.
+ */
 
-const getDriverName = () => {
-  return getRandomElement(HARDCODED_DRIVERS);
-};
+/**
+ * @typedef {Object} Pagination
+ * @property {number} currentPage - Halaman saat ini.
+ * @property {number} totalPages - Total halaman tersedia.
+ * @property {number} totalItems - Total item data.
+ * @property {number} itemsPerPage - Jumlah item per halaman.
+ */
 
-// --- Data Generator for a single task ---
-const generateMockRowData = () => {
-  const statusCode = getRandomElement(STATUS_CODES);
-  const positionPattern = getRandomElement([
-    "fully_in_view",
-    "starts_before",
-    "ends_after",
-  ]);
-  let position, scheduled;
-  const additional = getRandomInt(0, 1);
+/**
+ * @typedef {Object} Summary
+ * @property {number} totalArmada - Jumlah total armada.
+ * @property {number} totalDriver - Jumlah total driver.
+ * @property {Object.<string, number>} statusCounts - Jumlah agenda berdasarkan status.
+ * @property {number[]} countPerDay - Jumlah agenda per hari.
+ * @property {boolean[]} countConflictedPerDay - Status konflik per hari.
+ */
 
-  switch (positionPattern) {
-    case "starts_before": {
-      position = getRandomInt(-3, -1);
-      const minScheduled = 1 - position - additional;
-      const maxScheduledByView = 5 - position - additional;
-      const finalMaxScheduled = Math.min(maxScheduledByView, 3);
-      scheduled = getRandomInt(minScheduled, finalMaxScheduled);
-      break;
-    }
-    case "ends_after": {
-      position = getRandomInt(2, 4);
-      const minScheduled = 6 - position - additional;
-      scheduled = getRandomInt(Math.max(1, minScheduled), 3);
-      break;
-    }
-    case "fully_in_view":
-    default: {
-      position = getRandomInt(0, 4);
-      const maxScheduledByView = Math.max(1, 5 - position - additional);
-      const finalMaxScheduled = Math.min(maxScheduledByView, 3);
-      scheduled = getRandomInt(1, finalMaxScheduled);
-      break;
-    }
+/**
+ * @typedef {Object} AgendaSchedulesResponse
+ * @property {Schedule[]} schedules - Daftar schedule per armada.
+ * @property {Pagination} pagination - Data pagination.
+ * @property {Summary} summary - Ringkasan statistik.
+ * @property {string} lastUpdated - Waktu terakhir data diperbarui (ISO string).
+ */
+
+/**
+ * Mengambil daftar agenda jadwal armada berdasarkan parameter yang diberikan.
+ * @param {Object} params - Parameter pencarian untuk agenda jadwal.
+ * @returns {Promise<AgendaSchedulesResponse>} - Daftar agenda jadwal armada.
+ */
+export const getAgendaSchedules = async (params) => {
+  let result;
+
+  if (useMockData) {
+    const searchParams = new URLSearchParams(params).toString();
+    result = await xior.get(
+      `/api/v1/transporter/agenda-schedules?${searchParams}`
+    );
   }
 
-  const isInactive = statusCode === "NON_AKTIF";
-  const isFinished = statusCode === "PENGIRIMAN_SELESAI";
-  const mustHaveLocationData = statusCode === "MENUNGGU_JAM_MUAT";
-  const dataMuat =
-    isInactive && !mustHaveLocationData
-      ? null
-      : { title: "Lokasi Muat", subtitle: getRandomElement(locations) };
-  const dataBongkar =
-    isInactive && !mustHaveLocationData
-      ? null
-      : { title: "Lokasi Bongkar", subtitle: getRandomElement(locations) };
-
-  return {
-    statusCode,
-    position,
-    scheduled,
-    additional,
-    hasSosIssue: statusCode === "BERTUGAS" && Math.random() < 0.5,
-    currentLocation: isInactive
-      ? "Garasi Pool Kendaraan"
-      : getRandomElement(locations),
-    estimation:
-      isInactive || isFinished
-        ? null
-        : `est. ${getRandomInt(5, 50)}km (${getRandomInt(1, 2)}jam ${getRandomInt(10, 59)}menit)`,
-    distanceRemaining: isFinished || isInactive ? 0 : getRandomInt(1, 200),
-    dataMuat,
-    dataBongkar,
-  };
-};
-
-// --- START: New Generator for Driver View ---
-// Generates a schedule item including plate/truck info
-const generateDriverViewScheduleItem = () => ({
-  plateNumber: generatePlateNumber(),
-  truckType: getRandomElement(truckTypes),
-  ...generateMockRowData(),
-});
-
-// Generates the full dataset grouped by driver
-const generateDriverViewDataset = () => {
-  return driverNames.map((driverName) => ({
-    driverName: driverName,
-    driverEmail: getRandomElement(randomEmail),
-    driverPhone: getRandomElement(randomPhoneNumber),
-    // Each driver gets 1 to 3 tasks
-    schedules: Array.from(
-      { length: getRandomInt(1, 3) },
-      generateDriverViewScheduleItem
-    ),
-  }));
-};
-// --- END: New Generator for Driver View ---
-
-const generateArmadaViewDataset = (size) => {
-  return Array.from({ length: size }, () => ({
-    plateNumber: generatePlateNumber(),
-    truckType: getRandomElement(truckTypes),
-    rowData: [{ ...generateMockRowData(), driverName: getDriverName() }],
-  }));
-};
-
-// --- The "Backend" Logic ---
-const runMockApiLogic = (params) => {
-  const {
-    page = 1,
-    limit = 10,
-    agenda_status,
-    search,
-    view_type = "armada",
-  } = params;
-
-  let results;
-
-  // --- START: Logic to switch between view types ---
-  if (view_type === "driver") {
-    results = generateDriverViewDataset();
-    if (search) {
-      results = results.filter((driver) =>
-        driver.driverName.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-  } else {
-    // Default to "armada" view
-    results = generateArmadaViewDataset(45);
-    if (search) {
-      results = results.filter(
-        (item) =>
-          item.plateNumber.toLowerCase().includes(search.toLowerCase()) ||
-          item.rowData[0].driverName
-            .toLowerCase()
-            .includes(search.toLowerCase())
-      );
-      // Ensure unique plate numbers for armada search
-      const seenPlates = new Set();
-      results = results.filter((item) => {
-        if (seenPlates.has(item.plateNumber)) return false;
-        seenPlates.add(item.plateNumber);
-        return true;
-      });
-    }
-  }
-  // --- END: Logic to switch between view types ---
-
-  if (agenda_status && agenda_status.length > 0) {
-    if (view_type === "driver") {
-      // Filter the nested schedules for each driver
-      results = results
-        .map((driver) => ({
-          ...driver,
-          schedules: driver.schedules.filter((task) =>
-            agenda_status.includes(task.statusCode)
-          ),
-        }))
-        .filter((driver) => driver.schedules.length > 0); // Only keep drivers that still have tasks
-    } else {
-      results = results.filter((item) =>
-        agenda_status.includes(item.rowData[0].statusCode)
-      );
-    }
-  }
-
-  const totalItems = results.length;
-  const totalPages = Math.ceil(totalItems / limit);
-  const baseSchedules = results.slice((page - 1) * limit, page * limit);
-
-  const minRows = 4;
-  const placeholderCount = Math.max(0, minRows - baseSchedules.length);
-  const placeholderStructure =
-    view_type === "driver"
-      ? {
-          driverName: null,
-          driverEmail: null,
-          driverPhone: null,
-          schedules: [],
-          isPlaceholder: true,
-        }
-      : {
-          plateNumber: null,
-          truckType: null,
-          rowData: [],
-          isPlaceholder: true,
-        };
-  const placeholders = Array.from(
-    { length: placeholderCount },
-    () => placeholderStructure
-  );
-
-  const paginatedSchedules = [...baseSchedules, ...placeholders];
-
-  return {
-    Message: { Code: 200, Text: "Data agenda berhasil dimuat" },
-    Data: {
-      schedules: paginatedSchedules,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems,
-        itemsPerPage: limit,
-      },
-      summary: { totalArmada: totalItems, totalDriver: 42, statusCounts: {} },
-      lastUpdated: new Date().toISOString(),
-    },
-    Type: "GET_AGENDA_SCHEDULES",
-  };
-};
-
-// --- The Fetcher ---
-export const getAgendaSchedules = async (key) => {
-  const [, params] = key;
-  await new Promise((resolve) => setTimeout(resolve, 750));
-  return runMockApiLogic(params);
+  return result.data?.Data;
 };
