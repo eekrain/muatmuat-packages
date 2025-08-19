@@ -4,8 +4,10 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import BadgeSOSPopover from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { cn } from "@/lib/utils";
@@ -22,7 +24,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
 
   const breadcrumbData = [
     { name: "Monitoring", href: "/monitoring" },
-    { name: "Daftar Pesanan Aktif" },
+    // { name: "Daftar Pesanan Aktif" },
     { name: "Detail Pesanan" },
     { name: "Lihat Posisi Armada" },
   ];
@@ -131,7 +133,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
       <div className="px-4">
-        <BreadCrumb data={breadcrumbData} className="justify-center pt-6" />
+        <BreadCrumb data={breadcrumbData} className="pt-6" />
       </div>
 
       <div className="mt-4 flex items-center gap-3 px-4">
@@ -158,13 +160,32 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
               className="flex flex-col rounded-lg border border-neutral-300 bg-white"
             >
               <div className="relative p-4">
-                <div className="mb-3">
+                <div className="mb-3 flex items-center gap-2">
                   <BadgeStatus
                     variant={vehicle.statusVariant}
                     className="inline-flex w-auto"
                   >
                     {vehicle.status}
                   </BadgeStatus>
+                  <BadgeSOSPopover
+                    sosData={{
+                      licensePlate: vehicle.licensePlate,
+                      truckIcon: vehicle.icon,
+                      reportTime: "10 Jan 2025 12:00 WIB",
+                      images: [],
+                      vehicleType: "Colt Diesel Double - Bak Terbuka",
+                      driverName: vehicle.driverName,
+                      driverPhone: "0823-3123-1290",
+                      lastLocation: "Kab. Batu",
+                      orderNumber: fleetData.orderCode,
+                      pickupLocation: "Kota Surabaya, Kec. Tegalsari",
+                      dropoffLocation: "Kab. Pasuruan, Kec. Klojen",
+                    }}
+                    onProcessLoad={() => console.log("Process Load")}
+                    onViewDetail={() => console.log("View Detail")}
+                    onViewHistory={() => console.log("View History")}
+                    onConfirm={() => console.log("Confirm")}
+                  />
                 </div>
 
                 <div className="flex items-center gap-4 pr-10">
@@ -182,7 +203,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
                     </h3>
                     <div className="mt-1 flex items-center gap-1.5">
                       <IconComponent
-                        src="/icons/user.svg"
+                        src="/icons/user16.svg"
                         className="h-4 w-4 flex-shrink-0 text-neutral-600"
                       />
                       <span className="truncate text-xs font-medium text-neutral-800">
