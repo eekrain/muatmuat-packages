@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -13,24 +15,111 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import { cn } from "@/lib/utils";
-import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 import {
   ORDER_ACTIONS,
   ORDER_STATUS,
   getOrderStatusActions,
   getOrderStatusBadge,
-} from "@/utils/Transporter/orderStatus";
+} from "@/utils/CS/orderStatus";
+import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
+
+// Component to show tooltip only when text is truncated
+const TruncatedTextWithTooltip = ({ text, className }) => {
+  const textRef = useRef(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useEffect(() => {
+    const checkTruncation = () => {
+      const element = textRef.current;
+      if (element) {
+        // For line-clamp, we need to check if the element's scrollHeight > clientHeight
+        // or use a more reliable method by creating a temporary element
+        const tempElement = document.createElement("span");
+        tempElement.style.visibility = "hidden";
+        tempElement.style.position = "absolute";
+        tempElement.style.whiteSpace = "nowrap";
+        tempElement.style.fontSize = window.getComputedStyle(element).fontSize;
+        tempElement.style.fontFamily =
+          window.getComputedStyle(element).fontFamily;
+        tempElement.style.fontWeight =
+          window.getComputedStyle(element).fontWeight;
+        tempElement.textContent = text;
+
+        document.body.appendChild(tempElement);
+        const fullWidth = tempElement.offsetWidth;
+        document.body.removeChild(tempElement);
+
+        const containerWidth = element.offsetWidth;
+        setIsTruncated(fullWidth > containerWidth);
+      }
+    };
+
+    // Check truncation after component mounts and when text changes
+    const timeoutId = setTimeout(checkTruncation, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [text]);
+
+  const content = (
+    <span
+      ref={textRef}
+      className={cn(className, isTruncated && "hover:cursor-pointer")}
+    >
+      {text}
+    </span>
+  );
+
+  if (isTruncated) {
+    return (
+      <InfoTooltip
+        trigger={content}
+        side="top"
+        className={`hover:cursor-pointer`}
+      >
+        <div className="max-w-[312px]">{text}</div>
+      </InfoTooltip>
+    );
+  }
+
+  return content;
+};
+
+// Helper function to format informasi muatan display
+const formatInformasiMuatan = (informasiMuatan = []) => {
+  if (!informasiMuatan || informasiMuatan.length === 0) {
+    return { displayText: "-", hasMore: false, remainingItems: [] };
+  }
+
+  if (informasiMuatan.length === 1) {
+    return {
+      displayText: informasiMuatan[0],
+      hasMore: false,
+      remainingItems: [],
+    };
+  }
+
+  const firstItem = informasiMuatan[0];
+  const remainingCount = informasiMuatan.length - 1;
+  const remainingItems = informasiMuatan.slice(1);
+
+  return {
+    displayText: `${firstItem}, +${remainingCount} lainnya`,
+    hasMore: true,
+    remainingItems,
+  };
+};
 
 const DaftarPesananAktifListItem = ({
   row,
   isOpen,
   onToggleDropdown,
   onActionClick,
-  onViewFleetStatus,
+  onViewFleetStatus: _onViewFleetStatus,
 }) => {
   const { dateLabel, timeRange, dateColor } = formatMuatTime(row);
   const statusBadge = getOrderStatusBadge(row.orderStatus);
   const config = getOrderStatusActions(row.orderStatus, row);
+  const muatanInfo = formatInformasiMuatan(row.informasiMuatan);
 
   const handleActionClick = (actionType) => {
     switch (actionType) {
@@ -187,15 +276,16 @@ const DaftarPesananAktifListItem = ({
 
         {/* Armada */}
         <div className="flex w-full flex-col gap-1">
-          <span className="line-clamp-1 break-all text-xs font-bold">
-            {row.truckType.name}
-          </span>
+          <TruncatedTextWithTooltip
+            text={row.truckType.name}
+            className="line-clamp-1 break-all text-xs font-bold"
+          />
           <span className="line-clamp-1 break-all text-xs font-medium">
             <span className="text-neutral-600">Carrier :</span>{" "}
             {row.carrierTruck.name}
           </span>
           <div className="mt-1 flex items-center gap-4">
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <IconComponent
                 src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
                 className="h-4 w-4 text-gray-600"
@@ -205,13 +295,40 @@ const DaftarPesananAktifListItem = ({
               </span>
             </div>
             <span className="text-gray-300">•</span>
-            <div className="flex items-center gap-1">
+            <div className="flex max-w-[118px] items-center gap-1">
               <IconComponent
                 src="/icons/monitoring/daftar-pesanan-aktif/scales.svg"
-                className="h-4 w-4 text-gray-600"
+                className="h-4 w-4 shrink-0 text-gray-600"
               />
               <span className="text-xxs font-medium">
-                {row.totalWeight} {row.weightUnit}
+                {muatanInfo.hasMore ? (
+                  <>
+                    {row.informasiMuatan[0]},{" "}
+                    <InfoTooltip
+                      trigger={
+                        <span className="cursor-pointer text-primary-700 hover:text-primary-800">
+                          +{muatanInfo.remainingItems.length} lainnya
+                        </span>
+                      }
+                      side="top"
+                      align="start"
+                    >
+                      <div className="max-w-[312px]">
+                        <div className="mb-2 font-semibold text-black">
+                          Informasi Muatan
+                        </div>
+                        <ol className="list-inside list-decimal space-y-1">
+                          {muatanInfo.remainingItems.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </InfoTooltip>{" "}
+                    ({row.totalWeight} {row.weightUnit})
+                  </>
+                ) : (
+                  `${muatanInfo.displayText} (${row.totalWeight} ${row.weightUnit})`
+                )}
               </span>
             </div>
           </div>

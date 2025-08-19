@@ -11,6 +11,8 @@ import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepper
 import { cn } from "@/lib/utils";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
+import ModalFotoPendukung from "./ModalFotoPendukung";
+
 // Helper: order status chip color by label
 const getOrderStatusClasses = (label) => {
   const base =
@@ -34,11 +36,18 @@ const RekapPembatalanList = ({
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [selectedDrivers, setSelectedDrivers] = useState([]);
   const { addToast } = useToastActions();
 
   const openConfirm = (item) => {
     setSelectedItem(item);
     setConfirmOpen(true);
+  };
+
+  const openPhotoModal = (drivers) => {
+    setSelectedDrivers(drivers);
+    setPhotoModalOpen(true);
   };
 
   const handleConfirm = () => {
@@ -90,8 +99,16 @@ const RekapPembatalanList = ({
             reason={item.reason}
             drivers={item.drivers}
             onConfirmPenalty={() => openConfirm(item)}
+            onDriverImageClick={openPhotoModal}
           />
         ))}
+
+        {/* Photo Modal */}
+        <ModalFotoPendukung
+          isOpen={photoModalOpen}
+          onClose={() => setPhotoModalOpen(false)}
+          photos={selectedDrivers}
+        />
 
         {/* Confirmation Modal */}
         <ConfirmationModal
@@ -131,6 +148,7 @@ const CancellationCard = ({
   reason = "-",
   drivers = [],
   onConfirmPenalty,
+  onDriverImageClick,
 }) => {
   const showDrivers = Array.isArray(drivers) && drivers.length > 0;
   const [showAllCargo, setShowAllCargo] = useState(false);
@@ -283,7 +301,9 @@ const CancellationCard = ({
             {reason || "-"}
           </div>
 
-          {showDrivers && <DriverImageList drivers={drivers} />}
+          {showDrivers && (
+            <DriverImageList drivers={drivers} onClick={onDriverImageClick} />
+          )}
         </div>
         <div className="w-full">
           {penaltyStatus === "pending" && (
@@ -318,17 +338,27 @@ const HeaderPenaltyBadge = ({ status }) => {
   return <span className="ml-auto" />; // keep layout
 };
 
-const DriverImageList = ({ drivers = [] }) => {
+const DriverImageList = ({ drivers = [], onClick }) => {
+  const handleClick = () => {
+    if (onClick && drivers.length > 0) {
+      onClick(drivers);
+    }
+  };
+
   return (
     <div className="flex h-10 items-center gap-2">
-      {drivers.slice(0, 2).map((d, i) => (
-        <div key={i} className="h-10 w-10 rounded-[4px] bg-white">
+      {drivers.slice(0, 4).map((d, i) => (
+        <button
+          key={i}
+          onClick={handleClick}
+          className="h-10 w-10 cursor-pointer rounded-[4px] bg-white transition-opacity hover:opacity-80"
+        >
           <img
             src={d.photo || d.image || "/img/default-avatar.png"}
             alt={d.name || "driver"}
             className="h-10 w-10 rounded-[4px] object-cover"
           />
-        </div>
+        </button>
       ))}
     </div>
   );
