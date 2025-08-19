@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
-import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
@@ -124,7 +123,10 @@ const ModalEmailBaru = ({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent size="small" className="w-[550px] p-0" type="muattrans">
+      <ModalContent
+        className="!w-[550px] !min-w-[550px] !max-w-[550px] p-0"
+        type="muattrans"
+      >
         <ModalHeader isChangeEmail={true} />
 
         <div className="flex flex-col items-center gap-6 p-8">
@@ -136,21 +138,13 @@ const ModalEmailBaru = ({
             verifikasi ke email ini
           </p>
 
-          <div className="w-full px-4">
+          <div className="h-auto w-full px-4">
             <Input
-              icon={{ left: "/icons/verify-email.svg" }}
+              icon={{ left: "/icons/Message-yellow.svg" }}
               value={email}
               onChange={handleInputChange}
-              leftIcon={
-                <IconComponent
-                  src="/icons/verify-email.svg"
-                  alt="email"
-                  width={24}
-                  height={24}
-                />
-              }
               placeholder="Masukkan Email"
-              className="w-full"
+              className="!h-[40px] w-full"
               type="email"
               errorMessage={errorMessage}
               hideErrorMessage={true}
