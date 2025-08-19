@@ -3,8 +3,10 @@ import { useMemo } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
+import EditSchedule from "./EditSchedule";
 import LocationPoint from "./LocationPoint";
 import InfoPopover from "./PopoverAgenda";
 
@@ -201,7 +203,7 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                     hasSosIssue ? titleStyles.SOS : titleStyles[agendaStatus]
                   )}
                 >
-                  {TitleEnum[agendaStatus]}
+                  {StatusArmadaTypeEnum[agendaStatus]}
                 </span>
 
                 {hasSosIssue && (
@@ -341,8 +343,10 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                       className="h-full w-full object-cover"
                     />
                   </div>
-                </div>{" "}
-                <div className="p-6">{/* <EditSchedule /> */}</div>
+                </div>
+                <div className="p-6">
+                  <EditSchedule />
+                </div>
               </ModalContent>
             </Modal>
           )}
