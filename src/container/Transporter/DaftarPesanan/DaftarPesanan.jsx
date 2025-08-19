@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -28,9 +29,10 @@ const DaftarPesanan = ({
   onChangeQueryParams,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [tempSearch, setTempSearch] = useState("");
-  console.log("isFirstTimer", isFirstTimer);
+
   const [selectedTab, setSelectedTab] = useState("semua");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -307,6 +309,9 @@ const DaftarPesanan = ({
           <Button
             className="min-w-[174px]"
             variant="muattrans-primary-secondary"
+            onClick={() =>
+              router.push(`/daftar-pesanan/${row.id}/detail-pesanan`)
+            }
           >
             Detail
           </Button>
@@ -518,92 +523,96 @@ const DaftarPesanan = ({
             </div>
           ) : (
             <div className="flex flex-col">
-              <div className="flex items-center justify-between px-6 py-5">
-                <div className="flex items-center gap-x-3">
-                  <Input
-                    className="gap-0"
-                    // disabled={
-                    //   hasNoOrders || (!hasFilteredOrders && !queryParams.search)
-                    // }
-                    appearance={{ containerClassName: "w-[262px]" }}
-                    placeholder={t("placeholderCariPesanan")}
-                    icon={{
-                      left: "/icons/search16.svg",
-                      right: tempSearch ? (
-                        <IconComponent
-                          src="/icons/silang16.svg"
-                          onClick={handleClearSearch}
-                        />
-                      ) : null,
-                    }}
-                    value={tempSearch}
-                    onChange={({ target: { value } }) => setTempSearch(value)}
-                    onKeyUp={handleSearch}
-                  />
-                  <Filter
-                    // disabled={
-                    //   hasNoOrders ||
-                    //   (!hasFilteredOrders &&
-                    //     !statusRadioOptions
-                    //       .flatMap((item) => item.children)
-                    //       .some((item) => item.value === queryParams.status))
-                    // }
-                    options={[]}
-                    // value={queryParams.status}
-                    value=""
-                    onChange={
-                      ({ name, value }) => {}
-                      //   onChangeQueryParams(name, value)
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-x-3">
-                  <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
-                    {t("labelTampilkan")}
-                  </span>
-                  {[
-                    { value: "", label: "Semua" },
-                    {
-                      value: "WAITING_PAYMENT",
-                      label: `Perlu Respon Perubahan (2)`,
-                    },
-                    {
-                      value: "WAITING_REPAYMENT",
-                      label: `Perlu Konfirmasi Siap (2)`,
-                    },
-                    {
-                      value: "DOCUMENT_SHIPPING",
-                      label: `Perlu Assign Armada (3)`,
-                    },
-                  ].map((tab, key) => {
-                    // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
-                    // isn't one of the specific tab values
-                    const isActiveAllTab = tab.value === "";
-                    //   &&
-                    //   queryParams.status !== "WAITING_PAYMENT" &&
-                    //   queryParams.status !== "WAITING_REPAYMENT" &&
-                    //   queryParams.status !== "DOCUMENT_SHIPPING";
+              <div className="flex flex-col gap-y-6 px-6 py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-x-3">
+                    <Input
+                      className="gap-0"
+                      // disabled={
+                      //   hasNoOrders || (!hasFilteredOrders && !queryParams.search)
+                      // }
+                      appearance={{ containerClassName: "w-[262px]" }}
+                      placeholder={t("placeholderCariPesanan")}
+                      icon={{
+                        left: "/icons/search16.svg",
+                        right: tempSearch ? (
+                          <IconComponent
+                            src="/icons/silang16.svg"
+                            onClick={handleClearSearch}
+                          />
+                        ) : null,
+                      }}
+                      value={tempSearch}
+                      onChange={({ target: { value } }) => setTempSearch(value)}
+                      onKeyUp={handleSearch}
+                    />
+                    <Filter
+                      // disabled={
+                      //   hasNoOrders ||
+                      //   (!hasFilteredOrders &&
+                      //     !statusRadioOptions
+                      //       .flatMap((item) => item.children)
+                      //       .some((item) => item.value === queryParams.status))
+                      // }
+                      options={[]}
+                      // value={queryParams.status}
+                      value=""
+                      onChange={
+                        ({ name, value }) => {}
+                        //   onChangeQueryParams(name, value)
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-x-3">
+                    <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
+                      {t("labelTampilkan")}
+                    </span>
+                    {[
+                      { value: "", label: "Semua" },
+                      {
+                        value: "WAITING_PAYMENT",
+                        label: `Perlu Respon Perubahan (2)`,
+                      },
+                      {
+                        value: "WAITING_REPAYMENT",
+                        label: `Perlu Konfirmasi Siap (2)`,
+                      },
+                      {
+                        value: "DOCUMENT_SHIPPING",
+                        label: `Perlu Assign Armada (3)`,
+                      },
+                    ].map((tab, key) => {
+                      // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
+                      // isn't one of the specific tab values
+                      const isActiveAllTab = tab.value === "";
+                      //   &&
+                      //   queryParams.status !== "WAITING_PAYMENT" &&
+                      //   queryParams.status !== "WAITING_REPAYMENT" &&
+                      //   queryParams.status !== "DOCUMENT_SHIPPING";
 
-                    return (
-                      <div
-                        key={key}
-                        onClick={() => onChangeQueryParams("status", tab.value)}
-                        className={cn(
-                          "relative flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
-                          queryParams.status === tab.value || isActiveAllTab
-                            ? "border border-primary-700 bg-primary-50 text-primary-700"
-                            : "bg-neutral-200 text-neutral-900"
-                        )}
-                      >
-                        <span className="text-xxs leading-[1.3]">
-                          {tab.label}
-                        </span>
-                        {!isActiveAllTab ? (
-                          <div className="absolute right-[11px] top-[6.5px] size-1 rounded-full bg-error-700" />
-                        ) : null}
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          key={key}
+                          onClick={() =>
+                            onChangeQueryParams("status", tab.value)
+                          }
+                          className={cn(
+                            "relative flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
+                            queryParams.status === tab.value || isActiveAllTab
+                              ? "border border-primary-700 bg-primary-50 text-primary-700"
+                              : "bg-neutral-200 text-neutral-900"
+                          )}
+                        >
+                          <span className="text-xxs leading-[1.3]">
+                            {tab.label}
+                          </span>
+                          {!isActiveAllTab ? (
+                            <div className="absolute right-[11px] top-[6.5px] size-1 rounded-full bg-error-700" />
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
               <Table
@@ -737,14 +746,16 @@ const DaftarPesanan = ({
           )} */}
         </>
       )}
-      <Pagination
-        currentPage={1}
-        totalPages={1}
-        perPage={10}
-        onPageChange={() => {}}
-        onPerPageChange={() => {}}
-        className="py-0"
-      />
+      {isFirstTimer ? null : (
+        <Pagination
+          currentPage={1}
+          totalPages={1}
+          perPage={10}
+          onPageChange={() => {}}
+          onPerPageChange={() => {}}
+          className="py-0"
+        />
+      )}
     </div>
   );
 };

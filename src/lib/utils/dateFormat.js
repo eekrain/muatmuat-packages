@@ -186,7 +186,11 @@ export const formatDateRange = (startDate, endDate) => {
  * If both are present and on the same day, formats as "DD MMM YYYY HH:mm WIB s/d HH:mm WIB".
  * If both are present and on different days, formats as "DD MMM YYYY HH:mm WIB s/d DD MMM YYYY HH:mm WIB".
  */
-export function formatLoadTime(loadTimeStart, loadTimeEnd) {
+export function formatLoadTime(
+  loadTimeStart,
+  loadTimeEnd,
+  showOneLine = false
+) {
   const startDate = _parseDate(loadTimeStart);
   const endDate = _parseDate(loadTimeEnd);
 
@@ -206,7 +210,7 @@ export function formatLoadTime(loadTimeStart, loadTimeEnd) {
     return (
       <span>
         {`${formattedStartDate} ${formattedStartTime} s/d `}
-        <br />
+        {showOneLine ? " " : <br />}
         {`${formattedEndTime}`}
       </span>
     );
@@ -214,7 +218,7 @@ export function formatLoadTime(loadTimeStart, loadTimeEnd) {
     return (
       <span>
         {`${formattedStartDate} ${formattedStartTime} s/d `}
-        <br />
+        {showOneLine ? " " : <br />}
         {`${formattedEndDate} ${formattedEndTime}`}
       </span>
     );
