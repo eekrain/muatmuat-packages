@@ -97,9 +97,11 @@ export const getDriverDetailData = async (driverId, params = {}) => {
   const {
     limit = 10,
     page = 1,
-    sort = "loadingTime",
-    order = "asc",
+    sort,
+    order,
     search = "",
+    startDate = "",
+    endDate = "",
   } = params;
 
   let result;
@@ -115,6 +117,8 @@ export const getDriverDetailData = async (driverId, params = {}) => {
           sort,
           order,
           search,
+          startDate,
+          endDate,
           driverId,
         },
       }

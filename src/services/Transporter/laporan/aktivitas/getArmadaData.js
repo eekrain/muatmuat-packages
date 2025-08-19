@@ -21,8 +21,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/photo-1753166402594.webp",
           currentLocation: "-",
-          activeOrderCode: "",
-          activeInvoiceNumber: "",
+          invoiceNumber: "",
           activeOrderPickupLocation: "",
           activeOrderDropoffLocation: "",
           estimateDistance: 0,
@@ -38,8 +37,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752811896934.webp",
           currentLocation: "-",
-          activeOrderCode: "",
-          activeInvoiceNumber: "",
+          invoiceNumber: "",
           activeOrderPickupLocation: "",
           activeOrderDropoffLocation: "",
           estimateDistance: 0,
@@ -55,8 +53,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752811896934.webp",
           currentLocation: "-",
-          activeOrderCode: "",
-          activeInvoiceNumber: "",
+          invoiceNumber: "",
           activeOrderPickupLocation: "",
           activeOrderDropoffLocation: "",
           estimateDistance: 0,
@@ -72,8 +69,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/photo-1753166402594.webp",
           currentLocation: "-",
-          activeOrderCode: "MT25AA583",
-          activeInvoiceNumber: "INV/MT25AA583",
+          invoiceNumber: "INV/MT25AA583",
           activeOrderPickupLocation:
             "Taman - Waru, Taman, Sidoarjo, Jawa Timur, Indonesia",
           activeOrderDropoffLocation:
@@ -91,8 +87,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/photo-1753166402594.webp",
           currentLocation: "-",
-          activeOrderCode: "MT25AA605",
-          activeInvoiceNumber: "INV/MT25AA605",
+          invoiceNumber: "INV/MT25AA605",
           activeOrderPickupLocation:
             "Surabaya North Quay, Perak Utara, Surabaya, Jawa Timur, Indonesia",
           activeOrderDropoffLocation:
@@ -110,8 +105,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/photo-1753166402594.webp",
           currentLocation: "-",
-          activeOrderCode: "",
-          activeInvoiceNumber: "",
+          invoiceNumber: "",
           activeOrderPickupLocation: "",
           activeOrderDropoffLocation: "",
           estimateDistance: 0,
@@ -127,8 +121,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752811896934.webp",
           currentLocation: "-",
-          activeOrderCode: "MT25AA605",
-          activeInvoiceNumber: "INV/MT25AA605",
+          invoiceNumber: "INV/MT25AA605",
           activeOrderPickupLocation:
             "Surabaya North Quay, Perak Utara, Surabaya, Jawa Timur, Indonesia",
           activeOrderDropoffLocation:
@@ -146,8 +139,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752811896934.webp",
           currentLocation: "-",
-          activeOrderCode: "MT25AA491",
-          activeInvoiceNumber: "INV/MT25AA491",
+          invoiceNumber: "INV/MT25AA491",
           activeOrderPickupLocation:
             "muatmuat, Jalan Kedung Doro, RT.001/RW.06, Kedungdoro, Surabaya, Jawa Timur, Indonesia",
           activeOrderDropoffLocation:
@@ -165,8 +157,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/photo-1753166402594.webp",
           currentLocation: "-",
-          activeOrderCode: "MT25AA564",
-          activeInvoiceNumber: "INV/MT25AA564",
+          invoiceNumber: "INV/MT25AA564",
           activeOrderPickupLocation:
             "muatmuat, Jalan Kedung Doro, RT.001/RW.06, Kedungdoro, Surabaya, Jawa Timur, Indonesia",
           activeOrderDropoffLocation:
@@ -184,8 +175,7 @@ export const mockFleetActivities = {
           fleetImage:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/photo-1753166402594.webp",
           currentLocation: "-",
-          activeOrderCode: "",
-          activeInvoiceNumber: "",
+          invoiceNumber: "",
           activeOrderPickupLocation: "",
           activeOrderDropoffLocation: "",
           estimateDistance: 0,
@@ -208,8 +198,8 @@ export const getFleetActivities = async (params = {}) => {
   const {
     limit = 10,
     page = 1,
-    sort = "licensePlate",
-    order = "asc",
+    sort,
+    order,
     search = "",
     status = "",
     fleetType = "",
