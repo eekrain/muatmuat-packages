@@ -15,6 +15,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import SelectResponPerubahan from "@/components/Select/SelectResponPerubahan";
+import AturResponMassalModal from "@/container/Shared/OrderModal/AturResponMassalModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import TerimaDanUbahArmadaModal from "@/container/Shared/OrderModal/TerimaDanUbahArmadaModal";
 import ImageArmada from "@/container/Shared/OrderModal/components/ImageArmada";
@@ -45,6 +46,11 @@ const ResponPerubahanPage = () => {
   const [selectedReplacementArmada, setSelectedReplacementArmada] = useState(
     {}
   );
+  const [isMassalModalOpen, setIsMassalModalOpen] = useState(false);
+  const [massalModalConfig, setMassalModalConfig] = useState({
+    title: "Terima Perubahan",
+    responseType: "accept",
+  });
 
   // Mock data for demonstration
   const armadaList = [
@@ -143,20 +149,27 @@ const ResponPerubahanPage = () => {
   const handleBulkResponse = (value) => {
     setBulkResponse(value);
     if (value === "change") {
-      // For bulk change, we'll need to handle multiple armada selections
-      // For now, just show a message that bulk change needs individual selection
-      toast.error(
-        "Untuk mengubah armada, silakan pilih satu per satu pada setiap armada"
-      );
-      setBulkResponse("");
-      return;
+      // Open modal for bulk change armada selection
+      setMassalModalConfig({
+        title: "Terima Perubahan & Ubah Armada",
+        responseType: "change",
+      });
+      setIsMassalModalOpen(true);
+    } else if (value === "accept") {
+      // Open modal for bulk accept
+      setMassalModalConfig({
+        title: "Terima Perubahan",
+        responseType: "accept",
+      });
+      setIsMassalModalOpen(true);
+    } else if (value === "reject") {
+      // Open modal for bulk reject
+      setMassalModalConfig({
+        title: "Tolak Perubahan & Batalkan Armada",
+        responseType: "reject",
+      });
+      setIsMassalModalOpen(true);
     }
-    // Apply to all armada
-    armadaList.forEach((armada) => {
-      setValue(`armada_${armada.id}`, value);
-    });
-    // Trigger validation for all fields
-    trigger();
   };
 
   const handleSaveAsDraft = async () => {
@@ -199,6 +212,51 @@ const ResponPerubahanPage = () => {
     trigger(`armada_${currentArmadaId}`);
     // Reset current armada ID
     setCurrentArmadaId(null);
+  };
+
+  const handleMassalSave = (
+    selectedArmadaList,
+    responseType,
+    replacementArmadaData
+  ) => {
+    console.log("Bulk response:", selectedArmadaList, responseType);
+    console.log("Replacement armada data:", replacementArmadaData);
+
+    // First, clear all responses of the same type and their replacement armada
+    armadaList.forEach((armada) => {
+      if (formValues[`armada_${armada.id}`] === responseType) {
+        setValue(`armada_${armada.id}`, "");
+        // Also clear replacement armada for unselected items
+        if (!selectedArmadaList.find((selected) => selected.id === armada.id)) {
+          setSelectedReplacementArmada((prev) => {
+            const newState = { ...prev };
+            delete newState[armada.id];
+            return newState;
+          });
+        }
+      }
+    });
+
+    // Then apply the response only to the selected armada
+    selectedArmadaList.forEach((armada) => {
+      setValue(`armada_${armada.id}`, responseType);
+
+      // If it's a change response and we have replacement armada, store it
+      if (
+        responseType === "change" &&
+        replacementArmadaData &&
+        replacementArmadaData[armada.id]
+      ) {
+        setSelectedReplacementArmada((prev) => ({
+          ...prev,
+          [armada.id]: replacementArmadaData[armada.id],
+        }));
+      }
+    });
+
+    // Reset bulk response dropdown
+    setBulkResponse("");
+    // Don't trigger validation here - let user submit when ready
   };
 
   const onSubmit = async (data) => {
@@ -519,6 +577,28 @@ const ResponPerubahanPage = () => {
         orderData={{ id: params.uuid }}
         armadaId={currentArmadaId}
         onSave={handleArmadaSave}
+      />
+
+      {/* AturResponMassalModal */}
+      <AturResponMassalModal
+        isOpen={isMassalModalOpen}
+        onClose={() => {
+          setIsMassalModalOpen(false);
+          setBulkResponse("");
+        }}
+        title={massalModalConfig.title}
+        responseType={massalModalConfig.responseType}
+        armadaList={filteredArmada}
+        totalRequired={armadaList.length}
+        onSave={handleMassalSave}
+        existingReplacements={selectedReplacementArmada}
+        existingSelections={filteredArmada
+          .filter(
+            (armada) =>
+              formValues[`armada_${armada.id}`] ===
+              massalModalConfig.responseType
+          )
+          .map((armada) => armada.id.toString())}
       />
     </div>
   );
