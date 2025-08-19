@@ -103,7 +103,7 @@ const DonutChart = ({ data, className, showThirdRow = false }) => {
 
           <RadixTooltip>
             <TooltipTrigger asChild>
-              <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center">
+              <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer text-center">
                 <p className="text-base font-bold text-neutral-900">
                   {formatNumberShorthand(centerTextValue)}
                 </p>

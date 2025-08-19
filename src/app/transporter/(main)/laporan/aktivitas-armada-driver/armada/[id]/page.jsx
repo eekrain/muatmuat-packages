@@ -15,6 +15,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+import { useGetFleetDetailData } from "@/services/Transporter/laporan/aktivitas/getArmadaDetailData";
 
 export default function DetailArmadaPage({ params }) {
   const router = useRouter();
@@ -25,102 +26,124 @@ export default function DetailArmadaPage({ params }) {
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
 
-  // Mock data for armada detail
+  // Get fleet detail activities
+  const { data: detailData, isLoading: detailLoading } = useGetFleetDetailData(
+    params.id,
+    {
+      limit: perPage,
+      page: currentPage,
+      sort: sortConfig?.sort || "loadingTime",
+      order: sortConfig?.order || "asc",
+      search: searchValue,
+    }
+  );
+
+  // Get fleet data from sessionStorage (passed from main table)
+  // Get fleet data from detailData.fleetInfo
   const armadaData = {
     id: params.id,
-    licensePlate: "L 8310 SH",
-    vehicleType: "Colt Diesel Double - Dump",
-    currentLocation: "Kota Surabaya, Kec. Tegalsari",
-    status: "Bertugas",
-    statusType: "on_duty",
-    image: "/img/mock-armada/truck1.png",
+    fleetId: params.id,
+    licensePlate: detailData?.fleetInfo?.licensePlate || "Loading...",
+    vehicleType: detailData?.fleetInfo
+      ? `${detailData.fleetInfo.truckType || ""} - ${detailData.fleetInfo.carrierType || ""}`.trim() ||
+        "Loading..."
+      : "Loading...",
+    currentLocation: detailData?.fleetInfo?.currentLocation || "Loading...",
+    status: detailData?.fleetInfo?.status || "Loading...",
+    image: detailData?.fleetInfo?.fleetImage || "/img/mock-armada/truck1.png",
   };
 
-  // Mock data for activities
-  const activitiesData = [
-    // {
-    //   id: 1,
-    //   orderCode: "INV/MTR/210504/001/AAA",
-    //   route: {
-    //     origin: "Kab. Jombang, Kec. Wonosal...",
-    //     destination: "Kab. Jombang, Kec. Wonosal...",
-    //     estimate: "121 km",
-    //   },
-    //   driverName: "Daffa Toldo",
-    //   loadDate: null,
-    //   unloadDate: null,
-    //   status: "Dijadwalkan",
-    //   statusType: "scheduled",
-    // },
-    // {
-    //   id: 2,
-    //   orderCode: "INV/MTR/210504/002/BBB",
-    //   route: {
-    //     origin: "Kab. Jombang, Kec. Wonosal...",
-    //     destination: "Kab. Jombang, Kec. Wonosal...",
-    //     estimate: "121 km",
-    //   },
-    //   driverName: "Daffa Toldo",
-    //   loadDate: "24 Sep 2024 12:00 WIB",
-    //   unloadDate: null,
-    //   status: "Bertugas",
-    //   statusType: "on_duty",
-    // },
-    // {
-    //   id: 3,
-    //   orderCode: "INV/MTR/210504/003/CCC",
-    //   route: {
-    //     origin: "Kab. Jombang, Kec. Wonosal...",
-    //     destination: "Kab. Jombang, Kec. Wonosal...",
-    //     estimate: "121 km",
-    //   },
-    //   driverName: "Daffa Toldo",
-    //   loadDate: "24 Sep 2024 12:00 WIB",
-    //   unloadDate: "24 Sep 2024 12:00 WIB",
-    //   status: "Pengiriman Selesai",
-    //   statusType: "completed",
-    // },
-    // {
-    //   id: 4,
-    //   orderCode: "INV/MTR/210504/004/DDD",
-    //   route: {
-    //     origin: "Kab. Jombang, Kec. Wonosal...",
-    //     destination: "Kab. Jombang, Kec. Wonosal...",
-    //     estimate: "121 km",
-    //   },
-    //   driverName: "Daffa Toldo",
-    //   loadDate: "24 Sep 2024 12:00 WIB",
-    //   unloadDate: "24 Sep 2024 12:00 WIB",
-    //   status: "Pengiriman Selesai",
-    //   statusType: "completed",
-    // },
-  ];
+  // Get activities from detail API
+  const activitiesData = detailData.activities || [];
+  // {
+  //   id: 1,
+  //   orderCode: "INV/MTR/210504/001/AAA",
+  //   route: {
+  //     origin: "Kab. Jombang, Kec. Wonosal...",
+  //     destination: "Kab. Jombang, Kec. Wonosal...",
+  //     estimate: "121 km",
+  //   },
+  //   driverName: "Daffa Toldo",
+  //   loadDate: null,
+  //   unloadDate: null,
+  //   status: "Dijadwalkan",
+  //   statusType: "scheduled",
+  // },
+  // {
+  //   id: 2,
+  //   orderCode: "INV/MTR/210504/002/BBB",
+  //   route: {
+  //     origin: "Kab. Jombang, Kec. Wonosal...",
+  //     destination: "Kab. Jombang, Kec. Wonosal...",
+  //     estimate: "121 km",
+  //   },
+  //   driverName: "Daffa Toldo",
+  //   loadDate: "24 Sep 2024 12:00 WIB",
+  //   unloadDate: null,
+  //   status: "Bertugas",
+  //   statusType: "on_duty",
+  // },
+  // {
+  //   id: 3,
+  //   orderCode: "INV/MTR/210504/003/CCC",
+  //   route: {
+  //     origin: "Kab. Jombang, Kec. Wonosal...",
+  //     destination: "Kab. Jombang, Kec. Wonosal...",
+  //     estimate: "121 km",
+  //   },
+  //   driverName: "Daffa Toldo",
+  //   loadDate: "24 Sep 2024 12:00 WIB",
+  //   unloadDate: "24 Sep 2024 12:00 WIB",
+  //   status: "Pengiriman Selesai",
+  //   statusType: "completed",
+  // },
+  // {
+  //   id: 4,
+  //   orderCode: "INV/MTR/210504/004/DDD",
+  //   route: {
+  //     origin: "Kab. Jombang, Kec. Wonosal...",
+  //     destination: "Kab. Jombang, Kec. Wonosal...",
+  //     estimate: "121 km",
+  //   },
+  //   driverName: "Daffa Toldo",
+  //   loadDate: "24 Sep 2024 12:00 WIB",
+  //   unloadDate: "24 Sep 2024 12:00 WIB",
+  //   status: "Pengiriman Selesai",
+  //   statusType: "completed",
+  // },
+  // ];
 
   // Table columns for activities
   const columns = [
     {
       header: "Kode Pesanan",
-      key: "orderCode",
+      key: "orderInfo.orderCode",
       sortable: true,
       width: "200px",
       searchable: true,
+      render: (row) => {
+        if (!row.orderInfo?.orderCode || row.orderInfo.orderCode === "") {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return <div className="text-sm">{row.orderInfo.orderCode}</div>;
+      },
     },
     {
       header: "Rute Pesanan",
-      key: "route",
+      key: "orderInfo",
       sortable: false,
       width: "250px",
       searchable: false,
       render: (row) => (
         <div className="space-y-2">
-          {row.route.estimate && (
+          {row.orderInfo?.estimatedDistance && (
             <div className="text-xs font-medium text-neutral-700">
-              Estimasi: {row.route.estimate}
+              Estimasi: {row.orderInfo.estimatedDistance} km
             </div>
           )}
           <MuatBongkarStepper
-            pickupLocations={[row.route.origin]}
-            dropoffLocations={[row.route.destination]}
+            pickupLocations={[row.orderInfo?.pickupLocation || ""]}
+            dropoffLocations={[row.orderInfo?.dropoffLocation || ""]}
             appearance={{
               titleClassName: "text-xs font-medium text-neutral-900",
             }}
@@ -130,34 +153,59 @@ export default function DetailArmadaPage({ params }) {
     },
     {
       header: "Nama Driver",
-      key: "driverName",
+      key: "driverInfo.name",
       sortable: true,
       width: "150px",
       searchable: true,
+      render: (row) => {
+        if (!row.driverInfo?.name) {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return <div className="text-sm">{row.driverInfo.name}</div>;
+      },
     },
     {
       header: "Tanggal Muat",
-      key: "loadDate",
+      key: "orderInfo.loadingTime",
       sortable: true,
       width: "150px",
       searchable: true,
-      render: (row) => row.loadDate || "-",
+      render: (row) => {
+        if (!row.orderInfo?.loadingTime) {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return (
+          <div className="text-sm">
+            {new Date(row.orderInfo.loadingTime).toLocaleString("id-ID")}
+          </div>
+        );
+      },
     },
     {
       header: "Tanggal Bongkar",
-      key: "unloadDate",
+      key: "orderInfo.unloadTime",
       sortable: true,
       width: "150px",
       searchable: true,
-      render: (row) => row.unloadDate || "-",
+      render: (row) => {
+        if (!row.orderInfo?.unloadTime) {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return (
+          <div className="text-sm">
+            {new Date(row.orderInfo.unloadTime).toLocaleString("id-ID")}
+          </div>
+        );
+      },
     },
     {
       header: "Status",
-      key: "status",
+      key: "orderInfo.status",
       sortable: true,
       width: "180px",
       searchable: true,
-      render: (row) => getStatusBadge(row.status, row.statusType),
+      render: (row) =>
+        getStatusBadge(row.orderInfo?.status, row.orderInfo?.status),
     },
     {
       header: "Action",
@@ -285,26 +333,54 @@ export default function DetailArmadaPage({ params }) {
     setSortConfig({ sort: newSort, order: newOrder });
   };
 
-  const getStatusBadge = (status, statusType) => {
+  const getStatusBadge = (status) => {
     let bgColor = "bg-gray-200";
     let textColor = "text-gray-600";
+    let displayStatus = status || "Unknown";
 
-    if (statusType === "scheduled") {
-      bgColor = "bg-yellow-100";
-      textColor = "text-yellow-900";
-    } else if (statusType === "on_duty") {
+    if (status === "LOADING") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-    } else if (statusType === "completed") {
+      displayStatus = "Sedang Muat";
+    } else if (status === "COMPLETED") {
+      bgColor = "bg-green-100";
+      textColor = "text-green-900";
+      displayStatus = "Selesai";
+    } else if (status === "PENDING") {
+      bgColor = "bg-yellow-100";
+      textColor = "text-yellow-900";
+      displayStatus = "Menunggu";
+    } else if (status === "CANCELLED") {
+      bgColor = "bg-red-100";
+      textColor = "text-red-900";
+      displayStatus = "Dibatalkan";
+    } else if (status === "ON_DUTY") {
+      bgColor = "bg-blue-100";
+      textColor = "text-blue-900";
+      displayStatus = "Bertugas";
+    } else if (status === "READY_FOR_ORDER") {
+      bgColor = "bg-green-100";
+      textColor = "text-green-900";
+      displayStatus = "Siap Menerima Order";
+    } else if (status === "NOT_PAIRED") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-600";
+      displayStatus = "Belum Dipasangkan";
+    } else if (status === "INACTIVE") {
+      bgColor = "bg-red-100";
+      textColor = "text-red-900";
+      displayStatus = "Nonaktif";
+    } else if (status === null || status === "") {
+      bgColor = "bg-gray-100";
+      textColor = "text-gray-500";
+      displayStatus = "Tidak Ada Status";
     }
 
     return (
       <span
         className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${bgColor} ${textColor}`}
       >
-        {status}
+        {displayStatus}
       </span>
     );
   };
@@ -313,10 +389,14 @@ export default function DetailArmadaPage({ params }) {
     if (searchValue) {
       const searchLower = searchValue.toLowerCase();
       return (
-        row.orderCode.toLowerCase().includes(searchLower) ||
-        row.driverName.toLowerCase().includes(searchLower) ||
-        (row.route.origin &&
-          row.route.origin.toLowerCase().includes(searchLower))
+        (row.orderInfo?.orderCode || "").toLowerCase().includes(searchLower) ||
+        (row.driverInfo?.name || "").toLowerCase().includes(searchLower) ||
+        (row.orderInfo?.pickupLocation || "")
+          .toLowerCase()
+          .includes(searchLower) ||
+        (row.orderInfo?.dropoffLocation || "")
+          .toLowerCase()
+          .includes(searchLower)
       );
     }
     return true;
@@ -362,7 +442,7 @@ export default function DetailArmadaPage({ params }) {
               <div className="flex flex-col gap-3">
                 {/* Status Badge */}
                 <div className="flex items-center gap-3">
-                  {getStatusBadge(armadaData.status, armadaData.statusType)}
+                  {getStatusBadge(armadaData.status)}
                 </div>
 
                 {/* License Plate */}

@@ -12,8 +12,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
-import { isDev } from "@/lib/constants/is-dev";
 
+// --- (TRUCK_STATUS_OPTIONS dan ORDER_STATUS_OPTIONS tetap sama) ---
 const TRUCK_STATUS_OPTIONS = [
   {
     id: "ON_DUTY",
@@ -53,11 +53,14 @@ const ORDER_STATUS_OPTIONS = [
 export default function FilterPopoverArmada({
   onApplyFilter,
   filterCounts = {},
+  isPopoverOpen,
+  onOpenChange,
+  isFilterActive,
 }) {
   const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
   const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
 
-  // Mapping from option IDs to API filter keys
+  // --- (Mapping dan options with count tetap sama) ---
   const countKeyMapping = {
     ON_DUTY: "OnDuty",
     WAITING_LOADING_TIME: "WaitingLoadingTime",
@@ -67,7 +70,6 @@ export default function FilterPopoverArmada({
     NEEDS_RESPONSE: "needResponse",
   };
 
-  // Add counts to each option
   const truckStatusOptionsWithCount = TRUCK_STATUS_OPTIONS.map((opt) => ({
     ...opt,
     count: filterCounts[countKeyMapping[opt.id]] ?? 0,
@@ -101,13 +103,20 @@ export default function FilterPopoverArmada({
   };
 
   return (
-    <Popover>
+    // PERUBAHAN: Jadikan Popover sebagai controlled component
+    <Popover open={isPopoverOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex h-8 items-center gap-2 rounded-md border border-neutral-600 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-primary-700 hover:bg-gray-50"
+          className={`flex h-8 items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold transition-colors hover:border-primary-700 hover:bg-gray-50 ${
+            isFilterActive
+              ? "border-primary-700 text-primary-700" // Style saat aktif
+              : "border-neutral-600 text-neutral-600" // Style default
+          }`}
         >
-          <SlidersHorizontal className="h-4 w-4 text-neutral-600" />
+          <SlidersHorizontal
+            className={`h-4 w-4 ${isFilterActive ? "text-primary-700" : "text-neutral-600"}`}
+          />
           Filter
         </button>
       </PopoverTrigger>
@@ -120,7 +129,8 @@ export default function FilterPopoverArmada({
         sideOffset={12}
         style={{ border: "none" }}
       >
-        {/* Arrow/triangle pointing left */}
+        {/* Konten popover lainnya tetap sama... */}
+        {/* ... */}
         <div
           className="absolute"
           style={{

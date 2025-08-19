@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -196,19 +195,17 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
                 "Kamu memiliki draft tambah driver yang belum selesai. Silakan simpan data tersebut atau hapus draft sebelum menambahkan driver baru"
               )}
             </p>
-            <Link href="#">
-              <Button
-                onClick={() => {
-                  onValueChange("draft");
-                }}
-              >
-                {t(
-                  "TambahDriverMassalScreen.buttonCompleteDraft",
-                  {},
-                  "Selesaikan Draft"
-                )}
-              </Button>
-            </Link>
+            <Button
+              onClick={() => {
+                onValueChange("draft");
+              }}
+            >
+              {t(
+                "TambahDriverMassalScreen.buttonCompleteDraft",
+                {},
+                "Selesaikan Draft"
+              )}
+            </Button>
           </div>
         </ModalContent>
       </Modal>

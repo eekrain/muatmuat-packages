@@ -61,10 +61,7 @@ const RoundedTopBar = (props) => {
 const CustomLegend = (props) => {
   const { payload } = props;
   return (
-    <div
-      className="flex items-center justify-center"
-      style={{ paddingBottom: "20px" }}
-    >
+    <div className="ml-8 flex items-center justify-center pb-6">
       {payload.map((entry, index) => (
         <div key={`item-${index}`} className="mr-4 flex items-center last:mr-0">
           <div

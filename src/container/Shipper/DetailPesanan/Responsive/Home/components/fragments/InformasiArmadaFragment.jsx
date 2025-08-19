@@ -24,7 +24,11 @@ export const InformasiArmadaFragment = ({
             {dataRingkasanPesanan?.vehicle?.name || "Box - Colt Diesel Engkel"}
           </p>
           <p className="text-sm font-medium text-neutral-900">
-            Kebutuhan : {dataRingkasanPesanan?.vehicle?.truckCount || dataStatusPesanan?.totalUnit || 0} Unit
+            Kebutuhan :{" "}
+            {dataRingkasanPesanan?.vehicle?.truckCount ||
+              dataStatusPesanan?.totalUnit ||
+              0}{" "}
+            Unit
           </p>
         </div>
       </div>
