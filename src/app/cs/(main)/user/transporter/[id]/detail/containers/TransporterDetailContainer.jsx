@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
@@ -12,6 +12,7 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 import { toast } from "@/lib/toast";
+import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
 
 import DaftarArmadaTab from "./tabs/DaftarArmadaTab";
 import DaftarDriverTab from "./tabs/DaftarDriverTab";
@@ -28,7 +29,17 @@ const TransporterDetailContainer = ({ transporterId }) => {
     data: null,
   });
   const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
-  const [transporterData, setTransporterData] = useState(null);
+
+  // API call to get transporter details
+  const {
+    data: apiResponse,
+    error,
+    isLoading,
+    mutate,
+  } = useGetTransporterDetails(transporterId);
+
+  // Extract transporter data from API response
+  const transporterData = apiResponse?.Data;
 
   // Mock fleet data
   const mockFleetData = [
@@ -288,98 +299,7 @@ const TransporterDetailContainer = ({ transporterId }) => {
       vehicleType:
         "Ultra Long Wheelbase Heavy Duty 10x4 Axle Diesel Truck - Multi Axle Expandable Flatbed Modular Cargo Carrier for Oversized Materials and Equipment Transportation Needs",
     },
-  ]; // Mock data for cancellations
-  const mockCancellationData = [
-    {
-      orderId: "ORD-2024-001",
-      date: "2024-01-15",
-      origin: "Jakarta",
-      destination: "Surabaya",
-      reason: "Kendaraan mengalami kerusakan",
-      cancelledBy: "Transporter",
-    },
-    {
-      orderId: "ORD-2024-002",
-      date: "2024-01-14",
-      origin: "Bandung",
-      destination: "Yogyakarta",
-      reason: "Driver tidak tersedia",
-      cancelledBy: "Transporter",
-    },
-    {
-      orderId: "ORD-2024-003",
-      date: "2024-01-13",
-      origin: "Medan",
-      destination: "Pekanbaru",
-      reason: "Permintaan customer",
-      cancelledBy: "Customer",
-    },
-    {
-      orderId: "ORD-2024-004",
-      date: "2024-01-12",
-      origin: "Semarang",
-      destination: "Solo",
-      reason: "Cuaca buruk",
-      cancelledBy: "Transporter",
-    },
-    {
-      orderId: "ORD-2024-005",
-      date: "2024-01-11",
-      origin: "Palembang",
-      destination: "Lampung",
-      reason: "Masalah teknis",
-      cancelledBy: "Transporter",
-    },
   ];
-
-  const mockPaymentData = [];
-  const mockCompanyData = [];
-  const mockHistoryData = [];
-
-  useEffect(() => {
-    // Mock data for different transporter statuses based on ID
-    const mockTransporterVariations = {
-      1: {
-        id: "1",
-        companyName:
-          "PT Kalimantan Timur Jaya Sentosa Makmur Sejahtera Internasional",
-        email: "contact.shipper@mail.com",
-        picName: "Ahmad Maulana",
-        picPhone: "No. HP : 0822-3100-1231",
-        address:
-          "Jl. Anggrek No. 123, RT 05 RW 09, Kel. Mekarsari, Kec. Cimanggis, Kota Depok, Provinsi Jawa Barat, Kode Pos 16951",
-        status: "Aktif",
-        location: "Depok",
-        completedOrders: 124,
-        joinDate: "2 Jan 2025",
-        logo: "/img/kaltim.png",
-      },
-      2: {
-        id: "2",
-        companyName: "PT Transport Nusantara Logistics",
-        email: "info@nusantaralogistics.com",
-        picName: "Budi Santoso",
-        picPhone: "No. HP : 0821-5500-9988",
-        address: "Jl. Sudirman No. 45, Jakarta Pusat",
-        status: "Non Aktif",
-        location: "Jakarta",
-        completedOrders: 89,
-        joinDate: "15 Mar 2024",
-        logo: "/img/kaltim.png",
-      },
-    };
-
-    const mockTransporterData =
-      mockTransporterVariations[transporterId] ||
-      mockTransporterVariations["1"];
-
-    // Simulate API call to fetch transporter data
-    setTransporterData(mockTransporterData);
-  }, [transporterId]);
-
-  const openModal = (type, data) => {
-    setModalState({ isOpen: true, type, data });
-  };
 
   const openHubungiModal = () => {
     setHubungiModalOpen(true);
@@ -393,18 +313,14 @@ const TransporterDetailContainer = ({ transporterId }) => {
     if (!modalState.data) return;
 
     if (modalState.type === "deactivate") {
-      // Update the transporter status to Non Aktif
-      setTransporterData((prevData) => ({
-        ...prevData,
-        status: "Non Aktif",
-      }));
+      // In a real app, you would call an API to update the transporter status
+      // For now, we'll just refresh the data and show a success message
+      mutate(); // Refresh the data
       toast.success("Berhasil menonaktifkan Transporter");
     } else if (modalState.type === "activate") {
-      // Update the transporter status to Aktif
-      setTransporterData((prevData) => ({
-        ...prevData,
-        status: "Aktif",
-      }));
+      // In a real app, you would call an API to update the transporter status
+      // For now, we'll just refresh the data and show a success message
+      mutate(); // Refresh the data
       toast.success("Berhasil mengaktifkan Transporter");
     }
     setModalState({ isOpen: false, type: "", data: null });
@@ -477,9 +393,42 @@ const TransporterDetailContainer = ({ transporterId }) => {
     </div>
   );
 
-  if (!transporterData) {
-    return <div>Loading...</div>;
+  // Loading and error states
+  if (isLoading) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg font-semibold">Memuat data transporter...</p>
+          <p className="mt-2 text-sm text-neutral-600">Mohon tunggu sebentar</p>
+        </div>
+      </div>
+    );
   }
+
+  if (error || !transporterData) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg font-semibold text-error-500">
+            Terjadi Kesalahan
+          </p>
+          <p className="mt-2 text-sm text-neutral-600">
+            Gagal memuat data transporter
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Format date for display
+  const formatJoinDate = (dateString) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="">
@@ -488,7 +437,7 @@ const TransporterDetailContainer = ({ transporterId }) => {
         <div className="flex items-start gap-3">
           <div className="relative flex h-20 w-20 items-center justify-center rounded-[100%] border border-neutral-400 bg-white p-2">
             <img
-              src={transporterData.logo}
+              src={transporterData.companyLogo || "/img/kaltim.png"}
               alt="logo"
               className="rounded-[100%] object-contain"
             />
@@ -496,10 +445,12 @@ const TransporterDetailContainer = ({ transporterId }) => {
           <div className="space-y-3">
             <div>
               <h1 className="text-xl font-bold text-black">
-                {transporterData.companyName}
+                {transporterData.companyName || "-"}
               </h1>
               <div className="mt-2 flex items-center space-x-2 text-sm">
-                <StatusIndicator status={transporterData.status} />
+                <StatusIndicator
+                  status={transporterData.isActive ? "Aktif" : "Non Aktif"}
+                />
                 <span>&bull;</span>
                 <div className="flex items-center space-x-1">
                   <IconComponent
@@ -510,7 +461,7 @@ const TransporterDetailContainer = ({ transporterId }) => {
                   />
 
                   <span className="font-medium text-neutral-900">
-                    {transporterData.location}
+                    {transporterData.cityLocation || "-"}
                   </span>
                 </div>
               </div>
@@ -535,11 +486,11 @@ const TransporterDetailContainer = ({ transporterId }) => {
         <div className="flex items-center space-x-8">
           <div className="grid grid-cols-2 items-center divide-x divide-neutral-400">
             <StatisticItem
-              value={transporterData.completedOrders}
+              value={transporterData.completedOrders || 0}
               label="Pesanan Selesai"
             />
             <StatisticItem
-              value={transporterData.joinDate}
+              value={formatJoinDate(transporterData.joinedSince)}
               label="Bergabung Sejak"
             />
           </div>
@@ -594,8 +545,8 @@ const TransporterDetailContainer = ({ transporterId }) => {
           <DaftarArmadaTab mockFleetData={mockFleetData} />
 
           <DaftarDriverTab mockDriverData={mockDriverData} />
-          <RekapPembatalanTab mockCancellationData={mockCancellationData} />
-          <DataTransporterTab transporterData={transporterData} />
+          <RekapPembatalanTab transporterId={transporterId} />
+          <DataTransporterTab transporterId={transporterId} />
           <RiwayatStatusTab />
         </Tabs>
       </div>
