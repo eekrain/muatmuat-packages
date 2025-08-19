@@ -287,8 +287,7 @@ const OtpContainer = ({
             {type === "change-email"
               ? searchParams.get("email") || "0872517235"
               : type === "change-email2"
-                ? searchParams.get("email") ||
-                  "public.relation.mrsby@midtownight.com"
+                ? searchParams.get("email") || "user@example.com"
                 : number || "0893435352125"}
           </div>
           {type !== "forgot-password" &&
