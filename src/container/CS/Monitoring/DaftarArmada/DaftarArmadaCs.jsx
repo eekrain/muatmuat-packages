@@ -1,15 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
-import { AlertTriangle, Loader2, Phone, Truck, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
@@ -270,25 +270,34 @@ const DaftarArmadaCs = ({
                         <h3 className="text-base font-bold">
                           {transporter.companyName}
                         </h3>
-                        <div className="flex items-center gap-2 text-xs text-neutral-700">
+                        <div className="flex items-center gap-1 pt-2 text-xs text-neutral-700">
                           <ImageComponent
                             src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
                             width={16}
                             height={16}
                           />
                           <span>{transporterFleets.length} Armada</span>
-                          <button
-                            onClick={() => handleOpenHubungiModal(transporter)}
-                            className="flex items-center gap-2 text-xs font-medium text-primary-700"
-                          >
-                            <ImageComponent
-                              src="/icons/call16.svg"
-                              width={16}
-                              height={16}
-                              className="text-primary-700"
+                          <li className="flex items-center gap-1 pl-[26px]">
+                            <IconComponent
+                              src="/icons/ellipse-7.svg"
+                              height={3}
+                              width={2}
+                              alt="list-bullet"
                             />
-                            Hubungi
-                          </button>
+                            <button
+                              onClick={() =>
+                                handleOpenHubungiModal(transporter)
+                              }
+                              className="flex items-center gap-1 text-sm font-medium text-primary-700"
+                            >
+                              <IconComponent
+                                src="/icons/call-blue.svg"
+                                width={16}
+                                height={16}
+                              />
+                              <span>Hubungi</span>
+                            </button>
+                          </li>
                         </div>
                       </div>
                     </div>

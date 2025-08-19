@@ -12,7 +12,8 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
-// import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
+// --- (1) UNCOMMENT baris ini ---
+import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
@@ -47,6 +48,10 @@ function CardLacakArmada({
     useState(false);
   const [isUbahArmadaModalOpen, setIsUbahArmadaModalOpen] = useState(false);
   const [isSubmittingUbahArmada, setIsSubmittingUbahArmada] = useState(false);
+
+  // --- (2) TAMBAHKAN state untuk AlasanPembatalanModal ---
+  const [isAlasanPembatalanModalOpen, setIsAlasanPembatalanModalOpen] =
+    useState(false);
 
   // Data stepper
   const steps = stepperData || [
@@ -99,11 +104,26 @@ function CardLacakArmada({
     handleCloseDriverModal();
   };
 
-  // --- Handlers Batalkan Armada ---
+  // --- (3) UBAH handler Batalkan Armada ---
   const handleCancelFleet = () => setIsBatalkanArmadaPopupOpen(true);
   const handleConfirmCancelFleet = () => {
-    alert("Armada dibatalkan!");
+    // Tutup popup pertama
     setIsBatalkanArmadaPopupOpen(false);
+    // Buka modal alasan pembatalan
+    setIsAlasanPembatalanModalOpen(true);
+  };
+
+  // --- (4) TAMBAHKAN handler untuk AlasanPembatalanModal ---
+  const handleCloseAlasanPembatalanModal = () => {
+    setIsAlasanPembatalanModalOpen(false);
+  };
+  const handleConfirmAlasanPembatalan = async (data) => {
+    // Logika untuk mengirim data pembatalan ke API ada di sini
+    console.log("Submitting fleet cancellation with reason:", data);
+    toast.success("Permintaan pembatalan armada berhasil dikirim.");
+    // Tutup modal setelah konfirmasi
+    handleCloseAlasanPembatalanModal();
+    // Anda bisa menambahkan logic refresh data di sini jika perlu
   };
 
   // --- Handlers Ubah Armada ---
@@ -123,6 +143,7 @@ function CardLacakArmada({
   const emptyHistory = false;
 
   const getStatusLabel = (s) => {
+    // ... (kode tidak berubah)
     switch (s) {
       case "COMPLETED":
         return "Selesai";
@@ -140,6 +161,7 @@ function CardLacakArmada({
   };
 
   const getBadgeVariant = (s) => {
+    // ... (kode tidak berubah)
     if (
       s === OrderStatusEnum.WAITING_PAYMENT_1 ||
       s === OrderStatusEnum.WAITING_PAYMENT_2 ||
@@ -165,6 +187,7 @@ function CardLacakArmada({
   return (
     <>
       <div className="flex w-full flex-col gap-4 rounded-xl border border-neutral-300 bg-white p-4">
+        {/* ... (kode JSX header dan info driver tidak berubah) ... */}
         {/* Header + Aksi */}
         <div className="flex items-center justify-between">
           <div className="mb-2 flex items-center gap-2">
@@ -289,7 +312,15 @@ function CardLacakArmada({
         onConfirm={handleConfirmCancelFleet}
       />
 
-      {/* ⬇️ GANTI ke ModalUbahArmada (dummy) */}
+      {/* --- (5) RENDER AlasanPembatalanModal --- */}
+      <AlasanPembatalanModal
+        isOpen={isAlasanPembatalanModalOpen}
+        onClose={handleCloseAlasanPembatalanModal}
+        onConfirm={handleConfirmAlasanPembatalan}
+        order={order} // Pastikan prop 'order' diteruskan
+      />
+
+      {/* Modal Ubah Armada */}
       {isUbahArmadaModalOpen && (
         <ModalUbahArmada
           onClose={handleCloseUbahArmadaModal}

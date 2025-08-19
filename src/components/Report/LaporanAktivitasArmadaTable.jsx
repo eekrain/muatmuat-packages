@@ -95,15 +95,15 @@ const LaporanAktivitasArmadaTable = ({
     },
     {
       header: "Kode Pesanan Aktif",
-      key: "activeOrderCode",
+      key: "invoiceNumber",
       sortable: true,
       width: "100px",
       searchable: true,
       render: (row) => {
-        if (!row.activeOrderCode || row.activeOrderCode === "") {
+        if (!row.invoiceNumber || row.invoiceNumber === "") {
           return <div className="text-sm">Belum Ada</div>;
         }
-        return <div className="text-sm">{row.activeOrderCode}</div>;
+        return <div className="text-sm">{row.invoiceNumber}</div>;
       },
     },
     {

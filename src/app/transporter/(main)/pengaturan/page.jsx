@@ -23,10 +23,10 @@ import {
   ProvinceSelectionModal,
 } from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
 import {
   useGetAreaMuatData,
+  useGetAreaMuatStatus,
   useGetMasterProvinces,
 } from "@/services/Transporter/pengaturan/getDataAreaMuat";
 import { useGetTransporterCargoData } from "@/services/Transporter/pengaturan/getDataCargoConfig";
@@ -44,19 +44,20 @@ export default function Page() {
   const [isViewAreaBongkarModalOpen, setIsViewAreaBongkarModalOpen] =
     useState(false);
   const [isViewMuatanModalOpen, setIsViewMuatanModalOpen] = useState(false);
-  const [searchProvince, setSearchProvince] = useState("");
+  const [searchProvince, setSearchProvince] = useState(null);
   const [viewModalSearch, setViewModalSearch] = useState("");
   const [viewBongkarModalSearch, setViewBongkarModalSearch] = useState("");
   const [viewMuatanModalSearch, setViewMuatanModalSearch] = useState("");
 
   // Fetch area muat data from API
-  const {
-    provinces: areaMuatProvinces,
-    summary: areaMuatSummary,
-    status: areaMuatStatus,
-  } = useGetAreaMuatData({
-    q: searchProvince,
-  });
+  const { provinces: areaMuatProvinces, summary: areaMuatSummary } =
+    useGetAreaMuatData({
+      ...(searchProvince !== "" && { q: searchProvince }),
+    });
+
+  const { data: areaMuatStatus } = useGetAreaMuatStatus();
+
+  console.log(areaMuatProvinces, areaMuatStatus);
 
   // Fetch area bongkar data from API
   const {
@@ -65,13 +66,13 @@ export default function Page() {
     isLoading: isLoadingBongkar,
     hasData: hasAreaBongkarData,
   } = useGetAreaBongkarData({
-    q: searchProvince,
+    ...(searchProvince !== "" && { q: searchProvince }),
   });
 
   // Fetch provinces data with search
   const { provinces: provincesData, isLoading: isLoadingProvinces } =
     useGetMasterProvinces({
-      q: searchProvince,
+      ...(searchProvince !== "" && { q: searchProvince }),
       excludeExisting: false,
     });
 
@@ -92,7 +93,7 @@ export default function Page() {
   }, []);
 
   // Handle save provinces
-  const handleSaveProvinces = (
+  const handleSaveProvinces = async (
     selectedProvincesData,
     selectedProvinceIds,
     context
@@ -100,6 +101,13 @@ export default function Page() {
     if (context === "area-muat") {
       console.log("Saving Area Muat provinces:", selectedProvincesData);
       console.log("Area Muat province IDs:", selectedProvinceIds);
+      localStorage.setItem(
+        "areaMuatProvinces",
+        JSON.stringify({
+          data: selectedProvincesData,
+        })
+      );
+      router.push("/pengaturan/area-muat");
     } else if (context === "area-bongkar") {
       console.log("Saving Area Bongkar provinces:", selectedProvincesData);
       console.log("Area Bongkar province IDs:", selectedProvinceIds);
@@ -176,7 +184,7 @@ export default function Page() {
                           key={province.provinceId}
                           className="me-1 px-2"
                         >
-                          {province.provinceName} -{" "}
+                          {province.province} -{" "}
                           {typeof province.cityCount === "number"
                             ? `${province.cityCount} Kota/Kab`
                             : province.cityCount}
@@ -443,7 +451,18 @@ export default function Page() {
                     ?.includes(viewModalSearch?.toLowerCase() || "")
                 ).length === 0 ? (
                   <div className="flex w-full items-center justify-center">
-                    <VoucherSearchEmpty />
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      {/* SVG illustration for "Keyword Not Found" */}
+                      <img
+                        src="/img/search-not-found.webp"
+                        alt="search-not-found"
+                        className="h-[114px] w-[134px] object-contain"
+                      />
+
+                      <p className="mt-[12px] text-base font-medium text-gray-600">
+                        Keyword Tidak Ditemukan Di Sistem
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   (areaMuatProvinces || [])
@@ -524,7 +543,18 @@ export default function Page() {
                     ?.includes(viewBongkarModalSearch?.toLowerCase() || "")
                 ).length === 0 ? (
                   <div className="flex w-full items-center justify-center">
-                    <VoucherSearchEmpty />
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      {/* SVG illustration for "Keyword Not Found" */}
+                      <img
+                        src="/img/search-not-found.webp"
+                        alt="search-not-found"
+                        className="h-[114px] w-[134px] object-contain"
+                      />
+
+                      <p className="mt-[12px] text-base font-medium text-gray-600">
+                        Keyword Tidak Ditemukan Di Sistem
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   (areaBongkarProvinces || [])
@@ -596,7 +626,18 @@ export default function Page() {
                     ?.includes(viewMuatanModalSearch?.toLowerCase() || "")
                 ).length === 0 ? (
                   <div className="flex w-full items-center justify-center">
-                    <VoucherSearchEmpty />
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      {/* SVG illustration for "Keyword Not Found" */}
+                      <img
+                        src="/img/search-not-found.webp"
+                        alt="search-not-found"
+                        className="h-[114px] w-[134px] object-contain"
+                      />
+
+                      <p className="mt-[12px] text-base font-medium text-gray-600">
+                        Keyword Tidak Ditemukan Di Sistem
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   muatan
