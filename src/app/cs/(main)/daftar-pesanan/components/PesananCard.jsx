@@ -16,338 +16,126 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
+import {
+  ORDER_STATUS,
+  statusDisplayMap,
+  useGetActionItems,
+  useLoadingTime,
+} from "../helpers/pesananCard.helpers";
 import BadgeOrderType from "./BadgeOrderType";
+import CancelFleetModal from "./CancelFleetModal";
+import CancelReasonModal from "./CancelReasonModal";
 import ContactModal from "./ContactModal";
+import FleetListModal from "./FleetListModal";
 import MuatBongkarStepperWithModal from "./MuatBongkarStepperWithModal";
 import OrderChangeInfoModal from "./OrderChangeInfoModal";
 
-const ORDER_STATUS = {
-  MENUNGGU_KONFIRMASI: "MENUNGGU_KONFIRMASI",
-  ARMADA_DIJADWALKAN: "ARMADA_DIJADWALKAN",
-  PERLU_ASSIGN_ARMADA: "PERLU_ASSIGN_ARMADA",
-  PERLU_KONFIRMASI_SIAP: "PERLU_KONFIRMASI_SIAP",
-  PERLU_RESPON_PERUBAHAN: "PERLU_RESPON_PERUBAHAN",
-  PROSES_MUAT: "PROSES_MUAT",
-  PROSES_BONGKAR: "PROSES_BONGKAR",
-  DOKUMEN_SEDANG_DISIAPKAN: "DOKUMEN_SEDANG_DISIAPKAN",
-  PROSES_PENGIRIMAN_DOKUMEN: "PROSES_PENGIRIMAN_DOKUMEN",
-};
-
-const statusDisplayMap = {
-  [ORDER_STATUS.MENUNGGU_KONFIRMASI]: {
-    text: "Menunggu Konfirmasi",
-    variant: "primary",
-  },
-  [ORDER_STATUS.ARMADA_DIJADWALKAN]: {
-    text: "Armada Dijadwalkan",
-    variant: "primary",
-  },
-  [ORDER_STATUS.PERLU_ASSIGN_ARMADA]: {
-    text: "Perlu Assign Armada",
-    variant: "warning",
-  },
-  [ORDER_STATUS.PERLU_KONFIRMASI_SIAP]: {
-    text: "Perlu Konfirmasi Siap",
-    variant: "error",
-  },
-  [ORDER_STATUS.PERLU_RESPON_PERUBAHAN]: {
-    text: "Perlu Respon Perubahan",
-    variant: "warning",
-  },
-  [ORDER_STATUS.PROSES_MUAT]: { text: "Proses Muat", variant: "primary" },
-  [ORDER_STATUS.PROSES_BONGKAR]: { text: "Proses Bongkar", variant: "primary" },
-  [ORDER_STATUS.DOKUMEN_SEDANG_DISIAPKAN]: {
-    text: "Dokumen Sedang Disiapkan",
-    variant: "primary",
-  },
-  [ORDER_STATUS.PROSES_PENGIRIMAN_DOKUMEN]: {
-    text: "Proses Pengiriman Dokumen",
-    variant: "primary",
-  },
-};
-
-// Helper to get action items
-const getActionItems = ({ order, userRole, t, onViewChange }) => {
-  const actions = [];
-  const canCancelOrder = userRole === "GM";
-  const hasMultipleUnits = order.truckCount > 1;
-
-  switch (order.orderStatus) {
-    case ORDER_STATUS.MENUNGGU_KONFIRMASI:
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      if (hasMultipleUnits) {
-        actions.push({
-          label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-          isDestructive: true,
-        });
-      }
-      actions.push({
-        label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
-        isDestructive: true,
-        disabled: !canCancelOrder,
-      });
-      break;
-    case ORDER_STATUS.ARMADA_DIJADWALKAN:
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      if (order.orderType === "Terjadwal") {
-        actions.push({
-          label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-          isDestructive: true,
-        });
-        actions.push({
-          label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
-          isDestructive: true,
-          disabled: !canCancelOrder,
-        });
-      }
-      break;
-    case ORDER_STATUS.PERLU_ASSIGN_ARMADA:
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      if (hasMultipleUnits) {
-        actions.push({
-          label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-          isDestructive: true,
-        });
-      }
-      actions.push({
-        label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
-        isDestructive: true,
-        disabled: !canCancelOrder,
-      });
-      break;
-    case ORDER_STATUS.PERLU_KONFIRMASI_SIAP:
-    case ORDER_STATUS.PERLU_RESPON_PERUBAHAN:
-      actions.push({
-        label: t("pesananCard.actionViewChange", {}, "Lihat Perubahan"),
-        onClick: onViewChange,
-      });
-      actions.push({
-        label: t("pesananCard.actionTrackFleet", {}, "Lacak Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      actions.push({
-        label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
-        isDestructive: true,
-        disabled: !canCancelOrder,
-      });
-      break;
-    case ORDER_STATUS.PROSES_MUAT:
-      actions.push({
-        label: t("pesananCard.actionTrackFleet", {}, "Lacak Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      actions.push({
-        label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-        isDestructive: true,
-      });
-      actions.push({
-        label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
-        isDestructive: true,
-        disabled: !canCancelOrder,
-      });
-      break;
-    case ORDER_STATUS.PROSES_BONGKAR:
-      actions.push({
-        label: t("pesananCard.actionTrackFleet", {}, "Lacak Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      break;
-    case ORDER_STATUS.DOKUMEN_SEDANG_DISIAPKAN:
-      actions.push({
-        label: t("pesananCard.actionUploadArchive", {}, "Unggah Dokumen Arsip"),
-      });
-      actions.push({
-        label: t("pesananCard.actionUploadReceipt", {}, "Unggah Resi"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      break;
-    case ORDER_STATUS.PROSES_PENGIRIMAN_DOKUMEN:
-      actions.push({
-        label: t("pesananCard.actionViewArchive", {}, "Lihat Dokumen Arsip"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewReceipt", {}, "Lihat Resi Pengiriman"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
-      });
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-      break;
-    default:
-      actions.push({
-        label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-        isLink: true,
-        href: `/daftar-pesanan/${order.id}`,
-      });
-  }
-  return actions;
-};
-
-// Helper for date formatting
-const useLoadingTime = (schedule) => {
+const PesananCard = ({ order, userRole }) => {
   const { t } = useTranslation();
-  return useMemo(() => {
-    const now = new Date();
-    const startDate = new Date(schedule.startDate);
-    const endDate = schedule.endDate ? new Date(schedule.endDate) : null;
 
-    const startOfDay = (date) =>
-      new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const diffDays = Math.ceil(
-      (startOfDay(startDate) - startOfDay(now)) / (1000 * 60 * 60 * 24)
-    );
+  const [modalState, setModalState] = useState({
+    contact: false,
+    changeInfo: false,
+    fleetList: false,
+    cancelFleet: false,
+    cancelOrderReason: false,
+    cancelFleetReason: false,
+    permissionDeniedTitle: null,
+    confirmCancelOrder: false,
+    confirmCancelFleet: false,
+  });
 
-    let dateLabel = t(
-      "pesananCard.dateLabelOver5Days",
-      {},
-      "Muat >5 Hari Lagi"
-    );
-    let dateColor = "text-primary-700";
+  const [modalData, setModalData] = useState({
+    contactId: null,
+    changeDetails: null,
+    fleetList: [],
+    fleetToCancel: [],
+  });
 
-    if (diffDays <= 0) {
-      dateLabel = t("pesananCard.dateLabelToday", {}, "Muat Hari Ini");
-      dateColor = "text-success-700";
-    } else if (diffDays === 1) {
-      dateLabel = t("pesananCard.dateLabelTomorrow", {}, "Muat Besok");
-      dateColor = "text-success-700";
-    } else if (diffDays <= 5) {
-      dateLabel = t(
-        "pesananCard.dateLabelWithin5Days",
-        { days: diffDays },
-        `Muat ${diffDays} Hari Lagi`
-      );
-      dateColor = "text-warning-700";
-    }
+  const [isLoading, setIsLoading] = useState(false);
 
-    const fullDateTimeOptions = {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Jakarta",
-    };
-    const timeOnlyOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Jakarta",
-    };
+  const openModal = (modalName) =>
+    setModalState((prev) => ({ ...prev, [modalName]: true }));
+  const closeModal = (modalName) =>
+    setModalState((prev) => ({ ...prev, [modalName]: false }));
 
-    const formatterFull = new Intl.DateTimeFormat("id-ID", fullDateTimeOptions);
-    const formatterTime = new Intl.DateTimeFormat("id-ID", timeOnlyOptions);
-
-    let timeRange = `${formatterFull.format(startDate)} WIB`;
-
-    if (endDate) {
-      const isSameDay =
-        startOfDay(startDate).getTime() === startOfDay(endDate).getTime();
-      const endFormatted = isSameDay
-        ? formatterTime.format(endDate)
-        : formatterFull.format(endDate);
-      timeRange = `${formatterFull.format(startDate)} WIB s/d ${endFormatted} WIB`;
-    }
-
-    return { dateLabel, timeRange, dateColor };
-  }, [schedule, t]);
-};
-
-const PesananCard = ({ order, userRole, className }) => {
-  const { t } = useTranslation();
   const { dateLabel, timeRange, dateColor } = useLoadingTime(
     order.loadingSchedule
   );
-  const statusInfo = statusDisplayMap[order.orderStatus] || {
-    text: order.orderStatus,
-    variant: "primary",
-  };
-
-  const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false);
-  const [changeDetails, setChangeDetails] = useState(null);
-  const [isLoadingChange, setIsLoadingChange] = useState(false);
-
-  const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
-  const [selectedContactId, setSelectedContactId] = useState(null);
-
-  const handleOpenContactModal = (contactId) => {
-    setSelectedContactId(contactId);
-    setIsHubungiModalOpen(true);
-  };
 
   const handleOpenChangeInfoModal = async () => {
-    setIsChangeInfoModalOpen(true);
-    setIsLoadingChange(true);
+    openModal("changeInfo");
+    setIsLoading(true);
     try {
       const response = await fetch(`/api/v1/cs/orders/${order.id}/changes`);
       const result = await response.json();
-      setChangeDetails(result.Data);
+      setModalData((prev) => ({ ...prev, changeDetails: result.Data }));
     } catch (error) {
       console.error("Failed to fetch change details", error);
-      setChangeDetails(null);
+      setModalData((prev) => ({ ...prev, changeDetails: null }));
     } finally {
-      setIsLoadingChange(false);
+      setIsLoading(false);
     }
   };
 
-  const actionItems = getActionItems({
+  const handleViewFleet = async () => {
+    openModal("fleetList");
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/v1/cs/orders/${order.id}/vehicles`);
+      const result = await res.json();
+      setModalData((prev) => ({ ...prev, fleetList: result.Data || [] }));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelFleet = () => {
+    if (userRole !== "GM") {
+      setModalState((prev) => ({
+        ...prev,
+        permissionDeniedTitle: "Batalkan Armada",
+      }));
+      return;
+    }
+    openModal("confirmCancelFleet");
+  };
+
+  const proceedToSelectFleetToCancel = async () => {
+    closeModal("confirmCancelFleet");
+    openModal("cancelFleet");
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/v1/cs/orders/${order.id}/vehicles`);
+      const result = await res.json();
+      setModalData((prev) => ({ ...prev, fleetList: result.Data || [] }));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelOrder = () => {
+    if (userRole !== "GM") {
+      setModalState((prev) => ({
+        ...prev,
+        permissionDeniedTitle: "Batalkan Pesanan",
+      }));
+      return;
+    }
+    openModal("confirmCancelOrder");
+  };
+
+  const actionItems = useGetActionItems({
     order,
     userRole,
-    t,
     onViewChange: handleOpenChangeInfoModal,
+    onViewFleet: handleViewFleet,
+    onCancelFleet: handleCancelFleet,
+    onCancelOrder: handleCancelOrder,
   });
 
   const handleActionClick = (action) => {
@@ -372,6 +160,40 @@ const PesananCard = ({ order, userRole, className }) => {
     }
   };
 
+  const handleOpenContactModal = (contactId) => {
+    setModalData((prev) => ({ ...prev, contactId }));
+    openModal("contact");
+  };
+
+  const multiStatusMemo = useMemo(() => {
+    if (
+      order.unitStatuses &&
+      Array.isArray(order.unitStatuses) &&
+      order.unitStatuses.length > 1
+    ) {
+      const statusCounts = order.unitStatuses.reduce((acc, unit) => {
+        acc[unit.status] = (acc[unit.status] || 0) + 1;
+        return acc;
+      }, {});
+      const uniqueStatuses = Object.keys(statusCounts);
+      if (uniqueStatuses.length > 1) {
+        const dominantStatus = uniqueStatuses.sort(
+          (a, b) => statusCounts[b] - statusCounts[a]
+        )[0];
+        return {
+          hasMultiple: true,
+          dominantStatus: dominantStatus,
+          dominantStatusUnitCount: statusCounts[dominantStatus],
+        };
+      }
+    }
+    return { hasMultiple: false };
+  }, [order.unitStatuses]);
+
+  const statusInfo = statusDisplayMap[order.orderStatus] || {
+    text: order.orderStatus,
+    variant: "primary",
+  };
   const cargoItems = order.cargoItems || [];
   const firstCargoItem = cargoItems.length > 0 ? cargoItems[0] : null;
   const otherCargoItems = cargoItems.length > 1 ? cargoItems.slice(1) : [];
@@ -389,37 +211,6 @@ const PesananCard = ({ order, userRole, className }) => {
       </ol>
     </div>
   );
-
-  const handleOpenHubungiModal = (contactId) => {
-    setSelectedContactId(contactId);
-    setIsHubungiModalOpen(true);
-  };
-
-  const multiStatusMemo = useMemo(() => {
-    if (
-      order.unitStatuses &&
-      Array.isArray(order.unitStatuses) &&
-      order.unitStatuses.length > 1
-    ) {
-      const statusCounts = order.unitStatuses.reduce((acc, unit) => {
-        acc[unit.status] = (acc[unit.status] || 0) + 1;
-        return acc;
-      }, {});
-
-      const uniqueStatuses = Object.keys(statusCounts);
-      if (uniqueStatuses.length > 1) {
-        const dominantStatus = uniqueStatuses.sort(
-          (a, b) => statusCounts[b] - statusCounts[a]
-        )[0];
-        return {
-          hasMultiple: true,
-          dominantStatus: dominantStatus,
-          dominantStatusUnitCount: statusCounts[dominantStatus],
-        };
-      }
-    }
-    return { hasMultiple: false };
-  }, [order.unitStatuses]);
 
   return (
     <>
@@ -446,7 +237,7 @@ const PesananCard = ({ order, userRole, className }) => {
               <div className="border-l border-neutral-400 py-1 pl-2">
                 <Button
                   variant="link"
-                  onClick={() => handleOpenHubungiModal(order.transporter.id)}
+                  onClick={() => handleOpenContactModal(order.transporter.id)}
                   iconLeft={
                     <IconComponent
                       src="/icons/ic-contact-phone.svg"
@@ -479,7 +270,7 @@ const PesananCard = ({ order, userRole, className }) => {
               <div className="border-l border-neutral-400 py-1 pl-2">
                 <Button
                   variant="link"
-                  onClick={() => handleOpenHubungiModal(order.shipper.id)}
+                  onClick={() => handleOpenContactModal(order.shipper.id)}
                   iconLeft={
                     <IconComponent
                       src="/icons/ic-contact-phone.svg"
@@ -597,15 +388,12 @@ const PesananCard = ({ order, userRole, className }) => {
               </div>
             </div>
             <div className="flex justify-between">
-              {/* Armada */}
               <div className="ml-12 mr-3 flex w-[316px] flex-col gap-1">
-                {/* FIXED TOOLTIP USAGE */}
                 <TruncatedTooltip
                   text={order.truckType.name}
                   lineClamp={1}
                   className="text-xs font-bold"
                 />
-                {/* FIXED TOOLTIP USAGE */}
 
                 <TruncatedTooltip
                   text={order.carrierTruck.name}
@@ -657,12 +445,13 @@ const PesananCard = ({ order, userRole, className }) => {
                         {order.sosStatus.sosCount} Unit
                       </span>
                     </div>
-                    <Button
-                      variant="link"
-                      className="h-auto p-0 text-xs font-medium"
+                    <Link
+                      href="/monitoring?tab=urgent"
+                      target="_blank"
+                      className="text-xs font-medium text-primary-700 no-underline hover:text-primary-800"
                     >
                       {t("pesananCard.viewSOS", {}, "Lihat SOS")}
-                    </Button>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -681,7 +470,7 @@ const PesananCard = ({ order, userRole, className }) => {
                     {multiStatusMemo.dominantStatusUnitCount} Unit
                   </BadgeStatusPesanan>
                   <Link
-                    href={`/daftar-pesanan/${order.id}/status`}
+                    href={`/daftar-pesanan/${order.id}/lacak-armada`}
                     target="_blank"
                   >
                     <span className="mt-1 cursor-pointer text-xs font-medium text-primary-700 hover:text-primary-800">
@@ -712,7 +501,10 @@ const PesananCard = ({ order, userRole, className }) => {
                       <ChevronDown className="h-3 w-3 text-neutral-700" />
                     </button>
                   </SimpleDropdownTrigger>
-                  <SimpleDropdownContent className="w-[180px]" align="end">
+                  <SimpleDropdownContent
+                    className="w-fit -space-y-1 border-2"
+                    align="end"
+                  >
                     {actionItems.map((action, index) => (
                       <SimpleDropdownItem
                         key={index}
@@ -730,21 +522,106 @@ const PesananCard = ({ order, userRole, className }) => {
           </div>
         </div>
       </div>
+
       <ContactModal
-        isOpen={isHubungiModalOpen}
-        onClose={() => setIsHubungiModalOpen(false)}
-        contactId={selectedContactId}
-        useMockData={true} // Ganti ke false saat integrasi
+        isOpen={modalState.contact}
+        onClose={() => closeModal("contact")}
+        contactId={modalData.contactId}
+        useMockData={true}
       />
       <OrderChangeInfoModal
-        isOpen={isChangeInfoModalOpen}
-        onClose={() => setIsChangeInfoModalOpen(false)}
-        changeDetails={changeDetails}
-        isLoading={isLoadingChange}
+        isOpen={modalState.changeInfo}
+        onClose={() => closeModal("changeInfo")}
+        changeDetails={modalData.changeDetails}
+        isLoading={isLoading}
         onHubungi={() => {
-          setIsChangeInfoModalOpen(false);
+          closeModal("changeInfo");
           handleOpenContactModal(order.transporter.id);
         }}
+      />
+      <FleetListModal
+        isOpen={modalState.fleetList}
+        onClose={() => closeModal("fleetList")}
+        vehicles={modalData.fleetList}
+        isLoading={isLoading}
+      />
+      <CancelFleetModal
+        isOpen={modalState.cancelFleet}
+        onClose={() => closeModal("cancelFleet")}
+        vehicles={modalData.fleetList}
+        isLoading={isLoading}
+        onSubmit={(fleetIds) => {
+          setModalData((prev) => ({ ...prev, fleetToCancel: fleetIds }));
+          closeModal("cancelFleet");
+          openModal("cancelFleetReason");
+        }}
+      />
+      <CancelReasonModal
+        isOpen={modalState.cancelFleetReason}
+        onClose={() => closeModal("cancelFleetReason")}
+        onSubmit={(reason) => {
+          toast.success(
+            `Berhasil membatalkan ${modalData.fleetToCancel.length} armada dari pesanan ${order.orderCode} - ${order.transporter.name}`
+          );
+          closeModal("cancelFleetReason");
+        }}
+        title="Masukkan Alasan Pembatalan"
+        placeholder="Masukkan alasan pembatalan"
+      />
+      <ConfirmationModal
+        isOpen={modalState.confirmCancelOrder}
+        setIsOpen={(val) => !val && closeModal("confirmCancelOrder")}
+        title={{ text: "Batalkan Pesanan" }}
+        description={{
+          text: `Apakah kamu yakin ingin membatalkan pesanan ${order.orderCode}?`,
+        }}
+        cancel={{
+          text: "Kembali",
+          classname:
+            "bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500] !border-none",
+        }}
+        confirm={{
+          text: "Ya, Batalkan",
+          onClick: () => {
+            closeModal("confirmCancelOrder");
+            toast.success(
+              `Berhasil membatalkan pesanan ${order.orderCode} - ${order.transporter.name}`
+            );
+          },
+          classname:
+            "border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+        }}
+      />
+      <ConfirmationModal
+        isOpen={modalState.confirmCancelFleet}
+        setIsOpen={(val) => !val && closeModal("confirmCancelFleet")}
+        title={{ text: "Batalkan Armada" }}
+        description={{
+          text: `Apakah kamu yakin ingin membatalkan armada dari pesanan ${order.orderCode}?`,
+        }}
+        cancel={{
+          text: "Kembali",
+          classname:
+            "bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500] !border-none",
+        }}
+        confirm={{
+          text: "Ya, Batalkan",
+          onClick: proceedToSelectFleetToCancel,
+          classname:
+            "border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+        }}
+      />
+      <ConfirmationModal
+        isOpen={!!modalState.permissionDeniedTitle}
+        setIsOpen={() =>
+          setModalState((prev) => ({ ...prev, permissionDeniedTitle: null }))
+        }
+        title={{ text: modalState.permissionDeniedTitle || "" }}
+        description={{
+          text: "Maaf, kamu belum memiliki akses. Pembatalan Armada maupun pesanan hanya bisa dilakukan oleh akses sebagai GM.",
+        }}
+        withCancel={false}
+        confirm={{ text: "Oke" }}
       />
     </>
   );

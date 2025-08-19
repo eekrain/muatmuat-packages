@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
-
 import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import FilterDropdown from "@/components/FilterDropdown/FilterDropdown";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 
 const LaporanPencairanDanaTable = ({
@@ -113,14 +112,21 @@ const LaporanPencairanDanaTable = ({
   };
 
   const getSortIcon = (columnKey) => {
-    if (sortConfig.sort === columnKey) {
-      return sortConfig.order === "desc" ? (
-        <ChevronDown className="h-4 w-4 text-primary-700" />
-      ) : (
-        <ChevronUp className="h-4 w-4 text-primary-700" />
-      );
-    }
-    return <ChevronDown className="h-4 w-4 text-gray-400" />;
+    const isSorted = sortConfig.sort === columnKey;
+
+    return (
+      <IconComponent
+        src={
+          !isSorted
+            ? "/icons/default-sort.svg"
+            : sortConfig.order === "asc"
+              ? "/icons/asc-sort.svg"
+              : "/icons/desc-sort.svg"
+        }
+        height={13}
+        className={!isSorted ? "text-neutral-400" : "text-primary-700"}
+      />
+    );
   };
 
   const renderHeader = () => {

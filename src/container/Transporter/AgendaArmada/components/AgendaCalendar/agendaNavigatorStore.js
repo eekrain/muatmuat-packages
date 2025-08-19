@@ -47,6 +47,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
   // --- Data & Fetching State ---
   schedules: [],
   previousSchedules: [], // Keep previous data during navigation
+  summary: null, // Summary data including countPerDay and countConflictedPerDay
   page: 1,
   totalPages: 1,
   hasNextPage: false,
@@ -197,11 +198,8 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         view_type: viewType,
       };
 
-      const response = await getAgendaSchedules([
-        "/v1/transporter/agenda-schedules",
-        params,
-      ]);
-      const { schedules, pagination } = response.Data;
+      const response = await getAgendaSchedules(params);
+      const { schedules, pagination, summary } = response;
 
       console.log("📊 fetchSchedules success:", {
         schedulesCount: schedules.length,
@@ -212,6 +210,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
 
       set({
         schedules,
+        summary, // Store the summary data
         previousSchedules: [], // Clear previous data on successful fetch
         page: pagination.currentPage,
         totalPages: pagination.totalPages,
@@ -271,11 +270,8 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         view_type: viewType,
       };
 
-      const response = await getAgendaSchedules([
-        "/v1/transporter/agenda-schedules",
-        params,
-      ]);
-      const { schedules: newSchedules, pagination } = response.Data;
+      const response = await getAgendaSchedules(params);
+      const { schedules: newSchedules, pagination } = response;
 
       console.log("📥 fetchNextPage success:", {
         newSchedulesCount: newSchedules.length,

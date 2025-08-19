@@ -287,3 +287,148 @@ export const randomPhoneNumber = [
   "0897-8901-2345",
   "0898-4567-8901",
 ];
+
+// --- All your helper and generator functions go here ---
+const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const getRandomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+const generateScheduleEvent = ({ view_type }) => {
+  const isConflicted = Math.random() < 0.02;
+  let statusCode, position, scheduled, additional;
+
+  if (isConflicted) {
+    statusCode = "BERTUGAS";
+    scheduled = 1;
+    additional = 0;
+    position = getRandomInt(0, 4);
+  } else {
+    statusCode = getRandomElement(
+      STATUS_CODES.filter((s) => s !== "BERTUGAS" || Math.random() > 0.15)
+    );
+    const positionPattern = getRandomElement([
+      "fully_in_view",
+      "starts_before",
+      "ends_after",
+    ]);
+    additional = getRandomInt(0, 1);
+    switch (positionPattern) {
+      case "starts_before": {
+        position = getRandomInt(-3, -1);
+        const minScheduled = 1 - position - additional;
+        const maxScheduledByView = 5 - position - additional;
+        const finalMaxScheduled = Math.min(maxScheduledByView, 3);
+        scheduled = getRandomInt(minScheduled, finalMaxScheduled);
+        break;
+      }
+      case "ends_after": {
+        position = getRandomInt(2, 4);
+        const minScheduled = 6 - position - additional;
+        scheduled = getRandomInt(Math.max(1, minScheduled), 3);
+        break;
+      }
+      case "fully_in_view":
+      default: {
+        position = getRandomInt(0, 4);
+        const maxScheduledByView = Math.max(1, 5 - position - additional);
+        const finalMaxScheduled = Math.min(maxScheduledByView, 3);
+        scheduled = getRandomInt(1, finalMaxScheduled);
+        break;
+      }
+    }
+  }
+
+  const isInactive = statusCode === "NON_AKTIF";
+  const isFinished = statusCode === "PENGIRIMAN_SELESAI";
+
+  return {
+    id: String(Math.random()),
+    orderID: String(Math.random()),
+    fleetID: String(Math.random()),
+    driverID: String(Math.random()),
+    scheduleDate: new Date(),
+    scheduleEndDate: new Date(),
+    additionalUnloadTimeStart: new Date(),
+    additionalUnloadTimeEnd: new Date(),
+    scheduledStartTime: new Date(),
+    scheduledEndTime: new Date(),
+    agendaStatus: statusCode,
+    position,
+    scheduled,
+    additional,
+    hasSosIssue: statusCode === "BERTUGAS" && Math.random() < 0.5,
+    isConflicted,
+    estimation: {
+      currentLocation: isInactive
+        ? "Garasi Pool Kendaraan"
+        : getRandomElement(locations),
+      nextDistance: isInactive || isFinished ? 0 : getRandomInt(5, 50),
+      nextTime: isInactive || isFinished ? 0 : getRandomInt(10, 120),
+    },
+    firstDestinationName: getRandomElement(locations),
+    estimatedTotalDistanceKm: getRandomInt(50, 500),
+    lastDestinationName: getRandomElement(locations),
+    driverName: view_type === "armada" ? getRandomElement(driverNames) : null,
+    licensePlate:
+      view_type === "driver"
+        ? `${getRandomElement(truckTypes).split(" - ")[0]} Plate`
+        : null,
+    truckType: view_type === "driver" ? getRandomElement(truckTypes) : null,
+  };
+};
+
+const generateArmadaViewDataset = (size = 45) => {
+  const records = new Map();
+  const availablePlates = [
+    ...new Set(
+      driverNames.map(
+        (d) =>
+          `${d.split(" ")[0][0]} ${getRandomInt(1000, 9999)} ${d.split(" ")[1].substring(0, 3).toUpperCase()}`
+      )
+    ),
+  ];
+  let safeguard = 0;
+  while (
+    records.size < Math.min(size, availablePlates.length) &&
+    safeguard < 500
+  ) {
+    const plate = getRandomElement(availablePlates);
+    if (!records.has(plate)) {
+      records.set(plate, {
+        licensePlate: plate,
+        truckType: getRandomElement(truckTypes),
+        driverName: null,
+        driverPhone: null,
+        driverEmail: null,
+        schedule: Array.from({ length: getRandomInt(1, 2) }, () =>
+          generateScheduleEvent({ view_type: "armada" })
+        ),
+      });
+    }
+    safeguard++;
+  }
+  return Array.from(records.values());
+};
+
+const generateDriverViewDataset = (size = driverNames.length) => {
+  return driverNames.slice(0, size).map((driver) => {
+    const driverEmail =
+      randomEmail[Math.floor(Math.random() * randomEmail.length)];
+    return {
+      licensePlate: null,
+      truckType: null,
+      driverName: driver,
+      driverPhone: getRandomElement(randomPhoneNumber),
+      driverEmail: driverEmail,
+      schedule: Array.from({ length: getRandomInt(1, 3) }, () =>
+        generateScheduleEvent({ view_type: "driver" })
+      ),
+    };
+  });
+};
+
+// Generate the full datasets once and export them
+export const MOCK_DATABASE = {
+  armada: generateArmadaViewDataset(50), // Increased from default 45 to 50
+  driver: generateDriverViewDataset(50), // Increased from default to 50
+};

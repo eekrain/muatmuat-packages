@@ -19,10 +19,9 @@ const RingkasanPendapatanAktif = ({ dataOrderDetail }) => {
           <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
             <CardPayment.Section title={"Pesanan Jasa Angkut"}>
               <CardPayment.LineItem
-                label={t("labelNominalPesanJasaAngkut", {
-                  unit: dataOrderDetail?.truckCount,
-                })}
-                labelClassName="max-w-[160px]"
+                // 25. 30 - Web - LB - 0253
+                label={`Nominal Pesanan Jasa Angkut (${dataOrderDetail?.truckCount} Unit)`}
+                labelClassName="max-w-[170px]"
                 value={idrFormat(dataOrderDetail?.incomeSummary.transportFee)}
               />
             </CardPayment.Section>

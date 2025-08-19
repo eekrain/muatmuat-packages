@@ -5,7 +5,7 @@ import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 import { useDateNavigator } from "./use-date-navigator";
 
 export const CalendarHeader2 = () => {
-  const { viewType, setViewType } = useAgendaNavigatorStore();
+  const { viewType, setViewType, summary } = useAgendaNavigatorStore();
   const { displayedDates, handleNext, handlePrev } = useDateNavigator();
 
   const handleViewChange = async (newViewType) => {
@@ -30,15 +30,25 @@ export const CalendarHeader2 = () => {
       </div>
 
       <div className="relative grid h-full grid-cols-5 items-center justify-center border-l border-neutral-300">
-        {displayedDates?.map((item) => {
+        {displayedDates?.map((item, index) => {
+          // Get count and conflict status for this day from summary data
+          const dayCount = summary?.countPerDay?.[index] || 0;
+          const hasConflict = summary?.countConflictedPerDay?.[index] || false;
+
           return (
             <div
               key={item.fullDate}
               className="flex items-center justify-center gap-2 py-2 text-sm font-semibold"
             >
+              {hasConflict && (
+                <IconComponent
+                  src="/icons/agenda/conflict-sirine.svg"
+                  className="size-6"
+                />
+              )}
               <span>{`${item.day}, ${item.date}`}</span>
               <div className="flex items-center justify-center rounded-full border border-neutral-400 bg-neutral-200 px-2 py-[4px] text-xxs font-medium text-neutral-700">
-                1
+                {dayCount}
               </div>
             </div>
           );
