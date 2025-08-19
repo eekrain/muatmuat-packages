@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -28,9 +29,10 @@ const DaftarPesanan = ({
   onChangeQueryParams,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [tempSearch, setTempSearch] = useState("");
-  console.log("isFirstTimer", isFirstTimer);
+
   const [selectedTab, setSelectedTab] = useState("semua");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -307,6 +309,9 @@ const DaftarPesanan = ({
           <Button
             className="min-w-[174px]"
             variant="muattrans-primary-secondary"
+            onClick={() =>
+              router.push(`/daftar-pesanan/${row.id}/detail-pesanan`)
+            }
           >
             Detail
           </Button>
