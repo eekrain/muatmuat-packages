@@ -21,6 +21,7 @@ import {
   useGetMasterKotaKabupaten,
   useGetMasterProvinsi,
 } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
+import { useSearchAreaBongkar } from "@/services/Transporter/pengaturan/searchAreaBongkar";
 
 export default function Page() {
   const router = useRouter();
@@ -29,9 +30,24 @@ export default function Page() {
   const [expandedProvinces, setExpandedProvinces] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   // Local state to manage checkbox selections
   const [localProvinces, setLocalProvinces] = useState([]);
+
+  // Search area bongkar functionality
+  const {
+    unloadingAreas: searchResults,
+    found: searchFound,
+    isLoading: isSearchLoading,
+    keyword: searchResponseKeyword,
+    pagination: searchPagination,
+  } = useSearchAreaBongkar({
+    keyword: searchKeyword,
+    page: 1,
+    limit: 10,
+  });
 
   // Fetch area bongkar management data
   const { provinces, isLoading, totalProvinces, totalSelectedCities } =
@@ -337,12 +353,29 @@ export default function Page() {
                   province.cities.some((city) => city.isSelected)
                 )}
                 onRemove={handleRemoveProvince}
-                onAdd={() => console.log("Add province")}
+                onAdd={() => {
+                  console.log("Open province selection modal");
+                  alert(
+                    "Fitur modal pemilihan provinsi akan segera diimplementasikan"
+                  );
+                }}
                 isDeleting={isDeleting}
               />
 
               {/* Search and Filter */}
               <div className="mb-6 flex items-center">
+                <div className="me-4">
+                  <Input
+                    placeholder="Cari Provinsi/Area"
+                    icon={{ left: "/icons/search.svg" }}
+                    value={searchKeyword}
+                    onChange={(e) => {
+                      setSearchKeyword(e.target.value);
+                      setShowSearchResults(e.target.value.length > 0);
+                    }}
+                    className="w-[262px] text-sm"
+                  />
+                </div>
                 <div className="me-4">
                   <Input
                     placeholder="Cari Kota/Kabupaten"
@@ -364,6 +397,63 @@ export default function Page() {
                   </span>
                 </div>
               </div>
+
+              {/* Search Results */}
+              {showSearchResults && searchKeyword && (
+                <div className="mb-6">
+                  <h4 className="mb-4 text-sm font-medium text-neutral-900">
+                    Hasil Pencarian &quot;{searchKeyword}&quot;{" "}
+                    {searchFound && `(${searchResults?.length || 0} ditemukan)`}
+                  </h4>
+                  {isSearchLoading ? (
+                    <div className="flex h-[100px] items-center justify-center rounded-lg border border-neutral-200">
+                      <span className="text-sm text-neutral-600">
+                        Mencari...
+                      </span>
+                    </div>
+                  ) : searchFound && searchResults?.length > 0 ? (
+                    <div className="space-y-3 rounded-lg border border-neutral-200 p-4">
+                      {searchResults.map((result) => (
+                        <div
+                          key={result.provinceId}
+                          className="flex items-center justify-between"
+                        >
+                          <div>
+                            <span
+                              className="text-sm font-medium text-neutral-900"
+                              dangerouslySetInnerHTML={{
+                                __html: result.highlightedName,
+                              }}
+                            />
+                            <p className="text-xs text-neutral-600">
+                              {result.displayText}
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              console.log("Add province to selection:", result);
+                              // TODO: Implement add province logic
+                              alert(
+                                `Fitur menambah ${result.provinceName} akan segera tersedia`
+                              );
+                            }}
+                          >
+                            Tambah
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex h-[100px] items-center justify-center rounded-lg border border-neutral-200">
+                      <span className="text-sm text-neutral-600">
+                        Tidak ada hasil untuk &quot;{searchKeyword}&quot;
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Loading State */}
               {isLoading || isLoadingMasterKotaKabupaten ? (

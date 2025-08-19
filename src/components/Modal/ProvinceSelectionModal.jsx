@@ -8,6 +8,7 @@ import Input from "@/components/Form/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import { toast } from "@/lib/toast";
+import { useSearchAreaBongkar } from "@/services/Transporter/pengaturan/searchAreaBongkar";
 
 const ProvinceSelectionModal = ({
   isOpen,
@@ -19,6 +20,7 @@ const ProvinceSelectionModal = ({
   onSearch,
   initialSelectedProvinces = [],
   saveContext = null, // Parameter untuk membedakan context save
+  enableSearchAPI = false, // Flag to enable search API integration
 }) => {
   const [searchProvince, setSearchProvince] = useState("");
   const [selectedProvinces, setSelectedProvinces] = useState(
@@ -26,15 +28,48 @@ const ProvinceSelectionModal = ({
   );
   const [filteredProvinces, setFilteredProvinces] = useState(provinces);
 
+  // Search area bongkar API integration
+  const {
+    unloadingAreas: searchResults,
+    found: searchFound,
+    isLoading: isSearchLoading,
+  } = useSearchAreaBongkar(
+    {
+      keyword: enableSearchAPI ? searchProvince : "",
+      page: 1,
+      limit: 20,
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
   useEffect(() => {
-    setFilteredProvinces(
-      provinces.filter((province) =>
-        province.provinceName
-          .toLowerCase()
-          .includes(searchProvince.toLowerCase())
-      )
-    );
-  }, [searchProvince, provinces]);
+    if (enableSearchAPI && searchFound && searchResults) {
+      // Use API search results and transform to match expected format
+      const transformedResults = searchResults.map((result) => ({
+        provinceId: result.provinceId,
+        provinceName: result.provinceName,
+        sortOrder: result.provinceName.charAt(0).toUpperCase(),
+        displayText: result.displayText,
+        highlightedName: result.highlightedName,
+      }));
+      setFilteredProvinces(transformedResults);
+    } else if (!enableSearchAPI || !searchProvince) {
+      // Use local filtering when API is disabled or no search term
+      setFilteredProvinces(
+        provinces.filter((province) =>
+          province.provinceName
+            .toLowerCase()
+            .includes(searchProvince.toLowerCase())
+        )
+      );
+    } else if (enableSearchAPI && searchProvince && !searchFound) {
+      // API returned no results
+      setFilteredProvinces([]);
+    }
+  }, [searchProvince, provinces, enableSearchAPI, searchFound, searchResults]);
 
   // Handle search with debounce effect
   useEffect(() => {
@@ -139,11 +174,18 @@ const ProvinceSelectionModal = ({
               {/* Search Input */}
               <div className="mb-4">
                 <Input
-                  placeholder="Cari Provinsi"
+                  placeholder={
+                    enableSearchAPI ? "Cari Provinsi/Area" : "Cari Provinsi"
+                  }
                   icon={{ left: "/icons/search.svg" }}
                   value={searchProvince}
                   onChange={(e) => setSearchProvince(e.target.value)}
                 />
+                {enableSearchAPI && isSearchLoading && (
+                  <div className="mt-2 text-xs text-neutral-600">
+                    Mencari...
+                  </div>
+                )}
               </div>
 
               {/* Select All Checkbox */}
@@ -152,7 +194,7 @@ const ProvinceSelectionModal = ({
                   className="!gap-0"
                   label=""
                   checked={isAllSelected}
-                  disabled={provinces.length === 0}
+                  disabled={filteredProvinces.length === 0}
                   onChange={(e) => handleSelectAll(e.checked)}
                 />
                 <span className="text-sm leading-[17.6px]">Pilih Semua</span>
@@ -194,9 +236,16 @@ const ProvinceSelectionModal = ({
                                     )
                                   }
                                 />
-                                <span className="text-base font-normal leading-[19.2px] text-neutral-900">
-                                  {province.provinceName}
-                                </span>
+                                <span
+                                  className="text-base font-normal leading-[19.2px] text-neutral-900"
+                                  dangerouslySetInnerHTML={{
+                                    __html:
+                                      enableSearchAPI &&
+                                      province.highlightedName
+                                        ? province.highlightedName
+                                        : province.provinceName,
+                                  }}
+                                />
                               </div>
                             );
                           })}
