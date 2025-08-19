@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-import { fetcherMuatrans } from "@/lib/fetcher";
+import { fetcherMuatrans } from "@/lib/axios";
 
 const useMockData = true;
 
