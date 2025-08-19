@@ -21,11 +21,12 @@ const mockAvailableArmada = [
   {
     id: "armada-1",
     plateNumber: "AE 6666 LBA",
-    driverName: "Ahmad Maulana",
+    driverName: "Ahmad Maulana Raja Segala Raja Siap Sedia Membela Bangsa",
     vehicleType: "Colt Diesel Double - Bak Terbuka",
     status: "available",
     isRecommended: true,
     recommendationReason: "jenis armada sesuai, jarak terdekat",
+    truckImage: "/img/mock-armada/one.png",
   },
   {
     id: "armada-2",
@@ -35,6 +36,7 @@ const mockAvailableArmada = [
     status: "potential_overload",
     isRecommended: false,
     recommendationReason: null,
+    truckImage: "/img/mock-armada/two.png",
   },
   {
     id: "armada-3",
@@ -44,6 +46,7 @@ const mockAvailableArmada = [
     status: "available",
     isRecommended: false,
     recommendationReason: null,
+    truckImage: "/img/mock-armada/three.png",
   },
   {
     id: "armada-4",
@@ -53,6 +56,7 @@ const mockAvailableArmada = [
     status: "available",
     isRecommended: false,
     recommendationReason: null,
+    truckImage: "/img/mock-armada/one.png",
   },
 ];
 
@@ -140,7 +144,7 @@ const TerimaDanUbahArmadaModal = ({
   const getRecommendationBadge = (armada) => {
     if (armada.isRecommended) {
       return (
-        <span className="flex h-6 items-center justify-center rounded bg-success-600 px-2 text-xs font-semibold text-white">
+        <span className="flex h-6 items-center justify-center rounded bg-success-400 px-2 text-xs font-semibold text-success-50">
           Rekomendasi
         </span>
       );
@@ -148,7 +152,7 @@ const TerimaDanUbahArmadaModal = ({
 
     if (armada.status === "potential_overload") {
       return (
-        <span className="flex h-6 items-center justify-center rounded bg-error-400 px-2 text-xs font-semibold text-white">
+        <span className="flex h-6 items-center justify-center rounded bg-error-50 px-2 text-xs font-semibold text-error-400">
           Potensi Overload
         </span>
       );
@@ -198,14 +202,14 @@ const TerimaDanUbahArmadaModal = ({
           {/* Armada List */}
           <div className="mx-6 mb-4 max-h-[291px] overflow-y-auto rounded-lg border border-neutral-400">
             {filteredArmada.length === 0 ? (
-              <div className="flex items-center justify-center py-8">
-                <SearchNotFound label="Armada Tidak Ditemukan" />
+              <div className="flex h-[291px] items-center justify-center py-8">
+                <SearchNotFound />
               </div>
             ) : (
               filteredArmada.map((armada, index) => (
                 <div key={armada.id}>
                   <div
-                    className="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-neutral-50"
+                    className="flex cursor-pointer items-center justify-between gap-3 p-4 transition-colors hover:bg-neutral-50"
                     onClick={() => handleArmadaSelect(armada.id)}
                   >
                     <div className="flex items-center gap-3">
@@ -213,7 +217,7 @@ const TerimaDanUbahArmadaModal = ({
                       <ImageArmada
                         src={armada.truckImage}
                         plateNumber={armada.plateNumber}
-                        size="sm"
+                        size="md"
                       />
 
                       {/* Armada Info */}
@@ -225,19 +229,19 @@ const TerimaDanUbahArmadaModal = ({
                         </div>
                         <div className="flex items-center gap-1">
                           <IconComponent
-                            src="/icons/user.svg"
+                            src="/icons/user16.svg"
                             className="h-3 w-3 text-neutral-600"
                           />
-                          <span className="text-xs font-medium text-black">
+                          <span className="line-clamp-1 break-before-all text-xxs font-medium">
                             {armada.driverName}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <IconComponent
-                            src="/icons/truck.svg"
+                            src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
                             className="h-3 w-3 text-neutral-600"
                           />
-                          <span className="text-xs text-neutral-600">
+                          <span className="text-xxs font-medium">
                             {armada.vehicleType}
                           </span>
                         </div>
@@ -246,11 +250,11 @@ const TerimaDanUbahArmadaModal = ({
 
                     {/* Radio Button and Badge */}
                     <div className="flex items-center gap-3">
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="flex flex-col items-end gap-2">
                         {getRecommendationBadge(armada)}
                         {armada.isRecommended &&
                           armada.recommendationReason && (
-                            <span className="text-right text-xs text-neutral-500">
+                            <span className="whitespace-nowrap text-right text-xxs">
                               {armada.recommendationReason}
                             </span>
                           )}
