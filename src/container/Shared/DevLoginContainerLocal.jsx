@@ -4,19 +4,11 @@ import { useState } from "react";
 
 import xior from "xior";
 
-import { useTokenActions } from "@/store/Auth/tokenStore";
+import { useTokenActions } from "@/store/AuthStore/tokenStore";
 
-// Helper to determine input type
-const getInputType = (input) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(input) ? "email" : "phone";
-};
-
-const DevLoginContainerLocal = ({
-  onSuccessRedirect = "/manajemen-armada",
-}) => {
+const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
   const [formData, setFormData] = useState({
-    emailOrPhone: "",
+    loginId: "",
     password: "",
   });
   const [errors, setErrors] = useState({});
@@ -40,33 +32,21 @@ const DevLoginContainerLocal = ({
 
   const validateForm = () => {
     const newErrors = {};
-    const { emailOrPhone, password } = formData;
+    const { loginId, password } = formData;
 
-    // Validate email/phone
-    if (!emailOrPhone.trim()) {
-      newErrors.emailOrPhone = "Email or phone number is required";
+    // Validate loginId (email)
+    if (!loginId.trim()) {
+      newErrors.loginId = "Email is required";
     } else {
-      const inputType = getInputType(emailOrPhone);
-
-      if (inputType === "email") {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailOrPhone)) {
-          newErrors.emailOrPhone = "Please enter a valid email address";
-        }
-      } else {
-        const phoneDigits = emailOrPhone.replace(/\D/g, "");
-        if (phoneDigits.length < 10 || phoneDigits.length > 15) {
-          newErrors.emailOrPhone =
-            "Please enter a valid phone number (10-15 digits)";
-        }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(loginId)) {
+        newErrors.loginId = "Please enter a valid email address";
       }
     }
 
     // Validate password
-    if (!password) {
+    if (!password.trim()) {
       newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
     }
 
     setErrors(newErrors);
@@ -83,72 +63,31 @@ const DevLoginContainerLocal = ({
     setIsLoading(true);
 
     try {
-      // Determine if input is email or phone
-      const isEmail = /\S+@\S+\.\S+/.test(formData.emailOrPhone);
+      // Create Basic Auth header
+      const basicAuth = btoa("az_muattrans:Zci01Y4zh2IHCupULvXbTdDM");
 
-      // First API call to do_login_user
-      const form = new FormData();
-      // Send as 'email' or 'phone' based on input format
-      if (isEmail) {
-        form.append("email", formData.emailOrPhone);
-      } else {
-        form.append("phone", formData.emailOrPhone);
-      }
-      // Encode password to base64
-      const encodedPassword = btoa(formData.password);
-      form.append("password", encodedPassword);
-
-      const firstResponse = await xior.post(
-        "https://general-az.assetlogistik.com/api/do_login_user",
-        form,
+      // API call to transporter auth with Basic Auth
+      const response = await xior.post(
+        "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/login",
+        {
+          loginId: formData.loginId,
+          password: formData.password,
+        },
         {
           headers: {
-            "User-Agent": "insomnia/11.2.0",
+            Authorization: `Basic ${basicAuth}`,
           },
         }
       );
 
-      console.log("First API response:", firstResponse.data);
-
-      // Extract token from first response
-      const token = firstResponse.data?.Data?.Token;
-
-      if (!token) {
-        throw new Error("No token received from login");
-      }
-
-      // Second API call to muatparts auth
-      const secondPayload = { email: formData.emailOrPhone, token: token };
-
-      const secondResponse = await xior.post(
-        "https://api-az.assetlogistik.com/v1/muatparts/auth/login/mp",
-        secondPayload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "User-Agent": "insomnia/11.2.0",
-          },
-        }
-      );
-
-      console.log("Second API response:", secondResponse.data);
-
-      // Set tokens in the store - check for correct path based on API response
+      // Set tokens in the store
       if (
-        secondResponse.data?.Data?.accessToken &&
-        secondResponse.data?.Data?.refreshToken
+        response.data?.Data?.accessToken &&
+        response.data?.Data?.refreshToken
       ) {
         setToken({
-          accessToken: secondResponse.data.Data.accessToken,
-          refreshToken: secondResponse.data.Data.refreshToken,
-        });
-      } else if (
-        secondResponse.data?.data?.accessToken &&
-        secondResponse.data?.data?.refreshToken
-      ) {
-        setToken({
-          accessToken: secondResponse.data.data.accessToken,
-          refreshToken: secondResponse.data.data.refreshToken,
+          accessToken: response.data.Data.accessToken,
+          refreshToken: response.data.Data.refreshToken,
         });
       } else {
         throw new Error("Invalid token response from server");
@@ -159,7 +98,6 @@ const DevLoginContainerLocal = ({
 
       window.location.replace(onSuccessRedirect);
     } catch (error) {
-      console.error("Login error:", error);
       setErrors({
         general:
           error.response?.data?.message || "Login failed. Please try again.",
@@ -174,7 +112,7 @@ const DevLoginContainerLocal = ({
       <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Masuk Pakai Akun general-az Kamu!
+            Masuk sebagai Dev 🤫
           </h2>
         </div>
 
@@ -182,43 +120,40 @@ const DevLoginContainerLocal = ({
           <div className="space-y-4">
             <div>
               <label
-                htmlFor="emailOrPhone"
+                htmlFor="loginId"
                 className="mb-1 block text-sm font-medium text-gray-700"
               >
-                Email or Phone Number <span className="text-red-500">*</span>
+                Email<span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
-                id="emailOrPhone"
-                name="emailOrPhone"
-                placeholder="Enter your email or phone number"
-                value={formData.emailOrPhone}
+                type="email"
+                id="loginId"
+                name="loginId"
+                placeholder="Enter your email"
+                value={formData.loginId}
                 onChange={handleInputChange}
                 disabled={isLoading}
-                autoComplete="username"
+                autoComplete="email"
                 className={`w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.emailOrPhone ? "border-red-500" : "border-gray-300"
+                  errors.loginId ? "border-red-500" : "border-gray-300"
                 } ${isLoading ? "cursor-not-allowed bg-gray-100" : ""}`}
               />
-              {errors.emailOrPhone && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.emailOrPhone}
-                </p>
+              {errors.loginId && (
+                <p className="mt-1 text-sm text-red-500">{errors.loginId}</p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor="password"
                 className="mb-1 block text-sm font-medium text-gray-700"
               >
-                Password <span className="text-red-500">*</span>
+                Password<span className="text-red-500">*</span>
               </label>
               <input
                 type="password"
                 id="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder="Enter your Password"
                 value={formData.password}
                 onChange={handleInputChange}
                 disabled={isLoading}
@@ -258,4 +193,4 @@ const DevLoginContainerLocal = ({
   );
 };
 
-export default DevLoginContainerLocal;
+export default DevLoginContainer;
