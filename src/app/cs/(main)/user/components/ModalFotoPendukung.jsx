@@ -5,7 +5,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
 /**
@@ -44,9 +44,7 @@ const ModalFotoPendukung = ({ isOpen, onClose, photos = [] }) => {
   return (
     <Modal open={isOpen} onOpenChange={handleClose}>
       <ModalContent className="w-[600px] max-w-[90vw]" type="muattrans">
-        <ModalHeader />
-
-        <div className="flex flex-col items-center gap-6 px-6 py-9">
+        <div className="flex flex-col items-center gap-6 px-3 pb-3 pt-8">
           {/* Title */}
           <h2 className="text-base font-bold text-neutral-900">
             Foto Pendukung
@@ -54,7 +52,7 @@ const ModalFotoPendukung = ({ isOpen, onClose, photos = [] }) => {
 
           {/* Main Photo Display */}
           <div className="relative">
-            <div className="flex h-[400px] w-[500px] max-w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
+            <div className="flex h-[400px] w-[550px] max-w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
               <img
                 src={currentPhoto || "/img/default-avatar.png"}
                 alt={`Driver photo ${currentIndex + 1}`}
@@ -100,7 +98,7 @@ const ModalFotoPendukung = ({ isOpen, onClose, photos = [] }) => {
                   key={index}
                   onClick={() => goToPhoto(index)}
                   className={cn(
-                    "h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-all",
+                    "size-14 shrink-0 overflow-hidden rounded-lg border-2 transition-all",
                     index === currentIndex
                       ? "border-[#176CF7]"
                       : "border-transparent hover:border-neutral-300"
@@ -119,11 +117,11 @@ const ModalFotoPendukung = ({ isOpen, onClose, photos = [] }) => {
           )}
 
           {/* Photo counter for multiple photos */}
-          {hasMultiplePhotos && (
+          {/* {hasMultiplePhotos && (
             <div className="text-sm text-neutral-600">
               {currentIndex + 1} dari {validPhotos.length}
             </div>
-          )}
+          )} */}
         </div>
       </ModalContent>
     </Modal>
