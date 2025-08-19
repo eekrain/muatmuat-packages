@@ -1,18 +1,14 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
-import { AuthenticationProvider } from "@/hooks/use-auth";
-import useDevice from "@/hooks/use-device";
+import { AuthenticationProvider } from "@/hooks/Transporter/use-auth";
 import { TranslationProvider } from "@/hooks/use-translation";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { StackManagerInitializer } from "@/lib/stack-manager";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
-import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {
   return (
@@ -35,37 +31,13 @@ const Script = () => {
   useDefaultTimeoutLoading();
   useResetNavigationOnDesktop();
 
-  const { fetchSidebarData } = useNotificationCounterActions();
-  useEffect(() => {
-    fetchSidebarData().catch((error) => {
-      // Error fetching sidebar data
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // TODO: Implement fetch sidebar count
+  useEffect(() => {}, []);
 
   return null;
 };
 
-const useResetNavigationOnDesktop = () => {
-  const router = useRouter();
-  const { isMobile, mounted } = useDevice();
-  const { replace: replaceNavigation } = useResponsiveNavigation();
-  const searchParams = useSearchParams();
-  const screenSearchParam = searchParams.get("screen");
-
-  useEffect(() => {
-    if (!mounted || !screenSearchParam) return;
-    if (!isMobile) {
-      const currentSeach = new URLSearchParams(window.location.search);
-      currentSeach.delete("screen");
-      router.replace(`${window.location.pathname}?${currentSeach.toString()}`, {
-        scroll: false,
-      });
-      replaceNavigation("/");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile, mounted, screenSearchParam]);
-};
+const useResetNavigationOnDesktop = () => {};
 
 const useDefaultTimeoutLoading = () => {
   const { setIsGlobalLoading } = useLoadingAction();

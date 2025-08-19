@@ -10,8 +10,8 @@ import AssignArmadaModal from "@/container/Shared/OrderModal/AssignArmadaModal";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { cn } from "@/lib/utils";
-import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
-import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
+import { useGetActiveOrders } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrders";
+import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
@@ -102,7 +102,7 @@ const DaftarPesananAktif = ({
 
   const orders = data?.orders || [];
   const totalActiveOrders = activeOrdersCount?.totalActiveOrders || 0;
-  const availableStatuses = data?.availableStatuses || {};
+  const availableStatuses = activeOrdersCount?.availableStatuses || {};
 
   // Dropdown options
   const getStatusOptions = () => {
@@ -199,10 +199,13 @@ const DaftarPesananAktif = ({
                     onChange={setSelectedStatusFilter}
                     placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
                     options={getStatusOptions()}
-                    showNotificationDot={getStatusUrgentCount() > 0}
-                    notificationCount={getStatusUrgentCount()}
+                    // showNotificationDot={getStatusUrgentCount() > 0}
+                    // notificationCount={getStatusUrgentCount()}
                     className="max-w-[150px]"
                     disabled={isSearchNotFound}
+                    showNotificationDotWithoutNumber={
+                      getStatusUrgentCount() > 0
+                    }
                   />
                 </div>
               </div>

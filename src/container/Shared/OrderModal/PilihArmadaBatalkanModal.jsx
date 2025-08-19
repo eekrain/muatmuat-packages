@@ -13,6 +13,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
+import ImageArmada from "./components/ImageArmada";
+
 // Valibot validation schema
 const FleetSelectionSchema = v.object({
   selectedFleets: v.pipe(
@@ -166,19 +168,11 @@ const PilihArmadaBatalkan = ({
                     {/* Fleet Info */}
                     <div className="flex flex-1 items-center gap-4">
                       {/* Fleet Image */}
-                      <div
-                        className={cn(
-                          "h-[52px] w-[52px] bg-white",
-                          "rounded-[9.18px] border-[0.76px] border-[#C4C4C4]",
-                          "relative flex items-center justify-center overflow-hidden"
-                        )}
-                      >
-                        <img
-                          src={dummyImages[index % dummyImages.length]}
-                          alt={`Truck ${fleet.plateNumber}`}
-                          className="absolute inset-0 h-full w-full object-cover"
-                        />
-                      </div>
+                      <ImageArmada
+                        src={dummyImages[index % dummyImages.length]}
+                        plateNumber={fleet.plateNumber}
+                        size="sm"
+                      />
 
                       {/* Fleet Details */}
                       <div className="flex h-[44px] flex-1 flex-col items-start justify-center gap-3 py-1">
@@ -195,8 +189,8 @@ const PilihArmadaBatalkan = ({
                             src="/icons/user16.svg"
                             className="h-4 w-4 text-[#461B02]"
                           />
-                          <div className="h-2 w-full">
-                            <p className="text-xs font-medium leading-[120%] text-black">
+                          <div className="w-full">
+                            <p className="text-xs font-medium text-black">
                               {fleet.driverName || "Noel Gallagher"}
                             </p>
                           </div>

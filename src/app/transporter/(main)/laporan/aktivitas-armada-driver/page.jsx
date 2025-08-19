@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Download } from "lucide-react";
 
@@ -28,10 +28,30 @@ export default function Page() {
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [filters, setFilters] = useState({});
+  const [sortConfig, setSortConfig] = useState({
+    sort: null,
+    order: null,
+  });
+
+  // Detect tab from URL or sessionStorage when component mounts
+  useEffect(() => {
+    // Check if there's a stored tab preference from detail page
+    const storedTab = sessionStorage.getItem("laporan_selected_tab");
+    if (storedTab && (storedTab === "armada" || storedTab === "driver")) {
+      setSelectedTab(storedTab);
+      // Clean up sessionStorage after reading
+      sessionStorage.removeItem("laporan_selected_tab");
+    }
+  }, []);
 
   // Get count data for fleet and driver
   const { data: countData, isLoading: countLoading } =
     useGetCountArmadaDriver();
+
+  // Ensure sortConfig is reset to null on component mount
+  useEffect(() => {
+    setSortConfig({ sort: null, order: null });
+  }, []);
 
   // Helper function untuk mendapatkan startDate dan endDate dari periode
   const getPeriodDates = () => {
@@ -124,36 +144,73 @@ export default function Page() {
     return apiFilters;
   };
 
+  // Helper function untuk mendapatkan sort key yang sesuai dengan tab
+  const getSortKey = (sortKey) => {
+    if (selectedTab === "driver") {
+      // Mapping untuk driver: licensePlate -> name, currentStatus -> status
+      if (sortKey === "licensePlate") return "name";
+      if (sortKey === "currentStatus") return "status";
+      return sortKey;
+    }
+    // Armada: gunakan key asli
+    return sortKey;
+  };
+
   // Get fleet activities data - only when armada tab is active
-  const { data: fleetData, isLoading: fleetLoading } = useGetFleetActivities(
+  const fleetParams =
     selectedTab === "armada"
       ? {
           limit: perPage,
           page: currentPage,
-          sort: "licensePlate",
-          order: "asc",
+          ...(sortConfig.sort !== null &&
+            sortConfig.order !== null && {
+              sort: sortConfig.sort,
+              order: sortConfig.order,
+            }),
           search: searchValue.length >= 3 ? searchValue : "",
           ...getFilterParams(), // ✅ Gunakan helper function untuk filter params
           ...getPeriodDates(),
         }
-      : null
+      : null;
+
+  // Debug log untuk memastikan parameter sort tidak dikirim saat awal
+  if (selectedTab === "armada" && fleetParams) {
+    console.log("Fleet API params:", fleetParams);
+  }
+
+  const { data: fleetData, isLoading: fleetLoading } = useGetFleetActivities(
+    fleetParams,
+    {
+      key: `fleet-${JSON.stringify(fleetParams)}`,
+    }
   );
 
   // Get driver activities data - only when driver tab is active
+  const driverParams =
+    selectedTab === "driver"
+      ? {
+          limit: perPage,
+          page: currentPage,
+          ...(sortConfig.sort !== null &&
+            sortConfig.order !== null && {
+              sort: getSortKey(sortConfig.sort),
+              order: sortConfig.order,
+            }),
+          search: searchValue.length >= 3 ? searchValue : "",
+          ...getDriverFilterParams(), // ✅ Gunakan helper function untuk driver filter params
+          ...getPeriodDates(),
+        }
+      : null;
+
+  // Debug log untuk memastikan parameter sort tidak dikirim saat awal
+  if (selectedTab === "driver" && driverParams) {
+    console.log("Driver API params:", driverParams);
+  }
+
   const { data: driverDataFromAPI, isLoading: driverLoading } =
-    useGetDriverData(
-      selectedTab === "driver"
-        ? {
-            limit: perPage,
-            page: currentPage,
-            sort: "name",
-            order: "desc",
-            search: searchValue.length >= 3 ? searchValue : "",
-            ...getDriverFilterParams(), // ✅ Gunakan helper function untuk driver filter params
-            ...getPeriodDates(),
-          }
-        : null
-    );
+    useGetDriverData(driverParams, {
+      key: `driver-${JSON.stringify(driverParams)}`,
+    });
 
   // Get filter data
   const { data: fleetTypeFilters, isLoading: fleetTypeLoading } =
@@ -284,6 +341,15 @@ export default function Page() {
     },
   };
 
+  // Helper function untuk reset sorting berdasarkan tab aktif
+  const resetSorting = () => {
+    if (selectedTab === "driver") {
+      setSortConfig({ sort: null, order: null });
+    } else {
+      setSortConfig({ sort: null, order: null });
+    }
+  };
+
   // Handler untuk filter periode
   const handleSelectPeriod = (selectedOption) => {
     if (selectedOption?.range) {
@@ -294,37 +360,60 @@ export default function Page() {
       }
       setCurrentPeriodValue(selectedOption);
       setCurrentPage(1); // Reset pagination when period changes
+      resetSorting(); // Reset sorting when period changes
     } else if (selectedOption?.value === "") {
       setCurrentPeriodValue(selectedOption);
       setCurrentPage(1); // Reset pagination when period changes
+      resetSorting(); // Reset sorting when period changes
     } else if (selectedOption?.value !== undefined) {
       setCurrentPeriodValue(selectedOption);
       setCurrentPage(1); // Reset pagination when period changes
+      resetSorting(); // Reset sorting when period changes
     }
   };
 
   const handleSearch = (value) => {
     setSearchValue(value);
     setCurrentPage(1);
+    resetSorting(); // Reset sorting when search changes
   };
 
   const handleFilter = (newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1);
+    resetSorting(); // Reset sorting when filters change
     // API will automatically re-fetch due to SWR dependency on filters
   };
 
-  const handleSort = (_sort, _order) => {};
+  const handleSort = (sort, order) => {
+    if (sort && order) {
+      setSortConfig({ sort, order });
+      setCurrentPage(1); // Reset pagination when sorting changes
+    } else {
+      // Reset to no sorting
+      setSortConfig({ sort: null, order: null });
+      setCurrentPage(1);
+    }
+  };
 
   // Reset pagination when switching tabs
   const handleTabChange = (newTab) => {
     setSelectedTab(newTab);
     setCurrentPage(1); // Reset to page 1 when switching tabs
 
-    // Reset search values, period, and filters when switching tabs
+    // Reset search values, period, filters, and sorting when switching tabs
     setSearchValue("");
     setCurrentPeriodValue(null);
     setFilters({});
+    // Set default sorting berdasarkan tab yang aktif
+    if (newTab === "driver") {
+      setSortConfig({ sort: null, order: null });
+    } else {
+      setSortConfig({ sort: null, order: null });
+    }
+
+    // Store the selected tab to sessionStorage for detail page navigation
+    sessionStorage.setItem("laporan_selected_tab", newTab);
   };
 
   const handlePageChange = (page) => {
@@ -410,7 +499,7 @@ export default function Page() {
               onSort={handleSort}
               searchValue={searchValue}
               filters={filters}
-              sortConfig={{ sort: null, order: null }}
+              sortConfig={sortConfig}
               showFilter={true}
               showSearch={true}
               searchPlaceholder="Cari No. Pol atau Kode Pesanan"
@@ -436,7 +525,7 @@ export default function Page() {
               onSort={handleSort}
               searchValue={searchValue}
               filters={filters}
-              sortConfig={{ sort: null, order: null }}
+              sortConfig={sortConfig}
               showFilter={true}
               showSearch={true}
               searchPlaceholder="Cari Nama Driver, Rute atau lainnya"

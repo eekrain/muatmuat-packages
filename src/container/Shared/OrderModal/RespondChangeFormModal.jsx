@@ -13,7 +13,8 @@ import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import { toast } from "@/lib/toast";
 
-import FleetSelector from "./FleetSelector";
+import FleetSelector from "./components/FleetSelector";
+import ImageArmada from "./components/ImageArmada";
 
 // Valibot validation schema
 const FormSchema = v.pipe(
@@ -188,13 +189,11 @@ const RespondChangeFormModal = ({ isOpen, onClose, orderData }) => {
               </h3>
 
               <div className="flex items-center gap-3">
-                <div className="relative flex h-[56px] w-[56px] items-center justify-center overflow-hidden rounded-[4px] border border-neutral-400 bg-white">
-                  <img
-                    src="/img/mock-armada/one.png"
-                    alt="Truck AE 1111 LBA"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
+                <ImageArmada
+                  src="/img/mock-armada/one.png"
+                  plateNumber="AE 1111 LBA"
+                  size="md"
+                />
 
                 <div className="flex-1">
                   <div className="mb-3 flex items-center gap-1">
