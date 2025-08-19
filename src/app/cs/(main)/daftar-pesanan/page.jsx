@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import Period from "@/app/transporter/(main)/dashboard/real-time/components/Period";
 import Button from "@/components/Button/Button";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   Tabs,
@@ -19,8 +20,10 @@ import RiwayatTab from "./components/RiwayatTab";
 const DaftarPesananPage = () => {
   const { t } = useTranslation();
 
-  const [useMockData, setUseMockData] = useState(true);
-  const [userRole, setUserRole] = useState("CS");
+  const [forceFirstTimer] = useState(false);
+  const [forceEmpty] = useState(false);
+  const [useMockData] = useState(true);
+  const [userRole] = useState("CS");
 
   const [activeTab, setActiveTab] = useState("pesanan-aktif");
   const [dashboardData, setDashboardData] = useState({
@@ -68,10 +71,43 @@ const DaftarPesananPage = () => {
     [t]
   );
 
+  const isFirstTimer =
+    forceFirstTimer ||
+    (!isLoading &&
+      dashboardData.active === 0 &&
+      dashboardData.history === 0 &&
+      lastAction === "initial");
+  const isEmptyState =
+    forceEmpty || (!isFirstTimer && !hasData && lastAction === "initial");
+
   const disableDownloadButton = isLoading || !hasData;
-  const disableUploadButton = isLoading || !hasData; // Added logic for Unggah Resi
+  const disableUploadButton = isLoading || !hasData;
   const disablePeriodButton =
     isLoading || (!hasData && lastAction !== "period");
+
+  const renderEmpty = () => {
+    if (isEmptyState) {
+      return (
+        <DataEmpty
+          title={t(
+            "daftarPesanan.emptyActiveTitle",
+            {},
+            "Daftar Pesanan Aktif Masih Kosong"
+          )}
+          subtitle=""
+          className="h-[304px]"
+        />
+      );
+    } else if (isFirstTimer) {
+      return (
+        <DataEmpty
+          title={t("daftarPesanan.firstTimerTitle", {}, "Belum Ada Pesanan")}
+          subtitle=""
+          className="h-[280px]"
+        />
+      );
+    }
+  };
 
   return (
     <div className="mx-auto my-6 max-h-screen w-full max-w-[1280px] space-y-4 px-6">
@@ -83,58 +119,66 @@ const DaftarPesananPage = () => {
         value={activeTab}
         onValueChange={(v) => setActiveTab(v)}
       >
-        <div className="flex items-center justify-between">
-          <TabsList className="w-[380px]">
-            <TabsTriggerWithSeparator
-              value="pesanan-aktif"
-              activeColor="primary-700"
-              className={"!text-base"}
-            >
-              {t("daftarPesanan.tabActive", {}, "Pesanan Aktif")}
-              {dashboardData.active > 0 ? ` (${dashboardData.active})` : ""}
-            </TabsTriggerWithSeparator>
-            <TabsTriggerWithSeparator
-              value="riwayat"
-              activeColor="primary-700"
-              showSeparator={false}
-              className={"!text-base"}
-            >
-              {t("daftarPesanan.tabHistory", {}, "Riwayat")}
-            </TabsTriggerWithSeparator>
-          </TabsList>
-          <div className="flex items-center gap-3">
-            <div className="w-[200px]">
-              <Period
-                value={period}
-                onSelect={(p) => setPeriod(p)}
-                options={periodOptions}
-                disable={disablePeriodButton}
-              />
-            </div>
-            <Button
-              variant="muattrans-primary-secondary"
-              disabled={disableUploadButton}
-            >
-              {t("daftarPesanan.buttonUploadReceipt", {}, "Unggah Resi")}
-            </Button>
-            <Button
-              variant="muattrans-primary"
-              disabled={disableDownloadButton}
-            >
-              {t("daftarPesanan.buttonDownload", {}, "Unduh")}
-            </Button>
+        {!isFirstTimer && (
+          <div className="flex items-center justify-between">
+            <TabsList className="w-[380px]">
+              <TabsTriggerWithSeparator
+                value="pesanan-aktif"
+                activeColor="primary-700"
+                className={"!text-base"}
+              >
+                {t("daftarPesanan.tabActive", {}, "Pesanan Aktif")}
+                {dashboardData.active > 0 ? ` (${dashboardData.active})` : ""}
+              </TabsTriggerWithSeparator>
+              <TabsTriggerWithSeparator
+                value="riwayat"
+                activeColor="primary-700"
+                showSeparator={false}
+                className={"!text-base"}
+              >
+                {t("daftarPesanan.tabHistory", {}, "Riwayat")}
+              </TabsTriggerWithSeparator>
+            </TabsList>
+            {!isEmptyState && (
+              <div className="flex items-center gap-3">
+                <div className="w-[200px]">
+                  <Period
+                    value={period}
+                    onSelect={(p) => setPeriod(p)}
+                    options={periodOptions}
+                    disable={disablePeriodButton}
+                  />
+                </div>
+                <Button
+                  variant="muattrans-primary-secondary"
+                  disabled={disableUploadButton}
+                >
+                  {t("daftarPesanan.buttonUploadReceipt", {}, "Unggah Resi")}
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  disabled={disableDownloadButton}
+                >
+                  {t("daftarPesanan.buttonDownload", {}, "Unduh")}
+                </Button>
+              </div>
+            )}
           </div>
-        </div>
+        )}
         <TabsContent value="pesanan-aktif" className="pt-4">
-          <PesananAktifTab
-            useMockData={useMockData}
-            userRole={userRole}
-            period={period}
-            urgentCounts={dashboardData.urgentCounts}
-            setIsLoading={setIsLoading}
-            setHasData={setHasData}
-            setLastAction={setLastAction}
-          />
+          {isFirstTimer || isEmptyState ? (
+            renderEmpty()
+          ) : (
+            <PesananAktifTab
+              useMockData={useMockData}
+              userRole={userRole}
+              period={period}
+              urgentCounts={dashboardData.urgentCounts}
+              setIsLoading={setIsLoading}
+              setHasData={setHasData}
+              setLastAction={setLastAction}
+            />
+          )}
         </TabsContent>
         <TabsContent value="riwayat" className="pt-4">
           <RiwayatTab />

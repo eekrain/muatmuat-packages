@@ -38,9 +38,6 @@ const PesananAktifTab = ({
 }) => {
   const { t } = useTranslation();
 
-  const [forceFirstTimer, setForceFirstTimer] = useState(false);
-  const [forceEmpty, setForceEmpty] = useState(false);
-
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,7 +64,7 @@ const PesananAktifTab = ({
     if (searchQuery !== prevSearch) action = "search";
     else if (JSON.stringify(activeFilters) !== prevFilters) action = "filter";
     else if (period !== prevPeriod) action = "period";
-    else if (urgentStatusFilter !== prevUrgent) action = "urgent"; // Separate action for urgent filter
+    else if (urgentStatusFilter !== prevUrgent) action = "urgent";
     localLastAction.current = action;
     setLastAction(action);
   }, [
@@ -189,13 +186,6 @@ const PesananAktifTab = ({
   const hasActiveFilters = Object.values(activeFilters).some(
     (v) => Array.isArray(v) && v.length > 0
   );
-  const isFirstTimer =
-    !loading &&
-    !error &&
-    totalItems === 0 &&
-    !searchQuery &&
-    !hasActiveFilters &&
-    !period;
 
   const activeFiltersForBar = useMemo(() => {
     const barFilters = [];
@@ -227,42 +217,16 @@ const PesananAktifTab = ({
   const renderContent = () => {
     if (loading)
       return (
-        <div className="flex h-[500px] items-center justify-center">
+        <div className="flex h-[200px] items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
         </div>
       );
     if (error)
       return (
-        <div className="flex h-[500px] items-center justify-center p-4 text-center text-error-500">
+        <div className="flex h-[200px] items-center justify-center p-4 text-center text-error-500">
           {error}
         </div>
       );
-    if (forceFirstTimer)
-      return (
-        <DataEmpty
-          title={t("daftarPesanan.firstTimerTitle", {}, "Belum Ada Pesanan")}
-          className="h-[500px] !shadow-none"
-        />
-      );
-    if (forceEmpty)
-      return (
-        <DataEmpty
-          title={t(
-            "daftarPesanan.emptyActiveTitle",
-            {},
-            "Daftar Pesanan Aktif Masih Kosong"
-          )}
-          className="h-[500px] !shadow-none"
-        />
-      );
-    if (isFirstTimer)
-      return (
-        <DataEmpty
-          title={t("daftarPesanan.firstTimerTitle", {}, "Belum Ada Pesanan")}
-          className="h-[500px] !shadow-none"
-        />
-      );
-
     if (totalItems === 0) {
       if (localLastAction.current === "search")
         return (
@@ -273,7 +237,7 @@ const PesananAktifTab = ({
               {},
               "Keyword Tidak Ditemukan"
             )}
-            className="h-[500px]"
+            className="h-[300px]"
           />
         );
       if (
@@ -281,7 +245,7 @@ const PesananAktifTab = ({
         localLastAction.current === "urgent"
       )
         return (
-          <DataNotFound className="h-[500px]">
+          <DataNotFound className="h-[340px] !pb-4">
             <p className="w-[257px] text-center text-base font-[600] text-neutral-600">
               {t(
                 "daftarPesanan.filterNotFoundTitle",
@@ -300,12 +264,9 @@ const PesananAktifTab = ({
       if (localLastAction.current === "period")
         return (
           <DataEmpty
-            title={t(
-              "daftarPesanan.periodNotFoundTitle",
-              {},
-              "Tidak ada data pada periode ini"
-            )}
-            className="h-[500px] !shadow-none"
+            title={t("daftarPesanan.periodNotFoundTitle", {}, "Tidak ada data")}
+            subtitle=""
+            className="h-[220px] !shadow-none"
           />
         );
     }
@@ -333,42 +294,44 @@ const PesananAktifTab = ({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl bg-white shadow-[0px_4px_11px_0px_#41414140]">
-        <PesananActionBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          activeFilters={activeFilters}
-          onFilterChange={setActiveFilters}
-          sortConfig={sortConfig}
-          onSortChange={setSortConfig}
-          urgentStatusFilter={urgentStatusFilter}
-          onUrgentStatusChange={setUrgentStatusFilter}
-          urgentCounts={urgentCounts}
-          filterOptions={filterOptions}
-          loading={loading}
-          lastAction={localLastAction.current}
-          totalItems={totalItems}
-        />
-        {hasActiveFilters && (
-          <div className="px-4">
-            <ActiveFiltersBar
-              filters={activeFiltersForBar}
-              onRemoveFilter={handleRemoveFilter}
-              onClearAll={() => setActiveFilters({})}
-            />
-          </div>
+      <>
+        <div className="rounded-xl bg-white shadow-[0px_4px_11px_0px_#41414140]">
+          <PesananActionBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            activeFilters={activeFilters}
+            onFilterChange={setActiveFilters}
+            sortConfig={sortConfig}
+            onSortChange={setSortConfig}
+            urgentStatusFilter={urgentStatusFilter}
+            onUrgentStatusChange={setUrgentStatusFilter}
+            urgentCounts={urgentCounts}
+            filterOptions={filterOptions}
+            loading={loading}
+            lastAction={localLastAction.current}
+            totalItems={totalItems}
+          />
+          {hasActiveFilters && (
+            <div className="px-4">
+              <ActiveFiltersBar
+                filters={activeFiltersForBar}
+                onRemoveFilter={handleRemoveFilter}
+                onClearAll={() => setActiveFilters({})}
+              />
+            </div>
+          )}
+          <div className="pt-4">{renderContent()}</div>
+        </div>
+        {!loading && totalItems > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={data?.pagination?.totalPages || 1}
+            onPageChange={setCurrentPage}
+            onPerPageChange={setPerPage}
+            perPage={perPage}
+          />
         )}
-        <div className="pt-4">{renderContent()}</div>
-      </div>
-      {!loading && totalItems > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={data?.pagination?.totalPages || 1}
-          onPageChange={setCurrentPage}
-          onPerPageChange={setPerPage}
-          perPage={perPage}
-        />
-      )}
+      </>
     </div>
   );
 };
