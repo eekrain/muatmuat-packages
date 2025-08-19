@@ -14,6 +14,8 @@ import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import { toast } from "@/lib/toast";
 
+import ImageArmada from "./components/ImageArmada";
+
 // Mock data for available armada
 const mockAvailableArmada = [
   {
@@ -208,12 +210,11 @@ const TerimaDanUbahArmadaModal = ({
                   >
                     <div className="flex items-center gap-3">
                       {/* Truck Image */}
-                      <div className="flex h-12 w-12 items-center justify-center rounded border border-neutral-300 bg-white">
-                        <IconComponent
-                          src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                          className="h-8 w-8 text-gray-600"
-                        />
-                      </div>
+                      <ImageArmada
+                        src={armada.truckImage}
+                        plateNumber={armada.plateNumber}
+                        size="sm"
+                      />
 
                       {/* Armada Info */}
                       <div className="flex flex-col gap-1">
