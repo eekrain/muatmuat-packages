@@ -3,9 +3,11 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const ModalUbahTransporter = ({ open, onClose }) => {
+  const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState(null);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
   const [selectedArmada, setSelectedArmada] = useState(null);
@@ -145,7 +147,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
         <div className="relative w-[700px] rounded-xl bg-white p-6 shadow-lg">
           <div className="mb-6 flex items-center justify-center">
             <h2 className="text-[16px] font-bold text-neutral-900">
-              Informasi Perubahan Transporter
+              {t(
+                "ModalUbahTransporter.titleInformasiPerubahanTransporter",
+                {},
+                "Informasi Perubahan Transporter"
+              )}
             </h2>
             <button
               onClick={onClose}
@@ -163,13 +169,23 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                   className="inline-block h-4 w-4 text-muat-trans-secondary-900"
                 />
               </div>
-              <span className="text-xs font-bold">Perubahan Transporter</span>
+              <span className="text-xs font-bold">
+                {t(
+                  "ModalUbahTransporter.labelPerubahanTransporter",
+                  {},
+                  "Perubahan Transporter"
+                )}
+              </span>
             </div>
             <div className="mb-6 mt-3 flex gap-4 border-t border-neutral-400 pt-3">
               <div className="mr-6 flex-1 border-r border-neutral-400 pr-6">
                 <div>
                   <div className="mb-4 text-xs font-medium text-neutral-600">
-                    Transporter Awal
+                    {t(
+                      "ModalUbahTransporter.labelTransporterAwal",
+                      {},
+                      "Transporter Awal"
+                    )}
                   </div>
                   <div className="mb-1 flex items-center gap-2">
                     <img
@@ -193,7 +209,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                 </div>
                 <div>
                   <div className="mb-4 text-xs font-medium text-neutral-600">
-                    Armada Awal
+                    {t(
+                      "ModalUbahTransporter.labelArmadaAwal",
+                      {},
+                      "Armada Awal"
+                    )}
                   </div>
                   <div className="mb-1 flex items-center gap-2">
                     <img
@@ -219,7 +239,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
               <div className="flex-1">
                 <div>
                   <div className="mb-4 text-xs font-medium text-neutral-600">
-                    Transporter Baru
+                    {t(
+                      "ModalUbahTransporter.labelTransporterBaru",
+                      {},
+                      "Transporter Baru"
+                    )}
                   </div>
                   <div className="mb-1 flex items-center gap-2">
                     <img
@@ -243,7 +267,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                 </div>
                 <div>
                   <div className="mb-4 text-xs font-medium text-neutral-600">
-                    Armada Baru
+                    {t(
+                      "ModalUbahTransporter.labelArmadaBaru",
+                      {},
+                      "Armada Baru"
+                    )}
                   </div>
                   <div className="mb-1 flex items-center gap-2">
                     <img
@@ -274,10 +302,14 @@ const ModalUbahTransporter = ({ open, onClose }) => {
               onClick={() => setShowDetail(false)}
               variant="muattrans-primary-secondary"
             >
-              Kembali
+              {t("ModalUbahTransporter.buttonKembali", {}, "Kembali")}
             </Button>
             <Button onClick={onClose} variant="muattrans-primary">
-              Kirim Perubahan
+              {t(
+                "ModalUbahTransporter.buttonKirimPerubahan",
+                {},
+                "Kirim Perubahan"
+              )}
             </Button>
           </div>
         </div>
@@ -290,7 +322,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
       <div className="relative w-[700px] rounded-xl bg-white p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-center">
           <h2 className="text-[16px] font-bold text-neutral-900">
-            Ubah Transporter
+            {t(
+              "ModalUbahTransporter.titleUbahTransporter",
+              {},
+              "Ubah Transporter"
+            )}
           </h2>
           <button
             onClick={onClose}
@@ -301,13 +337,21 @@ const ModalUbahTransporter = ({ open, onClose }) => {
         </div>
 
         <Input
-          placeholder="Cari No. Polisi / Nama Driver / Transporter "
+          placeholder={t(
+            "ModalUbahTransporter.placeholderSearch",
+            {},
+            "Cari No. Polisi / Nama Driver / Transporter "
+          )}
           icon={{ left: "/icons/search.svg" }}
           className="w-full text-sm"
         />
 
         <p className="mb-4 mt-3 text-xs font-bold">
-          Pilih 1 unit armada untuk ditugaskan
+          {t(
+            "ModalUbahTransporter.labelPilihArmada",
+            {},
+            "Pilih 1 unit armada untuk ditugaskan"
+          )}
         </p>
 
         <div className="max-h-[266px] space-y-3 overflow-y-auto">
@@ -318,7 +362,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
             >
               {t.status === "rekomendasi" && (
                 <span className="absolute right-0 top-0 rounded-bl bg-success-400 px-11 py-[6px] text-xs font-semibold text-white">
-                  Rekomendasi
+                  {t(
+                    "ModalUbahTransporter.labelRekomendasi",
+                    {},
+                    "Rekomendasi"
+                  )}
                 </span>
               )}
               <div className="flex items-center justify-between p-4">
@@ -337,7 +385,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                   <div className="space-y-2">
                     <div className="text-xs font-bold">{t.name}</div>
                     <div className="text-xs font-medium">
-                      {t.cocok} Armada Yang Cocok
+                      {t(
+                        "ModalUbahTransporter.labelArmadaCocok",
+                        { count: t.cocok },
+                        "{count} Armada Yang Cocok"
+                      )}
                     </div>
                     <div className="flex gap-3 text-[10px] font-medium">
                       <span className="flex items-center gap-1">
@@ -345,19 +397,31 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                           src="/icons/transporter12.svg"
                           className="inline-block h-3 w-3"
                         />
-                        {t.aktif} Armada Aktif
+                        {t(
+                          "ModalUbahTransporter.labelArmadaAktif",
+                          { count: t.aktif },
+                          "{count} Armada Aktif"
+                        )}
                       </span>
                       <span className="flex items-center gap-1">
                         <IconComponent
                           src="/icons/transporter12.svg"
                           className="inline-block h-3 w-3"
                         />{" "}
-                        {t.nonaktif} Armada Nonaktif
+                        {t(
+                          "ModalUbahTransporter.labelArmadaNonaktif",
+                          { count: t.nonaktif },
+                          "{count} Armada Nonaktif"
+                        )}
                       </span>
                     </div>
                     {t.status === "menolak" && (
                       <span className="text-xs font-bold text-error-400">
-                        Transporter Menolak
+                        {t(
+                          "ModalUbahTransporter.labelTransporterMenolak",
+                          {},
+                          "Transporter Menolak"
+                        )}
                       </span>
                     )}
                   </div>
@@ -369,7 +433,7 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                     }
                     variant="muattrans-primary-secondary"
                   >
-                    Hubungi
+                    {t("ModalUbahTransporter.buttonHubungi", {}, "Hubungi")}
                   </Button>
                   <button
                     onClick={() =>
@@ -408,7 +472,11 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                         <div className="space-y-2">
                           {a.rekomendasi && (
                             <div className="inline-block text-xs font-bold text-success-400">
-                              Rekomendasi
+                              {t(
+                                "ModalUbahTransporter.labelRekomendasi",
+                                {},
+                                "Rekomendasi"
+                              )}
                             </div>
                           )}
                           <div className="text-xs font-semibold text-neutral-800">
@@ -422,7 +490,12 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                               src="/icons/lokasi20.svg"
                               className="mr-1 inline-block h-[14px] w-[14px] text-muat-trans-secondary-900"
                             />
-                            {a.jarak} dari lokasi muat -{" "}
+                            {t(
+                              "ModalUbahTransporter.labelJarakDariLokasi",
+                              { jarak: a.jarak },
+                              "{jarak} dari lokasi muat"
+                            )}{" "}
+                            -{" "}
                             <span className="font-medium text-neutral-900">
                               {a.lokasi}
                             </span>
@@ -436,7 +509,7 @@ const ModalUbahTransporter = ({ open, onClose }) => {
                             "rounded-md bg-success-400 px-8 py-2 text-xs font-semibold text-success-50"
                           )}
                         >
-                          Aktif
+                          {t("ModalUbahTransporter.labelAktif", {}, "Aktif")}
                         </button>
                       )}
                     </div>
@@ -449,17 +522,21 @@ const ModalUbahTransporter = ({ open, onClose }) => {
 
         <div className="mt-6 flex justify-between">
           <Button variant="muattrans-error-secondary" onClick={onClose}>
-            Batalkan Armada
+            {t(
+              "ModalUbahTransporter.buttonBatalkanArmada",
+              {},
+              "Batalkan Armada"
+            )}
           </Button>
           <div className="flex gap-3">
             <Button onClick={onClose} variant="muattrans-primary-secondary">
-              Batal
+              {t("ModalUbahTransporter.buttonBatal", {}, "Batal")}
             </Button>
             <Button
               onClick={() => setShowDetail(true)}
               variant="muattrans-primary"
             >
-              Selanjutnya
+              {t("ModalUbahTransporter.buttonSelanjutnya", {}, "Selanjutnya")}
             </Button>
           </div>
         </div>
