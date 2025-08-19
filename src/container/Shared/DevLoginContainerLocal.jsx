@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Eye, EyeOff } from "lucide-react";
 import xior from "xior";
 
 import { useTokenActions } from "@/store/AuthStore/tokenStore";
@@ -13,6 +14,7 @@ const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { setToken } = useTokenActions();
 
   const handleInputChange = (e) => {
@@ -149,19 +151,33 @@ const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
               >
                 Password<span className="text-red-500">*</span>
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your Password"
-                value={formData.password}
-                onChange={handleInputChange}
-                disabled={isLoading}
-                autoComplete="current-password"
-                className={`w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                } ${isLoading ? "cursor-not-allowed bg-gray-100" : ""}`}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  placeholder="Enter your Password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  autoComplete="current-password"
+                  className={`w-full rounded-md border px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } ${isLoading ? "cursor-not-allowed bg-gray-100" : ""}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-500">{errors.password}</p>
               )}
