@@ -23,7 +23,7 @@ const DaftarPesananPage = () => {
   const [forceFirstTimer] = useState(false);
   const [forceEmpty] = useState(false);
   const [useMockData] = useState(true);
-  const [userRole] = useState("CS");
+  const [userRole] = useState("GM");
 
   const [activeTab, setActiveTab] = useState("pesanan-aktif");
   const [dashboardData, setDashboardData] = useState({
