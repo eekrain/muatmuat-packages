@@ -5,7 +5,7 @@ import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useSWRMutateHook } from "@/hooks/use-swr";
-import { PaymentMethodTitle } from "@/lib/constants/detailpesanan/payment.enum";
+import { PaymentMethodTitle } from "@/lib/constants/Shipper/detailpesanan/payment.enum";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";

@@ -4,7 +4,7 @@ import { addMinutes, isPast } from "date-fns";
 
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { fetcherMuatrans } from "@/lib/axios";
-import { DriverStatusScanEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { DriverStatusScanEnum } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 
 const useMockData = false; // mock detailpesanan
 

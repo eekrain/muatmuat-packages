@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 import {
   OrderStatusEnum,
   OrderTypeEnum,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { normalizeOrderDetail } from "@/lib/normalizers/sewaarmada";
 
 const useMockData_getOrderDetail = false;

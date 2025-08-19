@@ -4,58 +4,58 @@ import { useState } from "react";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import {
   Tabs,
-  TabsContent,
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 import DetailPesananHeader from "@/container/CS/DetailPesanan/DetailPesananHeader/DetailPesananHeader";
-import RingkasanPesanan from "@/container/CS/DetailPesanan/RingkasanPesanan/RingkasanPesanan";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useGetOrderDetailCS } from "@/services/detail-pesanan-cs/getOrderDetailCS";
+import { useGetOrderDetailCS } from "@/services/CS/monitoring/detail-pesanan-cs/getOrderDetailCS";
 
-import { LacakArmadaCard } from "./LacakArmada/LacakArmadaCard";
+import { TabLacakArmada } from "./TabLacakArmada/TabLacakArmada";
+import { TabRingkasanPesanan } from "./TabRingkasanPesanan/TabRingkasanPesanan";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
 
-  const { data: dataOrderDetail } = useGetOrderDetailCS(params.orderId);
+  const { data: dataDetailPesanan } = useGetOrderDetailCS(params.orderId);
 
-  const tabItems = useShallowMemo(() => {
-    return [
-      {
-        value: "ringkasan-pesanan",
-        label: "Ringkasan Pesanan",
-      },
-      {
-        value: "lacak-armada",
-        label: (
-          <div className="flex items-center gap-x-1">
-            <span>Lacak Armada</span>
-            {true && <span>(1)</span>}
-            {false && (
-              <div className="inline-flex h-[14px] items-center rounded bg-error-400 p-1 text-[8px] font-bold text-neutral-50">
-                SOS
-              </div>
-            )}
-          </div>
-        ),
-      },
-      {
-        value: "ringkasan-transaksi",
-        label: "Ringkasan Transaksi",
-      },
-      {
-        value: "riwayat-perubahan",
-        label: "Riwayat Aktivitas",
-      },
-    ];
-  }, []);
+  const tabItems = [
+    {
+      value: "ringkasan-pesanan",
+      label: "Ringkasan Pesanan",
+    },
+    {
+      value: "lacak-armada",
+      label: (
+        <div className="flex items-center gap-x-1">
+          <span>Lacak Armada</span>
+          {dataDetailPesanan?.orderDetail?.totalAssignedTruck > 0 && (
+            <span>
+              ({dataDetailPesanan?.orderDetail?.totalAssignedTruck || 0})
+            </span>
+          )}
+          {dataDetailPesanan?.orderDetail?.hasSos && (
+            <div className="inline-flex h-[14px] items-center rounded bg-error-400 p-1 text-[8px] font-bold text-neutral-50">
+              SOS
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      value: "ringkasan-transaksi",
+      label: "Ringkasan Transaksi",
+    },
+    {
+      value: "riwayat-perubahan",
+      label: "Riwayat Aktivitas",
+    },
+  ];
 
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
       <BreadCrumb data={breadcrumbData} maxWidth={111} />
-      <DetailPesananHeader dataOrderDetail={dataOrderDetail} />
+      <DetailPesananHeader dataOrderDetail={dataDetailPesanan} />
       <Tabs
         className="flex flex-col gap-y-4"
         value={activeTab}
@@ -74,16 +74,8 @@ const DetailPesanan = ({ breadcrumbData }) => {
             </TabsTriggerWithSeparator>
           ))}
         </TabsList>
-        <TabsContent
-          className="flex flex-col gap-y-4"
-          value="ringkasan-pesanan"
-        >
-          <RingkasanPesanan dataOrderDetail={dataOrderDetail} />
-        </TabsContent>
-
-        <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
-          <LacakArmadaCard />
-        </TabsContent>
+        <TabRingkasanPesanan data={dataDetailPesanan} />
+        <TabLacakArmada />
       </Tabs>
     </div>
   );

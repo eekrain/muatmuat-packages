@@ -6,7 +6,7 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import {
   OrderStatusEnum,
   getOrderStatusRank,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";

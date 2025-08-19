@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
+import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
 import EditSchedule from "./EditSchedule";

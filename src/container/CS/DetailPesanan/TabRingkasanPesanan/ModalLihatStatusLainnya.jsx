@@ -5,7 +5,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 export const ModalLihatStatusLainnya = ({ otherStatus }) => {
   const { t } = useTranslation();
@@ -24,19 +24,19 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
         <div className="flex flex-col gap-2">
           {otherStatus.map((item) => (
             <BadgeStatusPesanan
-              key={item.status}
+              key={item.orderStatus}
               variant={
-                item.status.startsWith("WAITING")
+                item.orderStatus.startsWith("WAITING")
                   ? "warning"
-                  : item.status.startsWith("CANCELED")
+                  : item.orderStatus.startsWith("CANCELED")
                     ? "error"
-                    : item.status === OrderStatusEnum.COMPLETED
+                    : item.orderStatus === OrderStatusEnum.COMPLETED
                       ? "success"
                       : "primary"
               }
               className="w-[272px]"
             >
-              {t(OrderStatusTitle[item.status])}: {item.count} Unit
+              {t(OrderStatusTitle[item.orderStatus])}: {item.count} Unit
             </BadgeStatusPesanan>
           ))}
         </div>

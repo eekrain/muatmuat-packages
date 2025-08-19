@@ -9,11 +9,11 @@ import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTungg
 import { WaitFleetSearchButton } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/WaitFleetSearch";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import {
   PaymentMethodIconFromMethod,
   PaymentMethodTitle,
-} from "@/lib/constants/detailpesanan/payment.enum";
+} from "@/lib/constants/Shipper/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";

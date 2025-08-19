@@ -12,7 +12,7 @@ import {
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 const BottomSheetPreviousDriver = ({

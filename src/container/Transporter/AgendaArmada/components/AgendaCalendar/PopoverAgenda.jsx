@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/Popover/Popover";
 import { useTranslation } from "@/hooks/use-translation";
-import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
+import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { getAgendaScheduleDetail } from "@/services/Transporter/agenda-armada-driver/getAgendaScheduleDetail";
 
