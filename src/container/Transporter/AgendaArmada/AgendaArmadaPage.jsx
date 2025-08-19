@@ -89,60 +89,66 @@ const AgendaArmadaDriverPage = () => {
     isLoading && !isNavigating && displaySchedules.length === 0;
 
   return (
-    <div className="flex flex-col gap-4 pt-6">
-      <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-bold text-black">Agenda Armada & Driver</h1>
-        <div className="flex items-center gap-3">
-          <p className="text-xs font-bold text-black">
-            Terakhir di update: {formatDate(lastUpdated)}
-          </p>
-          <RefreshButton onClick={handleRefresh} disabled={isLoading} />
+    <>
+      <div className="flex flex-col gap-4 pt-6">
+        <div className="flex flex-row items-center justify-between">
+          <h1 className="text-xl font-bold text-black">
+            Agenda Armada & Driver
+          </h1>
+          <div className="flex items-center gap-3">
+            <p className="text-xs font-bold text-black">
+              Terakhir di update: {formatDate(lastUpdated)}
+            </p>
+            <RefreshButton onClick={handleRefresh} disabled={isLoading} />
+          </div>
         </div>
+
+        {isLoadingInitialData ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-2">
+              <img
+                src="/img/loading-animation.webp"
+                width={80}
+                height={80}
+                alt="loading"
+              />
+              <div className="text-sm text-gray-600">Memuat agenda...</div>
+            </div>
+          </div>
+        ) : displaySchedules.length > 0 ? (
+          <AgendaCalendar
+            data={displaySchedules}
+            onLoadMore={handleLoadMore}
+            isLoadingMore={isLoadingMore}
+            isReachingEnd={!hasNextPage}
+            displayedDates={displayedDates}
+            displayMonthYear={displayMonthYear}
+            search={search}
+            filterAgendaStatus={filterAgendaStatus}
+            onSearchChange={handleSearchChange}
+            onFilterChange={handleFilterChange}
+            availablePeriods={availablePeriods}
+            shouldShowOverlay={shouldShowOverlay}
+          />
+        ) : isError ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="rounded-md bg-red-100 p-4 text-center text-red-700">
+              <p>Gagal memuat data. Silakan coba lagi nanti.</p>
+              <button
+                onClick={handleRefresh}
+                className="mt-2 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+              >
+                Coba Lagi
+              </button>
+            </div>
+          </div>
+        ) : (
+          <AgendaNotFound />
+        )}
       </div>
 
-      {isLoadingInitialData ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="flex flex-col items-center gap-2">
-            <img
-              src="/img/loading-animation.webp"
-              width={80}
-              height={80}
-              alt="loading"
-            />
-            <div className="text-sm text-gray-600">Memuat agenda...</div>
-          </div>
-        </div>
-      ) : displaySchedules.length > 0 ? (
-        <AgendaCalendar
-          data={displaySchedules}
-          onLoadMore={handleLoadMore}
-          isLoadingMore={isLoadingMore}
-          isReachingEnd={!hasNextPage}
-          displayedDates={displayedDates}
-          displayMonthYear={displayMonthYear}
-          search={search}
-          filterAgendaStatus={filterAgendaStatus}
-          onSearchChange={handleSearchChange}
-          onFilterChange={handleFilterChange}
-          availablePeriods={availablePeriods}
-          shouldShowOverlay={shouldShowOverlay}
-        />
-      ) : isError ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="rounded-md bg-red-100 p-4 text-center text-red-700">
-            <p>Gagal memuat data. Silakan coba lagi nanti.</p>
-            <button
-              onClick={handleRefresh}
-              className="mt-2 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-            >
-              Coba Lagi
-            </button>
-          </div>
-        </div>
-      ) : (
-        <AgendaNotFound />
-      )}
-    </div>
+      <pre>{JSON.stringify(displaySchedules, null, 2)}</pre>
+    </>
   );
 };
 

@@ -12,7 +12,6 @@
  * @property {number} [position=0] - Horizontal position offset for the card (multiplied by 205px)
  */
 import { CardItem } from "./CardItem";
-import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 
 /**
  * @typedef {Object} ArmadaProps
@@ -29,13 +28,11 @@ import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
  * @returns {JSX.Element} A card component showing delivery schedule information
  */
 
-export const AgendaRowItem = ({ data, cellWidth }) => {
-  const { viewType } = useAgendaNavigatorStore();
-
+export const AgendaRowItem = ({ data, viewType, cellWidth }) => {
   if (!data) return null;
 
   // Handle placeholder items for consistent grid layout
-  if (data.isPlaceholder) {
+  if (data?.isPlaceholder) {
     return (
       <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
         <div className="px-3 py-4">{/* Empty placeholder content */}</div>
@@ -51,21 +48,21 @@ export const AgendaRowItem = ({ data, cellWidth }) => {
     );
   }
 
-  // Handle driver view data structure
-  if (data.driverName && data.schedules) {
+  // Handle driver view data structure - API can return either structure
+  if (viewType === "driver") {
     return (
       <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
         <div className="border-b border-neutral-200 px-3 py-4">
-          <h5 className="mb-3 text-xs font-bold">{data.driverName}</h5>
+          <h5 className="mb-3 text-xs font-bold">{data?.driverName}</h5>
 
-          {data.driverPhone && (
+          {data?.driverPhone && (
             <p className="mb-2 text-xxs font-semibold text-neutral-900">
-              {data.driverPhone}
+              {data?.driverPhone}
             </p>
           )}
-          {data.driverEmail && (
+          {data?.driverEmail && (
             <p className="text-xxs font-medium text-neutral-900">
-              {data.driverEmail}
+              {data?.driverEmail}
             </p>
           )}
         </div>
@@ -76,25 +73,57 @@ export const AgendaRowItem = ({ data, cellWidth }) => {
           <div className="border-b border-r border-neutral-200" />
           <div className="border-b border-r border-neutral-200" />
           <div className="border-b border-neutral-200" />
-          {data.schedules.map((item, index) => (
-            <CardItem
-              key={index}
-              {...item}
-              cellWidth={cellWidth}
-              viewType={viewType}
-            />
-          ))}
+          {data?.schedule?.map((item, index) => {
+            return (
+              <CardItem
+                key={index}
+                item={item}
+                cellWidth={cellWidth}
+                viewType={viewType}
+              />
+            );
+          })}
         </div>
       </div>
     );
   }
 
-  // Handle armada view data structure (original logic)
+  // Handle armada view data structure - API can return either structure
+  if (viewType === "armada") {
+    return (
+      <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
+        <div className="border-b border-neutral-200 px-3 py-4">
+          <h5 className="text-xs font-bold">{data?.licensePlate}</h5>
+          <span className="text-xxs font-semibold">{data?.truckType}</span>
+        </div>
+
+        <div className="relative grid grid-cols-5 overflow-hidden">
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-neutral-200" />
+          {data?.schedule?.map((item, index) => {
+            return (
+              <CardItem
+                key={index}
+                item={item}
+                cellWidth={cellWidth}
+                viewType={viewType}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback for unknown structure
   return (
     <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
       <div className="border-b border-neutral-200 px-3 py-4">
-        <h5 className="text-xs font-bold">{data.plateNumber}</h5>
-        <span className="text-xxs font-semibold">{data.truckType}</span>
+        <h5 className="text-xs font-bold">Unknown</h5>
+        <span className="text-xxs font-semibold">No data</span>
       </div>
 
       <div className="relative grid grid-cols-5 overflow-hidden">
@@ -103,14 +132,6 @@ export const AgendaRowItem = ({ data, cellWidth }) => {
         <div className="border-b border-r border-neutral-200" />
         <div className="border-b border-r border-neutral-200" />
         <div className="border-b border-neutral-200" />
-        {data.rowData?.map((item, index) => (
-          <CardItem
-            key={index}
-            {...item}
-            cellWidth={cellWidth}
-            viewType={viewType}
-          />
-        ))}
       </div>
     </div>
   );

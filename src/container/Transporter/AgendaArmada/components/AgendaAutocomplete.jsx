@@ -56,7 +56,7 @@ const Root = ({
   // Only update store search when user selects a suggestion
 
   // Fetch search suggestions from API using local input value
-  const { data: suggestionsData } = useGetSearchSuggestions(
+  const { data: suggestionsData, isLoading } = useGetSearchSuggestions(
     useApiSuggestions ? inputValue : null,
     viewType,
     limit
@@ -64,9 +64,8 @@ const Root = ({
 
   // Extract API suggestions
   const apiSuggestions = useMemo(() => {
-    if (!useApiSuggestions || !suggestionsData?.data?.Data?.suggestions)
-      return [];
-    return suggestionsData.data.Data.suggestions;
+    if (!useApiSuggestions || !suggestionsData?.suggestions) return [];
+    return suggestionsData.suggestions;
   }, [useApiSuggestions, suggestionsData]);
 
   // Extract unique license plates and driver names from schedules for fallback
@@ -168,6 +167,7 @@ const Root = ({
     inputRef,
     useStoreSearch,
     useApiSuggestions,
+    isLoading: useApiSuggestions ? isLoading : false,
   };
   return (
     <AutocompleteContext.Provider value={value}>
@@ -321,8 +321,39 @@ const PopoverPanel = ({ children, className }) => {
 };
 
 const List = ({ children }) => {
-  const { filteredItems } = useAutocomplete();
+  const { filteredItems, isLoading, useApiSuggestions, inputValue } =
+    useAutocomplete();
+
+  // Show loading state for API suggestions
+  if (useApiSuggestions && isLoading && inputValue.length >= 2) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div className="flex items-center gap-2 text-xs text-neutral-500">
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
+          Mencari...
+        </div>
+      </div>
+    );
+  }
+
+  // Show no results message for API suggestions
+  if (
+    useApiSuggestions &&
+    !isLoading &&
+    inputValue.length >= 2 &&
+    filteredItems.length === 0
+  ) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <span className="text-xs text-neutral-500">
+          Tidak ada hasil ditemukan
+        </span>
+      </div>
+    );
+  }
+
   if (filteredItems.length === 0) return null;
+
   return (
     <ul
       id="autocomplete-list"
@@ -350,19 +381,70 @@ const Item = ({ index, item }) => {
       ? item.label
       : itemToString(item);
 
+  // Get icon and type label for API suggestions
+  const getIcon = () => {
+    if (!useApiSuggestions || typeof item !== "object") return null;
+
+    switch (item.type) {
+      case "LICENSE_PLATE":
+        return (
+          <IconComponent
+            src="/icons/box16.svg"
+            className="size-3 text-neutral-600"
+          />
+        );
+      case "DRIVER_NAME":
+        return (
+          <IconComponent
+            src="/icons/carrier16.svg"
+            className="size-3 text-neutral-600"
+          />
+        );
+      default:
+        return (
+          <IconComponent
+            src="/icons/search.svg"
+            className="size-3 text-neutral-600"
+          />
+        );
+    }
+  };
+
+  const getTypeLabel = () => {
+    if (!useApiSuggestions || typeof item !== "object") return null;
+
+    switch (item.type) {
+      case "LICENSE_PLATE":
+        return "Nomor Polisi";
+      case "DRIVER_NAME":
+        return "Driver";
+      default:
+        return null;
+    }
+  };
+
+  const icon = getIcon();
+  const typeLabel = getTypeLabel();
+
   return (
     <li
       id={`autocomplete-item-${index}`}
       role="option"
       aria-selected={isActive}
       className={cn(
-        "flex cursor-pointer items-center justify-between px-[10px] py-3 text-xs font-medium text-black",
+        "flex cursor-pointer items-center gap-3 px-[10px] py-3 text-xs font-medium text-black hover:bg-neutral-50",
         isActive && "bg-neutral-100"
       )}
       onClick={() => selectItem(item)}
       onMouseMove={() => setActiveIndex(index)}
     >
-      <span className="flex-grow">{displayText}</span>
+      {icon && <div className="flex-shrink-0">{icon}</div>}
+      <div className="flex-grow">
+        <div className="font-medium">{displayText}</div>
+        {typeLabel && (
+          <div className="text-xs text-neutral-500">{typeLabel}</div>
+        )}
+      </div>
     </li>
   );
 };

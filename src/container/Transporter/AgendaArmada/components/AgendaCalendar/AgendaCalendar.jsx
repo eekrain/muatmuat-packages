@@ -6,6 +6,7 @@ import { useClientWidth } from "@/hooks/use-client-width";
 import { AgendaRowItem } from "./AgendaRowItem";
 import { CalendarHeader1 } from "./CalendarHeader1";
 import { CalendarHeader2 } from "./CalendarHeader2";
+import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 import { useDateNavigator } from "./use-date-navigator";
 
 export const AgendaCalendar = ({
@@ -216,8 +217,8 @@ export const Content = ({
 }) => {
   const navigator = useDateNavigator();
   const { currentDayIndex } = navigator;
-  console.log("🚀 ~ currentDayIndex:", currentDayIndex);
   const { width: containerWidth, ref } = useClientWidth();
+  const viewType = useAgendaNavigatorStore((state) => state.viewType);
 
   const SIDEBAR_WIDTH = 202;
   const DAY_COLUMNS = 5;
@@ -290,6 +291,7 @@ export const Content = ({
               data={item}
               cellWidth={cellWidth}
               mutate={mutate}
+              viewType={viewType}
             />
           ))}
 

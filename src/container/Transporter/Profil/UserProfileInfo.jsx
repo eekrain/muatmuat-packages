@@ -8,6 +8,7 @@ import CropperWeb from "@/components/Cropper/CropperWeb";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ChangeWhatsappNumberModal from "@/components/Modal/ChangeWhatsappNumberModal";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import ModalEmailBaru from "@/components/Modal/ModalEmailBaru";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -112,12 +113,17 @@ const UserProfileInfo = ({ userProfile }) => {
   const fileInputRef = useRef(null);
   const [isChangeWhatsappModalOpen, setChangeWhatsappModalOpen] =
     useState(false);
+  const [isEmailModalOpen, setEmailModalOpen] = useState(false);
 
   const [hasVerified, setHasVerified] = useState(false);
+  const [hasVerifiedEmail, setHasVerifiedEmail] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("hasVerified") === "true") {
       setHasVerified(true);
+    }
+    if (searchParams.get("hasVerifiedEmail") === "true") {
+      setHasVerifiedEmail(true);
     }
   }, [searchParams]);
 
@@ -127,10 +133,30 @@ const UserProfileInfo = ({ userProfile }) => {
     }
   }, [hasVerified]);
 
+  useEffect(() => {
+    if (hasVerifiedEmail) {
+      setEmailModalOpen(true);
+      // toast.success("Email berhasil diverifikasi!");
+      // Clean up URL to prevent modal from re-opening on refresh
+      const newPath = window.location.pathname;
+      router.replace(newPath, { scroll: false });
+    }
+  }, [hasVerifiedEmail, router]);
+
   // This effect correctly opens the modal upon successful OTP redirect
   useEffect(() => {
     if (searchParams.get("change_whatsapp") === "true") {
       setChangeWhatsappModalOpen(true);
+      // Clean up URL to prevent modal from re-opening on refresh
+      const newPath = window.location.pathname;
+      router.replace(newPath, { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  // This effect opens email modal when returning from email OTP
+  useEffect(() => {
+    if (searchParams.get("change_email") === "true") {
+      setEmailModalOpen(true);
       // Clean up URL to prevent modal from re-opening on refresh
       const newPath = window.location.pathname;
       router.replace(newPath, { scroll: false });
@@ -172,6 +198,14 @@ const UserProfileInfo = ({ userProfile }) => {
     toast.success("Nomor WhatsApp baru akan segera diverifikasi.");
   };
 
+  const handleEmailSubmit = (newEmail) => {
+    console.log("New email submitted:", newEmail);
+    setEmailModalOpen(false);
+    router.push("/otp?type=change-email2");
+
+    // Add logic here to handle email verification process
+  };
+
   return (
     <>
       <div className="flex items-center gap-8 p-5 align-middle">
@@ -208,7 +242,11 @@ const UserProfileInfo = ({ userProfile }) => {
               value={userData.whatsapp}
               href={"/otp?type=whatsapp"}
             />
-            <EditableField label="Email" value={userData.email} />
+            <EditableField
+              label="Email"
+              value={userData.email}
+              href={"/otp?type=change-email"}
+            />
             <EditableField label="Password" value="********" />
           </div>
         </div>
@@ -253,6 +291,13 @@ const UserProfileInfo = ({ userProfile }) => {
         onSubmit={handleWhatsappSubmit}
         // originalWhatsapp={userData.whatsapp}
         originalWhatsapp={"081252355711"}
+      />
+
+      {/* Modal for Changing Email */}
+      <ModalEmailBaru
+        open={isEmailModalOpen}
+        onOpenChange={setEmailModalOpen}
+        onSubmit={handleEmailSubmit}
       />
     </>
   );

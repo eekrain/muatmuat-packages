@@ -48,7 +48,7 @@ const ModalLihatLokasi = ({
             <MapContainer
               coordinates={coordinates}
               className="h-[390px] w-full"
-              viewOnly={true}
+              viewOnly={false}
               textLabel={`${companyName} - ${address}`}
               draggableMarker={false}
             />

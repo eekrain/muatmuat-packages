@@ -32,7 +32,8 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
         <div className="flex w-full items-center gap-x-3">
           <div className="grid flex-1 grid-cols-[178px_1fr] items-center gap-x-8 gap-y-2">
             <span className="text-xs font-medium leading-[1.2] text-neutral-600">
-              {t("StatusPesananHeader.labelKodePesanan", {}, "Kode Pesanan")}
+              {/* 25. 30 - Web - LB - 0253 */}
+              No. Pesanan
             </span>
 
             <span className="text-xs font-medium leading-[1.2] text-neutral-600">
@@ -57,46 +58,56 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                 )}
               >
                 <BadgeStatusPesanan
-                  variant={statusMeta.variant}
+                  variant={statusMeta?.variant}
                   icon={{ iconLeft: statusMeta?.icon }}
                   className="w-fit"
                 >
-                  {statusMeta.label}
+                  {statusMeta?.label}
                 </BadgeStatusPesanan>
               </div>
             </div>
           </div>
 
-          {/* Referensi: LDG-7 */}
-          {dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING && (
-            <Button onClick={() => {}} variant="muattrans-primary">
-              Lihat Posisi Armada
-            </Button>
-          )}
-          {/* Referensi: LDN-334 */}
-          {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
-            <Button onClick={() => {}} variant="muattrans-primary">
-              Assign Armada
-            </Button>
-          )}
-          {/* Referensi: LDN-336 */}
-          {dataOrderDetail?.orderStatus ===
-            ORDER_STATUS.NEED_CONFIRMATION_READY && (
-            <Button onClick={() => {}} variant="muattrans-primary">
-              Konfirmasi Siap
-            </Button>
-          )}
-          {/* Referensi: LDN-337 */}
-          {dataOrderDetail?.orderStatus ===
-            ORDER_STATUS.NEED_CHANGE_RESPONSE && (
-            <Button onClick={() => {}} variant="muattrans-primary">
-              Respon Perubahan
-            </Button>
-          )}
+          <div className="flex items-center gap-x-3">
+            {/* Referensi: LDG-7 */}
+            {false && (
+              <BadgeStatusPesanan variant="muted" className="w-fit">
+                Respon Perubahan Disimpan Sebagai Draf
+              </BadgeStatusPesanan>
+            )}
 
-          {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" && (
-            <Button onClick={handleResponPerubahan}>Respon Perubahan</Button>
-          )}
+            {/* Referensi: LDG-7 */}
+            {dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING && (
+              <Button onClick={() => {}} variant="muattrans-primary">
+                Lihat Posisi Armada
+              </Button>
+            )}
+            {/* Referensi: LDN-334 */}
+            {dataOrderDetail?.orderStatus ===
+              ORDER_STATUS.NEED_ASSIGN_FLEET && (
+              <Button onClick={() => {}} variant="muattrans-primary">
+                Assign Armada
+              </Button>
+            )}
+            {/* Referensi: LDN-336 */}
+            {dataOrderDetail?.orderStatus ===
+              ORDER_STATUS.NEED_CONFIRMATION_READY && (
+              <Button onClick={() => {}} variant="muattrans-primary">
+                Konfirmasi Siap
+              </Button>
+            )}
+            {/* Referensi: LDN-337 */}
+            {dataOrderDetail?.orderStatus ===
+              ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+              <Button onClick={() => {}} variant="muattrans-primary">
+                Respon Perubahan
+              </Button>
+            )}
+
+            {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" && (
+              <Button onClick={handleResponPerubahan}>Respon Perubahan</Button>
+            )}
+          </div>
         </div>
       </CardContent>
 

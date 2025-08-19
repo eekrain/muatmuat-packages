@@ -16,6 +16,7 @@ import { NoFleetOverlay } from "@/container/Shared/Map/NoFleetOverlay";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
+import LihatPosisiArmada from "@/container/Transporter/Monitoring/LihatPosisiArmada/LihatPosisiArmada";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import RiwayatLaporanSOS from "@/container/Transporter/Monitoring/RiwayatLaporanSOS/RiwayatLaporanSOS";
@@ -344,7 +345,12 @@ const Page = () => {
         )}
       >
         {/* Left Section - Map and Bottom Panel */}
-        <div className="flex h-full flex-col gap-4 pt-4 transition-all duration-300 ease-in-out">
+        <div
+          className={cn(
+            "flex h-full flex-col gap-4 pt-4 transition-all duration-300 ease-in-out",
+            panels.leftPanelMode === "posisi" && "pb-4"
+          )}
+        >
           {/* Map Container */}
           <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out">
             <MapMonitoring
@@ -356,11 +362,22 @@ const Page = () => {
               onMapZoom={handleMapZoomChange}
               onMapCenterChange={handleMapCenterChange}
               mapContainerStyle={{
-                height: panels.isBottomExpanded
-                  ? `calc((100vh - 92px - 16px - 16px) / 2)`
-                  : `calc(100vh - 92px - 16px - 16px - 64px)`,
-                width: panels.showLeftPanel ? "calc(100% - 332px)" : "100%",
-                marginLeft: panels.showLeftPanel ? "332px" : "0",
+                height:
+                  panels.leftPanelMode === "posisi"
+                    ? `calc(100vh - 92px - 16px - 16px)` // Full height when viewing positions
+                    : panels.isBottomExpanded
+                      ? `calc((100vh - 92px - 16px - 16px) / 2)`
+                      : `calc(100vh - 92px - 16px - 16px - 64px)`,
+                width: panels.showLeftPanel
+                  ? panels.leftPanelMode === "posisi"
+                    ? "calc(100% - 432px)"
+                    : "calc(100% - 332px)"
+                  : "100%",
+                marginLeft: panels.showLeftPanel
+                  ? panels.leftPanelMode === "posisi"
+                    ? "432px"
+                    : "332px"
+                  : "0",
                 transition:
                   "height 300ms ease-in-out, width 300ms ease-in-out, margin-left 300ms ease-in-out",
               }}
@@ -400,15 +417,31 @@ const Page = () => {
               />
             )}
 
-            {/* Left Panel - Daftar Armada or SOS */}
+            {/* Left Panel - Daftar Armada, SOS, or LihatPosisiArmada */}
             <div
               className={cn(
-                "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
+                "absolute left-0 top-0 z-20 h-full rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
+                panels.leftPanelMode === "posisi" ? "w-[450px]" : "w-[350px]",
                 panels.showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
               {panels.leftPanelMode === "sos" ? (
                 <SOSContainer onClose={handleCloseLeftPanel} />
+              ) : panels.leftPanelMode === "posisi" ? (
+                <LihatPosisiArmada
+                  onClose={() => {
+                    // Hide position view and restore normal state
+                    panelsDispatch({
+                      type: PANEL_ACTIONS.HIDE_POSISI_ARMADA,
+                    });
+                    // Clear the selected order
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                      payload: null,
+                    });
+                  }}
+                  orderData={selections.selectedOrderForTracking}
+                />
               ) : (
                 <DaftarArmada
                   onClose={handleCloseLeftPanel}
@@ -427,52 +460,65 @@ const Page = () => {
           </div>
 
           {/* Bottom Panel - PilihArmada and Daftar Pesanan Aktif */}
-          <div
-            className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
-            style={{
-              height: panels.isBottomExpanded
-                ? "calc((100vh - 92px - 16px - 16px) / 2)"
-                : "calc(100vh - 100vh + 64px)",
-            }}
-          >
-            {panels.showRiwayatSOS ? (
-              <RiwayatLaporanSOS
-                onToggleExpand={() => {
-                  panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
-                }}
-                isExpanded={panels.isBottomExpanded}
-              />
-            ) : panels.showPilihArmada ? (
-              <PilihArmada
-                onToggleExpand={handleTogglePilihArmada}
-                isExpanded={panels.isBottomExpanded}
-                selectedRequest={selections.selectedRequestForFleet}
-              />
-            ) : (
-              <DaftarPesananAktif
-                onToggleExpand={handleToggleBottomPanel}
-                isExpanded={panels.isBottomExpanded}
-                hasShownOnboarding={hasShownOnboarding}
-                onOnboardingShown={() => setHasShownOnboarding(true)}
-                onViewFleetStatus={(order) => {
-                  panelsDispatch({
-                    type: PANEL_ACTIONS.SHOW_LACAK_ARMADA,
-                  });
-                  selectionsDispatch({
-                    type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
-                    payload: order,
-                  });
-                  // Automatically exit fullscreen mode when opening LacakArmada
-                  if (panels.isFullscreen) {
+          {panels.leftPanelMode !== "posisi" && (
+            <div
+              className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
+              style={{
+                height: panels.isBottomExpanded
+                  ? "calc((100vh - 92px - 16px - 16px) / 2)"
+                  : "calc(100vh - 100vh + 64px)",
+              }}
+            >
+              {panels.showRiwayatSOS ? (
+                <RiwayatLaporanSOS
+                  onToggleExpand={() => {
+                    panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
+                  }}
+                  isExpanded={panels.isBottomExpanded}
+                />
+              ) : panels.showPilihArmada ? (
+                <PilihArmada
+                  onToggleExpand={handleTogglePilihArmada}
+                  isExpanded={panels.isBottomExpanded}
+                  selectedRequest={selections.selectedRequestForFleet}
+                />
+              ) : (
+                <DaftarPesananAktif
+                  onToggleExpand={handleToggleBottomPanel}
+                  isExpanded={panels.isBottomExpanded}
+                  hasShownOnboarding={hasShownOnboarding}
+                  onOnboardingShown={() => setHasShownOnboarding(true)}
+                  onTrackFleet={(order) => {
+                    // Show fleet position tracking view
                     panelsDispatch({
-                      type: PANEL_ACTIONS.SET_FULLSCREEN,
-                      payload: false,
+                      type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
                     });
-                  }
-                }}
-              />
-            )}
-          </div>
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                      payload: order,
+                    });
+                  }}
+                  onViewFleetStatus={(order) => {
+                    // Show LacakArmada for viewing fleet status
+                    panelsDispatch({
+                      type: PANEL_ACTIONS.SHOW_LACAK_ARMADA,
+                    });
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                      payload: order,
+                    });
+                    // Automatically exit fullscreen mode when opening LacakArmada
+                    if (panels.isFullscreen) {
+                      panelsDispatch({
+                        type: PANEL_ACTIONS.SET_FULLSCREEN,
+                        payload: false,
+                      });
+                    }
+                  }}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar */}
