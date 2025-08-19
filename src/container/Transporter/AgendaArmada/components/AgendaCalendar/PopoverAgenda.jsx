@@ -32,14 +32,6 @@ const getStatusColor = (status, sos) => {
   }
 };
 
-const statusMapping = {
-  BERTUGAS: StatusArmadaTypeEnum.BERTUGAS,
-  PENGIRIMAN_SELESAI: StatusArmadaTypeEnum.PENGIRIMAN_SELESAI,
-  NON_AKTIF: StatusArmadaTypeEnum.NON_AKTIF,
-  MENUNGGU_JAM_MUAT: StatusArmadaTypeEnum.MENUNGGU_JAM_MUAT,
-  DIJADWALKAN: StatusArmadaTypeEnum.DIJADWALKAN,
-};
-
 const PopoverAgenda = ({ agendaData }) => {
   const { t } = useTranslation();
   const [showAllItems, setShowAllItems] = useState(false);
@@ -50,8 +42,12 @@ const PopoverAgenda = ({ agendaData }) => {
     ? agendaData.cargo || []
     : (agendaData.cargo || []).slice(0, 3);
   const hiddenItems = showAllItems ? [] : (agendaData.cargo || []).slice(3);
+
+  // Get the actual status value - check if it's already mapped or needs mapping
+  const actualStatus =
+    StatusArmadaTypeEnum[agendaData.agendaStatus] || agendaData.agendaStatus;
   const statusColor = getStatusColor(
-    statusMapping[agendaData.agendaStatus],
+    actualStatus,
     agendaData.issues?.hasSosIssue
   );
   return (
@@ -59,22 +55,19 @@ const PopoverAgenda = ({ agendaData }) => {
       <div className="p-3">
         <div className="space-y-3">
           <p className={`text-xs font-semibold ${statusColor}`}>
-            {statusMapping[agendaData.agendaStatus]}{" "}
+            {actualStatus}{" "}
             {agendaData.issues?.hasSosIssue &&
-              statusMapping[agendaData.agendaStatus] ===
-                StatusArmadaTypeEnum.BERTUGAS && (
+              actualStatus === StatusArmadaTypeEnum.BERTUGAS && (
                 <span className="inline-fle ml-1 h-5 w-10 items-center justify-center rounded-md bg-error-400 px-2 py-0.5 text-xs font-semibold text-white">
                   SOS
                 </span>
               )}
           </p>
-          {statusMapping[agendaData.agendaStatus] !==
-            StatusArmadaTypeEnum.NON_AKTIF && (
+          {actualStatus !== StatusArmadaTypeEnum.NON_AKTIF && (
             <>
               <div className="space-y-2">
                 {agendaData.issues?.hasSosIssue &&
-                  statusMapping[agendaData.agendaStatus] ===
-                    StatusArmadaTypeEnum.BERTUGAS && (
+                  actualStatus === StatusArmadaTypeEnum.BERTUGAS && (
                     <div className="flex items-center gap-2 rounded-md bg-error-50 px-2 py-1 text-xxs font-semibold text-error-400">
                       <IconComponent
                         src="/icons/warning-red.svg"
@@ -205,8 +198,7 @@ const PopoverAgenda = ({ agendaData }) => {
               </span>
             </div>
           </div>
-          {statusMapping[agendaData.agendaStatus] !==
-            StatusArmadaTypeEnum.NON_AKTIF && (
+          {actualStatus !== StatusArmadaTypeEnum.NON_AKTIF && (
             <div className="space-y-1">
               <p className="font-semibold text-neutral-900">
                 {t("PopoverAgenda.travelRoute", {}, "Rute Perjalanan")}
@@ -252,8 +244,7 @@ const PopoverAgenda = ({ agendaData }) => {
       <div className="border-t border-neutral-400"></div>
 
       <div className="flex justify-end gap-2 p-3">
-        {statusMapping[agendaData.agendaStatus] !==
-          StatusArmadaTypeEnum.PENGIRIMAN_SELESAI && (
+        {actualStatus !== StatusArmadaTypeEnum.PENGIRIMAN_SELESAI && (
           <Button
             variant="muattrans-primary-secondary"
             className="h-8 w-[140px] text-nowrap"
@@ -262,8 +253,7 @@ const PopoverAgenda = ({ agendaData }) => {
             {t("PopoverAgenda.trackFleet", {}, "Lacak Armada")}
           </Button>
         )}
-        {statusMapping[agendaData.agendaStatus] !==
-          StatusArmadaTypeEnum.NON_AKTIF && (
+        {actualStatus !== StatusArmadaTypeEnum.NON_AKTIF && (
           <Button
             variant="muattrans-primary"
             className="h-8 w-28"

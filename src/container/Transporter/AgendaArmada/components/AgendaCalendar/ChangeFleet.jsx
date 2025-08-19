@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
@@ -6,8 +6,38 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
-import LocationPoint from "./LocationPoint";
-import InfoPopover from "./PopoverAgenda";
+// --- Helper Components (Mocks for provided CardItem) ---
+// These are simplified versions of components used by CardItem for demonstration purposes.
+
+const LocationPoint = ({ type, title, subtitle, className, style }) => (
+  <div className={cn("flex items-start gap-2", className)} style={style}>
+    <div
+      className={cn(
+        "mt-1 h-3 w-3 flex-shrink-0 rounded-full",
+        type === "muat"
+          ? "border border-yellow-600 bg-yellow-400"
+          : "box-content border-[3px] border-neutral-900 bg-white"
+      )}
+    />
+    <div>
+      <p className="text-[10px] leading-tight text-neutral-500">{title}</p>
+      <p className="text-xs font-semibold leading-tight text-neutral-900">
+        {subtitle}
+      </p>
+    </div>
+  </div>
+);
+
+const InfoPopover = ({ data }) => {
+  // In a real scenario, this would be a popover component.
+  // For this implementation, it's just an icon.
+  return (
+    <IconComponent
+      src="/icons/info-outline.svg"
+      className="size-4 text-primary-700"
+    />
+  );
+};
 
 const cardEstimationStyles = {
   BERTUGAS: "bg-primary-50",
@@ -59,7 +89,7 @@ export const CardItem = (props) => {
       subtitle: "Kab. Malang, Kec. Singosari",
     },
     scheduled = 2,
-    additional = 0,
+    additional = 1,
     position = 0,
     hasSosIssue = false,
     cellWidth,
@@ -130,7 +160,6 @@ export const CardItem = (props) => {
                 SOS
               </span>
             )}
-
             <InfoPopover data={props} />
           </div>
 
@@ -148,7 +177,6 @@ export const CardItem = (props) => {
                 <LocationPoint
                   type="muat"
                   title={dataMuat.title}
-                  isEdit={true}
                   subtitle={dataMuat.subtitle}
                   className="basis-1/2"
                 />
@@ -164,7 +192,6 @@ export const CardItem = (props) => {
                 <LocationPoint
                   type="bongkar"
                   title={dataBongkar.title}
-                  isEdit={true}
                   subtitle={dataBongkar.subtitle}
                   className="absolute top-1/2 -translate-y-1/2"
                   style={{
@@ -177,17 +204,19 @@ export const CardItem = (props) => {
           )}
         </div>
 
-        {additional > 0 && (
-          <div
-            className="pt-1.5 text-center text-[10px] font-medium text-neutral-500"
-            style={{
-              width: `${cellConfig.right * cellWidth - 16}px`,
-              left: `${cellConfig.left * cellWidth + 8}px`,
-            }}
-          >
-            Estimasi Waktu Bongkar
-          </div>
-        )}
+        {/* {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) &&
+          additional > 0 &&
+          cellConfig.right >= 1 && ( */}
+        <div
+          className="text-center text-[8px] font-medium text-neutral-500"
+          style={{
+            width: `${cellConfig.right * cellWidth - 16}px`,
+            left: `${cellConfig.left * cellWidth + 8}px`,
+          }}
+        >
+          Estimasi Waktu Bongkar
+        </div>
+        {/* )} */}
       </div>
     </div>
   );
@@ -195,68 +224,24 @@ export const CardItem = (props) => {
 
 // --- Main Component ---
 
-const getStaticDates = (startOffset = 0) => {
-  const baseDates = [
-    { day: "Minggu", date: 17 },
-    { day: "Senin", date: 18 },
-    { day: "Selasa", date: 19 },
-    { day: "Rabu", date: 20 },
-    { day: "Kamis", date: 21 },
-    { day: "Jumat", date: 22 },
-    { day: "Sabtu", date: 23 },
-    { day: "Minggu", date: 24 },
-    { day: "Senin", date: 25 },
-    { day: "Selasa", date: 26 },
+const getDynamicDates = () => {
+  // Static dates from 17-21
+  const dates = [
+    "Minggu, 17",
+    "Senin, 18",
+    "Selasa, 19",
+    "Rabu, 20",
+    "Kamis, 21",
   ];
 
-  // Always show 5 dates starting from startOffset
-  const selectedDates = baseDates.slice(startOffset, startOffset + 5);
-
-  return selectedDates.map((item) => `${item.day}, ${item.date}`);
+  return dates;
 };
 
-const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
-  const [days, setDays] = useState(
-    defaultEstimate || cardData?.additional || 0
-  );
-  const [dateOffset, setDateOffset] = useState(0);
+const EditSchedule = ({ cardData }) => {
+  const [days, setDays] = useState(cardData?.additional || 1);
   const scheduleContainerWidth = 860;
-  const scheduledDays = cardData?.scheduled || 1;
-  const DATES = getStaticDates(dateOffset);
+  const DATES = getDynamicDates();
   const cellWidth = scheduleContainerWidth / DATES.length;
-
-  // Calculate if there's overflow
-  const totalDays = scheduledDays + days;
-  const hasOverflow = totalDays > 5;
-  const maxOffset = Math.max(0, totalDays - 5);
-  const cardPosition = 0 - dateOffset; // Shift card left when dates shift right
-
-  // Auto-follow the last estimate when days change
-  useEffect(() => {
-    if (hasOverflow) {
-      // Set dateOffset to show the last estimate date
-      setDateOffset(maxOffset);
-    } else {
-      // Reset to start when no overflow
-      setDateOffset(0);
-    }
-  }, [days, hasOverflow, maxOffset]);
-
-  // Navigation handlers
-  const canNavigateLeft = dateOffset > 0;
-  const canNavigateRight = dateOffset < maxOffset;
-
-  const handleNavigateLeft = () => {
-    if (canNavigateLeft) {
-      setDateOffset(dateOffset - 1);
-    }
-  };
-
-  const handleNavigateRight = () => {
-    if (canNavigateRight) {
-      setDateOffset(dateOffset + 1);
-    }
-  };
 
   return (
     <div className="space-y-7">
@@ -274,7 +259,7 @@ const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
         </div>
       </div>
       <div
-        className="relative overflow-hidden rounded-md border border-neutral-400"
+        className="rounded-md border border-neutral-400"
         style={{ width: `${scheduleContainerWidth}px` }}
       >
         <div className="grid h-14 grid-cols-5 items-center border-b border-neutral-200 text-center">
@@ -289,44 +274,9 @@ const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
             </div>
           ))}
         </div>
-        <div className="absolute top-3 flex w-full items-center justify-between gap-4 px-2">
-          <div className="flex justify-start">
-            {hasOverflow && (
-              <button
-                type="button"
-                onClick={handleNavigateLeft}
-                disabled={!canNavigateLeft}
-                className="flex size-8 items-center justify-center rounded-full bg-white shadow-md disabled:cursor-not-allowed"
-              >
-                <IconComponent
-                  src="/icons/chevron-left16-2.svg"
-                  width={16}
-                  height={16}
-                />
-              </button>
-            )}
-          </div>
-          <div className="flex justify-end">
-            {hasOverflow && (
-              <button
-                type="button"
-                onClick={handleNavigateRight}
-                disabled={!canNavigateRight}
-                className="flex size-8 items-center justify-center rounded-full bg-white shadow-md disabled:cursor-not-allowed"
-              >
-                <IconComponent
-                  src="/icons/chevron-right16-2.svg"
-                  width={16}
-                  height={16}
-                />
-              </button>
-            )}
-          </div>
-        </div>
 
-        <div className="relative h-[68px] overflow-visible">
+        <div className="relative h-[68px]">
           <CardItem
-            key={`card-${days}-${scheduledDays}`}
             cellWidth={cellWidth}
             statusCode={cardData?.statusCode || "BERTUGAS"}
             driverName={cardData?.driverName || "Ahmad Maulana"}
@@ -334,7 +284,7 @@ const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
             estimation={cardData?.estimation || "est. 30km (1jam 30menit)"}
             scheduled={cardData?.scheduled || 1}
             additional={days}
-            position={cardPosition}
+            position={0}
             distanceRemaining={cardData?.distanceRemaining || 121}
             dataMuat={
               cardData?.dataMuat || {
