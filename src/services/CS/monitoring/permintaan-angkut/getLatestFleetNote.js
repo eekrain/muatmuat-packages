@@ -14,21 +14,24 @@ const apiResultLatestFleetNote = {
     latestNote: {
       id: "note_uuid",
       content:
-        "Follow-up dengan transporter ABC terkait 5 armada nonaktif. Konfirmasi bahwa 3 armada sedang maintenance rutin, 2 armada menunggu driver replacement. Estimasi kembali aktif dalam 3-5 hari.",
-      status: "active",
-      attachments: [
-        {
-          id: "attachment_uuid",
-          name: "maintenance_schedule.pdf",
-          url: "https://cdn.example.com/attachments/maintenance_schedule.pdf",
-          type: "application/pdf",
-          size: 1024000,
-          uploadedAt: "2025-01-14T16:25:00Z",
-        },
-      ],
+        "Armada terdeteksi nonaktif terlalu banyak dalam waktu 24 jam terakhir, hubungi transporter untuk mengaktifkan armada yang tersedia agar dapat menerima permintaan.",
+      status: "completed",
+      history: {
+        reportedAt: "2025-01-15T10:00:00Z",
+        notes:
+          "Kondisi armada memang sedang maintenance, sehingga aplikasi driver juga tidak diaktifkan karena belum bisa bertugas juga",
+        photos: [
+          {
+            url: "https://cdn.example.com/photos/maintenance_photo_1.jpg",
+          },
+          {
+            url: "https://cdn.example.com/photos/maintenance_photo_2.jpg",
+          },
+        ],
+      },
       relatedEntities: {
         transporterId: "transporter-uuid-2",
-        transporterName: "PT Transporter ABC",
+        transporterName: "PT Kaltim Jaya Makmur",
         affectedFleets: [
           {
             fleetId: "fleet-uuid-1",
@@ -59,7 +62,55 @@ const apiResultLatestFleetNote = {
         licensePlate: "B 5678 ABC",
         driverName: "Muhammad Rizky Ramadhani",
         inactiveDate: "2025-01-10T09:00:00Z",
-        inactiveDuration: 4320,
+        inactiveDuration: 4380,
+      },
+      {
+        licensePlate: "P 4321 JBR",
+        driverName: "Budi Hartono",
+        inactiveDate: "2025-08-15T14:30:00Z",
+        inactiveDuration: 1500,
+      },
+      {
+        licensePlate: "L 1122 SBY",
+        driverName: "Siti Aminah",
+        inactiveDate: "2025-08-18T08:00:00Z",
+        inactiveDuration: 7200,
+      },
+      {
+        licensePlate: "W 8877 SDA",
+        driverName: "Agus Wijaya",
+        inactiveDate: "2025-07-20T11:20:00Z",
+        inactiveDuration: 360,
+      },
+      {
+        licensePlate: "N 1995 MLG",
+        driverName: "Dewi Lestari",
+        inactiveDate: "2025-07-21T18:45:00Z",
+        inactiveDuration: 9500,
+      },
+      {
+        licensePlate: "DK 2024 DPS",
+        driverName: "I Gede Made",
+        inactiveDate: "2025-06-22T06:00:00Z",
+        inactiveDuration: 500,
+      },
+      {
+        licensePlate: "AE 4567 MDN",
+        driverName: "Joko Susanto",
+        inactiveDate: "2025-06-25T13:00:00Z",
+        inactiveDuration: 12000,
+      },
+      {
+        licensePlate: "AG 1234 KDR",
+        driverName: "Irfan Maulana",
+        inactiveDate: "2025-08-01T09:30:00Z",
+        inactiveDuration: 250,
+      },
+      {
+        licensePlate: "M 5555 PKS",
+        driverName: "Andi Purnomo",
+        inactiveDate: "2025-08-03T17:00:00Z",
+        inactiveDuration: 1800,
       },
     ],
     // case transporter idle
