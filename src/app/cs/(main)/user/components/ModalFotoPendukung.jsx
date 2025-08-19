@@ -16,8 +16,7 @@ const ModalFotoPendukung = ({ isOpen, onClose, photos = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Ensure we have valid photos
-  const validPhotos = photos.filter((photo) => photo?.image || photo?.photo);
-
+  const validPhotos = photos;
   if (validPhotos.length === 0) return null;
 
   const currentPhoto = validPhotos[currentIndex];
@@ -57,12 +56,8 @@ const ModalFotoPendukung = ({ isOpen, onClose, photos = [] }) => {
           <div className="relative">
             <div className="flex h-[400px] w-[500px] max-w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
               <img
-                src={
-                  currentPhoto?.image ||
-                  currentPhoto?.photo ||
-                  "/img/default-avatar.png"
-                }
-                alt={currentPhoto?.name || `Driver photo ${currentIndex + 1}`}
+                src={currentPhoto || "/img/default-avatar.png"}
+                alt={`Driver photo ${currentIndex + 1}`}
                 className="h-full w-full object-contain"
               />
             </div>

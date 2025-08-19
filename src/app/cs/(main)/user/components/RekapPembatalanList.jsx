@@ -8,6 +8,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
@@ -34,6 +35,7 @@ const RekapPembatalanList = ({
   onConfirmPenalty,
   className,
 }) => {
+  const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
@@ -57,7 +59,11 @@ const RekapPembatalanList = ({
     }
     // Show success toast
     addToast({
-      message: "Berhasil mengenakan poin penalti ke Transporter",
+      message: t(
+        "RekapPembatalanList.messageSuccessPenaltyApplied",
+        {},
+        "Berhasil mengenakan poin penalti ke Transporter"
+      ),
       type: "success",
       duration: 6000,
     });
@@ -75,7 +81,11 @@ const RekapPembatalanList = ({
           {title}
         </h3>
         <div className="text-sm font-semibold text-neutral-900">
-          Total : {summaryToShow?.totalPenaltyPoints || 0} Poin Penalti
+          {t(
+            "RekapPembatalanList.labelTotalPenaltyPoints",
+            { total: summaryToShow?.totalPenaltyPoints || 0 },
+            `Total : ${summaryToShow?.totalPenaltyPoints || 0} Poin Penalti`
+          )}
         </div>
       </div>
 
@@ -116,18 +126,28 @@ const RekapPembatalanList = ({
           variant="muattrans"
           isOpen={confirmOpen}
           setIsOpen={setConfirmOpen}
-          title={{ text: "Konfirmasi Penalti" }}
+          title={{
+            text: t(
+              "RekapPembatalanList.titleConfirmPenalty",
+              {},
+              "Konfirmasi Penalti"
+            ),
+          }}
           description={{
-            text: "Apakah kamu yakin ingin mengenakan poin penalti terkait pembatalan pada pesanan ini?",
+            text: t(
+              "RekapPembatalanList.descriptionConfirmPenalty",
+              {},
+              "Apakah kamu yakin ingin mengenakan poin penalti terkait pembatalan pada pesanan ini?"
+            ),
           }}
           cancel={{
             classname: "w-[116px]",
-            text: "Tidak",
+            text: t("RekapPembatalanList.buttonNo", {}, "Tidak"),
             onClick: () => setConfirmOpen(false),
           }}
           confirm={{
             classname: "w-[116px]",
-            text: "Ya",
+            text: t("RekapPembatalanList.buttonYes", {}, "Ya"),
             onClick: handleConfirm,
           }}
         />
@@ -150,6 +170,7 @@ const CancellationCard = ({
   onConfirmPenalty,
   onDriverImageClick,
 }) => {
+  const { t } = useTranslation();
   const showDrivers = Array.isArray(drivers) && drivers.length > 0;
   const [showAllCargo, setShowAllCargo] = useState(false);
 
@@ -159,7 +180,11 @@ const CancellationCard = ({
       <div className="box-border flex h-[52px] w-full flex-row items-center gap-4 bg-[#F8F8FB] px-4 py-3">
         <div className="flex min-w-0 flex-row items-center gap-2">
           <span className="text-[12px] font-medium leading-[1.2] text-[#7B7B7B]">
-            Pembatalan Ke :
+            {t(
+              "RekapPembatalanList.labelCancellationNumber",
+              {},
+              "Pembatalan Ke :"
+            )}
           </span>
           <span className="text-[12px] font-semibold leading-[1.2] text-black">
             {index}
@@ -167,7 +192,11 @@ const CancellationCard = ({
         </div>
         <div className="flex min-w-0 flex-row items-center gap-2">
           <span className="text-[12px] font-medium leading-[1.2] text-[#7B7B7B]">
-            Tanggal Pembatalan :
+            {t(
+              "RekapPembatalanList.labelCancellationDate",
+              {},
+              "Tanggal Pembatalan :"
+            )}
           </span>
           <span className="text-[12px] font-semibold leading-[1.2] text-black">
             {cancelledAt || "-"}
@@ -266,7 +295,11 @@ const CancellationCard = ({
                                 onClick={() => setShowAllCargo(true)}
                                 className="text-[#176CF7] hover:underline"
                               >
-                                +{remaining} lainnya
+                                {t(
+                                  "RekapPembatalanList.buttonShowMore",
+                                  { remaining },
+                                  `+${remaining} lainnya`
+                                )}
                               </button>
                             </span>
                           );
@@ -276,7 +309,12 @@ const CancellationCard = ({
                           const remaining = total - 1;
                           return (
                             <span className="text-[10px] font-medium leading-[1.3] text-black">
-                              {first}, +{remaining} lainnya
+                              {first},{" "}
+                              {t(
+                                "RekapPembatalanList.labelShowOthers",
+                                { remaining },
+                                `+${remaining} lainnya`
+                              )}
                             </span>
                           );
                         }
@@ -311,7 +349,11 @@ const CancellationCard = ({
               className="inline-flex w-full items-center justify-center rounded-[24px] bg-[#FFC217] px-6 py-3 text-[14px] font-semibold leading-[1.2] text-[#461B02] hover:brightness-[.95]"
               onClick={onConfirmPenalty}
             >
-              Konfirmasi Penalti
+              {t(
+                "RekapPembatalanList.buttonConfirmPenalty",
+                {},
+                "Konfirmasi Penalti"
+              )}
             </Button>
           )}
         </div>
@@ -321,17 +363,27 @@ const CancellationCard = ({
 };
 
 const HeaderPenaltyBadge = ({ status }) => {
+  const { t } = useTranslation();
+
   if (status === "exempt") {
     return (
       <span className="ml-auto inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold text-emerald-700">
-        Pembatalan pada pesanan ini tidak dikenakan poin penalti
+        {t(
+          "RekapPembatalanList.labelPenaltyExempt",
+          {},
+          "Pembatalan pada pesanan ini tidak dikenakan poin penalti"
+        )}
       </span>
     );
   }
   if (status === "penalized") {
     return (
       <span className="ml-auto inline-flex items-center rounded-full bg-rose-100 px-4 py-2 text-xs font-semibold text-rose-700">
-        Pembatalan pada pesanan ini dikenakan poin penalti
+        {t(
+          "RekapPembatalanList.labelPenaltyApplied",
+          {},
+          "Pembatalan pada pesanan ini dikenakan poin penalti"
+        )}
       </span>
     );
   }
@@ -354,8 +406,8 @@ const DriverImageList = ({ drivers = [], onClick }) => {
           className="h-10 w-10 cursor-pointer rounded-[4px] bg-white transition-opacity hover:opacity-80"
         >
           <img
-            src={d.photo || d.image || "/img/default-avatar.png"}
-            alt={d.name || "driver"}
+            src={d || "/img/default-avatar.png"}
+            alt={d.name || `driver ${i + 1}`}
             className="h-10 w-10 rounded-[4px] object-cover"
           />
         </button>
