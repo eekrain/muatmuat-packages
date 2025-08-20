@@ -72,7 +72,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                       variant={
                         getTrackingStatusBadge(vehicle.trackingStatus).variant
                       }
-                      className="inline-flex w-auto"
+                      className="inline-flex w-auto flex-shrink-0"
                     >
                       {getTrackingStatusBadge(vehicle.trackingStatus).label}
                     </BadgeStatus>
@@ -149,11 +149,11 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                 {expandedVehicles[vehicle.vehicleId] && (
                   <div className="mt-4 border-t border-neutral-300 pt-4">
                     <div className="bg-neutral-100 p-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-neutral-500">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="w-[120px] text-xs font-medium text-neutral-600">
                           Estimasi Tiba di Lokasi Bongkar
                         </span>
-                        <span className="text-xs font-semibold text-neutral-900">
+                        <span className="text-xs font-semibold">
                           {vehicle.estimatedArrival
                             ? `${new Date(
                                 vehicle.estimatedArrival
@@ -171,7 +171,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     </div>
 
                     <div className="pt-4">
-                      <h3 className="mb-4 text-sm font-semibold text-neutral-900">
+                      <h3 className="mb-4 text-xs font-semibold text-neutral-900">
                         Detail Status Driver
                       </h3>
                       <DriverTimeline

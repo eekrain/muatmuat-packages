@@ -138,7 +138,7 @@ const apiResultOrdersMultiFleetTracking = {
           },
           trackingStatus: "MENUJU_KE_LOKASI_BONGKAR",
           sosStatus: {
-            hasSos: false,
+            hasSos: true,
             sosId: null,
           },
           estimatedArrival: "2024-01-15T12:00:00.000Z",
@@ -347,7 +347,7 @@ const apiResultOrdersMultiFleetTracking = {
           },
           trackingStatus: "TIBA_DI_LOKASI_MUAT",
           sosStatus: {
-            hasSos: false,
+            hasSos: true,
             sosId: null,
           },
           estimatedArrival: "2024-01-15T11:45:00.000Z",
