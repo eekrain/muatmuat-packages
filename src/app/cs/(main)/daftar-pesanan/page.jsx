@@ -109,6 +109,19 @@ const DaftarPesananPage = () => {
     }
   };
 
+  const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
+
+  const handleSelectPeriod = (selectedOption) => {
+    if (selectedOption?.range) {
+      if (
+        !recentPeriodOptions.some((item) => item.value === selectedOption.value)
+      ) {
+        setRecentPeriodOptions((prev) => [selectedOption, ...prev].slice(0, 3));
+      }
+    }
+    setPeriod(selectedOption);
+  };
+
   return (
     <div className="mx-auto max-h-screen w-full max-w-[1280px] space-y-4 px-6 py-6">
       <PageTitle withBack={false}>
@@ -149,7 +162,7 @@ const DaftarPesananPage = () => {
                 <div className="w-[200px]">
                   <Period
                     value={period}
-                    onSelect={(p) => setPeriod(p)}
+                    onSelect={handleSelectPeriod}
                     options={periodOptions}
                     disable={disablePeriodButton}
                   />

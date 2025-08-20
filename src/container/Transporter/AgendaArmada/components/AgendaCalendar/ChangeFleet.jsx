@@ -75,7 +75,7 @@ const conflictingSchedules = [
   {
     // Second schedule: starts at day 3 (middle), ends at day 5
     id: 2,
-    agendaStatus: "DIJADWALKAN",
+    agendaStatus: "MENUNGGU_JAM_MUAT",
     firstDestinationName: "Surabaya",
     lastDestinationName: "Malang",
     scheduled: 2, // 3 days duration
