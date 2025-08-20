@@ -7,7 +7,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { TransporterInactiveTypeEnum } from "@/lib/constants/Transporter/laporan/transporterInactive.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetTransporterInactive } from "@/services/Transporter/laporan/riwayat-transporter-tidak-aktif/getTransporterInactive";
+import { useGetTransporterInactive } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactive";
 
 import DataTable from "./DataTable";
 import NoOrderTable from "./NoOrderTable";
