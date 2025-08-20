@@ -54,6 +54,7 @@ const Input = forwardRef(
         containerClassName: "",
         inputClassName: "",
         errorMessageClassName: "",
+        supportiveTextClassName: "",
         iconClassName: "",
       },
       errorMessage,
@@ -154,7 +155,12 @@ const Input = forwardRef(
             </span>
 
             {supportiveText && (
-              <span className="ml-auto text-xs font-medium text-neutral-900">
+              <span
+                className={cn(
+                  "ml-auto text-xs font-medium text-neutral-900",
+                  appearance.supportiveTextClassName
+                )}
+              >
                 {supportiveText}
               </span>
             )}

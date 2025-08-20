@@ -87,6 +87,7 @@ const NAVIGATION_MENU = [
     label: "Laporan",
     icon: "/icons/header-transporter/laporan.svg",
     isDropdown: true,
+    activePattern: "/laporan",
     dropdownItems: [
       {
         id: "laporan-pendapatan",
