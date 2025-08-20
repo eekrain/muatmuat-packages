@@ -17,11 +17,16 @@ import {
 import { cn } from "@/lib/utils";
 import { formatNumberShorthand } from "@/lib/utils/formatNumberShorthand";
 
-const CustomRechartsTooltip = ({ active, payload }) => {
+const CustomRechartsTooltip = ({ active, payload, tooltipClassname }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="pointer-events-none flex h-[36px] w-[112px] items-center justify-start rounded-lg border border-neutral-200 bg-white p-2 shadow-lg">
+      <div
+        className={cn(
+          "pointer-events-none flex h-[36px] w-[112px] items-center justify-start rounded-lg border border-neutral-200 bg-white p-2 shadow-lg",
+          tooltipClassname
+        )}
+      >
         <div className="flex flex-col text-xxs font-semibold text-neutral-900">
           <p className="">{data.name}:</p>
           <p className="">
@@ -34,10 +39,18 @@ const CustomRechartsTooltip = ({ active, payload }) => {
   return null;
 };
 
-const CustomLegend = ({ data, showThirdRow }) => (
-  <div className="flex flex-col justify-center gap-y-3">
+const CustomLegend = ({
+  data,
+  showThirdRow,
+  legendClassname,
+  itemLegendClassname,
+}) => (
+  <div className={cn("flex flex-col justify-center gap-y-3", legendClassname)}>
     {data.map((entry, index) => (
-      <div key={`item-${index}`} className="flex items-center gap-x-3">
+      <div
+        key={`item-${index}`}
+        className={cn("flex items-center gap-x-3", itemLegendClassname)}
+      >
         <div
           className="h-3 w-3 flex-shrink-0"
           style={{ backgroundColor: entry.color }}
@@ -59,7 +72,15 @@ const CustomLegend = ({ data, showThirdRow }) => (
 );
 
 // The main Donut Chart component
-const DonutChart = ({ data, className, showThirdRow = false }) => {
+const DonutChart = ({
+  data,
+  className,
+  tooltipClassname,
+  legendClassname,
+  itemLegendClassname,
+  chartClassname,
+  showThirdRow = false,
+}) => {
   const totalValue = useMemo(
     () => data.reduce((sum, entry) => sum + entry.value, 0),
     [data]
@@ -71,11 +92,18 @@ const DonutChart = ({ data, className, showThirdRow = false }) => {
   return (
     <TooltipProvider>
       <div className={cn("flex items-center gap-x-6 p-4", className)}>
-        <div className="relative h-[168px] w-[168px] flex-shrink-0">
+        <div
+          className={cn(
+            "relative h-[168px] w-[168px] flex-shrink-0",
+            chartClassname
+          )}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <RechartsTooltip
-                content={<CustomRechartsTooltip />}
+                content={
+                  <CustomRechartsTooltip tooltipClassname={tooltipClassname} />
+                }
                 cursor={{ fill: "transparent" }}
                 wrapperStyle={{ zIndex: 999 }}
               />
@@ -121,7 +149,12 @@ const DonutChart = ({ data, className, showThirdRow = false }) => {
           </RadixTooltip>
         </div>
 
-        <CustomLegend data={data} showThirdRow={showThirdRow} />
+        <CustomLegend
+          data={data}
+          showThirdRow={showThirdRow}
+          legendClassname={legendClassname}
+          itemLegendClassname={itemLegendClassname}
+        />
       </div>
     </TooltipProvider>
   );
