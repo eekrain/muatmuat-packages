@@ -416,10 +416,10 @@ const apiResultTransportRequestList = {
       hasPrevious: false,
     },
     tabCounters: {
-      all: 160,
-      instant: 45,
-      scheduled: 42,
-      halal: 0,
+      all: 10,
+      instant: 1,
+      scheduled: 1,
+      halal: 1,
       hasBlinkNode: true,
     },
     newRequestsCount: {

@@ -10,6 +10,12 @@ export const ORDER_STATUS = {
   PREPARE_DOCUMENT: "PREPARE_DOCUMENT",
   DOCUMENT_DELIVERY: "DOCUMENT_DELIVERY",
   COMPLETED: "COMPLETED",
+  HEADING_TO_LOADING: "HEADING_TO_LOADING",
+  HEADING_TO_UNLOADING: "HEADING_TO_UNLOADING",
+  DOCUMENT_PREPARATION: "DOCUMENT_PREPARATION",
+  CANCELLED_BY_TRANSPORTER: "CANCELLED_BY_TRANSPORTER",
+  CANCELLED_BY_SHIPPER: "CANCELLED_BY_SHIPPER",
+  CANCELLED_BY_SYSTEM: "CANCELLED_BY_SYSTEM",
 };
 
 // Order action definitions (single source of truth for actions and labels)
@@ -103,6 +109,30 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.COMPLETED]: {
     label: "Selesai",
     variant: "success",
+  },
+  [ORDER_STATUS.HEADING_TO_LOADING]: {
+    label: "Menuju ke Lokasi Muat",
+    variant: "primary",
+  },
+  [ORDER_STATUS.HEADING_TO_UNLOADING]: {
+    label: "Menuju ke Lokasi Bongkar 1",
+    variant: "primary",
+  },
+  [ORDER_STATUS.DOCUMENT_PREPARATION]: {
+    label: "Dokumen Sedang Disiapkan",
+    variant: "primary",
+  },
+  [ORDER_STATUS.CANCELLED_BY_TRANSPORTER]: {
+    label: "Dibatalkan Transporter",
+    variant: "error",
+  },
+  [ORDER_STATUS.CANCELLED_BY_SHIPPER]: {
+    label: "Dibatalkan Shipper",
+    variant: "error",
+  },
+  [ORDER_STATUS.CANCELLED_BY_SYSTEM]: {
+    label: "Dibatalkan Sistem",
+    variant: "error",
   },
 };
 

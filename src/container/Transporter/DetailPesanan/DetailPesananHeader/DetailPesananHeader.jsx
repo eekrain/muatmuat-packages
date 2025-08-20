@@ -40,6 +40,9 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
             ORDER_STATUS.UNLOADING,
             // Referensi: LDG-7
             ORDER_STATUS.COMPLETED,
+            ORDER_STATUS.HEADING_TO_LOADING,
+            ORDER_STATUS.DOCUMENT_PREPARATION,
+            ORDER_STATUS.DOCUMENT_DELIVERY,
           ].includes(dataOrderDetail?.orderStatus) ? (
             <Button
               variant="muattrans-primary-secondary"
@@ -58,14 +61,25 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
             ORDER_STATUS.NEED_CONFIRMATION_READY,
             // Referensi: LDN-337
             ORDER_STATUS.NEED_CHANGE_RESPONSE,
-          ].includes(dataOrderDetail?.orderStatus) && (
-            <Button variant="muatparts-error-secondary" onClick={() => {}}>
-              Batalkan Pesanan
-            </Button>
-          )}
+          ].includes(dataOrderDetail?.orderStatus) &&
+            dataOrderDetail?.orderStatus !== ORDER_STATUS.HEADING_TO_LOADING &&
+            dataOrderDetail?.orderStatus !==
+              ORDER_STATUS.DOCUMENT_PREPARATION &&
+            dataOrderDetail?.orderStatus !== ORDER_STATUS.DOCUMENT_DELIVERY &&
+            dataOrderDetail?.orderStatus !== ORDER_STATUS.COMPLETED &&
+            dataOrderDetail?.orderStatus !==
+              ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
+            dataOrderDetail?.orderStatus !==
+              ORDER_STATUS.CANCELLED_BY_SHIPPER &&
+            dataOrderDetail?.orderStatus !==
+              ORDER_STATUS.CANCELLED_BY_SYSTEM && (
+              <Button variant="muatparts-error-secondary" onClick={() => {}}>
+                Batalkan Pesanan
+              </Button>
+            )}
         </div>
       </div>
-      {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+      {/* {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
         <div
           className={
             "mt-4 flex items-center gap-[2px] rounded-lg bg-secondary-100 px-6 py-4 text-xs font-medium text-neutral-900"
@@ -80,7 +94,7 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
           Terdapat perubahan pesanan dari shipper, mohon pelajari perubahannya
           dan segera beri respon
         </div>
-      )}
+      )} */}
     </div>
   );
 };

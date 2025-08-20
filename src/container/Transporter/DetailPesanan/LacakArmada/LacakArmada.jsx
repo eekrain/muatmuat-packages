@@ -1,90 +1,134 @@
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 import CardLacakArmada from "./components/CardLacakArmada";
 import LacakArmadaHeader from "./components/LacakArmadaHeader";
 
 const LacakArmada = ({ dataOrderDetail }) => {
   const [searchValue, setSearchValue] = useState("");
-  const [activeTab, setActiveTab] = useState("aktif");
+
+  // Tentukan tab aktif berdasarkan status order
+  const getInitialActiveTab = () => {
+    if (!dataOrderDetail?.orderStatus) return "aktif";
+
+    // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
+    const riwayatStatuses = [
+      ORDER_STATUS.COMPLETED,
+      ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+      ORDER_STATUS.CANCELLED_BY_SHIPPER,
+      ORDER_STATUS.CANCELLED_BY_SYSTEM,
+    ];
+
+    return riwayatStatuses.includes(dataOrderDetail.orderStatus)
+      ? "riwayat"
+      : "aktif";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialActiveTab);
   const router = useRouter();
+
+  // Update tab aktif ketika dataOrderDetail berubah
+  useEffect(() => {
+    setActiveTab(getInitialActiveTab());
+  }, [dataOrderDetail?.orderStatus]);
+
+  // Fungsi untuk menentukan current step berdasarkan status
+  const getCurrentStepFromStatus = (status) => {
+    // Status pembatalan menggunakan cancelledSteps (index 1 untuk "Dibatalkan")
+    if (
+      [
+        ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+        ORDER_STATUS.CANCELLED_BY_SHIPPER,
+        ORDER_STATUS.CANCELLED_BY_SYSTEM,
+      ].includes(status)
+    ) {
+      return 1; // Step "Dibatalkan" dalam cancelledSteps
+    }
+
+    switch (status) {
+      case ORDER_STATUS.COMPLETED:
+        return 5; // Selesai
+      case ORDER_STATUS.DOCUMENT_DELIVERY:
+        return 4; // Proses Pengiriman Dokumen
+      case ORDER_STATUS.DOCUMENT_PREPARATION:
+        return 3; // Dokumen Sedang Disiapkan
+      case ORDER_STATUS.LOADING:
+        return 2; // Proses Muat
+      case ORDER_STATUS.HEADING_TO_LOADING:
+        return 1; // Proses Muat
+      case ORDER_STATUS.HEADING_TO_UNLOADING:
+        return 1; // Proses Muat
+      case ORDER_STATUS.UNLOADING:
+        return 1; // Proses Bongkar
+      default:
+        return 0; // Armada Dijadwalkan
+    }
+  };
+
   // Data stepper untuk tracking progress armada - sesuai desain Figma
   const stepperData = useShallowMemo(() => {
     return [
       {
         label: "Armada Dijadwalkan",
-        status: "SCHEDULED",
+        status: ORDER_STATUS.SCHEDULED_FLEET,
         icon: "/icons/stepper/stepper-scheduled.svg",
         subtitle: "",
       },
       {
         label: "Proses Muat",
-        status: "LOADING",
+        status: ORDER_STATUS.LOADING,
         icon: "/icons/stepper/stepper-box.svg",
         subtitle: "",
       },
       {
         label: "Proses Bongkar",
-        status: "UNLOADING",
+        status: ORDER_STATUS.UNLOADING,
         icon: "/icons/stepper/stepper-box-opened.svg",
         subtitle: "",
       },
       {
         label: "Dokumen Sedang Disiapkan",
-        status: "DOCUMENT_PREPARATION",
+        status: ORDER_STATUS.DOCUMENT_PREPARATION,
         icon: "/icons/stepper/stepper-document-preparing.svg",
         subtitle: "",
       },
       {
         label: "Proses Pengiriman Dokumen",
-        status: "DOCUMENT_DELIVERY",
+        status: ORDER_STATUS.DOCUMENT_DELIVERY,
         icon: "/icons/stepper/stepper-document-delivery.svg",
         subtitle: "",
       },
       {
         label: "Selesai",
-        status: "COMPLETED",
+        status: ORDER_STATUS.COMPLETED,
         icon: "/icons/stepper/stepper-completed.svg",
         subtitle: "",
       },
     ];
   }, []);
-  // Ambil data armada dari dataOrderDetail
-  const armadaList = [
-    {
-      plateNumber: "AE 1111 LBA",
-      driverName: "Noel Galagher",
-      driverAvatar: "/img/avatar.png",
-      currentStep: 5, // Index step yang sedang aktif (0-based) - Selesai
-      status: "COMPLETED",
-    },
-    {
-      plateNumber: "AE 2222 LBA",
-      driverName:
-        "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto",
-      driverAvatar: "/img/avatar.png",
-      currentStep: 1, // Index step yang sedang aktif (0-based) - Proses Muat
-      status: "LOADING",
-    },
-    {
-      plateNumber: "AE 333 LBA",
-      driverName: "Driver Name",
-      driverAvatar: "/img/avatar.png",
-      currentStep: 2, // Index step yang sedang aktif (0-based) - Proses Bongkar
-      status: "UNLOADING",
-    },
-  ];
+  // Ambil data armada dari dataOrderDetail.fleet
+  const armadaList =
+    dataOrderDetail?.fleet?.map((fleet) => ({
+      id: fleet.id,
+      plateNumber: fleet.plateNumber,
+      driverName: fleet.driverName,
+      driverAvatar: fleet.driverAvatar,
+      vehicleImage: fleet.vehicleImage,
+      currentStep: getCurrentStepFromStatus(dataOrderDetail?.orderStatus), // Index step yang sedang aktif (0-based)
+      status: dataOrderDetail?.orderStatus || ORDER_STATUS.SCHEDULED_FLEET, // Status dari order detail
+    })) || [];
   // Kategorisasi armada berdasarkan status order
   const categorizeArmada = (armada) => {
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
     const riwayatStatuses = [
-      "COMPLETED",
-      "CANCELLED_TRANSPORTER",
-      "CANCELLED_SHIPPER",
-      "CANCELLED_BY_SYSTEM",
+      ORDER_STATUS.COMPLETED,
+      ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+      ORDER_STATUS.CANCELLED_BY_SHIPPER,
+      ORDER_STATUS.CANCELLED_BY_SYSTEM,
     ];
 
     return riwayatStatuses.includes(armada.status) ? "riwayat" : "aktif";
@@ -121,7 +165,6 @@ const LacakArmada = ({ dataOrderDetail }) => {
   const handleDetailStatusClick = () => {
     router.push(`/daftar-pesanan/uuid/detail-pesanan/detail-status-armada`);
   };
-  console.log(filteredArmada, "armadalist");
   return (
     <Card className="rounded-xl border-none">
       <CardContent className="flex flex-col gap-4 p-6">
@@ -140,14 +183,14 @@ const LacakArmada = ({ dataOrderDetail }) => {
         <div className="flex flex-col gap-4">
           {filteredArmada.map((armada, index) => (
             <CardLacakArmada
-              key={index}
+              key={armada.id || armada.plateNumber}
               plateNumber={armada.plateNumber}
               driverName={armada.driverName}
-              vehicleImageUrl={armada.vehicleImageUrl}
+              vehicleImageUrl={armada.vehicleImage}
               status={armada.status}
               stepperData={stepperData}
-              vehicleId={armada.vehicleId}
-              driverId={armada.driverId}
+              vehicleId={armada.id}
+              driverId={armada.id}
               order={dataOrderDetail}
             />
           ))}
