@@ -5,6 +5,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
+import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
 
 import ModalDetailTransporterTidakAktif from "./ModalDetailTransporterTidakAktif";
 
@@ -49,10 +50,15 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
 
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
+  const [selectedTransporterId, setSelectedTransporterId] = useState(null);
+  const { data: latestFleetNote } = useGetLatestFleetNote(
+    selectedTransporterId
+  );
 
   const handleDetailClick = (transporter) => {
     if (transporter.inactivityStatus === "TRANSPORTER_INACTIVE") {
       setSelectedTransporter(transporter);
+      setSelectedTransporterId(transporter.transporterId);
       setShowDetailModal(true);
     } else {
       router.push(
@@ -151,10 +157,12 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
           </div>
         </div>
       </div>
-      {showDetailModal && (
+      {showDetailModal && latestFleetNote && (
         <ModalDetailTransporterTidakAktif
           transporter={selectedTransporter}
+          detail={latestFleetNote.Data?.detailInactive}
           onClose={() => setShowDetailModal(false)}
+          latestNote={latestFleetNote.Data?.latestNote}
           onHubungi={() => {}}
           onSelesaikan={() => setShowDetailModal(false)}
         />
