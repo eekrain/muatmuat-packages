@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 
 import { RingkasanPembayaranDefault } from "./RingkasanPembayaranDefault";

@@ -13,8 +13,8 @@ import {
   AlertLabelEnum,
   AlertNeedConfirmEnum,
   AlertTypeEnum,
-} from "@/lib/constants/detailpesanan/alert.enum";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/alert.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";

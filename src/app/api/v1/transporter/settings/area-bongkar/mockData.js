@@ -1,104 +1,38 @@
-export const masterProvinsiSuccessResponse = {
-  Message: {
-    Code: 200,
-    Text: "Master data provinsi berhasil diambil",
-  },
-  Data: {
-    provinsi: [
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440001",
-        provinceName: "Aceh",
-        alphabetGroup: "A",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440002",
-        provinceName: "Bali",
-        alphabetGroup: "B",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440003",
-        provinceName: "Banten",
-        alphabetGroup: "B",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440004",
-        provinceName: "Bengkulu",
-        alphabetGroup: "B",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440005",
-        provinceName: "DI Yogyakarta",
-        alphabetGroup: "D",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440006",
-        provinceName: "DKI Jakarta",
-        alphabetGroup: "D",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440007",
-        provinceName: "Gorontalo",
-        alphabetGroup: "G",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440008",
-        provinceName: "Jambi",
-        alphabetGroup: "J",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440009",
-        provinceName: "Jawa Barat",
-        alphabetGroup: "J",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440010",
-        provinceName: "Jawa Tengah",
-        alphabetGroup: "J",
-        isSelected: false,
-      },
-    ],
-    pagination: {
+import {
+  createMasterProvinsiNoDataResponse,
+  createMasterProvinsiSuccessResponse,
+  masterProvinsiData,
+} from "../master/provinsi/mockData";
+
+// Create sample data with some provinces selected for area bongkar
+const sampleSelectedProvinsi = masterProvinsiData
+  .slice(0, 10)
+  .map((provinsi, index) => ({
+    ...provinsi,
+    isSelected: [1, 4, 5, 8].includes(index), // Select BALI, DI YOGYAKARTA, DKI JAKARTA, JAWA BARAT
+  }));
+
+export const masterProvinsiSuccessResponse =
+  createMasterProvinsiSuccessResponse(
+    sampleSelectedProvinsi,
+    {
       currentPage: 1,
       totalPages: 3,
       totalItems: 34,
       itemsPerPage: 10,
     },
-    grouping: {
-      A: 1,
-      B: 3,
-      D: 2,
-      G: 1,
-      J: 3,
-    },
-  },
-  Type: "GET_MASTER_PROVINSI",
-};
+    "search=&page=1&limit=10&excludeSelected=false"
+  );
 
-export const masterProvinsiNoDataResponse = {
-  Message: {
-    Code: 404,
-    Text: "Data provinsi tidak ditemukan",
+export const masterProvinsiNoDataResponse = createMasterProvinsiNoDataResponse(
+  {
+    currentPage: 1,
+    totalPages: 0,
+    totalItems: 0,
+    itemsPerPage: 10,
   },
-  Data: {
-    provinsi: [],
-    pagination: {
-      currentPage: 1,
-      totalPages: 0,
-      totalItems: 0,
-      itemsPerPage: 10,
-    },
-  },
-  Type: "GET_MASTER_PROVINSI_ERROR",
-};
+  "search=&page=1&limit=10&excludeSelected=false"
+);
 
 export const successResponse = {
   Message: {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 // Data untuk lokasi muat dan bongkar
 const locationData = {

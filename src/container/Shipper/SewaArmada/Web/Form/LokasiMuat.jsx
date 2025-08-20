@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,

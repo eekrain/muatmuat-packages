@@ -17,6 +17,7 @@ import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverla
 import {
   deleteProvinsiAreaBongkar,
   saveAreaBongkar,
+  updateAreaBongkarSelection,
   useGetAreaBongkarManage,
   useGetMasterKotaKabupaten,
   useGetMasterProvinsi,
@@ -50,11 +51,10 @@ export default function Page() {
   });
 
   // Fetch area bongkar management data
-  const { provinces, isLoading, totalProvinces, totalSelectedCities } =
-    useGetAreaBongkarManage({
-      search: searchCity,
-      showSelected: showSelectedOnly,
-    });
+  const { provinces, isLoading } = useGetAreaBongkarManage({
+    search: searchCity,
+    showSelected: showSelectedOnly,
+  });
 
   // Fetch master provinsi data for reference (can be used for province selection popup)
   const { provinsi: masterProvinsi, isLoading: isLoadingMasterProvinsi } =
@@ -103,13 +103,13 @@ export default function Page() {
   // Log master data for demonstration
   useEffect(() => {
     if (masterProvinsi && masterProvinsi.length > 0) {
-      console.log("Master Provinsi data loaded:", masterProvinsi);
+      // Master Provinsi data loaded
     }
   }, [masterProvinsi]);
 
   useEffect(() => {
     if (masterKotaKabupaten && masterKotaKabupaten.length > 0) {
-      console.log("Master Kota/Kabupaten data loaded:", masterKotaKabupaten);
+      // Master Kota/Kabupaten data loaded
     }
   }, [masterKotaKabupaten]);
 
@@ -169,48 +169,141 @@ export default function Page() {
   };
 
   // Handle select all for a province
-  const handleSelectAllProvince = (provinceId, checked) => {
-    setLocalProvinces((prevProvinces) =>
-      prevProvinces.map((province) => {
-        if (province.id === provinceId) {
-          // Update all cities in the province
-          const updatedCities = province.cities.map((city) => ({
-            ...city,
-            isSelected: checked,
-          }));
+  const handleSelectAllProvince = async (provinceId, checked) => {
+    try {
+      // Update local state first for immediate UI feedback
+      setLocalProvinces((prevProvinces) =>
+        prevProvinces.map((province) => {
+          if (province.id === provinceId) {
+            // Update all cities in the province
+            const updatedCities = province.cities.map((city) => ({
+              ...city,
+              isSelected: checked,
+            }));
 
-          return {
-            ...province,
-            allSelected: checked,
-            cities: updatedCities,
-          };
-        }
-        return province;
-      })
-    );
+            return {
+              ...province,
+              allSelected: checked,
+              cities: updatedCities,
+            };
+          }
+          return province;
+        })
+      );
+
+      // Sync with backend
+      const province = localProvinces.find((p) => p.id === provinceId);
+      if (province) {
+        const updatedCities = province.cities.map((city) => ({
+          kotaId: city.cityId,
+          kotaName: city.cityName,
+          isSelected: checked,
+        }));
+
+        await updateAreaBongkarSelection(provinceId, { cities: updatedCities });
+      }
+    } catch (error) {
+      // Error updating province selection
+
+      // Revert local state on error
+      setLocalProvinces((prevProvinces) =>
+        prevProvinces.map((province) => {
+          if (province.id === provinceId) {
+            const revertedCities = province.cities.map((city) => ({
+              ...city,
+              isSelected: !checked,
+            }));
+
+            return {
+              ...province,
+              allSelected: !checked,
+              cities: revertedCities,
+            };
+          }
+          return province;
+        })
+      );
+
+      // Parse and show error message
+      try {
+        const errorData = JSON.parse(error.message);
+        alert(
+          errorData.Message?.Text || "Terjadi kesalahan saat mengupdate pilihan"
+        );
+      } catch {
+        alert("Terjadi kesalahan saat mengupdate pilihan");
+      }
+    }
   };
 
   // Handle individual city selection
-  const handleCitySelect = (provinceId, cityId, checked) => {
-    setLocalProvinces((prevProvinces) =>
-      prevProvinces.map((province) => {
-        if (province.id === provinceId) {
-          const updatedCities = province.cities.map((city) =>
-            city.cityId === cityId ? { ...city, isSelected: checked } : city
-          );
+  const handleCitySelect = async (provinceId, cityId, checked) => {
+    try {
+      // Update local state first for immediate UI feedback
+      setLocalProvinces((prevProvinces) =>
+        prevProvinces.map((province) => {
+          if (province.id === provinceId) {
+            const updatedCities = province.cities.map((city) =>
+              city.cityId === cityId ? { ...city, isSelected: checked } : city
+            );
 
-          // Check if all cities are selected
-          const allSelected = updatedCities.every((city) => city.isSelected);
+            // Check if all cities are selected
+            const allSelected = updatedCities.every((city) => city.isSelected);
 
-          return {
-            ...province,
-            allSelected,
-            cities: updatedCities,
-          };
-        }
-        return province;
-      })
-    );
+            return {
+              ...province,
+              allSelected,
+              cities: updatedCities,
+            };
+          }
+          return province;
+        })
+      );
+
+      // Sync with backend
+      const province = localProvinces.find((p) => p.id === provinceId);
+      if (province) {
+        const updatedCities = province.cities.map((city) => ({
+          kotaId: city.cityId,
+          kotaName: city.cityName,
+          isSelected: city.cityId === cityId ? checked : city.isSelected,
+        }));
+
+        await updateAreaBongkarSelection(provinceId, { cities: updatedCities });
+      }
+    } catch (error) {
+      // Error updating city selection
+
+      // Revert local state on error
+      setLocalProvinces((prevProvinces) =>
+        prevProvinces.map((province) => {
+          if (province.id === provinceId) {
+            const revertedCities = province.cities.map((city) =>
+              city.cityId === cityId ? { ...city, isSelected: !checked } : city
+            );
+
+            const allSelected = revertedCities.every((city) => city.isSelected);
+
+            return {
+              ...province,
+              allSelected,
+              cities: revertedCities,
+            };
+          }
+          return province;
+        })
+      );
+
+      // Parse and show error message
+      try {
+        const errorData = JSON.parse(error.message);
+        alert(
+          errorData.Message?.Text || "Terjadi kesalahan saat mengupdate pilihan"
+        );
+      } catch {
+        alert("Terjadi kesalahan saat mengupdate pilihan");
+      }
+    }
   };
 
   // Handle expand/collapse province
@@ -433,7 +526,7 @@ export default function Page() {
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              console.log("Add province to selection:", result);
+                              // Province added to selection
                               // TODO: Implement add province logic
                               alert(
                                 `Fitur menambah ${result.provinceName} akan segera tersedia`
