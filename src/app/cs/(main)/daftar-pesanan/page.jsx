@@ -120,6 +120,8 @@ const DaftarPesananPage = () => {
         onValueChange={(v) => {
           setIsLoading(true);
           setActiveTab(v);
+          setPeriod(periodOptions[0]);
+          setLastAction("initial");
         }}
       >
         {!isFirstTimer && (

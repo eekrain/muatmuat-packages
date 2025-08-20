@@ -445,7 +445,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
                       statusDisplayMap[multiStatusMemo.dominantStatus]
                         ?.variant || "primary"
                     }
-                    className="!h-fit w-[120px] w-full !items-center !justify-center py-1 !text-center"
+                    className="!h-fit w-[120px] !items-center !justify-center py-1 !text-center"
                   >
                     {statusDisplayMap[multiStatusMemo.dominantStatus]?.text ||
                       multiStatusMemo.dominantStatus}{" "}
@@ -466,7 +466,12 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
                   </Link>
                 </div>
               ) : (
-                <div className={cn("flex flex-col gap-2")}>
+                <div
+                  className={cn(
+                    "flex flex-col gap-2",
+                    viewMode !== "default" && "ml-16"
+                  )}
+                >
                   <BadgeStatusPesanan
                     variant={statusInfo.variant}
                     className={cn(
