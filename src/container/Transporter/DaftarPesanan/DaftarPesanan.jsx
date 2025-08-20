@@ -523,7 +523,7 @@ const DaftarPesanan = ({
             </div>
           ) : (
             <div className="flex flex-col">
-              <div className="flex flex-col gap-y-6 px-6 py-5">
+              <div className="flex flex-col gap-y-6 p-6 pt-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-x-3">
                     <Input

@@ -132,10 +132,10 @@ export const useTransporterLogic = ({
     Object.entries(newFilters).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         processedFilterValues[key] = value.map((item) =>
-          typeof item === "object" && item.id ? item.id : item
+          typeof item === "object" && item.key ? item.key : item
         );
-      } else if (typeof value === "object" && value?.id) {
-        processedFilterValues[key] = value.id;
+      } else if (typeof value === "object" && value?.key) {
+        processedFilterValues[key] = value.key;
       } else {
         processedFilterValues[key] = value;
       }

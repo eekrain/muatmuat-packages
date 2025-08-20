@@ -1,0 +1,93 @@
+import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import Button from "@/components/Button/Button";
+import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { cn } from "@/lib/utils";
+import { idrFormat } from "@/lib/utils/formatters";
+
+const OrderInfo = ({ className, title, value }) => {
+  return (
+    <div className={cn("flex items-center gap-x-2 text-xs", className)}>
+      <span className="font-medium text-neutral-600">{title}</span>
+      <span className="font-semibold">{value}</span>
+    </div>
+  );
+};
+
+const OrderWithAdditionalCost = () => {
+  const info = [
+    {
+      title: "Telah Dihubungi Oleh :",
+      value: "CS Daffa Toldo",
+      className: "min-w-[250px] max-w-[250px]",
+    },
+    {
+      title: "Jumlah Dihubungi :",
+      value: 2,
+      className: "min-w-[157px] max-w-[157px]",
+    },
+    {
+      title: "Terakhir Dihubungi :",
+      value: "02 Jan 2025 18:00 WIB",
+      className: "min-w-[253px] max-w-[253px]",
+    },
+  ];
+  return (
+    <>
+      <div className="flex h-[52px] items-center gap-x-2 bg-neutral-100 px-4">
+        {info.map((item, key) => (
+          <OrderInfo key={key} {...item} />
+        ))}
+      </div>
+      <div className="flex gap-x-6 p-4 pb-5">
+        <div className="mt-1 flex gap-x-6">
+          <div className="flex min-w-[92px] max-w-[92px] flex-col gap-y-3">
+            <Button variant="link">MT25A002A</Button>
+            <BadgeStatusPesanan className="w-fit" variant="success">
+              Instan
+            </BadgeStatusPesanan>
+          </div>
+          <div className="flex min-w-[280px] max-w-[280px] flex-col gap-y-2">
+            <span className="text-xs font-bold">Prima Arifandi</span>
+            <span className="text-xxs font-medium leading-[1.3]">
+              0812-3456-7890
+            </span>
+          </div>
+          <div className="flex min-w-[230px] max-w-[230px] flex-col gap-y-3">
+            <span className="text-xs font-bold">{idrFormat(900000)}</span>
+            <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
+              <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
+              <span>Lama Belum Dibayarkan : 2 Hari</span>
+            </div>
+          </div>
+          <div className="w-[415px]">
+            <MuatBongkarStepperWithModal
+              appearance={{
+                titleClassName: "line-clamp-1",
+              }}
+              pickupLocations={[
+                {
+                  fullAddress:
+                    "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+                },
+              ]}
+              dropoffLocations={[
+                {
+                  fullAddress:
+                    "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+                },
+                {
+                  fullAddress:
+                    "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang",
+                },
+              ]}
+            />
+          </div>
+        </div>
+        <Button className="px-6" variant="muattrans-primary" onClick={() => {}}>
+          Detail
+        </Button>
+      </div>
+    </>
+  );
+};
+export default OrderWithAdditionalCost;
