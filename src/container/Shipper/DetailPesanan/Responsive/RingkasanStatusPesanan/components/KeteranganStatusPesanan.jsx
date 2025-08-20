@@ -4,7 +4,7 @@ import { ChevronUp } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusTitle } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusTitle } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
 export const KeteranganStatusPesanan = ({ legendStatus }) => {

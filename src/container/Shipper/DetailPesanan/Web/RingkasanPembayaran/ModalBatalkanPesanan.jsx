@@ -15,7 +15,7 @@ import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/Modal
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
 import { useTranslation } from "@/hooks/use-translation";
 import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
 import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";

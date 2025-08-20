@@ -32,13 +32,12 @@ const ContactDetail = ({ mode, logo, companyName, details }) => (
                 {detail.icon && (
                   <IconComponent
                     src={detail.icon}
-                    alt=""
                     width={16}
                     height={16}
                     className="shrink-0 text-[#461B02]"
                   />
                 )}
-                <span className="truncate text-xs font-medium text-black">
+                <span className="mt-0.5 truncate text-xs font-medium text-black">
                   {detail.text}
                 </span>
               </div>
@@ -59,16 +58,19 @@ const ContactDetail = ({ mode, logo, companyName, details }) => (
   </div>
 );
 
-export const InformasiKontakCard = () => {
+export const InformasiKontakCard = ({ shipperInfo, transporterInfo }) => {
   const shipperDetails = [
-    { text: "0812-4321-6666", icon: "/icons/phone-call-16.svg" },
-    { text: "Kec. Tegalsari, Kota Surabaya", icon: "/icons/location-16.svg" },
+    { text: shipperInfo?.phoneNumber, icon: "/icons/contact.svg" },
+    { text: shipperInfo?.location, icon: "/icons/marker-outline.svg" },
   ];
 
   const transporterDetails = [
-    { text: "1 Unit", icon: "/icons/truck-16.svg" },
-    { text: "0246-5844-60", icon: "/icons/phone-call-16.svg" },
-    { text: "Kec. Tegalsari, Kota Surabaya", icon: "/icons/location-16.svg" },
+    {
+      text: `${transporterInfo?.totalUnits} Unit`,
+      icon: "/icons/transporter16.svg",
+    },
+    { text: transporterInfo?.phoneNumber, icon: "/icons/contact.svg" },
+    { text: transporterInfo?.location, icon: "/icons/marker-outline.svg" },
   ];
 
   return (

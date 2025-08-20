@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 const LIST_SHOW_BATALKAN_PESANAN = [
   OrderStatusEnum.SCHEDULED_FLEET,

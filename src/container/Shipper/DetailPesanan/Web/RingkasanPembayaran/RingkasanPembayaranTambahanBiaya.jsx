@@ -7,7 +7,7 @@ import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTungg
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { idrFormat } from "@/lib/utils/formatters";
 import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";
 import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";

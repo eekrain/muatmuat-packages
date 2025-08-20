@@ -29,15 +29,38 @@ const mapDriversToFormData = (drivers) => {
     return driverDefaultValues;
   }
 
-  const driverList = drivers.map((driver) => ({
-    tempId: driver.tempId, // Keep temp ID for reference
-    driverImage: driver.profileImage || null, // Will be populated by user during editing
-    fullName: driver.name || "",
-    whatsappNumber: driver.phoneNumber || "",
-    ktpPhoto: driver.ktpDocument || "", // Will be populated by user during editing
-    simB2Photo: driver.simDocument || "", // Will be populated by user during editing
-    simB2ExpiryDate: driver.simExpiryDate || "",
-  }));
+  const driverList = drivers.map((driver) => {
+    // Extract KTP document URL from documents array if available
+    const ktpDocument =
+      driver.documents?.find((doc) => doc.documentType === "KTP")
+        ?.documentUrl ||
+      driver.ktpDocument ||
+      "";
+
+    // Extract SIM document URL from documents array if available
+    const simDocument =
+      driver.documents?.find((doc) => doc.documentType === "SIM_B2_UMUM")
+        ?.documentUrl ||
+      driver.simDocument ||
+      "";
+
+    // Extract profile photo URL from photos array if available
+    const profileImage =
+      driver.photos?.find((photo) => photo.photoType === "PROFILE")?.photoUrl ||
+      driver.profileImage ||
+      null;
+
+    return {
+      tempId: driver.tempId || driver.id, // Keep temp ID for reference, fallback to API id
+      driverImage: profileImage, // Will be populated by user during editing
+      fullName: driver.name || "",
+      whatsappNumber: driver.phoneNumber || "",
+      ktpPhoto: ktpDocument, // Will be populated by user during editing
+      simB2Photo: simDocument, // Will be populated by user during editing
+      simB2ExpiryDate: driver.simExpiryDate || "",
+      verificationStatus: driver.verificationStatus || "PENDING", // New field from API contract
+    };
+  });
 
   return { driverList };
 };

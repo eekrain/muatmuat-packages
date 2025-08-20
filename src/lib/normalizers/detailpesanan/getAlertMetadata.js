@@ -4,7 +4,7 @@ import {
   AlertLabelResponsiveEnum,
   AlertNeedConfirmEnum,
   AlertTypeEnum,
-} from "@/lib/constants/detailpesanan/alert.enum";
+} from "@/lib/constants/Shipper/detailpesanan/alert.enum";
 
 export const getAlertMetadata = ({
   type,

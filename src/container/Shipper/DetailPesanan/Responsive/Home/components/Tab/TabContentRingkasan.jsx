@@ -1,5 +1,5 @@
 import { TabsContent } from "@/components/Tabs/Tabs";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 import AdditionalFeesDetail from "../AdditionalFeesDetail";
 import { MethodInfo } from "../MethodInfo";
