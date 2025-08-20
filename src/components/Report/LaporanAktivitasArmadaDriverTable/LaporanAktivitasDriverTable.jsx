@@ -29,7 +29,20 @@ const ClickableImage = ({ src, alt, className, onImageClick }) => {
   );
 };
 
-const LaporanAktivitasArmadaTable = ({
+// Function to format phone number with "-" separator every 4 digits
+const formatPhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) return "";
+
+  // Remove any existing non-digit characters
+  const cleaned = phoneNumber.replace(/\D/g, "");
+
+  // Add separator every 4 digits
+  const formatted = cleaned.replace(/(\d{4})(?=\d)/g, "$1-");
+
+  return formatted;
+};
+
+const LaporanAktivitasDriverTable = ({
   data = [],
   currentPage = 1,
   totalPages = 1,
@@ -47,7 +60,7 @@ const LaporanAktivitasArmadaTable = ({
   showSearch = true,
   showPagination = true,
   showTotalCount = true,
-  searchPlaceholder = "Cari Armada",
+  searchPlaceholder = "Cari Driver",
   disabledByPeriod = false,
   loading = false,
   className = "border-0",
@@ -57,51 +70,70 @@ const LaporanAktivitasArmadaTable = ({
   isPeriodFilterActive = false,
   isFilterDropdownActive = false,
 }) => {
-  const router = useRouter();
   const [localSearchValue, setLocalSearchValue] = useState(searchValue);
   const [localFilters, setLocalFilters] = useState(filters);
   const [localSortConfig, setLocalSortConfig] = useState(sortConfig);
   const [selectedImage, setSelectedImage] = useState("");
+  const router = useRouter();
 
-  // Table columns for Armada
+  // Table columns for Driver
   const columns = [
     {
-      header: "No. Polisi",
-      key: "licensePlate",
+      header: "Nama Driver",
+      key: "name",
       sortable: true,
       width: "250px",
       searchable: true,
       render: (row) => (
         <div className="flex items-center gap-3">
           <ClickableImage
-            src={row.fleetImage}
-            alt="Vehicle"
+            src={row.profileImage}
+            alt="Driver"
             className="h-12 w-12 cursor-pointer rounded object-cover transition-opacity hover:opacity-80"
             onImageClick={setSelectedImage}
           />
           <div>
-            <div className="font-semibold text-gray-900">
-              {row.licensePlate}
-            </div>
-            <div className="text-xs text-gray-600">
-              {row.truckType} - {row.carrierType}
+            <div className="text-sm font-bold">{row.name}</div>
+            <div className="mt-1 text-xs font-medium">
+              {formatPhoneNumber(row.phoneNumber)}
             </div>
           </div>
         </div>
       ),
     },
     {
-      header: "Lokasi Terkini",
-      key: "currentLocation",
+      header: "Armada",
+      key: "armada",
       sortable: false,
-      width: "180px",
+      width: "190px",
       searchable: true,
+      render: (row) => {
+        if (!row.currentFleet || !row.currentFleet.licensePlate) {
+          return <div className="text-sm">-</div>;
+        }
+
+        return (
+          <div className="flex flex-col">
+            <div className="text-sm font-semibold text-gray-900">
+              {row.currentFleet.licensePlate}
+            </div>
+            <div className="text-xs">
+              {row.currentFleet.truckType} - {row.currentFleet.carrierType}
+            </div>
+            <div className="text-xs">
+              {row.currentFleet.currentLocation === "-"
+                ? "-"
+                : row.currentFleet.currentLocation}
+            </div>
+          </div>
+        );
+      },
     },
     {
       header: "Kode Pesanan Aktif",
       key: "invoiceNumber",
       sortable: true,
-      width: "100px",
+      width: "150px",
       searchable: true,
       render: (row) => {
         if (!row.invoiceNumber || row.invoiceNumber === "") {
@@ -151,7 +183,7 @@ const LaporanAktivitasArmadaTable = ({
     },
     {
       header: "Status",
-      key: "status",
+      key: "currentStatus",
       sortable: true,
       width: "200px",
       searchable: true,
@@ -159,39 +191,44 @@ const LaporanAktivitasArmadaTable = ({
         let bgColor = "bg-gray-200";
         let textColor = "text-gray-600";
 
-        if (row.status === "READY_FOR_ORDER") {
+        if (row.currentStatus === "READY_FOR_ORDER") {
           bgColor = "bg-green-100";
           textColor = "text-green-900";
-        } else if (row.status === "NOT_PAIRED") {
+        } else if (row.currentStatus === "NOT_PAIRED") {
           bgColor = "bg-gray-100";
           textColor = "text-gray-600";
-        } else if (row.status === "ON_DUTY") {
+        } else if (row.currentStatus === "ON_DUTY") {
           bgColor = "bg-blue-100";
           textColor = "text-blue-900";
-        } else if (row.status === "WAITING_LOADING_TIME") {
+        } else if (row.currentStatus === "WAITING_LOADING_TIME") {
           bgColor = "bg-yellow-100";
           textColor = "text-yellow-900";
-        } else if (row.status === "INACTIVE") {
+        } else if (row.currentStatus === "INACTIVE") {
           bgColor = "bg-red-100";
           textColor = "text-red-900";
-        } else if (row.status === null) {
+        } else if (row.currentStatus === "NON_ACTIVE") {
+          bgColor = "bg-red-100";
+          textColor = "text-red-900";
+        } else if (row.currentStatus === null) {
           bgColor = "bg-gray-100";
           textColor = "text-gray-500";
         }
 
         // Map status to display labels
-        let displayStatus = row.status;
-        if (row.status === "READY_FOR_ORDER") {
+        let displayStatus = row.currentStatus;
+        if (row.currentStatus === "READY_FOR_ORDER") {
           displayStatus = "Siap Menerima Order";
-        } else if (row.status === "NOT_PAIRED") {
+        } else if (row.currentStatus === "NOT_PAIRED") {
           displayStatus = "Belum Dipasangkan";
-        } else if (row.status === "ON_DUTY") {
+        } else if (row.currentStatus === "ON_DUTY") {
           displayStatus = "Bertugas";
-        } else if (row.status === "WAITING_LOADING_TIME") {
+        } else if (row.currentStatus === "WAITING_LOADING_TIME") {
           displayStatus = "Akan Muat Hari Ini";
-        } else if (row.status === "INACTIVE") {
+        } else if (row.currentStatus === "INACTIVE") {
           displayStatus = "Nonaktif";
-        } else if (row.status === null) {
+        } else if (row.currentStatus === "NON_ACTIVE") {
+          displayStatus = "Nonaktif";
+        } else if (row.currentStatus === null) {
           displayStatus = "Tidak Ada Status";
         }
 
@@ -214,9 +251,9 @@ const LaporanAktivitasArmadaTable = ({
         <Button
           className="h-8 px-4 text-xs"
           onClick={() => {
-            // Navigate to detail page with only fleet ID
+            // Navigate to detail page with only driver ID
             router.push(
-              `/laporan/aktivitas-armada-driver/armada/${row.fleetId}`
+              `/laporan/aktivitas-armada-driver/driver/${row.driverId}`
             );
           }}
         >
@@ -233,7 +270,7 @@ const LaporanAktivitasArmadaTable = ({
 
   const handleSearchKeyUp = (e) => {
     if (e.key === "Enter") {
-      handleSearch(localSearchValue);
+      onSearch?.(localSearchValue);
     }
   };
 
@@ -377,11 +414,7 @@ const LaporanAktivitasArmadaTable = ({
               placeholder={searchPlaceholder}
               value={localSearchValue}
               onChange={(e) => setLocalSearchValue(e.target.value)}
-              onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  onSearch?.(localSearchValue);
-                }
-              }}
+              onKeyUp={handleSearchKeyUp}
               disabled={disableSearchInput}
               icon={{
                 left: (
@@ -422,7 +455,7 @@ const LaporanAktivitasArmadaTable = ({
         <div className="flex flex-col items-end gap-2">
           {showTotalCount && (
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {data.length} Armada
+              Total : {data.length} Driver
             </div>
           )}
         </div>
@@ -504,17 +537,17 @@ const LaporanAktivitasArmadaTable = ({
           <div className="p-4 md:p-6">
             <div className="mb-4 flex items-center justify-center">
               <h2 className="text-center text-xl font-semibold md:text-2xl">
-                Gambar Armada
+                Gambar Driver
               </h2>
             </div>
             {selectedImage && (
               <div className="flex justify-center rounded-lg">
                 <img
                   src={selectedImage}
-                  alt="Vehicle"
+                  alt="Driver"
                   className="h-full w-full rounded-lg object-contain"
                   style={{
-                    maxHeight: "calc(60vh - 100px)",
+                    maxHeight: "calc(65vh - 100px)",
                     maxWidth: "100%",
                   }}
                 />
@@ -527,4 +560,4 @@ const LaporanAktivitasArmadaTable = ({
   );
 };
 
-export default LaporanAktivitasArmadaTable;
+export default LaporanAktivitasDriverTable;
