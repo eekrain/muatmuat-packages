@@ -12,7 +12,7 @@ const apiResultInactiveTransporter = {
   },
   Data: {
     alertSummary: {
-      hasAlert: true,
+      hasAlert: false,
       current: 8,
       total: 12,
     },
