@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -10,7 +11,7 @@ import NoOrderTable from "./NoOrderTable";
 
 const RiwayatTransporterTidakAktif = () => {
   const { t } = useTranslation();
-
+  const router = useRouter();
   // State management for dynamic functionality
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -336,7 +337,11 @@ const RiwayatTransporterTidakAktif = () => {
         <Button
           className="!px-[36.5px]"
           variant="muattrans-primary"
-          onClick={() => {}}
+          onClick={() =>
+            router.push(
+              `/laporan/riwayat-transporter-tidak-aktif/${"uuid"}/riwayat-transporter`
+            )
+          }
         >
           Detail
         </Button>
