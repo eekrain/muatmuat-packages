@@ -75,6 +75,12 @@ function LacakArmadaHeader({
       </div>
 
       <div className="flex w-auto items-center gap-3">
+        {/* Referensi: LDN-93 */}
+        {false && (
+          <Button variant="muattrans-primary" onClick={() => {}}>
+            Lihat Posisi Armada
+          </Button>
+        )}
         {activeTab === "aktif" ? (
           <Button
             variant="muattrans-primary"
