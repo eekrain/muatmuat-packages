@@ -914,5 +914,7 @@
   "RekapPembatalanList.labelShowOthers": "+{remaining} 其他",
   "RekapPembatalanList.buttonConfirmPenalty": "确认惩罚",
   "RekapPembatalanList.labelPenaltyExempt": "此订单的取消不适用惩罚积分",
-  "RekapPembatalanList.labelPenaltyApplied": "此订单的取消适用惩罚积分"
+  "RekapPembatalanList.labelPenaltyApplied": "此订单的取消适用惩罚积分",
+  "TambahExcel.searchNotFoundTitle": "未找到搜索",
+  "TambahExcel.searchNotFoundSubtitle": "尝试其他关键字或检查拼写"
 }
