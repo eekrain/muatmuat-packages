@@ -65,7 +65,7 @@ const EditSchedule = ({ cardData }) => {
   return (
     <div className="space-y-7">
       <div className="flex flex-col items-center justify-center">
-        <div className="text-lg font-bold text-neutral-900">Ubah Estimasi</div>
+        <div className="font-bold text-neutral-900">Ubah Estimasi</div>
       </div>
       <div className="flex items-center gap-8 border-neutral-200">
         <div className="text-sm font-medium text-neutral-600">

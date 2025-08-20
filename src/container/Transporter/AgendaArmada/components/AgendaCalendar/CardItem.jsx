@@ -11,6 +11,7 @@ import {
 import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
+import ChangeFleet from "./ChangeFleet";
 import EditSchedule from "./EditSchedule";
 import LocationPoint from "./LocationPoint";
 import InfoPopover from "./PopoverAgenda";
@@ -121,10 +122,6 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
     lastDestinationName = "",
     estimatedTotalDistanceKm = 0,
     isConflicted = false,
-    scheduleDate,
-    scheduleEndDate,
-    additionalUnloadTimeStart,
-    additionalUnloadTimeEnd,
     driverName = "",
     licensePlate = "",
     truckType = "",
@@ -194,12 +191,44 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                 <span>Jadwal Bermasalah</span>
               </div>
               <div className="absolute bottom-2.5 left-0 w-full px-2.5">
-                <Button
-                  variant="muatparts-error-secondary"
-                  className="w-full text-xxs font-semibold md:h-7"
-                >
-                  Atur Ulang
-                </Button>
+                <Modal>
+                  <ModalTrigger asChild>
+                    <Button
+                      variant="muatparts-error-secondary"
+                      className="w-full text-xxs font-semibold md:h-7"
+                    >
+                      Atur Ulang
+                    </Button>
+                  </ModalTrigger>
+                  <ModalContent className="h-[565px] w-[908]">
+                    <ModalTitle className="sr-only">Ubah Armada</ModalTitle>
+                    <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
+                      <div>
+                        <img
+                          alt="svg header modal kiri"
+                          src="/img/header-modal/header-kiri.svg"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="my-auto">
+                        <img
+                          alt="logo muatmuat header coklat"
+                          src="/img/header-modal/muatmuat-brown.svg"
+                        />
+                      </div>
+                      <div>
+                        <img
+                          alt="svg header modal kanan "
+                          src="/img/header-modal/header-kanan.svg"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <ChangeFleet />
+                    </div>
+                  </ModalContent>
+                </Modal>
               </div>
             </>
           ) : (
