@@ -150,7 +150,10 @@ export const mockTransporterInactiveFleetDetails = {
           id: "fleet-007",
           licensePlate: "B 1357 STU",
           truckType: "Truk CDD Box",
+          driverName: "Gani Raharjo",
           status: "INACTIVE",
+          inactiveDate: "2024-01-07T13:25:00Z",
+          inactiveDuration: 3600, // 2.5 hari dalam menit
           photos: [
             {
               id: "photo-010",
@@ -165,7 +168,10 @@ export const mockTransporterInactiveFleetDetails = {
           id: "fleet-008",
           licensePlate: "B 8024 VWX",
           truckType: "Truk Trailer",
+          driverName: "Hadi Susanto",
           status: "INACTIVE",
+          inactiveDate: "2024-01-09T10:15:00Z",
+          inactiveDuration: 1800, // 1.25 hari dalam menit
           photos: [
             {
               id: "photo-011",
@@ -186,7 +192,10 @@ export const mockTransporterInactiveFleetDetails = {
           id: "fleet-009",
           licensePlate: "B 4680 YZA",
           truckType: "Truk Pickup",
+          driverName: "Iman Prabowo",
           status: "INACTIVE",
+          inactiveDate: "2024-01-11T12:40:00Z",
+          inactiveDuration: 960, // 16 jam dalam menit
           photos: [],
           lastActiveDate: "2024-01-11T12:40:00Z",
         },
@@ -194,7 +203,10 @@ export const mockTransporterInactiveFleetDetails = {
           id: "fleet-010",
           licensePlate: "B 1111 BCD",
           truckType: "Truk Box Pendingin",
+          driverName: "Joko Widodo",
           status: "INACTIVE",
+          inactiveDate: "2024-01-14T07:20:00Z",
+          inactiveDuration: 480, // 8 jam dalam menit
           photos: [
             {
               id: "photo-013",
@@ -209,7 +221,10 @@ export const mockTransporterInactiveFleetDetails = {
           id: "fleet-011",
           licensePlate: "B 2222 EFG",
           truckType: "Truk Wing Box",
+          driverName: "Krisna Murti",
           status: "INACTIVE",
+          inactiveDate: "2024-01-06T15:55:00Z",
+          inactiveDuration: 5760, // 4 hari dalam menit
           photos: [
             {
               id: "photo-014",
@@ -230,7 +245,10 @@ export const mockTransporterInactiveFleetDetails = {
           id: "fleet-012",
           licensePlate: "B 3333 HIJ",
           truckType: "Truk Crane",
+          driverName: "Lukman Hakim",
           status: "INACTIVE",
+          inactiveDate: "2024-01-04T09:30:00Z",
+          inactiveDuration: 8640, // 6 hari dalam menit
           photos: [
             {
               id: "photo-016",
