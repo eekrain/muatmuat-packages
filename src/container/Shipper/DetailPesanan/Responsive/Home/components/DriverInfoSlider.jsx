@@ -17,7 +17,7 @@ import Button from "@/components/Button/Button";
 import BottomSheetPreviousDriver from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomSheetPreviousDriver";
 import { useDrag } from "@/hooks/use-drag";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";

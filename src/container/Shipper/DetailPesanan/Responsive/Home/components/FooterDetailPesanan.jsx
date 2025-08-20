@@ -7,7 +7,7 @@ import ConfirmationModalResponsive from "@/components/Modal/ConfirmationModalRes
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { idrFormat } from "@/lib/utils/formatters";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";

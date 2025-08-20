@@ -420,7 +420,7 @@ const Page = () => {
             {/* Left Panel - Daftar Armada, SOS, or LihatPosisiArmada */}
             <div
               className={cn(
-                "absolute left-0 top-0 z-20 h-full rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
+                "absolute left-0 top-0 z-10 h-full rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
                 panels.leftPanelMode === "posisi" ? "w-[450px]" : "w-[350px]",
                 panels.showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
@@ -525,12 +525,12 @@ const Page = () => {
         <div
           className={cn(
             "relative rounded-l-xl shadow-muat transition-all duration-300 ease-in-out",
-            panels.isFullscreen ? "absolute right-0 top-0 z-30" : "h-full"
+            panels.isFullscreen ? "absolute right-0 top-0 z-10" : "h-full"
           )}
         >
           {/* LacakArmada as overlay */}
           {panels.showLacakArmada && (
-            <div className="absolute right-0 top-0 z-30 h-screen w-[429px] overflow-hidden rounded-l-xl bg-white">
+            <div className="absolute right-0 top-0 z-10 h-screen w-[429px] overflow-hidden rounded-l-xl bg-white">
               <LacakArmada
                 onClose={() => {
                   panelsDispatch({ type: PANEL_ACTIONS.HIDE_LACAK_ARMADA });
@@ -549,13 +549,13 @@ const Page = () => {
             className={cn(
               "relative flex flex-col overflow-hidden bg-white transition-[border-radius,width] duration-300 ease-in-out",
               panels.isFullscreen || panels.showLacakArmada
-                ? "absolute right-0 top-0 z-[40] h-12 w-[429px] rounded-l-xl shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1)]"
+                ? "absolute right-0 top-0 z-10 h-12 w-[429px] rounded-l-xl shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1)]"
                 : "h-full rounded-l-xl"
             )}
           >
             {/* Tabs with higher z-index for triggers */}
             <MonitoringTabs value={selectedTab} onValueChange={handleTabChange}>
-              <MonitoringTabsList className="relative z-20 bg-white">
+              <MonitoringTabsList className="relative z-10 bg-white">
                 <MonitoringTabTrigger
                   value="permintaan"
                   icon="/img/monitoring/permintaan-angkut.png"

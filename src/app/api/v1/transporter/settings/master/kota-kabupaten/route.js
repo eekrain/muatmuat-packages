@@ -45,7 +45,9 @@ export async function GET(req) {
     let citiesData = [...mockData.Data.cities];
 
     // Filter by provinceIds
-    const provinceIdArray = provinceIds.split(",").map((id) => id.trim());
+    const provinceIdArray = provinceIds
+      .split(",")
+      .map((id) => parseInt(id.trim()));
     citiesData = citiesData.filter((city) =>
       provinceIdArray.includes(city.provinceId)
     );

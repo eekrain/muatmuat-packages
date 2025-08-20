@@ -1,7 +1,7 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 const useMockData = false; // mock detailpesanan
 

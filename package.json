@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "next lint --fix && prettier --write .",
+    "format": "prettier --write .",
     "prepare": "husky",
     "zip": "node ./scripts/zip.js"
   },

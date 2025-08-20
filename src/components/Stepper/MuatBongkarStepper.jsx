@@ -1,6 +1,36 @@
 "use client";
 
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { cn } from "@/lib/utils";
+
+const TruncatedAddress = ({
+  text,
+  maxLength = 50,
+  className,
+  truncate = false,
+}) => {
+  if (!truncate || !text || text.length <= maxLength) {
+    return <span className={className}>{text}</span>;
+  }
+
+  const truncatedText = `${text.substring(0, maxLength)}...`;
+
+  return (
+    <InfoTooltip
+      trigger={
+        <span className={className} style={{ cursor: "pointer" }}>
+          {truncatedText}
+        </span>
+      }
+      side="top"
+      align="start"
+      className="max-w-[336px]"
+      sideOffset={2}
+    >
+      {text}
+    </InfoTooltip>
+  );
+};
 
 const MuatBongkarStepper = ({
   pickupLocations = [],
@@ -9,6 +39,8 @@ const MuatBongkarStepper = ({
   appearance = {
     titleClassName: "text-xs font-medium text-gray-900",
   },
+  truncate = false,
+  maxLength = 50,
 }) => {
   // Build locations array from pickupLocations and dropoffLocations
   const locations = [];
@@ -69,15 +101,16 @@ const MuatBongkarStepper = ({
               />
             </div>
           </div>
-          {/* Location text */}
-          <span
+          {/* Location text with conditional truncation and tooltip */}
+          <TruncatedAddress
+            text={location.title}
+            maxLength={maxLength}
+            truncate={truncate}
             className={cn(
               "text-xs font-medium text-gray-900",
               appearance.titleClassName
             )}
-          >
-            {location.title}
-          </span>
+          />
         </div>
       ))}
     </div>

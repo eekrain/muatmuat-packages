@@ -4,7 +4,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 export const ModalLihatStatusLainnya = ({ otherStatus }) => {
   const { t } = useTranslation();

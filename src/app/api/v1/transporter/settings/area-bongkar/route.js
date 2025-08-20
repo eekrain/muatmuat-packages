@@ -2,12 +2,9 @@ import { NextResponse } from "next/server";
 
 import {
   noCityErrorResponse,
-  noDataResponse,
   noProvinceErrorResponse,
   saveErrorResponse,
   saveSuccessResponse,
-  searchAreaBongkarNoDataResponse,
-  searchAreaBongkarSuccessResponse,
   serverErrorResponse,
   successResponse,
 } from "./mockData";
@@ -56,8 +53,8 @@ export async function GET(req) {
     return NextResponse.json(mockData, {
       status: mockData.Message.Code,
     });
-  } catch (error) {
-    console.error("Area Bongkar API Error:", error);
+  } catch {
+    // Error logged for debugging
     return NextResponse.json(serverErrorResponse, {
       status: serverErrorResponse.Message.Code,
     });

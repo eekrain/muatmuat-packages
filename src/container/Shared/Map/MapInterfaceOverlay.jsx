@@ -85,7 +85,7 @@ export const MapInterfaceOverlay = ({
     <>
       {/* Data Not Found Message */}
       {!hasData && (
-        <div className="absolute left-1/2 top-40 z-30 flex h-[52px] w-[300px] -translate-x-1/2 transform items-center justify-center rounded-md border border-neutral-400 bg-white px-[10px] py-[22px] shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+        <div className="absolute left-1/2 top-40 z-10 flex h-[52px] w-[300px] -translate-x-1/2 transform items-center justify-center rounded-md border border-neutral-400 bg-white px-[10px] py-[22px] shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
           <span className="text-center text-xs font-medium text-black">
             Data Tidak Ditemukan
           </span>
@@ -147,7 +147,7 @@ export const MapInterfaceOverlay = ({
       {/* Right Side Map Controls */}
       <div
         className={cn(
-          "absolute right-4 z-20 -translate-y-1/2 transform",
+          "absolute right-4 z-10 -translate-y-1/2 transform",
           isFullscreen ? "top-[210px]" : "top-[104px]"
         )}
       >
@@ -190,7 +190,7 @@ export const MapInterfaceOverlay = ({
       </div>
 
       {/* Bottom Right Toggle Control */}
-      <div className="absolute bottom-4 right-4 z-20 rounded-2xl bg-white p-2 shadow-lg">
+      <div className="absolute bottom-4 right-4 z-10 rounded-2xl bg-white p-2 shadow-lg">
         <div className="flex items-center gap-2">
           <label className="relative inline-flex cursor-pointer items-center">
             <input

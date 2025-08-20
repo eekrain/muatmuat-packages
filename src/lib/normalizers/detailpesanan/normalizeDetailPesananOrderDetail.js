@@ -2,7 +2,7 @@ import {
   LocationTypeEnum,
   OrderStatusIcon,
   OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 export const normalizeDetailPesananOrderDetail = ({
   dataOrderDetail,

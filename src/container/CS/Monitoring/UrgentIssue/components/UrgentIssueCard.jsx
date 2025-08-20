@@ -75,6 +75,8 @@ export const UrgentIssueCard = ({
             : "diselesaikan"
         }`
       );
+      // Reset updateParams setelah berhasil untuk mencegah toast muncul lagi
+      setUpdateParams({ id: null, body: null });
     } else if (isError) {
       toast.error(
         `Urgent issue pesanan ${orderCode} gagal ${
@@ -83,6 +85,8 @@ export const UrgentIssueCard = ({
             : "diselesaikan"
         }`
       );
+      // Reset updateParams setelah error untuk mencegah toast muncul lagi
+      setUpdateParams({ id: null, body: null });
     }
   }, [message, isError, updateParams, orderCode]);
 

@@ -9,8 +9,8 @@ import {
   OrderStatusEnum,
   OrderStatusIcon,
   OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { DriverStatusLabel } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";

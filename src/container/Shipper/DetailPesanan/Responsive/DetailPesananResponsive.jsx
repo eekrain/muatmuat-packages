@@ -7,7 +7,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import {
   OrderStatusEnum,
   getOrderStatusRank,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import {
   ResponsiveProvider,
   ResponsiveRoute,

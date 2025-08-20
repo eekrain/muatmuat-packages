@@ -6,8 +6,8 @@ import { Download } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import LaporanAktivitasArmadaTable from "@/components/Report/LaporanAktivitasArmadaTable";
-import LaporanAktivitasDriverTable from "@/components/Report/LaporanAktivitasDriverTable";
+import LaporanAktivitasArmadaTable from "@/components/Report/LaporanAktivitasArmadaDriverTable/LaporanAktivitasArmadaTable";
+import LaporanAktivitasDriverTable from "@/components/Report/LaporanAktivitasArmadaDriverTable/LaporanAktivitasDriverTable";
 import {
   Tabs,
   TabsList,
@@ -15,10 +15,12 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useGetFleetActivities } from "@/services/Transporter/laporan/aktivitas/getArmadaData";
 import { useGetCountArmadaDriver } from "@/services/Transporter/laporan/aktivitas/getCountArmadaDriver";
+import { useGetCustomPeriods } from "@/services/Transporter/laporan/aktivitas/getCustomPeriods";
 import { useGetDriverData } from "@/services/Transporter/laporan/aktivitas/getDriverData";
 import { useGetDriverStatusFilters } from "@/services/Transporter/laporan/aktivitas/getFilterArmadaStatus";
 import { useGetFleetTypeFilters } from "@/services/Transporter/laporan/aktivitas/getFilterArmadaType";
 import { useGetFleetStatusFilters } from "@/services/Transporter/laporan/aktivitas/getFilterDriverStatus";
+import { useSaveCustomPeriod } from "@/services/Transporter/laporan/aktivitas/saveCustomPeriod";
 
 export default function Page() {
   const [selectedTab, setSelectedTab] = useState("armada");
@@ -219,6 +221,17 @@ export default function Page() {
   const { data: fleetStatusFilters, isLoading: fleetStatusLoading } =
     useGetFleetStatusFilters();
 
+  // Get custom periods from API
+  const { data: customPeriodsFromAPI, isLoading: customPeriodsLoading } =
+    useGetCustomPeriods({
+      module:
+        selectedTab === "armada" ? "fleet-activities" : "driver-activities",
+    });
+
+  // Custom period save mutation
+  const { trigger: saveCustomPeriodTrigger, isMutating: isSavingCustomPeriod } =
+    useSaveCustomPeriod();
+
   // Konfigurasi periode dengan startDate dan endDate
   const periodOptions = [
     {
@@ -348,6 +361,22 @@ export default function Page() {
       setSortConfig({ sort: null, order: null });
     }
   };
+  // Convert API custom periods to dropdown format
+  const apiPeriodsAsOptions = (customPeriodsFromAPI || []).map((period) => ({
+    name: `${new Date(period.startDate).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })} - ${new Date(period.endDate).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })}`,
+    value: period.id,
+    startDate: period.startDate,
+    endDate: period.endDate,
+    isFromAPI: true,
+  }));
 
   // Handler untuk filter periode
   const handleSelectPeriod = (period) => {
@@ -479,7 +508,7 @@ export default function Page() {
           <DropdownPeriode
             options={periodOptions}
             onSelect={handleSelectPeriod}
-            recentSelections={recentPeriodOptions}
+            recentSelections={[...recentPeriodOptions, ...apiPeriodsAsOptions]}
             value={currentPeriodValue}
             disable={
               (getCurrentData().length === 0 &&
@@ -574,7 +603,10 @@ export default function Page() {
               onDownload={handleDownload}
               periodOptions={periodOptions}
               currentPeriodValue={currentPeriodValue}
-              recentPeriodOptions={recentPeriodOptions}
+              recentPeriodOptions={[
+                ...recentPeriodOptions,
+                ...apiPeriodsAsOptions,
+              ]}
               filterConfig={armadaFilterConfig}
               onFilter={handleFilter}
               onSearch={handleSearch}
@@ -604,7 +636,10 @@ export default function Page() {
               onDownload={handleDownload}
               periodOptions={periodOptions}
               currentPeriodValue={currentPeriodValue}
-              recentPeriodOptions={recentPeriodOptions}
+              recentPeriodOptions={[
+                ...recentPeriodOptions,
+                ...apiPeriodsAsOptions,
+              ]}
               filterConfig={driverFilterConfig}
               onFilter={handleFilter}
               onSearch={handleSearch}
