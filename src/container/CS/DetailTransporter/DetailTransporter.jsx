@@ -431,33 +431,31 @@ const DetailTransporter = ({ breadcrumbData }) => {
 
           {/* Right Column: DataTable */}
           <div className="w-full flex-grow">
-            {fleetNoteData?.Data?.latestNote?.status === "active" &&
-              alertData?.alertSummary?.hasAlert && (
-                <div className="relative top-2 flex w-full rounded-t-xl bg-neutral-50 px-6 pb-3 pt-5">
-                  <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
-                    {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                      "ARMADA_INACTIVE" && (
-                      <p className="text-xs font-semibold text-error-400">
-                        Armada nonaktif bertambah {total} dari follow-up
-                        terakhir.
-                        <span className="ml-1 cursor-pointer font-medium text-primary-700">
-                          Lihat Catatan Terakhir
-                        </span>
-                      </p>
-                    )}
-                    {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                      "TRANSPORTER_IDLE" && (
-                      <p className="text-xs font-semibold text-error-400">
-                        {transporterName} masih melewatkan {current} dari{" "}
-                        {total} pesanan dari follow-up terakhir.
-                        <span className="ml-1 cursor-pointer font-medium text-primary-700">
-                          Lihat Catatan Terakhir
-                        </span>
-                      </p>
-                    )}
-                  </div>
+            {fleetNoteData?.Data?.latestNote?.status === "active" && (
+              <div className="relative top-2 flex w-full rounded-t-xl bg-neutral-50 px-6 pb-3 pt-5">
+                <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
+                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                    "ARMADA_INACTIVE" && (
+                    <p className="text-xs font-semibold text-error-400">
+                      Armada nonaktif bertambah {total} dari follow-up terakhir.
+                      <span className="ml-1 cursor-pointer font-medium text-primary-700">
+                        Lihat Catatan Terakhir
+                      </span>
+                    </p>
+                  )}
+                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                    "TRANSPORTER_IDLE" && (
+                    <p className="text-xs font-semibold text-error-400">
+                      {transporterName} masih melewatkan {current} dari {total}{" "}
+                      pesanan dari follow-up terakhir.
+                      <span className="ml-1 cursor-pointer font-medium text-primary-700">
+                        Lihat Catatan Terakhir
+                      </span>
+                    </p>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
             {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
               "ARMADA_INACTIVE" && (

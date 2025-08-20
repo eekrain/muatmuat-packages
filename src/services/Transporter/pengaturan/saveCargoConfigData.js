@@ -42,7 +42,7 @@ export const saveTransporterCargoConfig = async (id, payload) => {
   }
 
   const result = await fetcherMuatrans.post(
-    `v1/transporter-cargo-config/${id}`,
+    `/v1/transporter/settings/transporter-cargo-config/${id}`,
     payload
   );
   return result?.data;
@@ -50,7 +50,7 @@ export const saveTransporterCargoConfig = async (id, payload) => {
 
 export const useSaveTransporterCargoConfig = (id) => {
   return useSWRMutation(
-    `v1/transporter-cargo-config/${id}`,
+    `/v1/transporter/settings/transporter-cargo-config/${id}`,
     async (url, { arg }) => {
       if (isMockSaveCargoConfig) {
         return mockSaveCargoConfigResponse.data.Data;

@@ -295,7 +295,7 @@ export const useGetTransporterCargoData = (id, params = {}, options = {}) => {
   const queryParams = new URLSearchParams(params).toString();
 
   const cacheKey = id
-    ? `/v1/transporter-cargo-config/${id}${
+    ? `/v1/transporter/settings/transporter-cargo-config/${id}${
         queryParams ? `?${queryParams}` : ""
       }`
     : null;
