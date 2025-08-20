@@ -4,6 +4,10 @@ import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import DetailTransporterHeader from "@/container/CS/DetailTransporter/DetailTransporterHeader/DetailTransporterHeader";
 import ModalCatatanPenyelesaian from "@/container/CS/DetailTransporter/DetailTransporterHeader/ModalCatatanPenyelesaian";
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
@@ -80,7 +84,51 @@ const armadaNonaktifColumns = [
   },
 ];
 
+const idleOrderColumns = [
+  {
+    key: "orderCode",
+    header: "No. Pesanan",
+    sortable: true,
+    render: (row) => (
+      <span className="text-xs font-medium text-neutral-900">
+        {row.orderCode}
+      </span>
+    ),
+  },
+  {
+    key: "transporterReceive",
+    header: "Transporter Penerima",
+    sortable: true,
+    render: (row) => (
+      <span className="text-wrap text-xs font-medium text-neutral-900">
+        {row.transporterReceive}
+      </span>
+    ),
+  },
+  {
+    key: "orderBlastAt",
+    header: "Waktu Pesanan Diblast",
+    sortable: true,
+    render: (row) => (
+      <span className="text-xs font-medium text-neutral-900">
+        {row.orderBlastAt}
+      </span>
+    ),
+  },
+  {
+    key: "orderTakenAt",
+    header: "Waktu Pengambilan",
+    sortable: true,
+    render: (row) => (
+      <span className="text-xs font-medium text-neutral-900">
+        {row.orderTakenAt}
+      </span>
+    ),
+  },
+];
+
 const DetailTransporter = ({ breadcrumbData }) => {
+  const [searchValue, setSearchValue] = useState("");
   // State for pagination (should be declared first)
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -89,9 +137,15 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [showCatatanModal, setShowCatatanModal] = useState(false);
 
-  // Fetch alert summary for totalIncrease
+  // Fetch alert summary for total
   const { data: alertData } = useGetInactiveTransporter();
-  const totalIncrease = alertData?.alertSummary?.totalIncrease ?? 0;
+  const total = alertData?.alertSummary?.total ?? 0;
+  const current = alertData?.alertSummary?.current ?? 0;
+
+  const [sortConfig, setSortConfig] = useState({
+    sort: "licensePlate",
+    order: "asc",
+  });
 
   // Fetch latest fleet note data
   const transporterId = "transporter-uuid-2"; // Example, should be dynamic
@@ -109,20 +163,123 @@ const DetailTransporter = ({ breadcrumbData }) => {
     logoUrl: "/icons/company-placeholder.svg",
   };
 
-  // Map data to DataTable format
-  const armadaNonaktifData = (fleetNoteData?.Data?.details || []).map(
-    (item) => ({
-      licensePlate: item.licensePlate,
-      driverName: item.driverName,
-      tanggalNonaktif: formatDate(item.inactiveDate),
-      lamaNonaktif: formatDuration(item.inactiveDuration),
-    })
-  );
+  // Map and sort data for DataTable
+  let armadaNonaktifData = (fleetNoteData?.Data?.details || []).map((item) => ({
+    licensePlate: item.licensePlate,
+    driverName: item.driverName,
+    tanggalNonaktif: formatDate(item.inactiveDate),
+    lamaNonaktif: formatDuration(item.inactiveDuration),
+    _rawTanggalNonaktif: item.inactiveDate,
+    _rawLamaNonaktif: item.inactiveDuration,
+  }));
+
+  let idleOrderData = (fleetNoteData?.Data?.detailsIdle || []).map((item) => ({
+    ...item,
+    orderBlastAt: item.orderBlastAt ? formatDate(item.orderBlastAt) : "-",
+    orderTakenAt: item.orderTakenAt ? formatDate(item.orderTakenAt) : "-",
+    _rawOrderBlastAt: item.orderBlastAt || null,
+    _rawOrderTakenAt: item.orderTakenAt || null,
+  }));
+
+  // Sorting
+  if (sortConfig?.sort) {
+    if (
+      fleetNoteData?.Data?.latestNote?.inactivityStatus === "ARMADA_INACTIVE"
+    ) {
+      armadaNonaktifData = [...armadaNonaktifData].sort((a, b) => {
+        let aValue = a[sortConfig.sort];
+        let bValue = b[sortConfig.sort];
+        // Custom sort for tanggalNonaktif and lamaNonaktif
+        if (sortConfig.sort === "tanggalNonaktif") {
+          aValue = a._rawTanggalNonaktif;
+          bValue = b._rawTanggalNonaktif;
+        } else if (sortConfig.sort === "lamaNonaktif") {
+          aValue = a._rawLamaNonaktif;
+          bValue = b._rawLamaNonaktif;
+        }
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          if (sortConfig.sort === "tanggalNonaktif") {
+            // Compare date string
+            return sortConfig.order === "asc"
+              ? new Date(aValue) - new Date(bValue)
+              : new Date(bValue) - new Date(aValue);
+          }
+          return sortConfig.order === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+        // Number sort (lamaNonaktif)
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return sortConfig.order === "asc" ? aValue - bValue : bValue - aValue;
+        }
+        return 0;
+      });
+    } else if (
+      fleetNoteData?.Data?.latestNote?.inactivityStatus === "TRANSPORTER_IDLE"
+    ) {
+      idleOrderData = [...idleOrderData].sort((a, b) => {
+        let aValue = a[sortConfig.sort];
+        let bValue = b[sortConfig.sort];
+        // Custom sort for orderBlastAt and orderTakenAt using raw values
+        if (sortConfig.sort === "orderBlastAt") {
+          aValue = a._rawOrderBlastAt ? new Date(a._rawOrderBlastAt) : 0;
+          bValue = b._rawOrderBlastAt ? new Date(b._rawOrderBlastAt) : 0;
+          return sortConfig.order === "asc" ? aValue - bValue : bValue - aValue;
+        }
+        if (sortConfig.sort === "orderTakenAt") {
+          aValue = a._rawOrderTakenAt ? new Date(a._rawOrderTakenAt) : 0;
+          bValue = b._rawOrderTakenAt ? new Date(b._rawOrderTakenAt) : 0;
+          return sortConfig.order === "asc" ? aValue - bValue : bValue - aValue;
+        }
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return sortConfig.order === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+        return 0;
+      });
+    }
+  }
+
+  // Search filter
+  const filteredArmadaNonaktifData = searchValue
+    ? armadaNonaktifData.filter(
+        (item) =>
+          item.licensePlate
+            ?.toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          item.driverName?.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    : armadaNonaktifData;
+
+  const filteredIdleOrderData = searchValue
+    ? idleOrderData.filter(
+        (item) =>
+          item.orderCode?.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.transporterReceive
+            ?.toLowerCase()
+            .includes(searchValue.toLowerCase())
+      )
+    : idleOrderData;
 
   // Use pagination from API response
   const pagination = fleetNoteData?.Data?.pagination || {};
   const totalPages = pagination.totalPages || 1;
   const totalItems = pagination.totalItems || armadaNonaktifData.length;
+
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
+  };
+
+  // Handle search for DataTable
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="w-full p-6">
@@ -146,14 +303,30 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 <p className="text-xs font-bold text-neutral-900">
                   {transporter.name}
                 </p>
-                <p className="text-xs font-medium text-error-400">
-                  Armada Nonaktif Terlalu Banyak (10/11)
-                </p>
+                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                  "ARMADA_INACTIVE" && (
+                  <p className="text-xs font-medium text-error-400">
+                    Armada Nonaktif Terlalu Banyak (
+                    {fleetNoteData?.Data?.latestNote?.current ?? "-"}/
+                    {fleetNoteData?.Data?.latestNote?.total ?? "-"})
+                  </p>
+                )}
+                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                  "TRANSPORTER_IDLE" && (
+                  <p className="text-xs font-medium text-error-400">
+                    Admin Terdeteksi Sering Idle (
+                    {fleetNoteData?.Data?.latestNote?.current ?? "-"}/
+                    {fleetNoteData?.Data?.latestNote?.total ?? "-"} Order)
+                  </p>
+                )}
               </div>
             </div>
-            <p className="text-xs font-medium text-neutral-600">
-              {fleetNoteData?.Data?.latestNote?.content || "-"}
-            </p>
+            {fleetNoteData?.Data?.latestNote?.status === "active" && (
+              <p className="text-xs font-medium text-neutral-600">
+                {fleetNoteData?.Data?.latestNote?.content || "-"}
+              </p>
+            )}
+
             <div className="flex justify-between gap-3">
               <Button
                 variant="muattrans-primary-secondary"
@@ -206,29 +379,35 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 <p className="text-xs font-medium text-neutral-600">
                   Foto Pendukung
                 </p>
-                <div className="flex flex-row gap-2">
-                  {fleetNoteData?.Data?.latestNote?.history?.photos?.length >
-                  0 ? (
-                    fleetNoteData.Data.latestNote.history.photos.map(
-                      (photo, idx) => (
-                        <div
-                          key={idx}
-                          className="h-10 w-10 flex-shrink-0 rounded-[4px] border"
-                        >
-                          <img
-                            src={photo.url}
+                <LightboxProvider
+                  images={
+                    fleetNoteData?.Data?.latestNote?.history?.photos?.map(
+                      (photo) => photo.url
+                    ) || []
+                  }
+                  title="Foto Pendukung"
+                >
+                  <div className="flex flex-row gap-2">
+                    {fleetNoteData?.Data?.latestNote?.history?.photos?.length >
+                    0 ? (
+                      fleetNoteData.Data.latestNote.history.photos.map(
+                        (photo, idx) => (
+                          <LightboxPreview
+                            key={idx}
+                            image={photo.url}
+                            index={idx}
+                            className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
                             alt={`Foto Pendukung ${idx + 1}`}
-                            className="h-full w-full rounded-[4px] object-cover"
                           />
-                        </div>
+                        )
                       )
-                    )
-                  ) : (
-                    <span className="text-xs text-neutral-500">
-                      Tidak ada foto
-                    </span>
-                  )}
-                </div>
+                    ) : (
+                      <span className="text-xs text-neutral-500">
+                        Tidak ada foto
+                      </span>
+                    )}
+                  </div>
+                </LightboxProvider>
               </div>
             </div>
           )}
@@ -244,6 +423,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
           isOpen={showCatatanModal}
           onClose={() => setShowCatatanModal(false)}
           onConfirm={() => setShowCatatanModal(false)}
+          fleetNoteData={fleetNoteData}
         />
 
         {/* Right Column: DataTable */}
@@ -251,34 +431,73 @@ const DetailTransporter = ({ breadcrumbData }) => {
           {fleetNoteData?.Data?.latestNote?.status === "active" && (
             <div className="flex w-full rounded-xl bg-neutral-50 px-6 pt-5">
               <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
-                <p className="text-xs font-semibold text-error-400">
-                  Armada nonaktif bertambah {totalIncrease} dari follow-up
-                  terakhir.
-                  <span className="cursor-pointer font-medium text-primary-700">
-                    Lihat Catatan Terakhir
-                  </span>
-                </p>
+                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                  "ARMADA_INACTIVE" && (
+                  <p className="text-xs font-semibold text-error-400">
+                    Armada nonaktif bertambah {total} dari follow-up terakhir.
+                    <span className="ml-1 cursor-pointer font-medium text-primary-700">
+                      Lihat Catatan Terakhir
+                    </span>
+                  </p>
+                )}
+                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                  "TRANSPORTER_IDLE" && (
+                  <p className="text-xs font-semibold text-error-400">
+                    {transporterName} masih melewatkan {current} dari {total}{" "}
+                    pesanan dari follow-up terakhir.
+                    <span className="ml-1 cursor-pointer font-medium text-primary-700">
+                      Lihat Catatan Terakhir
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
           )}
 
-          <DataTable
-            data={armadaNonaktifData}
-            columns={armadaNonaktifColumns}
-            searchPlaceholder="Cari Nama Driver / No. Polisi"
-            totalCountLabel="Armada Nonaktif"
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            perPage={perPage}
-            onPageChange={setCurrentPage}
-            onPerPageChange={setPerPage}
-            showFilter={false}
-            showPagination={true}
-            showTotalCount={true}
-            loading={isFleetNoteLoading}
-            className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
-          />
+          {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+            "ARMADA_INACTIVE" && (
+            <DataTable
+              data={filteredArmadaNonaktifData}
+              columns={armadaNonaktifColumns}
+              searchPlaceholder="Cari Nama Driver / No. Polisi"
+              totalCountLabel="Armada Nonaktif"
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              perPage={perPage}
+              onPageChange={setCurrentPage}
+              onPerPageChange={setPerPage}
+              showFilter={false}
+              showPagination={true}
+              showTotalCount={true}
+              onSort={handleSort}
+              onSearch={handleSearch}
+              loading={isFleetNoteLoading}
+              className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
+            />
+          )}
+          {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+            "TRANSPORTER_IDLE" && (
+            <DataTable
+              data={filteredIdleOrderData}
+              columns={idleOrderColumns}
+              searchPlaceholder="Cari No. Pesanan / Nama Transporter"
+              totalCountLabel="Order Terlewat"
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredIdleOrderData.length}
+              perPage={perPage}
+              onPageChange={setCurrentPage}
+              onPerPageChange={setPerPage}
+              showFilter={false}
+              showPagination={true}
+              showTotalCount={true}
+              onSort={handleSort}
+              onSearch={handleSearch}
+              loading={isFleetNoteLoading}
+              className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
+            />
+          )}
         </div>
       </div>
     </div>

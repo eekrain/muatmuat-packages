@@ -3,7 +3,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 export const FooterButton = ({ orderStatus }) => {

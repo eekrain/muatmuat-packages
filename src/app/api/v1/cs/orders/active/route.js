@@ -2,6 +2,57 @@ import { NextResponse } from "next/server";
 
 import { activeOrdersData } from "./mockData";
 
+const groupDataByTransporter = (orders) => {
+  const grouped = orders.reduce((acc, order) => {
+    const transporterId = order.transporter.id;
+    const shipperId = order.shipper.id;
+
+    if (!acc[transporterId]) {
+      acc[transporterId] = {
+        transporter: order.transporter,
+        shippers: {},
+      };
+    }
+    if (!acc[transporterId].shippers[shipperId]) {
+      acc[transporterId].shippers[shipperId] = {
+        shipper: order.shipper,
+        orders: [],
+      };
+    }
+    acc[transporterId].shippers[shipperId].orders.push(order);
+    return acc;
+  }, {});
+
+  return Object.values(grouped).map((transporterGroup) => ({
+    ...transporterGroup,
+    shippers: Object.values(transporterGroup.shippers),
+  }));
+};
+
+const groupDataByShipper = (orders) => {
+  const grouped = orders.reduce((acc, order) => {
+    const shipperId = order.shipper.id;
+    const transporterId = order.transporter.id;
+
+    if (!acc[shipperId]) {
+      acc[shipperId] = { shipper: order.shipper, transporters: {} };
+    }
+    if (!acc[shipperId].transporters[transporterId]) {
+      acc[shipperId].transporters[transporterId] = {
+        transporter: order.transporter,
+        orders: [],
+      };
+    }
+    acc[shipperId].transporters[transporterId].orders.push(order);
+    return acc;
+  }, {});
+
+  return Object.values(grouped).map((shipperGroup) => ({
+    ...shipperGroup,
+    transporters: Object.values(shipperGroup.transporters),
+  }));
+};
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -15,6 +66,7 @@ export async function GET(request) {
 
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
+  const viewBy = searchParams.get("viewBy") || "pesanan";
 
   if (urgentStatus && urgentStatus !== "all") {
     statuses.push(urgentStatus);
@@ -80,6 +132,26 @@ export async function GET(request) {
   );
 
   await new Promise((resolve) => setTimeout(resolve, 800));
+
+  if (viewBy === "transporter") {
+    const groupedData = groupDataByTransporter(filteredOrders);
+    return NextResponse.json({
+      Message: {
+        Code: 200,
+        Text: "Grouped active orders retrieved successfully",
+      },
+      Data: { groupedData: groupedData, pagination: null },
+      Type: "CS_ACTIVE_ORDERS_GROUPED",
+    });
+  }
+
+  if (viewBy === "shipper") {
+    const groupedData = groupDataByShipper(filteredOrders);
+    return NextResponse.json({
+      Message: { Code: 200, Text: "Grouped by shipper" },
+      Data: { groupedData: groupedData, viewBy: "shipper" },
+    });
+  }
 
   return NextResponse.json({
     Message: { Code: 200, Text: "Active orders retrieved successfully" },

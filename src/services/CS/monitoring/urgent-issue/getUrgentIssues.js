@@ -367,7 +367,29 @@ export const getUrgentIssueCount = async (cacheKey) => {
     if (status && !["new", "processing", "completed", "all"].includes(status)) {
       result = mockUrgentIssueCountError;
     } else {
-      result = mockUrgentIssueCount;
+      // Hitung count berdasarkan status yang diminta
+      const allItems = mockUrgentIssueList.data.Data.items;
+      const newCount = allItems.filter((item) => item.status === "NEW").length;
+      const processingCount = allItems.filter(
+        (item) => item.status === "PROCESSING"
+      ).length;
+      const completedCount = allItems.filter(
+        (item) => item.status === "COMPLETED"
+      ).length;
+
+      result = {
+        ...mockUrgentIssueCount,
+        data: {
+          ...mockUrgentIssueCount.data,
+          Data: {
+            new: newCount,
+            processing: processingCount,
+            completed: completedCount,
+            total: newCount + processingCount + completedCount,
+            activeTotal: newCount + processingCount,
+          },
+        },
+      };
     }
   } else {
     const query = params ? `?${new URLSearchParams(params).toString()}` : "";
@@ -394,7 +416,31 @@ export const getUrgentIssueList = async (cacheKey) => {
     if (status && !["new", "processing", "completed"].includes(status)) {
       result = mockUrgentIssueListError;
     } else {
-      result = mockUrgentIssueList;
+      // Filter mock data berdasarkan status yang diminta
+      const filteredItems = mockUrgentIssueList.data.Data.items.filter(
+        (item) => {
+          if (!status) return true; // Jika tidak ada status, return semua
+          return item.status.toLowerCase() === status.toLowerCase();
+        }
+      );
+
+      result = {
+        ...mockUrgentIssueList,
+        data: {
+          ...mockUrgentIssueList.data,
+          Data: {
+            ...mockUrgentIssueList.data.Data,
+            items: filteredItems,
+            pagination: {
+              ...mockUrgentIssueList.data.Data.pagination,
+              total: filteredItems.length,
+              totalPages: Math.ceil(filteredItems.length / 10),
+              hasNext: false,
+              hasPrev: false,
+            },
+          },
+        },
+      };
     }
   } else {
     const query = params ? `?${new URLSearchParams(params).toString()}` : "";

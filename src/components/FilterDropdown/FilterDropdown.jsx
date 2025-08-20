@@ -158,13 +158,13 @@ const FilterDropdown = ({
       return (
         <button
           className={cn(
-            "flex h-8 w-[104px] flex-row items-center justify-between gap-2 rounded-md border px-3 transition-colors duration-150 focus:outline-none",
+            "flex h-8 min-w-[104px] flex-row items-center justify-between gap-2 rounded-md border px-3 transition-colors duration-150 focus:outline-none",
             triggerClassName,
             disabled
               ? "cursor-not-allowed border-neutral-600 bg-neutral-200"
               : totalSelected > 0
-                ? "border-primary-700 bg-white hover:border-primary-700 hover:bg-gray-50"
-                : "border-neutral-600 bg-white hover:border-primary-700 hover:bg-gray-50"
+                ? "border-primary-700 bg-neutral-50"
+                : "border-neutral-600 bg-neutral-50"
           )}
           disabled={disabled}
         >
@@ -179,14 +179,13 @@ const FilterDropdown = ({
             Filter
           </span>
           <IconComponent
-            src="/icons/datatable-filter.svg"
-            height={14.33}
-            width={14.33}
-            className={
+            className={cn(
+              "text-neutral-700",
               totalSelected > 0 && !disabled
                 ? "text-primary-700"
-                : "text-neutral-700"
-            }
+                : "text-neutral-600"
+            )}
+            src="/icons/filter16.svg"
           />
         </button>
       );
@@ -310,8 +309,10 @@ const FilterDropdown = ({
                   {/* Items List */}
                   <div className="overflow-y-auto" style={{ maxHeight }}>
                     {getFilteredItems(category.key, category).length === 0 ? (
-                      <div className="py-2 text-center text-xs font-medium">
-                        {emptyMessage}
+                      <div className="flex h-[42px] w-full items-center justify-center">
+                        <span className="text-center text-xs font-medium">
+                          {emptyMessage}
+                        </span>
                       </div>
                     ) : (
                       getFilteredItems(category.key, category).map((item) => (

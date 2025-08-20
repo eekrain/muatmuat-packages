@@ -29,7 +29,7 @@ const ClickableImage = ({ src, alt, className, onImageClick }) => {
   );
 };
 
-const LaporanAktivitasDriverTable = ({
+const LaporanAktivitasArmadaTable = ({
   data = [],
   currentPage = 1,
   totalPages = 1,
@@ -47,7 +47,7 @@ const LaporanAktivitasDriverTable = ({
   showSearch = true,
   showPagination = true,
   showTotalCount = true,
-  searchPlaceholder = "Cari Driver",
+  searchPlaceholder = "Cari Armada",
   disabledByPeriod = false,
   loading = false,
   className = "border-0",
@@ -57,74 +57,55 @@ const LaporanAktivitasDriverTable = ({
   isPeriodFilterActive = false,
   isFilterDropdownActive = false,
 }) => {
+  const router = useRouter();
   const [localSearchValue, setLocalSearchValue] = useState(searchValue);
   const [localFilters, setLocalFilters] = useState(filters);
   const [localSortConfig, setLocalSortConfig] = useState(sortConfig);
   const [selectedImage, setSelectedImage] = useState("");
-  const router = useRouter();
 
-  // Table columns for Driver
+  // Table columns for Armada
   const columns = [
     {
-      header: "Nama Driver",
-      key: "name",
+      header: "No. Polisi",
+      key: "licensePlate",
       sortable: true,
-      width: "250px",
+      width: "300px",
       searchable: true,
       render: (row) => (
         <div className="flex items-center gap-3">
           <ClickableImage
-            src={row.profileImage}
-            alt="Driver"
+            src={row.fleetImage}
+            alt="Vehicle"
             className="h-12 w-12 cursor-pointer rounded object-cover transition-opacity hover:opacity-80"
             onImageClick={setSelectedImage}
           />
-          <div>
-            <div className="font-semibold text-gray-900">{row.name}</div>
-            <div className="text-xs text-gray-600">{row.phoneNumber}</div>
+          <div className="ms-3">
+            <div className="text-sm font-semibold">{row.licensePlate}</div>
+            <div className="mt-1 text-xxs font-medium">
+              {row.truckType} - {row.carrierType}
+            </div>
           </div>
         </div>
       ),
     },
     {
-      header: "Armada",
-      key: "armada",
+      header: "Lokasi Terkini",
+      key: "currentLocation",
       sortable: false,
-      width: "150px",
+      width: "180px",
       searchable: true,
-      render: (row) => {
-        if (!row.currentFleet || !row.currentFleet.licensePlate) {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
-        }
-
-        return (
-          <div className="flex flex-col">
-            <div className="text-sm font-semibold text-gray-900">
-              {row.currentFleet.licensePlate}
-            </div>
-            <div className="text-xs text-gray-600">
-              {row.currentFleet.truckType} - {row.currentFleet.carrierType}
-            </div>
-            <div className="text-xs text-gray-500">
-              {row.currentFleet.currentLocation === "-"
-                ? "Lokasi tidak tersedia"
-                : row.currentFleet.currentLocation}
-            </div>
-          </div>
-        );
-      },
     },
     {
       header: "Kode Pesanan Aktif",
       key: "invoiceNumber",
       sortable: true,
-      width: "150px",
+      width: "100px",
       searchable: true,
       render: (row) => {
         if (!row.invoiceNumber || row.invoiceNumber === "") {
-          return <div className="text-sm">Belum Ada</div>;
+          return <div className="text-xs font-medium">Belum Ada</div>;
         }
-        return <div className="text-sm">{row.invoiceNumber}</div>;
+        return <div className="text-xs font-medium">{row.invoiceNumber}</div>;
       },
     },
     {
@@ -135,7 +116,7 @@ const LaporanAktivitasDriverTable = ({
       searchable: false,
       render: (row) => {
         if (!row.activeOrderRoute || row.activeOrderRoute === "Belum Ada") {
-          return <div className="text-sm">Belum Ada</div>;
+          return <div className="text-xs font-medium">Belum Ada</div>;
         }
 
         // Parse route data to extract pickup and dropoff locations
@@ -168,7 +149,7 @@ const LaporanAktivitasDriverTable = ({
     },
     {
       header: "Status",
-      key: "currentStatus",
+      key: "status",
       sortable: true,
       width: "200px",
       searchable: true,
@@ -176,44 +157,39 @@ const LaporanAktivitasDriverTable = ({
         let bgColor = "bg-gray-200";
         let textColor = "text-gray-600";
 
-        if (row.currentStatus === "READY_FOR_ORDER") {
+        if (row.status === "READY_FOR_ORDER") {
           bgColor = "bg-green-100";
           textColor = "text-green-900";
-        } else if (row.currentStatus === "NOT_PAIRED") {
+        } else if (row.status === "NOT_PAIRED") {
           bgColor = "bg-gray-100";
           textColor = "text-gray-600";
-        } else if (row.currentStatus === "ON_DUTY") {
+        } else if (row.status === "ON_DUTY") {
           bgColor = "bg-blue-100";
           textColor = "text-blue-900";
-        } else if (row.currentStatus === "WAITING_LOADING_TIME") {
+        } else if (row.status === "WAITING_LOADING_TIME") {
           bgColor = "bg-yellow-100";
           textColor = "text-yellow-900";
-        } else if (row.currentStatus === "INACTIVE") {
+        } else if (row.status === "INACTIVE") {
           bgColor = "bg-red-100";
           textColor = "text-red-900";
-        } else if (row.currentStatus === "NON_ACTIVE") {
-          bgColor = "bg-red-100";
-          textColor = "text-red-900";
-        } else if (row.currentStatus === null) {
+        } else if (row.status === null) {
           bgColor = "bg-gray-100";
           textColor = "text-gray-500";
         }
 
         // Map status to display labels
-        let displayStatus = row.currentStatus;
-        if (row.currentStatus === "READY_FOR_ORDER") {
+        let displayStatus = row.status;
+        if (row.status === "READY_FOR_ORDER") {
           displayStatus = "Siap Menerima Order";
-        } else if (row.currentStatus === "NOT_PAIRED") {
+        } else if (row.status === "NOT_PAIRED") {
           displayStatus = "Belum Dipasangkan";
-        } else if (row.currentStatus === "ON_DUTY") {
+        } else if (row.status === "ON_DUTY") {
           displayStatus = "Bertugas";
-        } else if (row.currentStatus === "WAITING_LOADING_TIME") {
+        } else if (row.status === "WAITING_LOADING_TIME") {
           displayStatus = "Akan Muat Hari Ini";
-        } else if (row.currentStatus === "INACTIVE") {
+        } else if (row.status === "INACTIVE") {
           displayStatus = "Nonaktif";
-        } else if (row.currentStatus === "NON_ACTIVE") {
-          displayStatus = "Nonaktif";
-        } else if (row.currentStatus === null) {
+        } else if (row.status === null) {
           displayStatus = "Tidak Ada Status";
         }
 
@@ -236,9 +212,9 @@ const LaporanAktivitasDriverTable = ({
         <Button
           className="h-8 px-4 text-xs"
           onClick={() => {
-            // Navigate to detail page with only driver ID
+            // Navigate to detail page with only fleet ID
             router.push(
-              `/laporan/aktivitas-armada-driver/driver/${row.driverId}`
+              `/laporan/aktivitas-armada-driver/armada/${row.fleetId}`
             );
           }}
         >
@@ -255,7 +231,7 @@ const LaporanAktivitasDriverTable = ({
 
   const handleSearchKeyUp = (e) => {
     if (e.key === "Enter") {
-      onSearch?.(localSearchValue);
+      handleSearch(localSearchValue);
     }
   };
 
@@ -399,7 +375,11 @@ const LaporanAktivitasDriverTable = ({
               placeholder={searchPlaceholder}
               value={localSearchValue}
               onChange={(e) => setLocalSearchValue(e.target.value)}
-              onKeyUp={handleSearchKeyUp}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  onSearch?.(localSearchValue);
+                }
+              }}
               disabled={disableSearchInput}
               icon={{
                 left: (
@@ -440,7 +420,7 @@ const LaporanAktivitasDriverTable = ({
         <div className="flex flex-col items-end gap-2">
           {showTotalCount && (
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {data.length} Driver
+              Total : {data.length} Armada
             </div>
           )}
         </div>
@@ -522,17 +502,17 @@ const LaporanAktivitasDriverTable = ({
           <div className="p-4 md:p-6">
             <div className="mb-4 flex items-center justify-center">
               <h2 className="text-center text-xl font-semibold md:text-2xl">
-                Gambar Driver
+                Gambar Armada
               </h2>
             </div>
             {selectedImage && (
               <div className="flex justify-center rounded-lg">
                 <img
                   src={selectedImage}
-                  alt="Driver"
+                  alt="Vehicle"
                   className="h-full w-full rounded-lg object-contain"
                   style={{
-                    maxHeight: "calc(65vh - 100px)",
+                    maxHeight: "calc(60vh - 100px)",
                     maxWidth: "100%",
                   }}
                 />
@@ -545,4 +525,4 @@ const LaporanAktivitasDriverTable = ({
   );
 };
 
-export default LaporanAktivitasDriverTable;
+export default LaporanAktivitasArmadaTable;

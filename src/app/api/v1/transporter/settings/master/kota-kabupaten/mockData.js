@@ -6,7 +6,7 @@ export const kotaKabupatenSuccessResponse = {
   Data: {
     cities: [
       {
-        provinceId: "550e8400-e29b-41d4-a716-446655440001",
+        provinceId: 31,
         provinceName: "DKI Jakarta",
         selectedCount: 3,
         totalCount: 5,
@@ -40,7 +40,7 @@ export const kotaKabupatenSuccessResponse = {
         ],
       },
       {
-        provinceId: "550e8400-e29b-41d4-a716-446655440002",
+        provinceId: 32,
         provinceName: "Jawa Barat",
         selectedCount: 2,
         totalCount: 6,
@@ -79,7 +79,7 @@ export const kotaKabupatenSuccessResponse = {
         ],
       },
       {
-        provinceId: "550e8400-e29b-41d4-a716-446655440003",
+        provinceId: 33,
         provinceName: "Jawa Tengah",
         selectedCount: 1,
         totalCount: 4,

@@ -32,10 +32,10 @@ export const UrgentIssueCardTransporter = ({
 
   let statusDisplay = "baru";
   let buttonLabel = "Proses";
-  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
+  if (status?.toLowerCase() === "processing") {
     statusDisplay = "diproses";
     buttonLabel = "Selesai";
-  } else if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
+  } else if (status?.toLowerCase() === "completed") {
     statusDisplay = "selesai";
     buttonLabel = "Selesai";
   } else {
@@ -66,6 +66,8 @@ export const UrgentIssueCardTransporter = ({
             : "diselesaikan"
         }`
       );
+      // Reset updateParams setelah berhasil untuk mencegah toast muncul lagi
+      setUpdateParams({ id: null, body: null });
     } else if (isError) {
       toast.error(
         `Urgent issue pesanan ${orderCode} gagal ${
@@ -74,6 +76,8 @@ export const UrgentIssueCardTransporter = ({
             : "diselesaikan"
         }`
       );
+      // Reset updateParams setelah error untuk mencegah toast muncul lagi
+      setUpdateParams({ id: null, body: null });
     }
   }, [message, isError, updateParams, orderCode]);
 
@@ -166,13 +170,13 @@ export const UrgentIssueCardTransporter = ({
           // const parts = text.split(plate);
           return (
             <>
-              Armada
+              Armada{" "}
               <span
                 className="cursor-pointer text-primary-800"
                 onClick={handleClickVehiclePlateNumber}
               >
                 {plate}
-              </span>
+              </span>{" "}
               {description}
             </>
           );

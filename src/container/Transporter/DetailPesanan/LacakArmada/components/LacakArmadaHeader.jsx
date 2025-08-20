@@ -75,7 +75,15 @@ function LacakArmadaHeader({
       </div>
 
       <div className="flex w-auto items-center gap-3">
-        {isDaftarPesanan && (
+        {activeTab === "aktif" ? (
+          <Button
+            variant="muattrans-primary"
+            className="h-8 whitespace-nowrap px-4 md:px-6"
+            onClick={onDetailStatusClick}
+          >
+            Lihat Posisi Armada
+          </Button>
+        ) : (
           <Button
             variant="muattrans-primary-secondary"
             className="h-8 whitespace-nowrap px-4 md:px-6"
@@ -84,6 +92,7 @@ function LacakArmadaHeader({
             Detail Status Armada
           </Button>
         )}
+
         {showSearch && (
           <div className="h-8 w-[305px] shrink-0">
             <Input

@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import { Search } from "lucide-react";
-
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
+import Search from "@/components/Search/Search";
 import { toast } from "@/lib/toast";
 import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
 import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
@@ -156,19 +154,12 @@ const DriverSelectionModal = ({
               </div>
             ) : (
               <>
-                {/* Search Input */}
-                <Input
-                  type="text"
+                <Search
                   placeholder="Cari Driver"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  icon={{
-                    left: <Search className="h-4 w-4 text-neutral-500" />,
-                  }}
-                  appearance={{
-                    containerClassName: "h-8 w-full",
-                    inputClassName: "text-sm font-medium",
-                  }}
+                  onSearch={setSearchValue}
+                  autoSearch={true}
+                  containerClassName="w-full"
+                  inputClassName="text-sm font-medium"
                 />
 
                 {/* Driver List */}

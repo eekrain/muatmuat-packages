@@ -2,7 +2,6 @@ import { Fragment, useState } from "react";
 
 import { isSameDay } from "date-fns";
 
-import { TagBubble } from "@/components/Badge/TagBubble";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -10,9 +9,12 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
-import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import { formatDate, formatTime } from "@/lib/utils/dateFormat";
+import { thousandSeparator } from "@/lib/utils/formatters";
+
+import { DetailPicLokasiCard } from "./AdditionalServiceDetail";
 
 const SectionRow = ({ label, children }) => (
   <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-8">
@@ -35,7 +37,6 @@ const PICDetailItem = ({ icon, text, className = "" }) => (
 
 // Component untuk kartu lokasi individual
 const PICLocationCard = ({ locations = [], title }) => {
-  console.log("locations", locations);
   return (
     <div className={"flex w-full flex-row gap-8"}>
       <div className="flex h-8 min-w-[178px] items-center">
@@ -75,7 +76,7 @@ const PICLocationCard = ({ locations = [], title }) => {
                   />
                   <PICDetailItem
                     icon="/icons/profile16.svg"
-                    text={location.pic.name}
+                    text={location.picName}
                   />
                 </div>
               </Fragment>
@@ -87,7 +88,7 @@ const PICLocationCard = ({ locations = [], title }) => {
   );
 };
 
-const RingkasanPesananBody = ({ dataOrderDetail }) => {
+const RingkasanPesananBody = ({ data }) => {
   const [isMainSectionExpanded, setIsMainSectionExpanded] = useState(false);
   const [isPicSectionExpanded, setIsPicSectionExpanded] = useState(false);
 
@@ -95,22 +96,22 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
     setIsPicSectionExpanded((prevState) => !prevState);
   };
   const isSameLoadDay = isSameDay(
-    new Date(dataOrderDetail?.loadTimeStart),
-    new Date(dataOrderDetail?.loadTimeEnd)
+    new Date(data?.loadTimeStart),
+    new Date(data?.loadTimeEnd)
   );
 
-  const pickupLocations = dataOrderDetail?.locations?.filter(
-    (location) => location.type === "PICKUP"
+  const pickupLocations = data?.orderSummary?.locations?.filter(
+    (location) => location.locationType === "PICKUP"
   );
-  const dropoffLocations = dataOrderDetail?.locations?.filter(
-    (location) => location.type === "DROPOFF"
+  const dropoffLocations = data?.orderSummary?.locations?.filter(
+    (location) => location.locationType === "DROPOFF"
   );
 
-  const totalWeightKg = dataOrderDetail?.cargo
+  const totalWeightKg = data?.cargo
     ?.reduce((sum, item) => sum + item.weight * 1000, 0)
     .toLocaleString("id-ID");
 
-  const displayedCargo = dataOrderDetail?.cargo
+  const displayedCargo = data?.orderSummary?.cargo?.cargos
     ?.slice(0, 3)
     .map((item, index) => {
       let convertedWeight = item.weight;
@@ -123,15 +124,17 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
       }
       const formattedWeight = convertedWeight.toLocaleString("id-ID");
 
-      let convertedLength = item.length;
-      let convertedWidth = item.width;
-      let convertedHeight = item.height;
+      let convertedLength = item?.dimensions?.length || 0;
+      let convertedWidth = item?.dimensions?.width || 0;
+      let convertedHeight = item?.dimensions?.height || 0;
 
-      if (item.dimensionUnit === "m") {
-        convertedLength = item.length * 100; // Convert meters to cm
-        convertedWidth = item.width * 100; // Convert meters to cm
-        convertedHeight = item.height * 100; // Convert meters to cm
+      if (item?.dimensions?.unit === "m") {
+        convertedLength = convertedLength * 100; // Convert meters to cm
+        convertedWidth = convertedWidth * 100; // Convert meters to cm
+        convertedHeight = convertedHeight * 100; // Convert meters to cm
       }
+      const withDimension =
+        convertedLength > 0 || convertedWidth > 0 || convertedHeight > 0;
 
       const formattedLength = convertedLength.toLocaleString("id-ID");
       const formattedWidth = convertedWidth.toLocaleString("id-ID");
@@ -147,7 +150,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           <p className="text-xs font-semibold text-neutral-900">
             {item.name}
             <span className="text-neutral-600">
-              {` (${formattedWeight} kg) ${item.dimensionUnit ? `(${formattedLength}x${formattedWidth}x${formattedHeight} cm)` : ""}`}
+              {` (${formattedWeight} kg) ${withDimension ? `(${formattedLength}x${formattedWidth}x${formattedHeight} cm)` : ""}`}
             </span>
           </p>
         </div>
@@ -157,7 +160,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
   return (
     <Card className="rounded-xl border-none">
       <CardContent className="flex flex-col gap-y-6 p-6">
-        {dataOrderDetail?.isHalalLogistics && (
+        {data?.orderSummary?.isHalalLogistic && (
           <div className="flex h-10 w-full items-center gap-3 rounded-xl bg-[#F7EAFD] px-4">
             <img
               src="/icons/halal.svg"
@@ -178,22 +181,21 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
         <SectionRow label="Informasi Armada">
           <div className="flex items-center gap-4">
             <LightboxProvider
-              image={dataOrderDetail?.vehicle?.vehicleImage}
-              title={dataOrderDetail?.vehicle?.truckTypeName}
+              image={data?.orderSummary?.vehicle?.vehicleImage}
+              title={data?.orderSummary?.vehicle?.truckTypeName}
             >
               <LightboxPreview
-                image={dataOrderDetail?.vehicle?.vehicleImage}
-                alt={dataOrderDetail?.vehicle?.truckTypeName}
+                image={data?.orderSummary?.vehicle?.vehicleImage}
+                alt={data?.orderSummary?.vehicle?.truckTypeName}
                 className="size-[68px] rounded-xl object-cover"
               />
             </LightboxProvider>
             <div>
               <h3 className="text-xs font-bold text-neutral-900">
-                {/* Carrier name menyusul */}
-                {`${dataOrderDetail?.vehicle?.truckTypeName} - Box`}
+                {data?.orderSummary?.vehicle?.truckTypeName}
               </h3>
               <p className="mt-2 text-xs font-medium text-neutral-900">
-                Kebutuhan : {dataOrderDetail?.truckCount} Unit
+                Kebutuhan : {data?.orderSummary?.truckCount} Unit
               </p>
             </div>
           </div>
@@ -201,12 +203,12 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
 
         <SectionRow label="Waktu Muat">
           <p className="text-xs font-medium text-neutral-900">
-            {`${formatDate(dataOrderDetail?.loadTimeStart)} ${
-              dataOrderDetail?.loadTimeEnd
+            {`${formatDate(data?.orderSummary?.loadTimeStart)} ${
+              data?.orderSummary?.loadTimeEnd
                 ? ` s/d ${
                     isSameLoadDay
-                      ? formatTime(dataOrderDetail?.loadTimeEnd)
-                      : formatDate(dataOrderDetail?.loadTimeEnd)
+                      ? formatTime(data?.orderSummary?.loadTimeEnd)
+                      : formatDate(data?.orderSummary?.loadTimeEnd)
                   }`
                 : ""
             }`}
@@ -216,7 +218,8 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
         <SectionRow label="Rute Muat & Bongkar">
           <div className="flex flex-col gap-3">
             <p className="text-xs font-medium text-neutral-900">
-              Estimasi {dataOrderDetail?.estimatedDistance} km
+              Estimasi {data?.orderSummary?.estimatedDistance}{" "}
+              {data?.orderSummary?.estimatedDistanceUnit}
             </p>
             <MuatBongkarStepperWithModal
               pickupLocations={pickupLocations}
@@ -228,7 +231,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
         <SectionRow label="Informasi Muatan">
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium">
-              {`Total Berat : ${totalWeightKg} kg`}
+              {`Total Berat : ${thousandSeparator(data?.orderSummary?.cargo?.totalWeight)} ${data?.orderSummary?.cargo?.totalWeightUnit}`}
             </span>
             <div className="flex flex-col gap-2">{displayedCargo}</div>
           </div>
@@ -246,57 +249,52 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
               <div className="flex flex-col gap-6">
                 <SectionRow label="Deskripsi Muatan">
                   <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
-                    {dataOrderDetail?.cargoDescription}
+                    {data?.orderSummary?.cargo?.description}
                   </p>
                 </SectionRow>
 
                 <SectionRow label="Foto Muatan">
                   <LightboxProvider
-                    images={dataOrderDetail?.photos?.map(
-                      (photo) => photo.photoUrl
-                    )}
-                    title="Foto Muatan"
+                    images={data?.orderSummary?.cargo?.cargoPhotos || []}
+                    title="Lampiran/Foto Muatan"
                   >
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                      {dataOrderDetail?.photos?.map((photo, index) => (
-                        <LightboxPreview
-                          key={index}
-                          image={photo.photoUrl}
-                          index={index}
-                          alt={`Foto Muatan ${index + 1}`}
-                          className="size-[124px] rounded-xl object-cover"
-                        />
-                      ))}
+                    <div className="flex gap-4">
+                      {data?.orderSummary?.cargo?.cargoPhotos?.map(
+                        (photo, index) => (
+                          <LightboxPreview
+                            key={index}
+                            image={photo}
+                            index={index}
+                            alt={`Foto Muatan ${index + 1}`}
+                            className="size-[124px] rounded-xl object-cover"
+                          />
+                        )
+                      )}
                     </div>
                   </LightboxProvider>
                 </SectionRow>
 
-                {true ? (
-                  <SectionRow label="No. Delivery Order">
-                    <div className="flex flex-wrap gap-2">
-                      {["DO-20241023-001", "DO-20241023-002"]?.map(
-                        (order, index) => (
-                          <TagBubble key={index}>{order}</TagBubble>
-                        )
-                      )}
-                    </div>
-                  </SectionRow>
-                ) : null}
-
-                {dataOrderDetail?.additionalServices.length > 0 ? (
+                {data?.orderSummary?.additionalServices.length > 0 ? (
                   <SectionRow label="Layanan Tambahan">
                     <div className="flex flex-col gap-y-2">
-                      {dataOrderDetail?.additionalServices.map(
-                        (service, key) => (
-                          <div className="flex items-center gap-x-2" key={key}>
-                            <IconComponent
-                              className="text-muat-trans-secondary-900"
-                              src="/icons/layanan-tambahan16.svg"
-                            />
-                            <span className="text-xs font-semibold">
-                              {service.serviceName}
-                            </span>
-                          </div>
+                      {data?.orderSummary?.additionalServices.map(
+                        (data, key) => (
+                          <Fragment key={key}>
+                            <div className="flex items-center gap-x-2">
+                              <IconComponent
+                                className="text-muat-trans-secondary-900"
+                                src="/icons/layanan-tambahan16.svg"
+                              />
+                              <span className="text-xs font-semibold">
+                                {data.serviceName}
+                              </span>
+                            </div>
+                            {data?.isDocumentDelivery && (
+                              <div className="pl-6">
+                                <DetailPicLokasiCard data={data} />
+                              </div>
+                            )}
+                          </Fragment>
                         )
                       )}
                     </div>
@@ -359,7 +357,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                 isMainSectionExpanded ? "rotate-180" : ""
               }`}
             />
-            <span className="text-xs font-semibold text-primary-700">
+            <span className="mt-0.5 text-xs font-semibold text-primary-700">
               {isMainSectionExpanded ? "Sembunyikan" : "Lihat Selengkapnya"}
             </span>
           </button>

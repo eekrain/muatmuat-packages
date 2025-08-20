@@ -15,8 +15,9 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 // --- (1) UNCOMMENT baris ini ---
 import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 import ModalUbahArmada from "./ModalUbahArmada";
 import ModalUbahDriver from "./ModalUbahDriver";
@@ -69,7 +70,7 @@ function CardLacakArmada({
     { label: "Selesai", icon: "/icons/check16.svg" },
   ];
 
-  const historySteps = [
+  const cancelledSteps = [
     { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
     {
       label: "Dibatalkan",
@@ -78,23 +79,45 @@ function CardLacakArmada({
     },
   ];
 
+  // Fungsi untuk menentukan apakah status adalah pembatalan
+  const isCancelledStatus = (s) => {
+    return [
+      ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+      ORDER_STATUS.CANCELLED_BY_SHIPPER,
+      ORDER_STATUS.CANCELLED_BY_SYSTEM,
+    ].includes(s);
+  };
+
   const getActiveIndex = (s) => {
+    // Jika status pembatalan, gunakan index 1 (step "Dibatalkan")
+    if (isCancelledStatus(s)) {
+      return 1;
+    }
+
     switch (s) {
-      case "COMPLETED":
+      case ORDER_STATUS.COMPLETED:
         return 5;
-      case "DOCUMENT_DELIVERY":
+      case ORDER_STATUS.DOCUMENT_DELIVERY:
         return 4;
-      case "DOCUMENT_PREPARATION":
+      case ORDER_STATUS.DOCUMENT_PREPARATION:
         return 3;
-      case "LOADING":
+      case ORDER_STATUS.LOADING:
         return 2;
-      case "UNLOADING":
+      case ORDER_STATUS.HEADING_TO_LOADING:
+        return 1; // Proses Muat
+      case ORDER_STATUS.HEADING_TO_UNLOADING:
+        return 1; // Proses Muat
+      case ORDER_STATUS.UNLOADING:
         return 1;
       default:
         return 0;
     }
   };
+
   const activeIndex = getActiveIndex(status);
+
+  // Pilih steps berdasarkan status
+  const currentSteps = isCancelledStatus(status) ? cancelledSteps : steps;
 
   // --- Handlers Ubah Driver ---
   const handleOpenDriverModal = () => setIsDriverModalOpen(true);
@@ -138,30 +161,36 @@ function CardLacakArmada({
   };
 
   const [isSOS] = useState(false);
-  const isHistory = false;
-  const emptyFleetData = false;
-  const emptyHistory = false;
 
   const getStatusLabel = (s) => {
     // ... (kode tidak berubah)
     switch (s) {
-      case "COMPLETED":
+      case ORDER_STATUS.COMPLETED:
         return "Selesai";
-      case "LOADING":
+      case ORDER_STATUS.LOADING:
         return "Proses Muat";
-      case "UNLOADING":
+      case ORDER_STATUS.HEADING_TO_LOADING:
+        return "Menuju ke Lokasi Muat";
+      case ORDER_STATUS.HEADING_TO_UNLOADING:
+        return "Menuju ke Lokasi Bongkar 1";
+      case ORDER_STATUS.UNLOADING:
         return "Proses Bongkar";
-      case "DOCUMENT_PREPARATION":
+      case ORDER_STATUS.DOCUMENT_PREPARATION:
         return "Dokumen Sedang Disiapkan";
-      case "DOCUMENT_DELIVERY":
+      case ORDER_STATUS.DOCUMENT_DELIVERY:
         return "Proses Pengiriman Dokumen";
+      case ORDER_STATUS.CANCELLED_BY_TRANSPORTER:
+        return "Dibatalkan Transporter";
+      case ORDER_STATUS.CANCELLED_BY_SHIPPER:
+        return "Dibatalkan Shipper";
+      case ORDER_STATUS.CANCELLED_BY_SYSTEM:
+        return "Dibatalkan Sistem";
       default:
         return "Armada Dijadwalkan";
     }
   };
 
   const getBadgeVariant = (s) => {
-    // ... (kode tidak berubah)
     if (
       s === OrderStatusEnum.WAITING_PAYMENT_1 ||
       s === OrderStatusEnum.WAITING_PAYMENT_2 ||
@@ -175,11 +204,15 @@ function CardLacakArmada({
     if (
       s === OrderStatusEnum.CANCELED_BY_SHIPPER ||
       s === OrderStatusEnum.CANCELED_BY_SYSTEM ||
-      s === OrderStatusEnum.CANCELED_BY_TRANSPORTER
+      s === OrderStatusEnum.CANCELED_BY_TRANSPORTER ||
+      s === ORDER_STATUS.CANCELLED_BY_TRANSPORTER ||
+      s === ORDER_STATUS.CANCELLED_BY_SHIPPER ||
+      s === ORDER_STATUS.CANCELLED_BY_SYSTEM
     )
       return "error";
 
-    if (s === OrderStatusEnum.COMPLETED) return "success";
+    if (s === OrderStatusEnum.COMPLETED || s === ORDER_STATUS.COMPLETED)
+      return "success";
     return "primary";
   };
 
@@ -190,16 +223,33 @@ function CardLacakArmada({
         {/* ... (kode JSX header dan info driver tidak berubah) ... */}
         {/* Header + Aksi */}
         <div className="flex items-center justify-between">
-          <div className="mb-2 flex items-center gap-2">
-            <BadgeStatusPesanan
-              variant={getBadgeVariant(status)}
-              className="w-fit"
-            >
-              {getStatusLabel(status)}
-            </BadgeStatusPesanan>
+          <div className="flex items-center gap-2">
+            {status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
+              status !== ORDER_STATUS.DOCUMENT_DELIVERY && (
+                <BadgeStatusPesanan
+                  variant={getBadgeVariant(status)}
+                  className="w-fit"
+                >
+                  {getStatusLabel(status)}
+                </BadgeStatusPesanan>
+              )}
+
+            {/* Link Lihat Detail Pembatalan untuk status pembatalan */}
+            {isCancelledStatus(status) && (
+              <button
+                onClick={() => {
+                  // TODO: Implementasi untuk melihat detail pembatalan
+                  console.log("Lihat Detail Pembatalan clicked");
+                }}
+                className="text-xs font-medium text-blue-600"
+              >
+                Lihat Detail Pembatalan
+              </button>
+            )}
+
             {isSOS && (
               <>
-                <div className="inline-flex items-center justify-center rounded-md bg-red-500 px-3 py-1 text-xs font-bold text-white">
+                <div className="mb-2 inline-flex items-center justify-center rounded-md bg-red-500 px-3 py-1 text-xs font-bold text-white">
                   SOS
                 </div>
                 <button
@@ -212,27 +262,35 @@ function CardLacakArmada({
             )}
           </div>
 
-          {isMonitoring && (
-            <SimpleDropdown>
-              <SimpleDropdownTrigger asChild>
-                <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
-                  Aksi Lainnya
-                  <ChevronDown className="ml-1 h-4 w-4" />
-                </button>
-              </SimpleDropdownTrigger>
-              <SimpleDropdownContent align="end">
-                <SimpleDropdownItem onClick={handleOpenUbahArmadaModal}>
-                  Ubah Armada
-                </SimpleDropdownItem>
-                <SimpleDropdownItem onClick={handleOpenDriverModal}>
-                  Ubah Driver
-                </SimpleDropdownItem>
-                <SimpleDropdownItem onClick={handleCancelFleet}>
-                  Batalkan Armada
-                </SimpleDropdownItem>
-              </SimpleDropdownContent>
-            </SimpleDropdown>
-          )}
+          {isMonitoring &&
+            status !== ORDER_STATUS.HEADING_TO_UNLOADING &&
+            status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
+            status !== ORDER_STATUS.DOCUMENT_DELIVERY &&
+            status !== ORDER_STATUS.HEADING_TO_LOADING &&
+            status !== ORDER_STATUS.COMPLETED &&
+            status !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
+            status !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
+            status !== ORDER_STATUS.CANCELLED_BY_SYSTEM && (
+              <SimpleDropdown>
+                <SimpleDropdownTrigger asChild>
+                  <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+                    Aksi Lainnya
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  </button>
+                </SimpleDropdownTrigger>
+                <SimpleDropdownContent align="end">
+                  <SimpleDropdownItem onClick={handleOpenUbahArmadaModal}>
+                    Ubah Armada
+                  </SimpleDropdownItem>
+                  <SimpleDropdownItem onClick={handleOpenDriverModal}>
+                    Ubah Driver
+                  </SimpleDropdownItem>
+                  <SimpleDropdownItem onClick={handleCancelFleet}>
+                    Batalkan Armada
+                  </SimpleDropdownItem>
+                </SimpleDropdownContent>
+              </SimpleDropdown>
+            )}
         </div>
 
         <div className="flex w-full items-center justify-between">
@@ -278,9 +336,9 @@ function CardLacakArmada({
             <div className="w-full max-w-2xl">
               <StepperContainer
                 activeIndex={activeIndex}
-                totalStep={steps.length}
+                totalStep={currentSteps.length}
               >
-                {steps.map((step, stepIndex) => (
+                {currentSteps.map((step, stepIndex) => (
                   <StepperItem
                     key={step.status || stepIndex}
                     step={step}
