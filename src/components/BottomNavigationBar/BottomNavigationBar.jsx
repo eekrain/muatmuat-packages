@@ -47,13 +47,11 @@ const BottomNavigationBar = () => {
             Profil
           </span>
         </Link>
-        <Image
-          alt="bottomnavbar"
-          className="absolute bottom-0 left-0 h-[66px] w-full object-cover"
+        <IconComponent
           src="/icons/bottom-navigation-bar.svg"
+          className="absolute bottom-0 left-0 h-[66px] w-full bg-transparent object-cover drop-shadow-muat"
           width={100}
           height={66}
-          priority
         />
       </div>
     </div>

@@ -204,6 +204,9 @@ const config = {
         "responsive-footer": "0px -8px 16px 2px rgba(0, 0, 0, 0.15)",
         muat: "0 4px 11px 0 #41414140",
       },
+      dropShadow: {
+        muat: "0 4px 11px rgba(65, 65, 65, 0.25)",
+      },
       keyframes: {
         enter: {
           "0%": { transform: "scale(0.9)", opacity: 0 },
