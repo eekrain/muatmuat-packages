@@ -130,7 +130,7 @@ const apiResultMasterCargo = {
 };
 
 export const fetcherMasterCargo = async (cacheKey) => {
-  const url = "/api/v1/cargos/master";
+  const url = "/v1/transporter/settings/master-cargo-data";
 
   if (useMockData) {
     const result = apiResultMasterCargo;
