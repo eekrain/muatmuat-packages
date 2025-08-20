@@ -1,7 +1,7 @@
 import {
-  OrderStatusEnum,
-  OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+  CSOrderStatusEnum,
+  CSOrderStatusTitle,
+} from "@/lib/constants/CS/detailpesanan/detailpesanan-cs.enum";
 
 export const getStatusPesananMetadataCS = ({
   orderStatus,
@@ -11,19 +11,24 @@ export const getStatusPesananMetadataCS = ({
 }) => {
   if (!orderStatus) return { variant: "primary", label: "" };
   let variant = "primary";
-  if (orderStatus.startsWith("WAITING")) variant = "warning";
-  else if (orderStatus.startsWith("CANCELED")) variant = "error";
-  else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
+  if (
+    orderStatus === CSOrderStatusEnum.NEED_ASSIGN_FLEET ||
+    orderStatus === CSOrderStatusEnum.NEED_CONFIRMATION_CHANGES
+  )
+    variant = "warning";
+  else if (orderStatus === CSOrderStatusEnum.NEED_CONFIRMATION_READY)
+    variant = "error";
+  else if (orderStatus === CSOrderStatusEnum.COMPLETED) variant = "success";
 
   return {
     variant,
     label:
-      orderStatus !== OrderStatusEnum.COMPLETED &&
+      orderStatus !== CSOrderStatusEnum.COMPLETED &&
       !orderStatus.startsWith("CANCELED") &&
       !orderStatus.startsWith("WAITING_PAYMENT") &&
       orderStatusUnit &&
       truckCount > 1
-        ? `${t(OrderStatusTitle[orderStatus])} : ${orderStatusUnit} Unit`
-        : t(OrderStatusTitle[orderStatus]),
+        ? `${t(CSOrderStatusTitle[orderStatus])} : ${orderStatusUnit} Unit`
+        : t(CSOrderStatusTitle[orderStatus]),
   };
 };

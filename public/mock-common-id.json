@@ -1065,5 +1065,7 @@
   "RekapPembatalanList.labelShowOthers": "+{remaining} lainnya",
   "RekapPembatalanList.buttonConfirmPenalty": "Konfirmasi Penalti",
   "RekapPembatalanList.labelPenaltyExempt": "Pembatalan pada pesanan ini tidak dikenakan poin penalti",
-  "RekapPembatalanList.labelPenaltyApplied": "Pembatalan pada pesanan ini dikenakan poin penalti"
+  "RekapPembatalanList.labelPenaltyApplied": "Pembatalan pada pesanan ini dikenakan poin penalti",
+  "TambahExcel.searchNotFoundTitle": "Pencarian tidak ditemukan",
+  "TambahExcel.searchNotFoundSubtitle": "Coba kata kunci lain atau periksa ejaan"
 }

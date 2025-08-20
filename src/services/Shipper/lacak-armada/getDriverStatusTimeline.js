@@ -2,8 +2,8 @@ import { sub } from "date-fns";
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { DriverStatusEnum } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 
 import { getOrderDetail } from "../detailpesanan/getDetailPesananData";
 

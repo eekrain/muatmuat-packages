@@ -1,4 +1,4 @@
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { ORDER_STATUS_CONFIG } from "@/utils/Transporter/orderStatus";
 
 export const getStatusPesananMetadataTransporter = ({

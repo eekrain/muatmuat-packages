@@ -25,7 +25,7 @@ const LacakArmadaPage = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   const [mapState, setMapState] = useState({
-    center: { lat: -6.2, lng: 106.816666 }, // Default Jakarta
+    center: { lat: -6.2, lng: 106.816666 },
     zoom: 12,
     autoFitBounds: true,
     hasMapInteraction: false,
@@ -89,8 +89,6 @@ const LacakArmadaPage = () => {
       }));
     }
   }, [trackingData, calculatedBounds]);
-
-  // Handlers untuk interaksi peta
   const handleMapDrag = () =>
     setMapState((prev) => ({
       ...prev,
@@ -129,9 +127,7 @@ const LacakArmadaPage = () => {
     }));
 
   return (
-    // Menggunakan layout flexbox yang membungkus semuanya
     <div className="relative flex h-[calc(100vh-92px)] w-full overflow-hidden">
-      {/* Container untuk Peta dan Overlaynya */}
       <div className="relative !m-6 flex-1 rounded-2xl">
         <MapMonitoring
           locationMarkers={mapMarkers}
@@ -144,11 +140,12 @@ const LacakArmadaPage = () => {
           onMapCenterChange={handleMapCenterChange}
           showLicensePlate={mapState.showLicensePlate}
           mapContainerStyle={{
-            width: isSidebarVisible ? "73vw" : "97vw",
-            height: "84vh",
+            width: isSidebarVisible ? "100%" : "96vw",
+            height: "calc(100vh - 135px)",
             borderRadius: "24px",
             transition: "width 300ms ease-in-out",
           }}
+          truckSize={{ width: 12, height: 42 }}
         />
         <MapInterfaceOverlay
           onZoomIn={handleZoomIn}
@@ -162,22 +159,17 @@ const LacakArmadaPage = () => {
               showLicensePlate: !prev.showLicensePlate,
             }))
           }
-          // Props yang tidak relevan di halaman ini di-disable
-          hideTopNavigation={true} // Sembunyikan search bar, filter, dll.
+          hideTopNavigation={true}
         />
-
-        {/* Tombol Kembali (di atas overlay lain) */}
         <Button
           variant="muattrans-primary"
           onClick={() => router.push("/daftar-pesanan")}
-          className="absolute left-6 top-6 z-30" // z-index lebih tinggi
+          className="absolute left-6 top-6 z-30"
           iconLeft={<ChevronLeft size={20} />}
         >
           {t("lacakArmada.backButton", {}, "Kembali")}
         </Button>
       </div>
-
-      {/* Sidebar Kanan (Overlay) */}
       <div
         className={cn(
           "!mt-6 h-[96.5%] w-[420px] flex-shrink-0 rounded-l-[24px] bg-white shadow-lg transition-transform duration-300 ease-in-out",
@@ -192,8 +184,6 @@ const LacakArmadaPage = () => {
           isLoading={isLoading}
         />
       </div>
-
-      {/* Tombol untuk membuka kembali sidebar */}
       {!isSidebarVisible && (
         <button
           onClick={() => setIsSidebarVisible(true)}

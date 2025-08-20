@@ -2,7 +2,7 @@ import {
   OrderStatusEnum,
   OrderStatusTitle,
   OrderTypeEnum,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 export const getStatusPesananMetadata = ({
   orderStatus,
