@@ -42,13 +42,13 @@ export const Filter = () => {
               <MyDropdown.HoverItem key={item.value} asChild>
                 <Checkbox
                   label={item.label}
-                  className="h-8 md:px-2.5"
+                  className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
                   checked={selectedTransporters.has(item.value)}
                   onChange={() => toggleTransporterFilter(item.value)}
                 />
               </MyDropdown.HoverItem>
             ))}
-            {/* {[
+            {[
               { label: "PT Nusantara Jaya", value: "PT Nusantara Jaya" },
               { label: "PT Sinar Abadi", value: "PT Sinar Abadi" },
               { label: "PT Bumi Persada", value: "PT Bumi Persada" },
@@ -61,9 +61,12 @@ export const Filter = () => {
               { label: "PT Mandiri Sentosa", value: "PT Mandiri Sentosa" },
             ].map((item) => (
               <MyDropdown.HoverItem key={item.value} asChild>
-                <Checkbox label={item.label} className="h-8 md:px-2.5" />
+                <Checkbox
+                  label={item.label}
+                  className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
+                />
               </MyDropdown.HoverItem>
-            ))} */}
+            ))}
           </MyDropdown.HoverContent>
         </MyDropdown.HoverRoot>
 
@@ -73,7 +76,7 @@ export const Filter = () => {
               <MyDropdown.HoverItem key={item.value} asChild>
                 <Checkbox
                   label={t(item.label)}
-                  className="h-8 md:px-2.5"
+                  className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
                   checked={selectedStatuses.has(item.value)}
                   onChange={() => toggleStatusFilter(item.value)}
                 />
