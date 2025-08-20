@@ -15,7 +15,11 @@ const apiResultLatestFleetNote = {
       id: "note_uuid",
       content:
         "Armada terdeteksi nonaktif terlalu banyak dalam waktu 24 jam terakhir, hubungi transporter untuk mengaktifkan armada yang tersedia agar dapat menerima permintaan.",
-      status: "completed",
+      status: "active",
+      current: 10,
+      total: 11,
+      inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
+
       history: {
         reportedAt: "2025-01-15T10:00:00Z",
         notes:
@@ -116,16 +120,64 @@ const apiResultLatestFleetNote = {
     // case transporter idle
     detailsIdle: [
       {
-        orderCode: "ORDER123",
-        transporterReceive: "PT Transporter ABC",
-        orderBlastAt: "2025-01-12T08:00:00Z",
-        orderTakenAt: "2025-01-12T08:30:00Z",
+        orderCode: "MT25A001A",
+        transporterReceive: "PT Kaltim Trans",
+        orderBlastAt: "2025-05-01T12:45:00Z",
+        orderTakenAt: "2025-05-01T11:45:00Z",
       },
       {
-        orderCode: "ORDER124",
-        transporterReceive: "PT Transporter ABC",
-        orderBlastAt: "2025-01-13T09:00:00Z",
-        orderTakenAt: "2025-01-13T09:45:00Z",
+        orderCode: "MT25A002A",
+        transporterReceive: "PT Siba Surya",
+        orderBlastAt: "2025-05-01T08:30:00Z",
+        orderTakenAt: "2025-05-01T08:30:00Z",
+      },
+      {
+        orderCode: "MT25A003A",
+        transporterReceive: "PT. Satria Antaran Prima",
+        orderBlastAt: "2025-05-01T03:00:00Z",
+        orderTakenAt: "2025-05-01T03:00:00Z",
+      },
+      {
+        orderCode: "MT25A004A",
+        transporterReceive: "PT Prima Trans Logistik",
+        orderBlastAt: "2025-04-22T04:20:00Z",
+        orderTakenAt: "2025-04-22T04:20:00Z",
+      },
+      {
+        orderCode: "MT25A001A",
+        transporterReceive: "CV Agung Sejahtera",
+        orderBlastAt: "2025-04-18T15:50:00Z",
+        orderTakenAt: "2025-04-18T15:50:00Z",
+      },
+      {
+        orderCode: "MT25A010A",
+        transporterReceive: "PT Daffa Trans",
+        orderBlastAt: "2025-04-15T11:00:00Z",
+        orderTakenAt: "2025-04-15T11:00:00Z",
+      },
+      {
+        orderCode: "MT25A005A",
+        transporterReceive: "PT Martin Abadi Makmur",
+        orderBlastAt: "2025-04-09T23:45:00Z",
+        orderTakenAt: "2025-04-09T23:45:00Z",
+      },
+      {
+        orderCode: "MT25A001A",
+        transporterReceive: "PT Marindo Jaya",
+        orderBlastAt: "2025-04-07T07:15:00Z",
+        orderTakenAt: "2025-04-07T07:15:00Z",
+      },
+      {
+        orderCode: "MT25A020A",
+        transporterReceive: "PT Masaji Prayasa Cargo",
+        orderBlastAt: "2025-04-03T03:30:00Z",
+        orderTakenAt: "2025-04-03T03:30:00Z",
+      },
+      {
+        orderCode: "MT25A020A",
+        transporterReceive: "PT Wahana Prestasi Logistik",
+        orderBlastAt: "2025-04-01T01:00:00Z",
+        orderTakenAt: "2025-04-01T01:00:00Z",
       },
     ],
     // case transporter tidak aktif
@@ -135,7 +187,7 @@ const apiResultLatestFleetNote = {
     },
     pagination: {
       currentPage: 1,
-      totalPages: 10,
+      totalPages: 20,
       totalItems: 97,
       hasNext: true,
       hasPrevious: false,

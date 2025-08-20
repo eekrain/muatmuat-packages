@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
+import { ScrollableTabs } from "@/components/ScrollableTabs/ScrollableTabs";
 import Search from "@/components/Search/Search";
 import { toast } from "@/lib/toast";
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
@@ -74,40 +75,56 @@ const PermintaanAngkutCS = () => {
 
   // Calculate dynamic tab counts based on data and local state
   const getDynamicTabCounts = () => {
-    // Use tabCounters from mock data
-    if (!data?.requests) {
+    // Use tabCounters from mock data if there are no requests or search term
+    if (!data?.requests || !searchValue || searchValue.trim() === "") {
+      const allCount = data?.tabCounters?.all ?? 0;
+      const instantCount = data?.tabCounters?.instant ?? 0;
+      const scheduledCount = data?.tabCounters?.scheduled ?? 0;
+      const halalCount = data?.tabCounters?.halal ?? 0;
+
       return {
-        all: data?.tabCounters?.all ?? 0,
-        instant: data?.tabCounters?.instant ?? 0,
-        scheduled: data?.tabCounters?.scheduled ?? 0,
-        halal: data?.tabCounters?.halal ?? 0,
+        all: allCount,
+        instant: instantCount,
+        scheduled: scheduledCount,
+        halal: halalCount,
+        // The new hasArrow key is true if ANY count is greater than 9
+        hasArrow:
+          allCount > 9 ||
+          instantCount > 9 ||
+          scheduledCount > 9 ||
+          halalCount > 9,
       };
     }
 
-    // Kalau tidak ada search, langsung pakai tabCounters asli
-    if (!searchValue || searchValue.trim() === "") {
-      return {
-        all: data?.tabCounters?.all ?? 0,
-        instant: data?.tabCounters?.instant ?? 0,
-        scheduled: data?.tabCounters?.scheduled ?? 0,
-        halal: data?.tabCounters?.halal ?? 0,
-      };
-    }
-
-    // Kalau ada search, hitung ulang berdasarkan data yang terlihat
+    // If there is a search, hitung ulang berdasarkan data yang terlihat
     const visibleRequests = data.requests.filter(
       (request) =>
         !removedItems.has(request.id) &&
         request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
     );
 
+    const allCount = visibleRequests.length;
+    const instantCount = visibleRequests.filter(
+      (req) => req.orderType === "INSTANT"
+    ).length;
+    const scheduledCount = visibleRequests.filter(
+      (req) => req.orderType === "SCHEDULED"
+    ).length;
+    const halalCount = visibleRequests.filter(
+      (req) => req.isHalalLogistics
+    ).length;
+
     return {
-      all: visibleRequests.length,
-      instant: visibleRequests.filter((req) => req.orderType === "INSTANT")
-        .length,
-      scheduled: visibleRequests.filter((req) => req.orderType === "SCHEDULED")
-        .length,
-      halal: visibleRequests.filter((req) => req.isHalalLogistics).length,
+      all: allCount,
+      instant: instantCount,
+      scheduled: scheduledCount,
+      halal: halalCount,
+      // The new hasArrow key is true if ANY count is greater than 9
+      hasArrow:
+        allCount > 9 ||
+        instantCount > 9 ||
+        scheduledCount > 9 ||
+        halalCount > 9,
     };
   };
 
@@ -300,7 +317,11 @@ const PermintaanAngkutCS = () => {
           </div>
 
           {/* Tabs */}
-          <div className="flex h-7 w-auto max-w-[450px] gap-2">
+          <ScrollableTabs
+            className="h-7 w-auto max-w-[450px] gap-2"
+            dependencies={[dynamicTabCounts, activeTab]}
+            hasArrow={dynamicTabCounts.hasArrow}
+          >
             <button
               onClick={() => setActiveTab("semua")}
               className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
@@ -312,7 +333,7 @@ const PermintaanAngkutCS = () => {
               <span className="relative whitespace-nowrap">
                 Semua (
                 <span
-                  className={`$${
+                  className={`$$${
                     shouldAnimate(
                       dynamicTabCounts.all,
                       data?.newRequestsCount?.hasAnimation
@@ -347,7 +368,7 @@ const PermintaanAngkutCS = () => {
               <span className="relative whitespace-nowrap">
                 Instan (
                 <span
-                  className={`$${
+                  className={`$$${
                     shouldAnimate(
                       dynamicTabCounts.instant,
                       data?.newRequestsCount?.hasAnimation
@@ -382,7 +403,7 @@ const PermintaanAngkutCS = () => {
               <span className="relative whitespace-nowrap">
                 Terjadwal (
                 <span
-                  className={`$${
+                  className={`$$${
                     shouldAnimate(
                       dynamicTabCounts.scheduled,
                       data?.newRequestsCount?.hasAnimation
@@ -414,11 +435,14 @@ const PermintaanAngkutCS = () => {
                   : "w-auto min-w-[124px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <IconComponent src="/icons/halal.svg" className="h-4 w-4" />
+              <IconComponent
+                src="/icons/halal.svg"
+                className="h-4 w-4 flex-shrink-0"
+              />
               <span className="relative whitespace-nowrap">
                 Halal Logistik (
                 <span
-                  className={`$${
+                  className={`$$${
                     shouldAnimate(
                       dynamicTabCounts.halal,
                       data?.newRequestsCount?.hasAnimation
@@ -441,7 +465,7 @@ const PermintaanAngkutCS = () => {
                 )}
               </span>
             </button>
-          </div>
+          </ScrollableTabs>
         </div>
 
         {/* Scrollable Content Area */}
