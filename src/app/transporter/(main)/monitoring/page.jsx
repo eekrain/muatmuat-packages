@@ -440,7 +440,7 @@ const Page = () => {
                       payload: null,
                     });
                   }}
-                  orderData={selections.selectedOrderForTracking}
+                  orderId={selections.selectedOrderForTracking?.id}
                 />
               ) : (
                 <DaftarArmada
