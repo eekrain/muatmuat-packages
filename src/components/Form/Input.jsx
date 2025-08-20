@@ -113,7 +113,7 @@ const Input = forwardRef(
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              "w-full min-w-0 border-none border-transparent bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600 md:text-xs md:font-medium",
+              "w-full min-w-0 cursor-pointer border-none border-transparent bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600 md:text-xs md:font-medium",
               disabled && "cursor-not-allowed",
               appearance.inputClassName
             )}
