@@ -29,10 +29,12 @@ const TransporterSearchAndFilter = ({
         status: [
           {
             id: "Aktif",
+            key: "ACTIVE",
             label: t("TransporterSearchAndFilter.statusActive", {}, "Aktif"),
           },
           {
             id: "Non Aktif",
+            key: "NON_ACTIVE",
             label: t(
               "TransporterSearchAndFilter.statusInactive",
               {},
@@ -41,6 +43,7 @@ const TransporterSearchAndFilter = ({
           },
           {
             id: "Dalam Verifikasi",
+            key: "IN_VERIFICATION",
             label: t(
               "TransporterSearchAndFilter.statusInVerification",
               {},
@@ -49,6 +52,7 @@ const TransporterSearchAndFilter = ({
           },
           {
             id: "Verifikasi Ditolak",
+            key: "VERIFICATION_REJECTED",
             label: t(
               "TransporterSearchAndFilter.statusVerificationRejected",
               {},

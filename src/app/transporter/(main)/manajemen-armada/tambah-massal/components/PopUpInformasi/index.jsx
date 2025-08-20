@@ -175,7 +175,8 @@ export default function PopUpInformasi({
           ) : (
             <Slider.Root
               items={onboardingSlides}
-              className="flex h-[420px] flex-col p-6"
+              className="flex flex-col p-9"
+              loop={false}
             >
               <div className="flex flex-col items-center">
                 <div className="relative flex w-full items-center justify-center">
@@ -196,8 +197,8 @@ export default function PopUpInformasi({
                 <Slider.Description className="text-sm font-medium text-neutral-900" />
               </div>
               <Slider.Indicator className="" />
-              <div className="mt-4 flex items-center justify-center">
-                <label className="flex items-center space-x-2 text-sm text-neutral-600">
+              <div className="mt-6 flex items-center justify-center">
+                <label className="flex items-center space-x-2 text-xs font-medium text-neutral-900">
                   <input
                     type="checkbox"
                     checked={dontShowAgain}

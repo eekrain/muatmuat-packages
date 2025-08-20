@@ -26,6 +26,7 @@ const PesananActionBar = ({
   totalItems,
   viewBy,
   onViewByChange,
+  isHistory = false,
 }) => {
   const { t } = useTranslation();
   const [localSearch, setLocalSearch] = useState(searchQuery);
@@ -149,23 +150,26 @@ const PesananActionBar = ({
           }}
           className="w-[262px]"
         />
-        <FilterSelect
-          placeholder={urgentPlaceholder}
-          options={urgentStatusOptions}
-          value={urgentStatusFilter}
-          showNotificationDotWithoutNumber
-          onChange={onUrgentStatusChange}
-          disabled={disableUrgent}
-          className="w-[158px] !border-neutral-600 hover:!border-primary-700"
-          itemClassName="hover:!bg-neutral-200"
-          displayValueOverride={
-            urgentStatusFilter !== "all"
-              ? urgentStatusOptions.find((o) => o.value === urgentStatusFilter)
-                  ?.label
-              : urgentPlaceholder
-          }
-          renderItem={renderUrgentItem}
-        />
+        {!isHistory && (
+          <FilterSelect
+            placeholder={urgentPlaceholder}
+            options={urgentStatusOptions}
+            value={urgentStatusFilter}
+            showNotificationDotWithoutNumber
+            onChange={onUrgentStatusChange}
+            disabled={disableUrgent}
+            className="w-[158px] !border-neutral-600 hover:!border-primary-700"
+            itemClassName="hover:!bg-neutral-200"
+            displayValueOverride={
+              urgentStatusFilter !== "all"
+                ? urgentStatusOptions.find(
+                    (o) => o.value === urgentStatusFilter
+                  )?.label
+                : urgentPlaceholder
+            }
+            renderItem={renderUrgentItem}
+          />
+        )}
 
         <DashboardFilter
           categories={filterConfig.categories}

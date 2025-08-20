@@ -42,6 +42,9 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
       err.oldPassword =
         "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 Karakter";
     }
+    if (oldPassword !== "12345678") {
+      err.oldPassword = "Password lama salah";
+    }
     if (confirmPassword && confirmPassword.length < 8) {
       err.confirmPassword =
         "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 Karakter";
@@ -50,7 +53,7 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
       err.newPassword = "Password Baru tidak dapat sama dengan password lama";
     }
     if (confirmPassword && newPassword && confirmPassword !== newPassword) {
-      err.confirmPassword = "Konfirmasi password tidak sama";
+      err.confirmPassword = "Password tidak sama";
     }
     setErrors(err);
     return Object.keys(err).length === 0;
@@ -160,11 +163,11 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
                 />
 
                 {/* Tooltip info di kanan input */}
-                <div className="mb-2 ml-1 h-auto w-auto">
+                <div className="flex h-[22px] w-auto items-center justify-center">
                   <InfoTooltip
                     className="mr-2 max-w-[260px]"
                     side="right"
-                    align="start"
+                    align="center"
                     sideOffset={8}
                     trigger={
                       <button type="button" aria-label="Info kriteria password">
@@ -178,9 +181,6 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
                     }
                   >
                     <div className="text-xs">
-                      <p className="mb-2 font-semibold text-neutral-900">
-                        Kriteria password
-                      </p>
                       <ul className="space-y-1 text-neutral-700">
                         <li className="flex items-start gap-2">
                           <span className="mt-1 h-1 w-1 flex-shrink-0 rounded-full bg-neutral-700"></span>

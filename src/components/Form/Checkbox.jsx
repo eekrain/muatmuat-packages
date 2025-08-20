@@ -75,7 +75,7 @@ const Checkbox = ({
       />
       <span
         className={cn(
-          "capsize select-none text-sm font-semibold leading-[15.4px] text-neutral-900 md:text-xs md:font-medium md:leading-[14.4px]",
+          "select-none text-sm font-semibold leading-[15.4px] text-neutral-900 md:text-xs md:font-medium md:leading-[14.4px]",
           appearance.labelClassName
         )}
       >

@@ -16,10 +16,15 @@ import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { fetcherMuatrans } from "@/lib/axios";
+// Import fetcherMuatrans
+import { useTokenStore } from "@/store/AuthStore/tokenStore";
+import { useUserStore } from "@/store/AuthStore/userStore";
 
 const LoginPage = () => {
   const { t } = useTranslation();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state
 
   const LoginSchema = v.object({
     emailOrPhone: v.pipe(
@@ -68,54 +73,93 @@ const LoginPage = () => {
     password: "",
   });
 
-  const onSubmit = (data) => {
-    // Reset previous errors
+  const onSubmit = async (data) => {
     setFormErrors({
       emailOrPhone: "",
       password: "",
     });
+    setIsSubmitting(true); // Start loading
 
-    // Mock authentication logic
-    // In a real application, this would be replaced with an API call
-    const mockCredentials = {
-      email: "user@example.com",
-      phone: "08123456789",
-      password: "password123",
-    };
+    try {
+      const response = await fetcherMuatrans.post("/v1/auth/login", {
+        identifier: data.emailOrPhone,
+        password: data.password,
+        rememberMe: data.keepLoggedIn,
+      });
 
-    // Check if email/phone exists
-    const isEmailOrPhoneValid =
-      data.emailOrPhone === mockCredentials.email ||
-      data.emailOrPhone === mockCredentials.phone;
+      if (response.data.Message.Code === 200) {
+        // Handle successful login
+        const {
+          token,
+          refreshToken,
+          expiryTime,
+          user,
+          transporter,
+          redirectUrl,
+        } = response.data.Data;
 
-    if (!isEmailOrPhoneValid) {
-      setFormErrors((prev) => ({
-        ...prev,
-        emailOrPhone: t(
-          "LoginPage.errorEmailIncorrect",
-          {},
-          "No. Whatsapp / Email yang kamu masukkan salah"
-        ),
-      }));
-      return;
+        // Store tokens and user data
+        useTokenStore.getState().actions.setToken({
+          accessToken: token,
+          refreshToken: refreshToken,
+          expiryTime: expiryTime,
+        });
+        useUserStore.getState().actions.setUser({
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          profileImage: user.profileImage,
+          role: user.role,
+          transporterId: transporter.id,
+          companyName: transporter.companyName,
+          verificationStatus: transporter.verificationStatus,
+          isActive: transporter.isActive,
+        });
+
+        alert(t("LoginPage.alertLoginSuccess", {}, "Login Berhasil!"));
+        router.push(redirectUrl || "/dashboard");
+      } else {
+        // This part might not be reached if fetcherMuatrans throws on non-2xx codes
+        setFormErrors((prev) => ({
+          ...prev,
+          emailOrPhone:
+            response.data.Message.Text || "Terjadi kesalahan saat login.",
+        }));
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      // Handle API errors
+      const errorData = error.response?.data?.Data;
+      if (errorData?.errors) {
+        errorData.errors.forEach((err) => {
+          if (err.field === "identifier") {
+            setFormErrors((prev) => ({
+              ...prev,
+              emailOrPhone: err.message,
+            }));
+          } else if (err.field === "password") {
+            setFormErrors((prev) => ({
+              ...prev,
+              password: err.message,
+            }));
+          }
+        });
+      } else if (error.response?.data?.Message?.Text) {
+        // Generic error message from API
+        setFormErrors((prev) => ({
+          ...prev,
+          emailOrPhone: error.response.data.Message.Text,
+        }));
+      } else {
+        // Fallback for unexpected errors
+        alert(
+          t("LoginPage.alertLoginFailed", {}, "Terjadi kesalahan saat login.")
+        );
+      }
+    } finally {
+      setIsSubmitting(false); // End loading
     }
-
-    // Check if password is correct
-    if (data.password !== mockCredentials.password) {
-      setFormErrors((prev) => ({
-        ...prev,
-        password: t(
-          "LoginPage.errorPasswordIncorrect",
-          {},
-          "Password yang kamu masukkan salah"
-        ),
-      }));
-      return;
-    }
-
-    // If we get here, authentication was successful
-    router.push("/dashboard");
-    alert(t("LoginPage.alertLoginSuccess", {}, "Login Berhasil!"));
   };
 
   return (
@@ -241,8 +285,11 @@ const LoginPage = () => {
               type="submit"
               variant="muattrans-primary"
               className="mt-6 w-full py-5 text-muat-trans-secondary-900"
+              disabled={isSubmitting}
             >
-              {t("LoginPage.buttonLogin", {}, "Masuk")}
+              {isSubmitting
+                ? t("LoginPage.buttonLoginLoading", {}, "Masuk...")
+                : t("LoginPage.buttonLogin", {}, "Masuk")}
             </Button>
           </form>
         </div>

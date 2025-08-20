@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
@@ -10,14 +10,27 @@ import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
 
 const SetPasswordPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+
+  // Get email and token from URL params
+  const email = searchParams.get("email");
+  const token = searchParams.get("token");
+
+  // SWR mutation hook for API call
+  const {
+    trigger: verifyEmail,
+    isMutating,
+    error,
+  } = useVerifyEmailVerification();
 
   const {
     register,
@@ -43,16 +56,38 @@ const SetPasswordPage = () => {
   const toggleConfirmPasswordVisibility = () =>
     setIsConfirmPasswordVisible((prev) => !prev);
 
-  const onSubmit = (data) => {
-    console.log("Password baru berhasil dibuat:", { password: data.password });
-    alert(
-      t(
-        "SetPasswordPage.alertPasswordSuccessful",
-        null,
-        "Password berhasil dibuat!"
-      )
-    );
-    router.push("/otp");
+  const onSubmit = async (data) => {
+    try {
+      // Prepare request body according to API contract
+      const requestBody = {
+        email: email,
+        token: token,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      };
+
+      // Call API
+      const response = await verifyEmail(requestBody);
+
+      console.log("Email verification successful:", response);
+      alert(
+        t(
+          "SetPasswordPage.alertPasswordSuccessful",
+          null,
+          "Password berhasil dibuat!"
+        )
+      );
+      router.push("/otp");
+    } catch (error) {
+      console.error("Email verification failed:", error);
+      alert(
+        t(
+          "SetPasswordPage.alertPasswordFailed",
+          null,
+          "Gagal membuat password. Silakan coba lagi."
+        )
+      );
+    }
   };
 
   const getErrorMessage = () => {
@@ -253,11 +288,13 @@ const SetPasswordPage = () => {
 
           <Button
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid || isMutating}
             className="mx-auto mt-4 !h-10 w-[200px] text-buyer-seller-900 disabled:text-[#868686]"
-            variant={isValid ? "muattrans-primary" : "default"}
+            variant={isValid && !isMutating ? "muattrans-primary" : "default"}
           >
-            {t("SetPasswordPage.buttonContinue", null, "Lanjutkan")}
+            {isMutating
+              ? t("SetPasswordPage.buttonLoading", null, "Memproses...")
+              : t("SetPasswordPage.buttonContinue", null, "Lanjutkan")}
           </Button>
         </form>
       </div>

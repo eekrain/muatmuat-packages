@@ -288,13 +288,16 @@ const PesananAktifTab = ({
     if (viewBy === "transporter" && groupedData.length > 0) {
       return (
         <div>
-          {groupedData.map((group) => (
-            <TransporterGroupCard
-              key={group.transporter.id}
-              group={group}
-              userRole={userRole}
-            />
-          ))}
+          {groupedData.map((group, idx) => {
+            if (!group?.transporter) return null; // guard
+            return (
+              <TransporterGroupCard
+                key={group.transporter?.id ?? `transporter-${idx}`}
+                group={group}
+                userRole={userRole}
+              />
+            );
+          })}
         </div>
       );
     }
@@ -302,17 +305,19 @@ const PesananAktifTab = ({
     if (viewBy === "shipper" && groupedData.length > 0) {
       return (
         <div>
-          {groupedData.map((group) => (
-            <ShipperParentCard
-              key={group.shipper.id}
-              group={group}
-              userRole={userRole}
-            />
-          ))}
+          {groupedData.map((group, idx) => {
+            if (!group?.shipper) return null; // guard
+            return (
+              <ShipperParentCard
+                key={group.shipper?.id ?? `shipper-${idx}`}
+                group={group}
+                userRole={userRole}
+              />
+            );
+          })}
         </div>
       );
     }
-
     if (viewBy === "pesanan" && orders.length > 0) {
       return (
         <div>
