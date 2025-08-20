@@ -174,7 +174,7 @@ export const UrgentIssueCardTransporter = ({
             <>
               Armada{" "}
               <span
-                className="cursor-pointer text-primary-800"
+                className="cursor-pointer text-primary-700 hover:font-bold"
                 onClick={handleClickVehiclePlateNumber}
               >
                 {plate}
@@ -232,7 +232,7 @@ export const UrgentIssueCardTransporter = ({
                 </span>
                 <span
                   onClick={() => handleClickOrder(orderId)}
-                  className="text-xs font-medium text-primary-700 hover:cursor-pointer"
+                  className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:font-bold"
                 >
                   {orderCode || "-"}
                 </span>
@@ -322,7 +322,7 @@ export const UrgentIssueCardTransporter = ({
               </span>
               <span
                 onClick={() => handleClickOrder(orderId)}
-                className="text-xs font-medium text-primary-700 hover:cursor-pointer"
+                className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:font-bold"
               >
                 {orderCode || "-"}
               </span>
