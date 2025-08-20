@@ -31,13 +31,16 @@ const BadgeSOSPopover = ({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-center gap-2">
+    <div className="flex w-full items-center gap-2">
       <div className="h-6 w-10 content-center gap-1 rounded-md bg-error-400 text-center text-xs font-semibold text-error-50">
         SOS
       </div>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="link" className="h-auto p-0 text-xs font-medium">
+          <Button
+            variant="link"
+            className="h-auto flex-1 justify-start p-0 text-xs font-medium"
+          >
             Lihat SOS
           </Button>
         </PopoverTrigger>
@@ -46,7 +49,7 @@ const BadgeSOSPopover = ({
           className="w-[305px] place-content-center border-none bg-transparent p-0 shadow-none"
           align="start"
           side="right"
-          sideOffset={222}
+          sideOffset={42}
           alignOffset={-24}
         >
           <img src="/img/mock-popover-sos.png" alt="" className="-ml-2.5" />

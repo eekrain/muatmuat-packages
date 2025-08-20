@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { mutate } from "swr";
 
@@ -112,13 +112,20 @@ const UrgentIssue = () => {
 
   const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
 
-  const { items, isLoading, pagination } = useGetUrgentIssueList({
+  const {
+    items: rawItems,
+    isLoading,
+    pagination,
+  } = useGetUrgentIssueList({
     status: statusMap[activeTab],
     page,
     limit: 10,
     sort: "detectedAt",
     sortDirection: "desc",
   });
+
+  // Memoize items to prevent unnecessary re-renders
+  const items = useMemo(() => rawItems || [], [rawItems]);
 
   const toggleDetail = (id) => {
     setOpenDetails((prev) => {
@@ -152,11 +159,32 @@ const UrgentIssue = () => {
     );
   }, [activeTab]);
 
-  // Update data ketika items berubah
+  // Update data ketika items berubah dengan memoized dependency
   useEffect(() => {
-    if (!items) return;
+    if (items.length === 0) {
+      // Only reset data if page is 1
+      if (page === 1) {
+        setData([]);
+      }
+      return;
+    }
 
-    setData((prev) => (page === 1 ? items : [...prev, ...items]));
+    setData((prev) => {
+      // Hanya update jika page 1 atau data baru belum ada di prev
+      if (page === 1) {
+        return items;
+      }
+
+      // Check if items are already in prev to avoid duplicates
+      const existingIds = new Set(prev.map((item) => item.id));
+      const newItems = items.filter((item) => !existingIds.has(item.id));
+
+      if (newItems.length > 0) {
+        return [...prev, ...newItems];
+      }
+
+      return prev;
+    });
   }, [items, page]);
 
   // Setup scroll handler untuk infinite scroll
