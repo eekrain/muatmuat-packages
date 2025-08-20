@@ -23,6 +23,22 @@ const initialPicData = [
     phoneNumber: "628064749070",
     isActive: true,
   },
+  {
+    id: "5d66edce-0fb3-4c10-8a97-f3b4c2b28f6a",
+    picOrder: 2,
+    picName: "Sari Dewi",
+    picPosition: "Customer Service Manager",
+    phoneNumber: "628064749071",
+    isActive: true,
+  },
+  {
+    id: "86028452-1cb6-407b-9d4f-37aadf5d38c3",
+    picOrder: 3,
+    picName: "Budi Santoso",
+    picPosition: "Technical Support",
+    phoneNumber: "628064749072",
+    isActive: true,
+  },
 ];
 
 // --- Confirmation Modal (Tidak perlu diubah) ---
@@ -176,7 +192,7 @@ const PICFormSection = ({
 }) => (
   <div className={`px-9 py-4 ${className}`}>
     <div className="grid grid-cols-1 gap-6">
-      <FormContainer>
+      <FormContainer className={className}>
         <FormLabel required={isRequired}>{`Nama PIC ${index + 1}`}</FormLabel>
         <Input
           name="picName"
@@ -187,7 +203,7 @@ const PICFormSection = ({
           errorMessage={validationErrors[`${index}-picName`]}
         />
       </FormContainer>
-      <FormContainer>
+      <FormContainer className={className}>
         <FormLabel
           required={isRequired}
         >{`Jabatan PIC ${index + 1}`}</FormLabel>
@@ -202,13 +218,13 @@ const PICFormSection = ({
           errorMessage={validationErrors[`${index}-picPosition`]}
         />
       </FormContainer>
-      <FormContainer>
+      <FormContainer className={className}>
         <FormLabel required={isRequired}>{`No. HP PIC ${index + 1}`}</FormLabel>
         <Input
           name="phoneNumber"
           value={pic.phoneNumber}
           onChange={(e) => handleInputChange(index, e)}
-          placeholder={index === 0 ? "081234567891" : "Contoh : 08xxxxxxxxxx"}
+          placeholder={"Contoh : 08xxxxxxxxxx"}
           status={
             validationErrors[`${index}-phoneNumber`] ? "error" : "default"
           }
@@ -295,6 +311,7 @@ const PicContactInfo = () => {
     setValidationErrors({});
     setIsEditing(false);
     setIsModalOpen(false); // Tutup modal
+    toast.success("Berhasil membtalkan perubahan kontak PIC");
   };
 
   const executeSave = () => {
@@ -327,7 +344,7 @@ const PicContactInfo = () => {
     setIsEditing(false);
     setFormState(null);
     setIsModalOpen(false); // Tutup modal
-    toast.success("Data PIC berhasil diperbarui!");
+    toast.success("Berhasil menyimpan perubahan kontak PIC");
   };
 
   // --- ⬇️ MODIFIKASI: Handler tombol yang sekarang hanya membuka modal ---
