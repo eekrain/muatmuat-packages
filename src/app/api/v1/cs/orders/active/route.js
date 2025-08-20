@@ -29,6 +29,30 @@ const groupDataByTransporter = (orders) => {
   }));
 };
 
+const groupDataByShipper = (orders) => {
+  const grouped = orders.reduce((acc, order) => {
+    const shipperId = order.shipper.id;
+    const transporterId = order.transporter.id;
+
+    if (!acc[shipperId]) {
+      acc[shipperId] = { shipper: order.shipper, transporters: {} };
+    }
+    if (!acc[shipperId].transporters[transporterId]) {
+      acc[shipperId].transporters[transporterId] = {
+        transporter: order.transporter,
+        orders: [],
+      };
+    }
+    acc[shipperId].transporters[transporterId].orders.push(order);
+    return acc;
+  }, {});
+
+  return Object.values(grouped).map((shipperGroup) => ({
+    ...shipperGroup,
+    transporters: Object.values(shipperGroup.transporters),
+  }));
+};
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -118,6 +142,14 @@ export async function GET(request) {
       },
       Data: { groupedData: groupedData, pagination: null },
       Type: "CS_ACTIVE_ORDERS_GROUPED",
+    });
+  }
+
+  if (viewBy === "shipper") {
+    const groupedData = groupDataByShipper(filteredOrders);
+    return NextResponse.json({
+      Message: { Code: 200, Text: "Grouped by shipper" },
+      Data: { groupedData: groupedData, viewBy: "shipper" },
     });
   }
 

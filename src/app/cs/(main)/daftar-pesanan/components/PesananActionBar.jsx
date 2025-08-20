@@ -193,6 +193,7 @@ const PesananActionBar = ({
             options={[
               { label: "Pesanan", value: "pesanan" },
               { label: "Transporter", value: "transporter" },
+              { label: "Shipper", value: "shipper" },
             ]}
             value={viewBy}
             onChange={onViewByChange}

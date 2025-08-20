@@ -470,7 +470,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
               <div className="flex w-fit flex-col items-end gap-2">
                 <SimpleDropdown>
                   <SimpleDropdownTrigger asChild>
-                    {viewMode === "transporter-group" ? (
+                    {viewMode !== "default" ? (
                       <button className="rounded-md p-1 hover:bg-neutral-100">
                         <MoreVertical className="h-5 w-5 text-neutral-900" />
                       </button>

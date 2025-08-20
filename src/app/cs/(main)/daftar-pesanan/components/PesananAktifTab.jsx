@@ -10,6 +10,7 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import PesananActionBar from "./PesananActionBar";
 import PesananCard from "./PesananCard";
+import ShipperParentCard from "./ShipperParentCard";
 import TransporterGroupCard from "./TransporterGroupCard";
 
 const usePrevious = (value) => {
@@ -190,7 +191,9 @@ const PesananAktifTab = ({
 
   const totalItems =
     data?.pagination?.totalItems ||
-    (viewBy === "transporter" ? data?.groupedData?.length : 0) ||
+    (viewBy === "transporter" || viewBy === "shipper"
+      ? data?.groupedData?.length
+      : 0) ||
     0;
   const orders = data?.orders || [];
   const groupedData = data?.groupedData || [];
@@ -288,6 +291,20 @@ const PesananAktifTab = ({
           {groupedData.map((group) => (
             <TransporterGroupCard
               key={group.transporter.id}
+              group={group}
+              userRole={userRole}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    if (viewBy === "shipper" && groupedData.length > 0) {
+      return (
+        <div>
+          {groupedData.map((group) => (
+            <ShipperParentCard
+              key={group.shipper.id}
               group={group}
               userRole={userRole}
             />
