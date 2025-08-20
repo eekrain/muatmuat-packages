@@ -14,7 +14,7 @@ const TransporterTableActions = ({ row, onOpenModal, onOpenHubungiModal }) => {
 
   const renderActionItems = (row) => {
     switch (row.status) {
-      case "Aktif":
+      case "ACTIVE":
         return (
           <>
             <SimpleDropdownItem

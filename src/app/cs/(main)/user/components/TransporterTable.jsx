@@ -37,7 +37,7 @@ const TransporterTable = ({
 
   const columns = [
     {
-      key: "companyName",
+      key: "name",
       header: t("TransporterTable.headerCompanyName", {}, "Nama Perusahaan"),
       sortable: true,
       render: (row) => (
@@ -89,7 +89,7 @@ const TransporterTable = ({
       ),
     },
     {
-      key: "fleetCount",
+      key: "fleet_count",
       header: t("TransporterTable.headerFleetCount", {}, "Jumlah Armada"),
       width: "170px",
       sortable: true,

@@ -132,6 +132,10 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     openModal("confirmCancelOrder");
   };
 
+  const handleViewCancellationReason = () => {
+    console.log("OPEN MODAL VIEW CANCELLATION ###BELUMMM");
+  };
+
   const actionItems = useGetActionItems({
     order,
     userRole,
@@ -139,6 +143,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     onViewFleet: handleViewFleet,
     onCancelFleet: handleCancelFleet,
     onCancelOrder: handleCancelOrder,
+    onViewCancellationReason: handleViewCancellationReason,
   });
 
   const handleActionClick = (action) => {
@@ -374,7 +379,12 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
                 />
               </div>
             </div>
-            <div className="flex justify-between">
+            <div
+              className={cn(
+                "flex justify-between",
+                viewMode === "default" && "gap-6"
+              )}
+            >
               <div className="ml-12 mr-3 flex w-[316px] flex-col gap-1">
                 <TruncatedTooltip
                   text={order.truckType.name}
@@ -456,16 +466,31 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
                   </Link>
                 </div>
               ) : (
-                <BadgeStatusPesanan
-                  variant={statusInfo.variant}
-                  className={cn(
-                    "!h-fit w-full max-w-[120px] !items-center !justify-center py-1 !text-center",
-                    viewMode !== "default" && "ml-14"
+                <div className={cn("flex flex-col gap-2")}>
+                  <BadgeStatusPesanan
+                    variant={statusInfo.variant}
+                    className={cn(
+                      "!h-fit w-[120px] !items-center !justify-center py-1 !text-center"
+                    )}
+                  >
+                    {statusInfo.text}
+                  </BadgeStatusPesanan>
+                  {order.orderStatus.includes("DIBATALKAN") && (
+                    <Button
+                      variant="link"
+                      onClick={handleViewCancellationReason}
+                      className="p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
+                    >
+                      {t(
+                        "pesananCard.viewCancellationReason",
+                        {},
+                        "Alasan Pembatalan"
+                      )}
+                    </Button>
                   )}
-                >
-                  {statusInfo.text}
-                </BadgeStatusPesanan>
+                </div>
               )}
+
               {/* Status & Actions */}
               <div className="flex w-fit flex-col items-end gap-2">
                 <SimpleDropdown>
