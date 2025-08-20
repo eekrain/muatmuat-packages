@@ -12,7 +12,7 @@ import { ModalQRCodeDriver } from "@/components/Modal/ModalQRCodeDriver";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { getDriverStatusMetadata } from "@/lib/normalizers/CS/getStatusDriverMetadata";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { cn } from "@/lib/utils";
 
 import ModalDetailStatusDriver from "./ModalDetailStatusDriver";

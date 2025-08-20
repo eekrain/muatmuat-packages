@@ -8,7 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useTranslation } from "@/hooks/use-translation";
-import { getDriverStatusMetadata } from "@/lib/normalizers/CS/getStatusDriverMetadata";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 
 export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
   const { t } = useTranslation();
