@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import { mutate } from "swr";
+
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { useTranslation } from "@/hooks/use-translation";
 import {
@@ -22,6 +24,7 @@ const RequestList = ({
   status,
   openDetails,
   toggleDetail,
+  pagination,
 }) => {
   const { t } = useTranslation();
 
@@ -35,17 +38,7 @@ const RequestList = ({
     );
   }
 
-  // Filter sesuai tab
-  let filtered = [];
-  if (status === "baru") {
-    filtered = requests.filter((item) => item.status === "NEW");
-  } else if (status === "proses") {
-    filtered = requests.filter((item) => item.status === "PROCESSING");
-  } else if (status === "selesai") {
-    filtered = requests.filter((item) => item.status === "COMPLETED");
-  }
-
-  if (!filtered || filtered.length === 0) {
+  if (!requests || requests.length === 0) {
     return (
       <div className="h-full py-8">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
@@ -76,15 +69,35 @@ const RequestList = ({
 
   return (
     <div className="space-y-4 pb-12" ref={ref}>
-      {filtered.map((item, index) => (
+      {requests.map((item, index) => (
         <UrgentIssueCardTransporter
-          key={index}
+          key={item.id}
           data={item}
           statusTab={status}
           isDetailOpen={openDetails.includes(item.id)}
           onToggleDetail={() => toggleDetail(item.id)}
         />
       ))}
+
+      {/* Loading spinner untuk lazy load */}
+      {isLoading && requests.length > 0 && (
+        <div className="flex justify-center py-8">
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-100 border-t-primary-600"></div>
+              <div className="absolute inset-0 h-8 w-8 animate-ping rounded-full border-2 border-primary-400 opacity-20"></div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 animate-bounce rounded-full bg-primary-600 [animation-delay:-0.3s]"></div>
+              <div className="h-2 w-2 animate-bounce rounded-full bg-primary-600 [animation-delay:-0.15s]"></div>
+              <div className="h-2 w-2 animate-bounce rounded-full bg-primary-600"></div>
+            </div>
+            <span className="text-sm font-medium text-neutral-600">
+              Memuat data...
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -99,7 +112,7 @@ const UrgentIssue = () => {
 
   const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
 
-  const { items, isLoading } = useGetUrgentIssueList({
+  const { items, isLoading, pagination } = useGetUrgentIssueList({
     status: statusMap[activeTab],
     page,
     limit: 10,
@@ -127,27 +140,39 @@ const UrgentIssue = () => {
     });
   };
 
+  // Reset data dan page ketika tab berubah
   useEffect(() => {
-    setData(items);
+    setData([]);
     setPage(1);
+    setOpenDetails([]);
+
+    // Clear SWR cache untuk memastikan data fresh
+    mutate(
+      (key) => typeof key === "string" && key.includes("getUrgentIssueList")
+    );
   }, [activeTab]);
 
+  // Update data ketika items berubah
   useEffect(() => {
     if (!items) return;
 
     setData((prev) => (page === 1 ? items : [...prev, ...items]));
   }, [items, page]);
 
+  // Setup scroll handler untuk infinite scroll
   useEffect(() => {
-    setData(items);
     const handleScroll = () => {
       const container = requestContainer.current;
       if (!container) return;
 
       const { scrollTop, scrollHeight, clientHeight } = container;
 
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        setPage((p) => p + 1);
+      // Trigger lazy load jika sudah di bottom dan ada data lebih
+      if (scrollTop + clientHeight >= scrollHeight - 100 && !isLoading) {
+        // Cek apakah masih ada halaman berikutnya
+        if (pagination?.hasNext) {
+          setPage((p) => p + 1);
+        }
       }
     };
 
@@ -156,7 +181,7 @@ const UrgentIssue = () => {
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pagination?.hasNext, isLoading]);
 
   return (
     <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col">
@@ -222,11 +247,12 @@ const UrgentIssue = () => {
       <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
         <RequestList
           ref={requestContainer}
-          requests={items}
+          requests={data}
           isLoading={isLoading}
           status={activeTab}
           openDetails={openDetails}
           toggleDetail={toggleDetail}
+          pagination={pagination}
         />
       </div>
     </div>

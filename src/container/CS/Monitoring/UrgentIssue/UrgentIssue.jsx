@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -37,17 +37,7 @@ const RequestList = ({
     );
   }
 
-  // Filter sesuai tab
-  let filtered = [];
-  if (status === "baru") {
-    filtered = requests.filter((item) => item.status === "NEW");
-  } else if (status === "proses") {
-    filtered = requests.filter((item) => item.status === "PROCESSING");
-  } else if (status === "selesai") {
-    filtered = requests.filter((item) => item.status === "COMPLETED");
-  }
-
-  if (!filtered || filtered.length === 0) {
+  if (!requests || requests.length === 0) {
     return (
       <div className="h-full py-8">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
@@ -78,7 +68,7 @@ const RequestList = ({
 
   return (
     <div className="space-y-4 pb-12">
-      {filtered.map((item) => (
+      {requests.map((item) => (
         <UrgentIssueCard
           key={item.id}
           data={item}
@@ -98,16 +88,31 @@ const UrgentIssue = () => {
   const [filters, setFilters] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [hubungiModal, setHubungiModal] = useState(false);
+  const [data, setData] = useState([]);
 
   const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
 
   const { items, isLoading } = useGetUrgentIssueList({
     status: statusMap[activeTab],
-    page: 1,
+    page: currentPage,
     limit: 10,
     sort: "detectedAt",
     sortDirection: "desc",
   });
+
+  // Reset data dan page ketika tab berubah
+  useEffect(() => {
+    setData([]);
+    setCurrentPage(1);
+    setOpenDetails([]);
+  }, [activeTab]);
+
+  // Update data ketika items berubah
+  useEffect(() => {
+    if (!items) return;
+
+    setData((prev) => (currentPage === 1 ? items : [...prev, ...items]));
+  }, [items, currentPage]);
 
   const toggleDetail = (id) => {
     setOpenDetails((prev) => {
@@ -292,7 +297,7 @@ const UrgentIssue = () => {
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
         <RequestList
-          requests={items}
+          requests={data}
           isLoading={isLoading}
           status={activeTab}
           openDetails={openDetails}
