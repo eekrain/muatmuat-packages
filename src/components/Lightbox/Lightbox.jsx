@@ -45,7 +45,7 @@ export const lightboxTitleVariants = cva(
 );
 
 export const lightboxImageVariants = cva(
-  "kntl w-full object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
+  "w-full object-cover md:h-[306px] md:w-[544px] md:rounded-[9px]",
   {
     variants: {
       variant: {

@@ -1,7 +1,7 @@
 import { usePathname } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import {
   useSewaArmadaActions,

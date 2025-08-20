@@ -10,6 +10,10 @@ import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
@@ -48,6 +52,30 @@ export default function DetailDriverPage({ params }) {
     }
 
     return { startDate: "", endDate: "" };
+  };
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString("en-US", { month: "short" });
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${day} ${month} ${year} ${hours}:${minutes} WIB`;
+  };
+
+  // Function to format phone number with "-" separator every 4 digits
+  const formatPhoneNumber = (phoneNumber) => {
+    if (!phoneNumber) return "";
+
+    // Remove any existing non-digit characters
+    const cleaned = phoneNumber.replace(/\D/g, "");
+
+    // Add separator every 4 digits
+    const formatted = cleaned.replace(/(\d{4})(?=\d)/g, "$1-");
+
+    return formatted;
   };
 
   // Get driver detail activities from API
@@ -93,10 +121,17 @@ export default function DetailDriverPage({ params }) {
       width: "200px",
       searchable: true,
       render: (row) => {
-        if (!row.orderInfo?.orderCode || row.orderInfo.orderCode === "") {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        if (
+          !row.orderInfo?.invoiceNumber ||
+          row.orderInfo.invoiceNumber === ""
+        ) {
+          return <div className="text-sm">-</div>;
         }
-        return <div className="text-sm">{row.orderInfo.orderCode}</div>;
+        return (
+          <div className="text-sm font-semibold">
+            {row.orderInfo.invoiceNumber}
+          </div>
+        );
       },
     },
     {
@@ -108,16 +143,19 @@ export default function DetailDriverPage({ params }) {
       render: (row) => (
         <div className="space-y-2">
           {row.orderInfo?.estimatedDistance && (
-            <div className="text-xs font-medium text-neutral-700">
+            <div className="text-xs font-medium">
               Estimasi: {row.orderInfo.estimatedDistance} km
             </div>
           )}
           <MuatBongkarStepper
+            className="ms-2"
             pickupLocations={[row.orderInfo?.pickupLocation || ""]}
             dropoffLocations={[row.orderInfo?.dropoffLocation || ""]}
             appearance={{
-              titleClassName: "text-xs font-medium text-neutral-900",
+              titleClassName: "text-xs font-semibold text-neutral-900",
             }}
+            truncate={true}
+            maxLength={20}
           />
         </div>
       ),
@@ -133,7 +171,7 @@ export default function DetailDriverPage({ params }) {
           <div className="text-sm font-semibold text-gray-900">
             {row.fleetInfo?.licensePlate || "Belum Ada"}
           </div>
-          <div className="text-xs text-gray-600">
+          <div className="text-xs font-medium">
             {row.fleetInfo
               ? `${row.fleetInfo.truckType} - ${row.fleetInfo.carrierType}`
               : "Belum Ada"}
@@ -149,11 +187,11 @@ export default function DetailDriverPage({ params }) {
       searchable: true,
       render: (row) => {
         if (!row.orderInfo?.loadTimeStart) {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+          return <div className="text-sm">-</div>;
         }
         return (
           <div className="text-sm">
-            {new Date(row.orderInfo.loadTimeStart).toLocaleString("id-ID")}
+            {formatDateTime(row.orderInfo.loadTimeStart)}
           </div>
         );
       },
@@ -166,11 +204,11 @@ export default function DetailDriverPage({ params }) {
       searchable: true,
       render: (row) => {
         if (!row.orderInfo?.loadTimeEnd) {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+          return <div className="text-sm">-</div>;
         }
         return (
           <div className="text-sm">
-            {new Date(row.orderInfo.loadTimeEnd).toLocaleString("id-ID")}
+            {formatDateTime(row.orderInfo.loadTimeEnd)}
           </div>
         );
       },
@@ -361,6 +399,10 @@ export default function DetailDriverPage({ params }) {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
       displayStatus = "Siap Menerima Order";
+    } else if (status === "WAITING_PAYMENT_1") {
+      bgColor = "bg-orange-100";
+      textColor = "text-orange-900";
+      displayStatus = "Menunggu Pembayaran";
     } else if (status === "NOT_PAIRED") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-600";
@@ -377,7 +419,7 @@ export default function DetailDriverPage({ params }) {
 
     return (
       <span
-        className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${bgColor} ${textColor}`}
+        className={`inline-flex items-center justify-center rounded-lg px-2.5 py-1 text-[11px] font-medium ${bgColor} ${textColor} h-6 w-36`}
       >
         {displayStatus}
       </span>
@@ -420,11 +462,16 @@ export default function DetailDriverPage({ params }) {
             <div className="flex items-start gap-4">
               {/* Driver Image */}
               <div className="flex-shrink-0">
-                <img
-                  src={driverData.image}
-                  alt="Driver"
-                  className="h-20 w-20 rounded-full object-cover"
-                />
+                <LightboxProvider
+                  image={driverData.image}
+                  title="Gambar Driver"
+                >
+                  <LightboxPreview
+                    image={driverData.image}
+                    alt="Driver"
+                    className="h-20 w-20"
+                  />
+                </LightboxProvider>
               </div>
 
               {/* Driver Details */}
@@ -435,28 +482,38 @@ export default function DetailDriverPage({ params }) {
                 </div>
 
                 {/* Driver Name */}
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-gray-900">
                   {driverData.name}
                 </h2>
 
-                {/* Phone Number with Phone Icon */}
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Phone className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                  <span className="text-sm">{driverData.phoneNumber}</span>
-                </div>
-
                 {/* Vehicle Type with Truck Icon */}
-                <div className="flex gap-2">
-                  {/* Vehicle Type with Truck Icon */}
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Truck className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                    <span className="text-sm">{driverData.vehicleType}</span>
+                <div className="flex items-center gap-2 text-gray-600">
+                  {/* Phone Number */}
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
+                    <span className="text-sm font-medium">
+                      {formatPhoneNumber(driverData.phoneNumber)}
+                    </span>
                   </div>
 
-                  {/* Location with MapPin Icon */}
-                  <div className="flex items-center gap-2 text-gray-600">
+                  {/* Bullet Separator */}
+                  <span className="text-gray-400">•</span>
+
+                  {/* Vehicle Type */}
+                  <div className="flex items-center gap-2">
+                    <Truck className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
+                    <span className="text-sm font-medium">
+                      {driverData.vehicleType}
+                    </span>
+                  </div>
+
+                  {/* Bullet Separator */}
+                  <span className="text-gray-400">•</span>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                    <span className="text-sm">
+                    <span className="text-sm font-medium">
                       {driverData.currentLocation}
                     </span>
                   </div>

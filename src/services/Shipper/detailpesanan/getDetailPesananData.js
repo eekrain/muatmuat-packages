@@ -5,7 +5,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 import {
   OrderStatusEnum,
   OrderTypeEnum,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
 import { getAdditionalServices } from "./getAdditionalServices";

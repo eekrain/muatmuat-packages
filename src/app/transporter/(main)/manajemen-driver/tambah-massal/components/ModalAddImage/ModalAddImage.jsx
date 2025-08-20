@@ -6,7 +6,7 @@ import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
 
-import UploadVehiclePhotos from "../../../../manajemen-armada/tambah-massal/components/UploadVehiclePhotos/UploadVehiclePhotos";
+import UploadDriverPhoto from "../UploadDriverPhoto/UploadDriverPhoto";
 
 /**
  * @typedef {Object} ModalAddArmadaImageProps
@@ -40,6 +40,10 @@ export default function ModalAddImage({
       ...prev,
       [imageType]: image,
     }));
+
+    if (isError && image) {
+      setIsError(false);
+    }
   };
 
   const handleClose = () => {
@@ -83,7 +87,7 @@ export default function ModalAddImage({
             </p>
           </div>
           <div className="flex w-full items-center justify-center gap-4">
-            <UploadVehiclePhotos
+            <UploadDriverPhoto
               value={images.driver_image}
               onUpload={(image) => handleImageChange("driver_image", image)}
               isError={isError && !images.driver_image}

@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 import { sub } from "date-fns";
 
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { DriverStatusEnum } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 import { LeftPanel } from "./LeftPanel/LeftPanel";

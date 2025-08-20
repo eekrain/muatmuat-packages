@@ -6,7 +6,7 @@ import TimelineField from "@/components/Timeline/timeline-field";
 import {
   OrderStatusEnum,
   OrderTypeEnum,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,

@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import Button from "@/components/Button/Button";
 import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
+import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
 // --- Helper Components (Mocks for provided CardItem) ---
