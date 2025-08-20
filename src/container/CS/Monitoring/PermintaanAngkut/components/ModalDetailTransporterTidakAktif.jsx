@@ -47,7 +47,7 @@ const ModalDetailTransporterTidakAktif = ({
             </button>
           </div>
           {/* Card */}
-          <div className="mb-6 flex items-start gap-4 rounded-xl border border-neutral-300 p-4">
+          <div className="mb-4 flex items-start gap-4 rounded-xl border border-neutral-300 p-4">
             <img
               src={transporter.logoUrl || "/icons/company-placeholder.svg"}
               alt={transporter.transporterName}
@@ -98,8 +98,9 @@ const ModalDetailTransporterTidakAktif = ({
             </div>
           </div>
           {/* Detail Penyelesaian (if needed, use latestNote.history) */}
-          {latestNote?.history && (
-            <div className="flex h-[187px] flex-col overflow-y-auto rounded-xl border border-neutral-300 p-4">
+
+          {latestNote?.status === "completed" && (
+            <div className="mb-4 flex h-[187px] flex-col overflow-y-auto rounded-xl border border-neutral-300 p-4">
               <div className="mb-3 flex items-center">
                 <p className="text-xs font-bold text-neutral-900">
                   Detail Penyelesaian
@@ -158,6 +159,7 @@ const ModalDetailTransporterTidakAktif = ({
               </div>
             </div>
           )}
+
           {/* Actions */}
           <div className="flex items-center justify-center gap-2">
             <Button
@@ -167,17 +169,19 @@ const ModalDetailTransporterTidakAktif = ({
             >
               Hubungi
             </Button>
-            <Button
-              variant="muattrans-primary"
-              className="flex h-[44px] w-[137px] items-center justify-center gap-1.5 rounded-full text-sm font-semibold text-[#461B02]"
-              onClick={() => setShowCatatanModal(true)}
-            >
-              {/* <IconComponent
+            {latestNote?.status === "active" && (
+              <Button
+                variant="muattrans-primary"
+                className="flex h-[44px] w-[137px] items-center justify-center gap-1.5 rounded-full text-sm font-semibold text-[#461B02]"
+                onClick={() => setShowCatatanModal(true)}
+              >
+                {/* <IconComponent
                 src="/icons/check-circle16.svg"
                 className="h-4 w-4"
               /> */}
-              <span>Selesaikan</span>
-            </Button>
+                <span>Selesaikan</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
