@@ -4,11 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { X } from "lucide-react";
+
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { DataTable } from "@/components/DataTable";
 import DropzoneComponent from "@/components/Dropzone/Dropzone";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Table from "@/components/Table/Table";
 import Toggle from "@/components/Toggle/Toggle";
 import { useTranslation } from "@/hooks/use-translation";
 import { isDev } from "@/lib/constants/is-dev";
@@ -22,6 +25,7 @@ const TambahExcel = () => {
   const { t } = useTranslation();
   const [list, setList] = useState([]);
   const [stateUpload, setStateUpload] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
   const [searchParams, setSearchParams] = useState({
     page: 1,
     limit: 10,
@@ -202,6 +206,7 @@ const TambahExcel = () => {
   };
 
   const handleSearch = (searchTerm) => {
+    setSearchValue(searchTerm);
     setSearchParams((prev) => ({
       ...prev,
       search: searchTerm,
@@ -209,34 +214,88 @@ const TambahExcel = () => {
     }));
   };
 
-  const handlePageChange = (page) => {
-    setSearchParams((prev) => ({
-      ...prev,
-      page,
-    }));
-  };
-
-  const handlePerPageChange = (limit) => {
-    setSearchParams((prev) => ({
-      ...prev,
-      limit,
-      page: 1, // Reset to first page when changing page size
-    }));
+  const handleSearchKeyUp = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(searchValue);
+    }
   };
 
   useEffect(() => {
-    if (data && data.Data && data.Data.history.length > 0) {
-      setList(
-        data.Data.history.map((item) => ({
-          createdAt: item.uploadedAt,
-          document: item.originalFileName,
-          name: item.uploadBy,
-          status: item.status,
-          action: item.fileReport ? item.fileReport : "-",
-        }))
-      );
+    if (data && data.Data) {
+      if (data.Data.history.length > 0) {
+        setList(
+          data.Data.history.map((item) => ({
+            createdAt: item.uploadedAt,
+            document: item.originalFileName,
+            name: item.uploadBy,
+            status: item.status,
+            action: item.fileReport ? item.fileReport : "-",
+          }))
+        );
+      } else {
+        // Clear the list when API returns empty results (including search with no results)
+        setList([]);
+      }
     }
   }, [data]);
+
+  const renderTableHeader = () => {
+    // Disable search input only when there's no data from the beginning and no search is active
+    const isDisabled = list.length === 0 && !isLoading && !searchParams.search;
+
+    return (
+      <div className="flex items-center justify-between px-6 py-5">
+        <div className="flex items-center gap-3">
+          <h2 className="mr-3 text-xl font-bold text-neutral-900">
+            {t(
+              "TambahExcel.titleRiwayatUnggahan90Hari",
+              {},
+              "Riwayat Unggahan 90 Hari Terakhir"
+            )}
+          </h2>
+          <Input
+            type="text"
+            placeholder={t(
+              "TambahExcel.searchPlaceholderCariNamaDokumen",
+              {},
+              "Cari Nama Dokumen (min. 4 karakter)"
+            )}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyUp={handleSearchKeyUp}
+            disabled={isDisabled}
+            icon={{
+              left: (
+                <IconComponent src="/icons/datatable-search.svg" width={12} />
+              ),
+              right:
+                searchValue.length > 2 ? (
+                  <button
+                    onClick={() => {
+                      setSearchValue("");
+                      handleSearch("");
+                    }}
+                    className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
+                  >
+                    <X className="h-3 w-3 text-neutral-600" />
+                  </button>
+                ) : null,
+            }}
+            appearance={{
+              containerClassName: "h-8 w-[262px]",
+              inputClassName: "text-xs font-medium mt-0",
+            }}
+            className="w-fit"
+          />
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <div className="text-sm font-semibold text-neutral-900">
+            Total : {list.length} items
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -349,39 +408,50 @@ const TambahExcel = () => {
 
       {/* Card 3: Riwayat Unggahan */}
       <div className="flex max-h-[400px] flex-1 flex-col rounded-lg bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)] md:col-span-2">
-        {list.length > 0 ? (
-          <DataTable
-            data={list}
-            columns={columns}
-            searchPlaceholder={t(
-              "TambahExcel.searchPlaceholderCariNamaDokumen",
+        {renderTableHeader()}
+        {isLoading ? (
+          // Show loading state
+          <div className="flex h-[400px] items-center justify-center">
+            <div className="text-center">
+              <p className="font-semibold">Memuat data...</p>
+              <p className="mt-1 text-xs font-medium text-neutral-600">
+                Mohon tunggu sebentar
+              </p>
+            </div>
+          </div>
+        ) : list.length > 0 ? (
+          // Show table with data
+          <div className="flex-1 overflow-hidden">
+            <Table
+              columns={columns}
+              data={list}
+              loading={isLoading}
+              onSort={handleSort}
+              sortConfig={{
+                sort: searchParams.sort,
+                order: searchParams.order,
+              }}
+            />
+          </div>
+        ) : searchParams.search && searchParams.search.trim().length > 0 ? (
+          // Show search not found when there's an active search but no results (search input enabled)
+          <DataNotFound
+            className="w-full p-6"
+            type="search"
+            title={t(
+              "TambahExcel.searchNotFoundTitle",
               {},
-              "Cari Nama Dokumen (min. 4 karakter)"
+              "Pencarian tidak ditemukan"
             )}
-            currentPage={searchParams.page}
-            totalPages={data?.Data?.pagination?.totalPages || 1}
-            totalItems={data?.Data?.pagination?.totalItems || 0}
-            perPage={searchParams.limit}
-            // showDisplayView={false}
-            showPagination={false}
-            // showTotalCount={true}
-            tableTitle={
-              <h2 className="mr-3 text-xl font-bold text-neutral-900">
-                {t(
-                  "TambahExcel.titleRiwayatUnggahan90Hari",
-                  {},
-                  "Riwayat Unggahan 90 Hari Terakhir"
-                )}
-              </h2>
-            }
-            fixedHeight={true}
-            onPageChange={handlePageChange}
-            onPerPageChange={handlePerPageChange}
-            onSearch={handleSearch}
-            onSort={handleSort}
-            loading={isLoading}
+            subtitle={t(
+              "TambahExcel.searchNotFoundSubtitle",
+              {},
+              "Coba kata kunci lain atau periksa ejaan"
+            )}
+            textClass={"w-full"}
           />
         ) : (
+          // Show no data state when there's genuinely no data from beginning (search input disabled)
           <DataNotFound
             className="w-full p-6"
             image="/icons/NotFoundVoucher.png"
