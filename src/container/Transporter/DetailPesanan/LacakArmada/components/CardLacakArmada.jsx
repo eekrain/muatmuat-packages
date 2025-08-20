@@ -15,7 +15,7 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 // --- (1) UNCOMMENT baris ini ---
 import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 
 import ModalUbahArmada from "./ModalUbahArmada";

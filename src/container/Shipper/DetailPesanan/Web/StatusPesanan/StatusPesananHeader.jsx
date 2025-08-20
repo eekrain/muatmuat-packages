@@ -21,7 +21,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderStatusIcon,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";

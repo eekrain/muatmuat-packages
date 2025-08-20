@@ -1,11 +1,11 @@
 import {
   OrderStatusEnum,
   OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import {
   DriverStatusEnum,
   DriverStatusLabel,
-} from "@/lib/constants/detailpesanan/driver-status.enum";
+} from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 
 const SHOULD_RETURNS_ORDER_STATUS = [
   OrderStatusEnum.WAITING_REPAYMENT_1,

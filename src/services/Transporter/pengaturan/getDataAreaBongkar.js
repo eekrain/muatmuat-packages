@@ -1,5 +1,10 @@
 import useSWR from "swr";
 
+import {
+  createMasterProvinsiSuccessResponse,
+  masterProvinsiData,
+  provinceNameMapping,
+} from "@/app/api/v1/transporter/settings/master/provinsi/mockData";
 import { fetcherMuatrans } from "@/lib/axios";
 
 const useMockData = false; // toggle mock data
@@ -294,91 +299,24 @@ export const useGetAreaBongkarData = (params) => {
   };
 };
 
-// Mock API results for master provinsi (new endpoint)
-export const mockMasterProvinsi = {
-  Message: {
-    Code: 200,
-    Text: "Master data provinsi berhasil diambil",
+// Create sample data with some provinces selected for master provinsi service
+const sampleSelectedProvinsi = masterProvinsiData
+  .slice(0, 10)
+  .map((provinsi, index) => ({
+    ...provinsi,
+    isSelected: [1, 4, 5, 8].includes(index), // Select BALI, DI YOGYAKARTA, DKI JAKARTA, JAWA BARAT
+  }));
+
+export const mockMasterProvinsi = createMasterProvinsiSuccessResponse(
+  sampleSelectedProvinsi,
+  {
+    currentPage: 1,
+    totalPages: 3,
+    totalItems: 34,
+    itemsPerPage: 10,
   },
-  Data: {
-    provinsi: [
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440001",
-        provinceName: "Aceh",
-        alphabetGroup: "A",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440002",
-        provinceName: "Bali",
-        alphabetGroup: "B",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440003",
-        provinceName: "Banten",
-        alphabetGroup: "B",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440004",
-        provinceName: "Bengkulu",
-        alphabetGroup: "B",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440005",
-        provinceName: "DI Yogyakarta",
-        alphabetGroup: "D",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440006",
-        provinceName: "DKI Jakarta",
-        alphabetGroup: "D",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440007",
-        provinceName: "Gorontalo",
-        alphabetGroup: "G",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440008",
-        provinceName: "Jambi",
-        alphabetGroup: "J",
-        isSelected: false,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440009",
-        provinceName: "Jawa Barat",
-        alphabetGroup: "J",
-        isSelected: true,
-      },
-      {
-        provinceId: "550e8400-e29b-41d4-a716-446655440010",
-        provinceName: "Jawa Tengah",
-        alphabetGroup: "J",
-        isSelected: false,
-      },
-    ],
-    pagination: {
-      currentPage: 1,
-      totalPages: 3,
-      totalItems: 34,
-      itemsPerPage: 10,
-    },
-    grouping: {
-      A: 1,
-      B: 3,
-      D: 2,
-      G: 1,
-      J: 3,
-    },
-  },
-  Type: "GET_MASTER_PROVINSI",
-};
+  "search=&page=1&limit=10&excludeSelected=false"
+);
 
 // Mock API results for master kota/kabupaten
 export const mockMasterKotaKabupaten = {
@@ -389,8 +327,8 @@ export const mockMasterKotaKabupaten = {
   Data: {
     cities: [
       {
-        provinceId: "550e8400-e29b-41d4-a716-446655440001",
-        provinceName: "DKI Jakarta",
+        provinceId: 31,
+        provinceName: "DKI JAKARTA",
         selectedCount: 3,
         totalCount: 5,
         isAllSelected: false,
@@ -423,8 +361,8 @@ export const mockMasterKotaKabupaten = {
         ],
       },
       {
-        provinceId: "550e8400-e29b-41d4-a716-446655440002",
-        provinceName: "Jawa Barat",
+        provinceId: 32,
+        provinceName: "JAWA BARAT",
         selectedCount: 2,
         totalCount: 6,
         isAllSelected: false,
@@ -1416,7 +1354,9 @@ export const getMasterKotaKabupaten = async (cacheKey) => {
     let citiesData = [...mockMasterKotaKabupaten.Data.cities];
 
     // Filter by provinceIds
-    const provinceIdArray = provinceIds.split(",").map((id) => id.trim());
+    const provinceIdArray = provinceIds
+      .split(",")
+      .map((id) => parseInt(id.trim()));
     citiesData = citiesData.filter((city) =>
       provinceIdArray.includes(city.provinceId)
     );
@@ -1721,6 +1661,111 @@ export const deleteProvinsiAreaBongkar = async (provinsiId) => {
     deleted: result?.data?.Data?.deleted || false,
     deletedProvinsiName: result?.data?.Data?.deletedProvinsiName || "",
     remainingProvinsi: result?.data?.Data?.remainingProvinsi || 0,
+    message: result?.data?.Message || {},
+    raw: result,
+  };
+};
+
+// Mock response for update area bongkar selection
+export const mockUpdateAreaBongkarSelectionSuccess = {
+  Message: {
+    Code: 200,
+    Text: "Berhasil mengupdate pilihan kota/kabupaten",
+  },
+  Data: {
+    updated: true,
+    provinsiId: "550e8400-e29b-41d4-a716-446655440001",
+    provinsiName: "DKI Jakarta",
+    selectedCount: 3,
+    totalCount: 5,
+    isAllSelected: false,
+  },
+  Type: "UPDATE_AREA_BONGKAR_SELECTION",
+};
+
+export const mockUpdateAreaBongkarSelectionError = {
+  Message: {
+    Code: 400,
+    Text: "Pilih minimal 1 Kota/Kab pada Provinsi ini",
+  },
+  Data: {
+    errors: [
+      {
+        field: "kotaKabupaten",
+        message: "Minimal 1 kota/kabupaten harus dipilih",
+      },
+    ],
+  },
+  Type: "UPDATE_AREA_BONGKAR_SELECTION_ERROR",
+};
+
+// Update Area Bongkar Selection Function
+export const updateAreaBongkarSelection = async (provinsiId, data) => {
+  const { cities } = data;
+
+  let result;
+  if (useMockData) {
+    // Mock validation
+    if (!cities || !Array.isArray(cities)) {
+      const errorResponse = {
+        Message: {
+          Code: 400,
+          Text: "Data kota/kabupaten tidak valid",
+        },
+        Data: {
+          errors: [
+            {
+              field: "cities",
+              message: "cities must be an array",
+            },
+          ],
+        },
+        Type: "UPDATE_AREA_BONGKAR_SELECTION_ERROR",
+      };
+      throw new Error(JSON.stringify(errorResponse));
+    }
+
+    const selectedCities = cities.filter((city) => city.isSelected);
+    if (selectedCities.length === 0) {
+      throw new Error(JSON.stringify(mockUpdateAreaBongkarSelectionError));
+    }
+
+    // Use centralized province names mapping
+    const provinceName = provinceNameMapping[provinsiId] || "Provinsi";
+    const selectedCount = selectedCities.length;
+    const totalCount = cities.length;
+    const isAllSelected = selectedCount === totalCount;
+
+    result = {
+      data: {
+        ...mockUpdateAreaBongkarSelectionSuccess,
+        Data: {
+          ...mockUpdateAreaBongkarSelectionSuccess.Data,
+          provinsiId,
+          provinsiName: provinceName,
+          selectedCount,
+          totalCount,
+          isAllSelected,
+        },
+      },
+    };
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+  } else {
+    result = await fetcherMuatrans.put(
+      `${URL_AREA_BONGKAR}/provinsi/${provinsiId}`,
+      data
+    );
+  }
+
+  return {
+    updated: result?.data?.Data?.updated || false,
+    provinsiId: result?.data?.Data?.provinsiId || provinsiId,
+    provinsiName: result?.data?.Data?.provinsiName || "",
+    selectedCount: result?.data?.Data?.selectedCount || 0,
+    totalCount: result?.data?.Data?.totalCount || 0,
+    isAllSelected: result?.data?.Data?.isAllSelected || false,
     message: result?.data?.Message || {},
     raw: result,
   };

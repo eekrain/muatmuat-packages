@@ -68,17 +68,42 @@ export const authErrorResponse = {
 export const mockDraftDrivers = [
   {
     id: "draft-123e4567-e89b-12d3-a456-426614174000",
-    name: "John Doe",
-    phoneNumber: "081234567890",
+    name: "John Doe", // Referensi ke [dbt_mt_drivers.name] di ERD
+    phoneNumber: "081234567890", // Referensi ke [dbt_mt_drivers.phone_number] di ERD
     profileImage:
-      "https://storage.muatrans.com/drivers/photos/john-doe-profile.jpg",
+      "https://storage.muatrans.com/drivers/photos/john-doe-profile.jpg", // Referensi ke [dbt_mt_drivers.profile_image] di ERD
+    photos: [
+      // Referensi ke [dbt_mt_driver_draft.photos] di ERD
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/john-doe-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      // Referensi ke [dbt_mt_driver_draft.documents] di ERD
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/john-doe-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/john-doe-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
-      "https://storage.muatrans.com/drivers/documents/john-doe-ktp.jpg",
+      "https://storage.muatrans.com/drivers/documents/john-doe-ktp.jpg", // Referensi ke [dbm_mt_driver_documents.document_url] di ERD
     simDocument:
-      "https://storage.muatrans.com/drivers/documents/john-doe-sim.jpg",
-    simExpiryDate: "2026-12-31",
-    createdAt: "2025-07-15T10:30:00Z",
-    updatedAt: "2025-07-15T10:30:00Z",
+      "https://storage.muatrans.com/drivers/documents/john-doe-sim.jpg", // Referensi ke [dbm_mt_driver_documents.document_url] di ERD
+    simExpiryDate: "2026-12-31", // Referensi ke [dbt_mt_drivers.sim_expiry_date] di ERD
+    verificationStatus: "PENDING", // Referensi ke [dbt_mt_driver_draft.verification_status] di ERD
+    createdAt: "2025-07-15T10:30:00Z", // Referensi ke [dbt_mt_drivers.created_at] di ERD
+    updatedAt: "2025-07-15T10:30:00Z", // Referensi ke [dbt_mt_drivers.updated_at] di ERD
   },
   {
     id: "draft-456e7890-e12d-34a5-b678-901234567890",
@@ -86,11 +111,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081298765432",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/jane-smith-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/jane-smith-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/jane-smith-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/jane-smith-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/jane-smith-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/jane-smith-sim.jpg",
     simExpiryDate: "2027-03-15",
+    verificationStatus: "PENDING",
     createdAt: "2025-07-14T14:22:00Z",
     updatedAt: "2025-07-14T16:45:00Z",
   },
@@ -100,11 +148,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081345678901",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/mike-johnson-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/mike-johnson-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/mike-johnson-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/mike-johnson-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/mike-johnson-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/mike-johnson-sim.jpg",
     simExpiryDate: "2025-11-20",
+    verificationStatus: "APPROVED",
     createdAt: "2025-07-13T09:15:00Z",
     updatedAt: "2025-07-13T11:30:00Z",
   },
@@ -114,11 +185,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081456789012",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/sarah-wilson-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/sarah-wilson-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/sarah-wilson-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/sarah-wilson-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/sarah-wilson-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/sarah-wilson-sim.jpg",
     simExpiryDate: "2026-08-10",
+    verificationStatus: "REJECTED",
     createdAt: "2025-07-12T16:45:00Z",
     updatedAt: "2025-07-12T18:20:00Z",
   },
@@ -128,11 +222,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081567890123",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/robert-brown-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/robert-brown-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/robert-brown-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/robert-brown-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/robert-brown-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/robert-brown-sim.jpg",
     simExpiryDate: "2026-01-25",
+    verificationStatus: "PENDING",
     createdAt: "2025-07-11T11:20:00Z",
     updatedAt: "2025-07-11T13:15:00Z",
   },
@@ -142,11 +259,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081678901234",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/lisa-anderson-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/lisa-anderson-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/lisa-anderson-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/lisa-anderson-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/lisa-anderson-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/lisa-anderson-sim.jpg",
     simExpiryDate: "2027-05-30",
+    verificationStatus: "APPROVED",
     createdAt: "2025-07-10T08:45:00Z",
     updatedAt: "2025-07-10T10:20:00Z",
   },
@@ -156,11 +296,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081789012345",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/david-martinez-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/david-martinez-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/david-martinez-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/david-martinez-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/david-martinez-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/david-martinez-sim.jpg",
     simExpiryDate: "2026-09-12",
+    verificationStatus: "PENDING",
     createdAt: "2025-07-09T15:30:00Z",
     updatedAt: "2025-07-09T17:45:00Z",
   },
@@ -170,11 +333,34 @@ export const mockDraftDrivers = [
     phoneNumber: "081890123456",
     profileImage:
       "https://storage.muatrans.com/drivers/photos/amanda-taylor-profile.jpg",
+    photos: [
+      {
+        photoType: "PROFILE",
+        photoUrl:
+          "https://storage.muatrans.com/drivers/photos/amanda-taylor-profile.jpg",
+        photoName: "Profile Photo",
+      },
+    ],
+    documents: [
+      {
+        documentType: "KTP",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/amanda-taylor-ktp.jpg",
+        documentName: "KTP Document",
+      },
+      {
+        documentType: "SIM_B2_UMUM",
+        documentUrl:
+          "https://storage.muatrans.com/drivers/documents/amanda-taylor-sim.jpg",
+        documentName: "SIM B2 Document",
+      },
+    ],
     ktpDocument:
       "https://storage.muatrans.com/drivers/documents/amanda-taylor-ktp.jpg",
     simDocument:
       "https://storage.muatrans.com/drivers/documents/amanda-taylor-sim.jpg",
     simExpiryDate: "2025-12-05",
+    verificationStatus: "REJECTED",
     createdAt: "2025-07-08T12:15:00Z",
     updatedAt: "2025-07-08T14:30:00Z",
   },

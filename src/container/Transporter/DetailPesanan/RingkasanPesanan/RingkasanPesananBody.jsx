@@ -10,7 +10,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
-import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import { formatLoadTime } from "@/lib/utils/dateFormat";
 

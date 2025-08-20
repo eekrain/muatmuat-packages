@@ -6,7 +6,7 @@ import {
   TruckItem,
   WarningBadge,
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
-import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import {
   useSewaArmadaActions,

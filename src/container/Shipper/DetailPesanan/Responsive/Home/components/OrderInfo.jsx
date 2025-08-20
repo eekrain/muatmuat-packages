@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 

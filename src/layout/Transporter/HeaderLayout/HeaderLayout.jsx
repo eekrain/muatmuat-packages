@@ -140,7 +140,7 @@ const MenuItem = ({ imgUrl, title, variant, onClick }) => (
 
 const NotificationIcon = ({ src, count }) => (
   <Link href="#" className="relative">
-    <div className="absolute bottom-3 left-3 z-50 flex h-4 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1">
+    <div className="absolute bottom-3 left-3 z-20 flex h-4 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1">
       <span className="text-xxs font-medium leading-[8px] text-neutral-50">
         {count}
       </span>

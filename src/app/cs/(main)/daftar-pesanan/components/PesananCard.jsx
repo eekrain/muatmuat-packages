@@ -29,6 +29,7 @@ import {
 import BadgeOrderType from "./BadgeOrderType";
 import CancelFleetModal from "./CancelFleetModal";
 import CancelReasonModal from "./CancelReasonModal";
+import CargoInfo from "./CargoInfo";
 import ContactModal from "./ContactModal";
 import FleetListModal from "./FleetListModal";
 import MuatBongkarStepperWithModal from "./MuatBongkarStepperWithModal";
@@ -194,23 +195,6 @@ const PesananCard = ({ order, userRole }) => {
     text: order.orderStatus,
     variant: "primary",
   };
-  const cargoItems = order.cargoItems || [];
-  const firstCargoItem = cargoItems.length > 0 ? cargoItems[0] : null;
-  const otherCargoItems = cargoItems.length > 1 ? cargoItems.slice(1) : [];
-  const otherCargoItemsCount = otherCargoItems.length;
-
-  const renderCargoTooltipContent = () => (
-    <div>
-      <p className="mb-[12px] text-sm font-medium text-neutral-900">
-        {t("pesananCard.cargoInfoTitle", {}, "Informasi Muatan")}
-      </p>
-      <ol className="ml-1 list-inside list-decimal text-sm text-neutral-900">
-        {otherCargoItems.map((item, index) => (
-          <li key={index}>{item.name}</li>
-        ))}
-      </ol>
-    </div>
-  );
 
   return (
     <>
@@ -412,30 +396,11 @@ const PesananCard = ({ order, userRole }) => {
                     </span>
                   </div>
                   <span className="text-xxs text-gray-400">•</span>
-                  <div className="flex items-center gap-1">
-                    <IconComponent
-                      src="/icons/monitoring/daftar-pesanan-aktif/scales.svg"
-                      className="h-4 w-4 text-gray-600"
-                    />
-                    <span className="text-xxs font-medium">
-                      {firstCargoItem && <span>{firstCargoItem.name}</span>}
-                      {otherCargoItemsCount > 0 && (
-                        <InfoTooltip
-                          trigger={
-                            <span className="cursor-pointer text-primary-700 hover:text-primary-800">
-                              , +{otherCargoItemsCount}{" "}
-                              {t("pesananCard.cargoOthers", {}, "lainnya")}
-                            </span>
-                          }
-                          side="top"
-                          align="center"
-                        >
-                          {renderCargoTooltipContent()}
-                        </InfoTooltip>
-                      )}{" "}
-                      ({order.totalWeight} {order.weightUnit})
-                    </span>
-                  </div>
+                  <CargoInfo
+                    cargoItems={order.cargoItems}
+                    totalWeight={order.totalWeight}
+                    weightUnit={order.weightUnit}
+                  />
                 </div>
                 {order.sosStatus?.hasSos && order.sosStatus?.sosCount > 0 && (
                   <div className="mt-1 flex items-center gap-2">
@@ -446,7 +411,7 @@ const PesananCard = ({ order, userRole }) => {
                       </span>
                     </div>
                     <Link
-                      href="/monitoring?tab=urgent"
+                      href="/monitoring?tab=sos"
                       target="_blank"
                       className="text-xs font-medium text-primary-700 no-underline hover:text-primary-800"
                     >

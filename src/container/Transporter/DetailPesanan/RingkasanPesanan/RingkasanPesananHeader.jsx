@@ -99,7 +99,10 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
             {/* Referensi: LDN-337 */}
             {dataOrderDetail?.orderStatus ===
               ORDER_STATUS.NEED_CHANGE_RESPONSE && (
-              <Button onClick={() => {}} variant="muattrans-primary">
+              <Button
+                onClick={handleResponPerubahan}
+                variant="muattrans-primary"
+              >
                 Respon Perubahan
               </Button>
             )}

@@ -44,7 +44,7 @@ const ChangeEmailModal = ({
     // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
-      setErrorMessage("Format email tidak valid");
+      setErrorMessage("Penulisan email salah");
       return false;
     }
 

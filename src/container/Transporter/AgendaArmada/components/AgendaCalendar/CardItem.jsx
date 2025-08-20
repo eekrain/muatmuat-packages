@@ -8,7 +8,7 @@ import {
   ModalTitle,
   ModalTrigger,
 } from "@/components/Modal/Modal";
-import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
+import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
 import ChangeFleet from "./ChangeFleet";

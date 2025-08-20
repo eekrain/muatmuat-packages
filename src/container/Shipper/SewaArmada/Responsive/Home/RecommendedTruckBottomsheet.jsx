@@ -15,7 +15,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { idrFormat } from "@/lib/utils/formatters";
 import {

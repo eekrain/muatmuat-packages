@@ -4,6 +4,10 @@ import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import DetailTransporterHeader from "@/container/CS/DetailTransporter/DetailTransporterHeader/DetailTransporterHeader";
 import ModalCatatanPenyelesaian from "@/container/CS/DetailTransporter/DetailTransporterHeader/ModalCatatanPenyelesaian";
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
@@ -93,6 +97,11 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const { data: alertData } = useGetInactiveTransporter();
   const totalIncrease = alertData?.alertSummary?.totalIncrease ?? 0;
 
+  const [sortConfig, setSortConfig] = useState({
+    sort: "licensePlate",
+    order: "asc",
+  });
+
   // Fetch latest fleet note data
   const transporterId = "transporter-uuid-2"; // Example, should be dynamic
   const { data: fleetNoteData, isLoading: isFleetNoteLoading } =
@@ -110,19 +119,57 @@ const DetailTransporter = ({ breadcrumbData }) => {
   };
 
   // Map data to DataTable format
-  const armadaNonaktifData = (fleetNoteData?.Data?.details || []).map(
-    (item) => ({
-      licensePlate: item.licensePlate,
-      driverName: item.driverName,
-      tanggalNonaktif: formatDate(item.inactiveDate),
-      lamaNonaktif: formatDuration(item.inactiveDuration),
-    })
-  );
+  let armadaNonaktifData = (fleetNoteData?.Data?.details || []).map((item) => ({
+    licensePlate: item.licensePlate,
+    driverName: item.driverName,
+    tanggalNonaktif: formatDate(item.inactiveDate),
+    lamaNonaktif: formatDuration(item.inactiveDuration),
+    _rawTanggalNonaktif: item.inactiveDate,
+    _rawLamaNonaktif: item.inactiveDuration,
+  }));
+
+  // Sorting
+  if (sortConfig?.sort) {
+    armadaNonaktifData = [...armadaNonaktifData].sort((a, b) => {
+      let aValue = a[sortConfig.sort];
+      let bValue = b[sortConfig.sort];
+      // Custom sort for tanggalNonaktif and lamaNonaktif
+      if (sortConfig.sort === "tanggalNonaktif") {
+        aValue = a._rawTanggalNonaktif;
+        bValue = b._rawTanggalNonaktif;
+      } else if (sortConfig.sort === "lamaNonaktif") {
+        aValue = a._rawLamaNonaktif;
+        bValue = b._rawLamaNonaktif;
+      }
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        if (sortConfig.sort === "tanggalNonaktif") {
+          // Compare date string
+          return sortConfig.order === "asc"
+            ? new Date(aValue) - new Date(bValue)
+            : new Date(bValue) - new Date(aValue);
+        }
+        return sortConfig.order === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+      // Number sort (lamaNonaktif)
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortConfig.order === "asc" ? aValue - bValue : bValue - aValue;
+      }
+      return 0;
+    });
+  }
 
   // Use pagination from API response
   const pagination = fleetNoteData?.Data?.pagination || {};
   const totalPages = pagination.totalPages || 1;
   const totalItems = pagination.totalItems || armadaNonaktifData.length;
+
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
+  };
 
   return (
     <div className="w-full p-6">
@@ -206,29 +253,35 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 <p className="text-xs font-medium text-neutral-600">
                   Foto Pendukung
                 </p>
-                <div className="flex flex-row gap-2">
-                  {fleetNoteData?.Data?.latestNote?.history?.photos?.length >
-                  0 ? (
-                    fleetNoteData.Data.latestNote.history.photos.map(
-                      (photo, idx) => (
-                        <div
-                          key={idx}
-                          className="h-10 w-10 flex-shrink-0 rounded-[4px] border"
-                        >
-                          <img
-                            src={photo.url}
+                <LightboxProvider
+                  images={
+                    fleetNoteData?.Data?.latestNote?.history?.photos?.map(
+                      (photo) => photo.url
+                    ) || []
+                  }
+                  title="Foto Pendukung"
+                >
+                  <div className="flex flex-row gap-2">
+                    {fleetNoteData?.Data?.latestNote?.history?.photos?.length >
+                    0 ? (
+                      fleetNoteData.Data.latestNote.history.photos.map(
+                        (photo, idx) => (
+                          <LightboxPreview
+                            key={idx}
+                            image={photo.url}
+                            index={idx}
+                            className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
                             alt={`Foto Pendukung ${idx + 1}`}
-                            className="h-full w-full rounded-[4px] object-cover"
                           />
-                        </div>
+                        )
                       )
-                    )
-                  ) : (
-                    <span className="text-xs text-neutral-500">
-                      Tidak ada foto
-                    </span>
-                  )}
-                </div>
+                    ) : (
+                      <span className="text-xs text-neutral-500">
+                        Tidak ada foto
+                      </span>
+                    )}
+                  </div>
+                </LightboxProvider>
               </div>
             </div>
           )}
@@ -276,6 +329,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             showFilter={false}
             showPagination={true}
             showTotalCount={true}
+            onSort={handleSort}
             loading={isFleetNoteLoading}
             className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
           />

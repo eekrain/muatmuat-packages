@@ -10,7 +10,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderTypeEnum,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";

@@ -1066,5 +1066,7 @@
   "RekapPembatalanList.labelShowOthers": "+{remaining} others",
   "RekapPembatalanList.buttonConfirmPenalty": "Confirm Penalty",
   "RekapPembatalanList.labelPenaltyExempt": "Cancellation on this order is not subject to penalty points",
-  "RekapPembatalanList.labelPenaltyApplied": "Cancellation on this order is subject to penalty points"
+  "RekapPembatalanList.labelPenaltyApplied": "Cancellation on this order is subject to penalty points",
+  "TambahExcel.searchNotFoundTitle": "Search not found",
+  "TambahExcel.searchNotFoundSubtitle": "Try other keywords or check spelling"
 }

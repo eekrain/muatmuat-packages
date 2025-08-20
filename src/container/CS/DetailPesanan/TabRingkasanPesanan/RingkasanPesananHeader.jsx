@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils";
 import { InformasiKontakCard } from "./InformasiKontakCard";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
-const RingkasanPesananHeader = ({ dataOrderDetail }) => {
+const RingkasanPesananHeader = ({ data }) => {
   const { t } = useTranslation();
 
   const statusPesanan = getStatusPesananMetadataCS({
-    orderStatus: dataOrderDetail?.orderStatus,
-    orderStatusUnit: dataOrderDetail?.orderStatusUnit,
-    truckCount: dataOrderDetail?.truckCount,
+    orderStatus: data?.orderDetail?.orderStatus,
+    orderStatusUnit: data?.orderDetail?.orderStatusUnit,
+    truckCount: data?.orderSummary?.truckCount,
     t,
   });
 
@@ -39,7 +39,7 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
             </span>
 
             <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
-              {dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode}
+              {data?.orderDetail?.orderCode}
             </span>
 
             <div className="flex items-center gap-x-2">
@@ -72,19 +72,20 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                   {/* Menunggu Konfirmasi Shipper */}
                 </BadgeStatusPesanan>
 
-                <ModalLihatStatusLainnya
-                  otherStatus={dataOrderDetail?.otherStatus}
-                />
+                <ModalLihatStatusLainnya otherStatus={data?.otherStatus} />
               </div>
             </div>
 
             <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
-              {dataOrderDetail?.truckCount} Unit
+              {data?.orderSummary?.truckCount} Unit
             </span>
           </div>
         </div>
 
-        <InformasiKontakCard />
+        <InformasiKontakCard
+          shipperInfo={data?.shipperInfo}
+          transporterInfo={data?.transporterInfo}
+        />
       </CardContent>
     </Card>
   );

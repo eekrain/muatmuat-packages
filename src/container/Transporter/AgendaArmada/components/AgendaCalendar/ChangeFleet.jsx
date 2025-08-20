@@ -6,7 +6,7 @@ import Checkbox from "@/components/Form/Checkbox";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Select } from "@/components/Select";
-import { ChangeFleetTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
+import { ChangeFleetTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 
 import CardDetail from "./CardDetail";
 import { getDynamicDates } from "./getDynamicDates";

@@ -9,7 +9,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
-import { PaymentMethodIconFromTitle } from "@/lib/constants/detailpesanan/payment.enum";
+import { PaymentMethodIconFromTitle } from "@/lib/constants/Shipper/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
