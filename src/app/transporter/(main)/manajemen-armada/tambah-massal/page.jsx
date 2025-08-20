@@ -84,10 +84,11 @@ export default function TambahMassal() {
         className="w-full"
         defaultValue="tambah_armada_excel"
       >
-        <TabsList className="w-8/12">
+        <TabsList className="w-fit justify-start">
           <TabsTriggerWithSeparator
             value="tambah_armada_excel"
             activeColor="primary-700"
+            className="text-nowrap px-6"
           >
             {t(
               "TambahMassal.tabTambahArmadaDenganExcel",
@@ -98,6 +99,7 @@ export default function TambahMassal() {
           <TabsTriggerWithSeparator
             value="tambah_armada_massal"
             activeColor="primary-700"
+            className="text-nowrap px-6"
           >
             {t(
               "TambahMassal.tabTambahArmadaMassal",
@@ -109,6 +111,7 @@ export default function TambahMassal() {
             value="draft"
             activeColor="primary-700"
             showSeparator={false}
+            className="text-nowrap px-6"
           >
             {t("TambahMassal.tabDraft", {}, "Draft")}
           </TabsTriggerWithSeparator>
