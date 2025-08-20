@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { ChevronDown } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 
 import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -19,6 +20,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 
 import {
   ORDER_STATUS,
@@ -35,7 +37,7 @@ import FleetListModal from "./FleetListModal";
 import MuatBongkarStepperWithModal from "./MuatBongkarStepperWithModal";
 import OrderChangeInfoModal from "./OrderChangeInfoModal";
 
-const PesananCard = ({ order, userRole }) => {
+const PesananCard = ({ order, userRole, viewMode = "default" }) => {
   const { t } = useTranslation();
 
   const [modalState, setModalState] = useState({
@@ -198,77 +200,78 @@ const PesananCard = ({ order, userRole }) => {
 
   return (
     <>
-      <div className="relative z-0 flex w-full flex-col items-start border-b border-neutral-400 bg-white shadow-sm">
-        {/* Header Section */}
-        <div className="flex w-full flex-row items-center justify-between border-t border-neutral-400 bg-neutral-100 py-3">
-          <div className="flex w-full flex-row items-center gap-1">
-            {/* Transporter Section */}
-            <div className="flex w-full items-center gap-2 border-r border-neutral-400 px-4">
-              <span className="shrink-0 text-xs font-medium text-neutral-600">
-                {t("pesananCard.labelTransporter", {}, "Transporter :")}
-              </span>
-              <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muat-parts-non-500">
-                <span className="text-xs font-bold text-white">
-                  {order.transporter.name.charAt(0)}
+      <div className="relative z-0 flex w-full flex-col items-start border-b border-neutral-400 bg-white last:rounded-b-xl last:border-none">
+        {viewMode === "default" && (
+          <div className="flex w-full flex-row items-center justify-between border-t border-neutral-400 bg-neutral-100 py-3">
+            <div className="flex w-full flex-row items-center gap-1">
+              {/* Transporter Section */}
+              <div className="flex w-full items-center gap-2 border-r border-neutral-400 px-4">
+                <span className="shrink-0 text-xs font-medium text-neutral-600">
+                  {t("pesananCard.labelTransporter", {}, "Transporter :")}
                 </span>
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muat-parts-non-500">
+                  <span className="text-xs font-bold text-white">
+                    {order.transporter.name.charAt(0)}
+                  </span>
+                </div>
+                {/* FIXED TOOLTIP USAGE */}
+                <TruncatedTooltip
+                  text={order.transporter.name}
+                  lineClamp={1}
+                  className="line-clamp-1 flex-grow text-xs font-semibold text-black"
+                />
+                <div className="border-l border-neutral-400 py-1 pl-2">
+                  <Button
+                    variant="link"
+                    onClick={() => handleOpenContactModal(order.transporter.id)}
+                    iconLeft={
+                      <IconComponent
+                        src="/icons/ic-contact-phone.svg"
+                        className="h-4 w-4"
+                      />
+                    }
+                    className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
+                  >
+                    {t("pesananCard.contact", {}, "Hubungi")}
+                  </Button>
+                </div>
               </div>
-              {/* FIXED TOOLTIP USAGE */}
-              <TruncatedTooltip
-                text={order.transporter.name}
-                lineClamp={1}
-                className="line-clamp-1 flex-grow text-xs font-semibold text-black"
-              />
-              <div className="border-l border-neutral-400 py-1 pl-2">
-                <Button
-                  variant="link"
-                  onClick={() => handleOpenContactModal(order.transporter.id)}
-                  iconLeft={
-                    <IconComponent
-                      src="/icons/ic-contact-phone.svg"
-                      className="h-4 w-4"
-                    />
-                  }
-                  className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
-                >
-                  {t("pesananCard.contact", {}, "Hubungi")}
-                </Button>
-              </div>
-            </div>
 
-            {/* Shipper Section */}
-            <div className="flex w-full items-center gap-2 border-l border-neutral-400 px-4">
-              <span className="shrink-0 text-xs font-medium text-neutral-600">
-                {t("pesananCard.labelShipper", {}, "Shipper :")}
-              </span>
-              <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-700">
-                <span className="text-xs font-bold text-white">
-                  {order.shipper.name.charAt(0)}
+              {/* Shipper Section */}
+              <div className="flex w-full items-center gap-2 border-l border-neutral-400 px-4">
+                <span className="shrink-0 text-xs font-medium text-neutral-600">
+                  {t("pesananCard.labelShipper", {}, "Shipper :")}
                 </span>
-              </div>
-              {/* FIXED TOOLTIP USAGE */}
-              <TruncatedTooltip
-                text={order.shipper.name}
-                lineClamp={1}
-                className="line-clamp-1 flex-grow text-xs font-semibold text-black"
-              />
-              <div className="border-l border-neutral-400 py-1 pl-2">
-                <Button
-                  variant="link"
-                  onClick={() => handleOpenContactModal(order.shipper.id)}
-                  iconLeft={
-                    <IconComponent
-                      src="/icons/ic-contact-phone.svg"
-                      className="h-4 w-4"
-                    />
-                  }
-                  className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
-                >
-                  {t("pesananCard.contact", {}, "Hubungi")}
-                </Button>
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-700">
+                  <span className="text-xs font-bold text-white">
+                    {order.shipper.name.charAt(0)}
+                  </span>
+                </div>
+                {/* FIXED TOOLTIP USAGE */}
+                <TruncatedTooltip
+                  text={order.shipper.name}
+                  lineClamp={1}
+                  className="line-clamp-1 flex-grow text-xs font-semibold text-black"
+                />
+                <div className="border-l border-neutral-400 py-1 pl-2">
+                  <Button
+                    variant="link"
+                    onClick={() => handleOpenContactModal(order.shipper.id)}
+                    iconLeft={
+                      <IconComponent
+                        src="/icons/ic-contact-phone.svg"
+                        className="h-4 w-4"
+                      />
+                    }
+                    className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
+                  >
+                    {t("pesananCard.contact", {}, "Hubungi")}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="flex w-full shrink-0 items-start gap-4 p-4">
           {/* Order Code & Type */}
@@ -421,7 +424,12 @@ const PesananCard = ({ order, userRole }) => {
                 )}
               </div>
               {multiStatusMemo.hasMultiple ? (
-                <div className="flex flex-col items-center">
+                <div
+                  className={cn(
+                    "flex flex-col items-center",
+                    viewMode !== "default" && "ml-16"
+                  )}
+                >
                   <BadgeStatusPesanan
                     variant={
                       statusDisplayMap[multiStatusMemo.dominantStatus]
@@ -450,7 +458,10 @@ const PesananCard = ({ order, userRole }) => {
               ) : (
                 <BadgeStatusPesanan
                   variant={statusInfo.variant}
-                  className="!h-fit w-full max-w-[120px] !items-center !justify-center py-1 !text-center"
+                  className={cn(
+                    "!h-fit w-full max-w-[120px] !items-center !justify-center py-1 !text-center",
+                    viewMode !== "default" && "ml-14"
+                  )}
                 >
                   {statusInfo.text}
                 </BadgeStatusPesanan>
@@ -459,12 +470,18 @@ const PesananCard = ({ order, userRole }) => {
               <div className="flex w-fit flex-col items-end gap-2">
                 <SimpleDropdown>
                   <SimpleDropdownTrigger asChild>
-                    <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-400 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
-                      <span className="text-xs font-medium leading-tight text-black">
-                        {t("pesananCard.action", {}, "Aksi")}
-                      </span>
-                      <ChevronDown className="h-3 w-3 text-neutral-700" />
-                    </button>
+                    {viewMode === "transporter-group" ? (
+                      <button className="rounded-md p-1 hover:bg-neutral-100">
+                        <MoreVertical className="h-5 w-5 text-neutral-900" />
+                      </button>
+                    ) : (
+                      <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-400 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+                        <span className="text-xs font-medium leading-tight text-black">
+                          {t("pesananCard.action", {}, "Aksi")}
+                        </span>
+                        <ChevronDown className="h-3 w-3 text-neutral-700" />
+                      </button>
+                    )}
                   </SimpleDropdownTrigger>
                   <SimpleDropdownContent
                     className="w-fit -space-y-1 border-2"

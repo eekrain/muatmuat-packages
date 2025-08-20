@@ -24,6 +24,8 @@ const PesananActionBar = ({
   loading,
   lastAction,
   totalItems,
+  viewBy,
+  onViewByChange,
 }) => {
   const { t } = useTranslation();
   const [localSearch, setLocalSearch] = useState(searchQuery);
@@ -123,7 +125,7 @@ const PesananActionBar = ({
   );
 
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between px-4 pt-4">
       <div className="flex items-center gap-3">
         <Input
           value={localSearch}
@@ -192,10 +194,10 @@ const PesananActionBar = ({
               { label: "Pesanan", value: "pesanan" },
               { label: "Transporter", value: "transporter" },
             ]}
-            value={"pesanan"}
-            onChange={() => {}}
+            value={viewBy}
+            onChange={onViewByChange}
             className="!border-neutral-600 hover:!border-primary-700"
-            itemClassName="hover:!bg-neutral-200"
+            itemClassName="hover:!bg-neutral-200 text-neutral-900 font-medium"
             disabled={disableViewBy}
           />
         </div>
