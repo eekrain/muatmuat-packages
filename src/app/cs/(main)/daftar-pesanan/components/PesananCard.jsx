@@ -445,7 +445,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
                       statusDisplayMap[multiStatusMemo.dominantStatus]
                         ?.variant || "primary"
                     }
-                    className="!h-fit w-full max-w-[120px] !items-center !justify-center py-1 !text-center"
+                    className="!h-fit w-[120px] w-full !items-center !justify-center py-1 !text-center"
                   >
                     {statusDisplayMap[multiStatusMemo.dominantStatus]?.text ||
                       multiStatusMemo.dominantStatus}{" "}
