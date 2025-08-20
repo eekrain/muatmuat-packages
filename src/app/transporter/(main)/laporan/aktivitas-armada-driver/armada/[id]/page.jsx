@@ -3,13 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Download, MapPin, Truck } from "lucide-react";
+import { Download, MapPin, Phone, Truck } from "lucide-react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
@@ -50,6 +54,17 @@ export default function DetailArmadaPage({ params }) {
     return { startDate: "", endDate: "" };
   };
 
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString("en-US", { month: "short" });
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${day} ${month} ${year} ${hours}:${minutes} WIB`;
+  };
+
   // Get fleet detail activities
   const { data: detailData, isLoading: detailLoading } = useGetFleetDetailData(
     params.id,
@@ -79,6 +94,7 @@ export default function DetailArmadaPage({ params }) {
     currentLocation: detailData?.fleetInfo?.currentLocation || "Loading...",
     status: detailData?.fleetInfo?.status || "Loading...",
     image: detailData?.fleetInfo?.fleetImage || "/img/mock-armada/truck1.png",
+    phoneNumber: detailData?.fleetInfo?.phoneNumber || "Loading...",
   };
 
   // Get activities from detail API
@@ -147,34 +163,44 @@ export default function DetailArmadaPage({ params }) {
       header: "Kode Pesanan",
       key: "invoiceNumber",
       sortable: true,
-      width: "200px",
+      width: "170px",
       searchable: true,
       render: (row) => {
-        if (!row.orderInfo?.orderCode || row.orderInfo.orderCode === "") {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        if (
+          !row.orderInfo?.invoiceNumber ||
+          row.orderInfo.invoiceNumber === ""
+        ) {
+          return <div className="text-sm">-</div>;
         }
-        return <div className="text-sm">{row.orderInfo.orderCode}</div>;
+        return (
+          <div className="text-sm font-semibold">
+            {row.orderInfo.invoiceNumber}
+          </div>
+        );
       },
     },
     {
       header: "Rute Pesanan",
       key: "orderInfo",
       sortable: false,
-      width: "250px",
+      width: "280px",
       searchable: false,
       render: (row) => (
         <div className="space-y-2">
           {row.orderInfo?.estimatedDistance && (
-            <div className="text-xs font-medium text-neutral-700">
+            <div className="text-xs font-medium">
               Estimasi: {row.orderInfo.estimatedDistance} km
             </div>
           )}
           <MuatBongkarStepper
+            className="ms-2"
             pickupLocations={[row.orderInfo?.pickupLocation || ""]}
             dropoffLocations={[row.orderInfo?.dropoffLocation || ""]}
             appearance={{
-              titleClassName: "text-xs font-medium text-neutral-900",
+              titleClassName: "text-xs font-semibold text-neutral-900",
             }}
+            truncate={true}
+            maxLength={20}
           />
         </div>
       ),
@@ -183,13 +209,13 @@ export default function DetailArmadaPage({ params }) {
       header: "Nama Driver",
       key: "driverName",
       sortable: true,
-      width: "150px",
+      width: "170px",
       searchable: true,
       render: (row) => {
         if (!row.driverInfo?.name) {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+          return <div className="text-sm">-</div>;
         }
-        return <div className="text-sm">{row.driverInfo.name}</div>;
+        return <div className="text-sm font-medium">{row.driverInfo.name}</div>;
       },
     },
     {
@@ -200,11 +226,11 @@ export default function DetailArmadaPage({ params }) {
       searchable: true,
       render: (row) => {
         if (!row.orderInfo?.loadingTime) {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+          return <div className="text-sm">-</div>;
         }
         return (
-          <div className="text-sm">
-            {new Date(row.orderInfo.loadingTime).toLocaleString("id-ID")}
+          <div className="text-xs font-semibold">
+            {formatDateTime(row.orderInfo.loadingTime)}
           </div>
         );
       },
@@ -217,11 +243,11 @@ export default function DetailArmadaPage({ params }) {
       searchable: true,
       render: (row) => {
         if (!row.orderInfo?.unloadTime) {
-          return <div className="text-sm text-gray-500">Belum Ada</div>;
+          return <div className="text-sm">-</div>;
         }
         return (
-          <div className="text-sm">
-            {new Date(row.orderInfo.unloadTime).toLocaleString("id-ID")}
+          <div className="text-xs font-semibold">
+            {formatDateTime(row.orderInfo.unloadTime)}
           </div>
         );
       },
@@ -421,6 +447,10 @@ export default function DetailArmadaPage({ params }) {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
       displayStatus = "Nonaktif";
+    } else if (status === "WAITING_PAYMENT_1") {
+      bgColor = "bg-orange-100";
+      textColor = "text-orange-900";
+      displayStatus = "Menunggu Pembayaran";
     } else if (status === null || status === "") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-500";
@@ -429,7 +459,7 @@ export default function DetailArmadaPage({ params }) {
 
     return (
       <span
-        className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${bgColor} ${textColor}`}
+        className={`inline-flex items-center justify-center rounded-lg px-2.5 py-1 text-[11px] font-medium ${bgColor} ${textColor} h-6 w-36`}
       >
         {displayStatus}
       </span>
@@ -472,11 +502,16 @@ export default function DetailArmadaPage({ params }) {
             <div className="flex items-start gap-4">
               {/* Vehicle Image */}
               <div className="flex-shrink-0">
-                <img
-                  src={armadaData.image}
-                  alt="Vehicle"
-                  className="h-20 w-20 rounded-lg object-cover"
-                />
+                <LightboxProvider
+                  image={armadaData.image}
+                  title="Gambar Armada"
+                >
+                  <LightboxPreview
+                    image={armadaData.image}
+                    alt="Vehicle"
+                    className="h-20 w-20 cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-80"
+                  />
+                </LightboxProvider>
               </div>
 
               {/* Vehicle Details */}
@@ -491,17 +526,23 @@ export default function DetailArmadaPage({ params }) {
                   {armadaData.licensePlate}
                 </h2>
 
-                <div className="flex gap-2">
-                  {/* Vehicle Type with Truck Icon */}
-                  <div className="flex items-center gap-2 text-gray-600">
+                {/* Contact Info */}
+                <div className="flex items-center gap-2 text-gray-600">
+                  {/* Vehicle Type */}
+                  <div className="flex items-center gap-2">
                     <Truck className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                    <span className="text-sm">{armadaData.vehicleType}</span>
+                    <span className="text-sm font-medium">
+                      {armadaData.vehicleType}
+                    </span>
                   </div>
 
-                  {/* Location with MapPin Icon */}
-                  <div className="flex items-center gap-2 text-gray-600">
+                  {/* Bullet Separator */}
+                  <span className="text-gray-400">•</span>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                    <span className="text-sm">
+                    <span className="text-sm font-medium">
                       {armadaData.currentLocation}
                     </span>
                   </div>

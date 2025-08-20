@@ -6,8 +6,8 @@ import { Download } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import LaporanAktivitasArmadaTable from "@/components/Report/LaporanAktivitasArmadaTable";
-import LaporanAktivitasDriverTable from "@/components/Report/LaporanAktivitasDriverTable";
+import LaporanAktivitasArmadaTable from "@/components/Report/LaporanAktivitasArmadaDriverTable/LaporanAktivitasArmadaTable";
+import LaporanAktivitasDriverTable from "@/components/Report/LaporanAktivitasArmadaDriverTable/LaporanAktivitasDriverTable";
 import {
   Tabs,
   TabsList,

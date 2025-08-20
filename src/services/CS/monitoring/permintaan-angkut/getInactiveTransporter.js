@@ -13,7 +13,8 @@ const apiResultInactiveTransporter = {
   Data: {
     alertSummary: {
       hasAlert: true,
-      totalIncrease: 15,
+      current: 8,
+      total: 12,
     },
     transporters: [
       {
@@ -21,8 +22,6 @@ const apiResultInactiveTransporter = {
         transporterId: "transporter-uuid-1",
         transporterName:
           "PT Batavia Prosperindo Angkut Teknologi Indonesi Trans Tbk",
-        current: 8,
-        total: 12,
         lastActivity: "2025-01-15T14:30:00Z",
         inactivityStatus: "ARMADA_INACTIVE",
       },

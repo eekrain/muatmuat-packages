@@ -10,6 +10,8 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import PesananActionBar from "./PesananActionBar";
 import PesananCard from "./PesananCard";
+import ShipperParentCard from "./ShipperParentCard";
+import TransporterGroupCard from "./TransporterGroupCard";
 
 const usePrevious = (value) => {
   const ref = useRef();
@@ -58,6 +60,7 @@ const PesananAktifTab = ({
   const prevFilters = usePrevious(JSON.stringify(activeFilters));
   const prevPeriod = usePrevious(period);
   const prevUrgent = usePrevious(urgentStatusFilter);
+  const [viewBy, setViewBy] = useState("pesanan");
 
   useEffect(() => {
     let action = localLastAction.current;
@@ -107,6 +110,7 @@ const PesananAktifTab = ({
         limit: perPage,
         search: searchQuery,
         urgentStatus: urgentStatusFilter,
+        viewBy: viewBy,
       });
 
       if (sortConfig.value === "waktu_muat_terlama") {
@@ -152,7 +156,10 @@ const PesananAktifTab = ({
         const response = await fetch(`${endpoint}?${params.toString()}`);
         const result = await response.json();
         setData(result.Data);
-        setHasData(result.Data?.orders?.length > 0);
+        setHasData(
+          result.Data?.orders?.length > 0 ||
+            result.Data?.groupedData?.length > 0
+        );
       } catch (err) {
         setError(
           t("daftarPesanan.errorFetch", {}, "Gagal memuat data pesanan.")
@@ -179,10 +186,17 @@ const PesananAktifTab = ({
     setIsLoading,
     setHasData,
     filterOptions,
+    viewBy,
   ]);
 
-  const totalItems = data?.pagination?.totalItems || 0;
+  const totalItems =
+    data?.pagination?.totalItems ||
+    (viewBy === "transporter" || viewBy === "shipper"
+      ? data?.groupedData?.length
+      : 0) ||
+    0;
   const orders = data?.orders || [];
+  const groupedData = data?.groupedData || [];
   const hasActiveFilters = Object.values(activeFilters).some(
     (v) => Array.isArray(v) && v.length > 0
   );
@@ -271,7 +285,35 @@ const PesananAktifTab = ({
         );
     }
 
-    if (orders.length > 0)
+    if (viewBy === "transporter" && groupedData.length > 0) {
+      return (
+        <div>
+          {groupedData.map((group) => (
+            <TransporterGroupCard
+              key={group.transporter.id}
+              group={group}
+              userRole={userRole}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    if (viewBy === "shipper" && groupedData.length > 0) {
+      return (
+        <div>
+          {groupedData.map((group) => (
+            <ShipperParentCard
+              key={group.shipper.id}
+              group={group}
+              userRole={userRole}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    if (viewBy === "pesanan" && orders.length > 0) {
       return (
         <div>
           {orders.map((order) => (
@@ -279,6 +321,7 @@ const PesananAktifTab = ({
           ))}
         </div>
       );
+    }
 
     return (
       <DataEmpty
@@ -310,9 +353,11 @@ const PesananAktifTab = ({
             loading={loading}
             lastAction={localLastAction.current}
             totalItems={totalItems}
+            viewBy={viewBy}
+            onViewByChange={setViewBy}
           />
           {hasActiveFilters && (
-            <div className="px-4">
+            <div className="px-4 pt-4">
               <ActiveFiltersBar
                 filters={activeFiltersForBar}
                 onRemoveFilter={handleRemoveFilter}
