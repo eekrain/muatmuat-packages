@@ -32,6 +32,10 @@ export default function Page() {
     sort: null,
     order: null,
   });
+  const [isSearchNoResults, setIsSearchNoResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isPeriodFilterActive, setIsPeriodFilterActive] = useState(false);
+  const [isFilterDropdownActive, setIsFilterDropdownActive] = useState(false);
 
   // Detect tab from URL or sessionStorage when component mounts
   useEffect(() => {
@@ -172,11 +176,6 @@ export default function Page() {
           ...getPeriodDates(),
         }
       : null;
-
-  // Debug log untuk memastikan parameter sort tidak dikirim saat awal
-  if (selectedTab === "armada" && fleetParams) {
-    console.log("Fleet API params:", fleetParams);
-  }
 
   const { data: fleetData, isLoading: fleetLoading } = useGetFleetActivities(
     fleetParams,
@@ -351,38 +350,53 @@ export default function Page() {
   };
 
   // Handler untuk filter periode
-  const handleSelectPeriod = (selectedOption) => {
-    if (selectedOption?.range) {
-      if (
-        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
-      ) {
-        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
-      }
-      setCurrentPeriodValue(selectedOption);
-      setCurrentPage(1); // Reset pagination when period changes
-      resetSorting(); // Reset sorting when period changes
-    } else if (selectedOption?.value === "") {
-      setCurrentPeriodValue(selectedOption);
-      setCurrentPage(1); // Reset pagination when period changes
-      resetSorting(); // Reset sorting when period changes
-    } else if (selectedOption?.value !== undefined) {
-      setCurrentPeriodValue(selectedOption);
-      setCurrentPage(1); // Reset pagination when period changes
-      resetSorting(); // Reset sorting when period changes
+  const handleSelectPeriod = (period) => {
+    setCurrentPeriodValue(period);
+    setCurrentPage(1);
+    setIsSearchNoResults(false);
+
+    // Set period filter active state
+    setIsPeriodFilterActive(period && period.value !== "");
+
+    // Add to recent selections if not already there
+    if (period && !recentPeriodOptions.find((p) => p.value === period.value)) {
+      setRecentPeriodOptions((prev) => [period, ...prev.slice(0, 4)]);
     }
   };
 
   const handleSearch = (value) => {
     setSearchValue(value);
     setCurrentPage(1);
-    resetSorting(); // Reset sorting when search changes
+
+    if (value) {
+      // Set searching state
+      setIsSearching(true);
+      setIsSearchNoResults(false);
+
+      // Check results after a short delay to allow data to update
+      setTimeout(() => {
+        const currentData = getCurrentData();
+        const hasSearchResults = currentData.length > 0;
+        setIsSearchNoResults(!hasSearchResults);
+        setIsSearching(false);
+      }, 100);
+    } else {
+      // Clear search, reset states
+      setIsSearchNoResults(false);
+      setIsSearching(false);
+    }
   };
 
   const handleFilter = (newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1);
-    resetSorting(); // Reset sorting when filters change
-    // API will automatically re-fetch due to SWR dependency on filters
+    setIsSearchNoResults(false);
+
+    // Check if any filter is active
+    const hasActiveFilters = Object.keys(newFilters).some(
+      (key) => newFilters[key] && newFilters[key] !== ""
+    );
+    setIsFilterDropdownActive(hasActiveFilters);
   };
 
   const handleSort = (sort, order) => {
@@ -399,12 +413,13 @@ export default function Page() {
   // Reset pagination when switching tabs
   const handleTabChange = (newTab) => {
     setSelectedTab(newTab);
-    setCurrentPage(1); // Reset to page 1 when switching tabs
-
-    // Reset search values, period, filters, and sorting when switching tabs
+    setCurrentPage(1);
     setSearchValue("");
     setCurrentPeriodValue(null);
     setFilters({});
+    setIsSearchNoResults(false);
+    setIsPeriodFilterActive(false);
+    setIsFilterDropdownActive(false);
     // Set default sorting berdasarkan tab yang aktif
     if (newTab === "driver") {
       setSortConfig({ sort: null, order: null });
@@ -413,7 +428,7 @@ export default function Page() {
     }
 
     // Store the selected tab to sessionStorage for detail page navigation
-    sessionStorage.setItem("laporan_selected_tab", newTab);
+    sessionStorage.removeItem("laporan_selected_tab");
   };
 
   const handlePageChange = (page) => {
@@ -466,8 +481,75 @@ export default function Page() {
             onSelect={handleSelectPeriod}
             recentSelections={recentPeriodOptions}
             value={currentPeriodValue}
+            disable={
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                !isPeriodFilterActive &&
+                !isFilterDropdownActive) ||
+              (isSearchNoResults && !isSearching) ||
+              // Disable when search + filter dropdown active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                searchValue &&
+                isFilterDropdownActive &&
+                !isPeriodFilterActive) ||
+              // Disable when search alone active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                searchValue &&
+                !isFilterDropdownActive &&
+                !isPeriodFilterActive) ||
+              // Disable when filter alone active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                !searchValue &&
+                isFilterDropdownActive &&
+                !isPeriodFilterActive)
+            }
           />
-          <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
+          <Button
+            onClick={handleDownload}
+            iconLeft={<Download size={16} />}
+            disabled={
+              (getCurrentData().length === 0 && !isLoading) ||
+              (isSearchNoResults && !isSearching) ||
+              // Disable when filter dropdown active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                isFilterDropdownActive &&
+                !searchValue) ||
+              // Disable when search + period active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                searchValue &&
+                isPeriodFilterActive &&
+                !isFilterDropdownActive) ||
+              // Disable when search + filter active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                searchValue &&
+                isFilterDropdownActive &&
+                !isPeriodFilterActive) ||
+              // Disable when search alone active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                searchValue &&
+                !isFilterDropdownActive &&
+                !isPeriodFilterActive) ||
+              // Disable when filter alone active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                !searchValue &&
+                isFilterDropdownActive &&
+                !isPeriodFilterActive) ||
+              // Disable when period alone active but no data
+              (getCurrentData().length === 0 &&
+                !isLoading &&
+                !searchValue &&
+                !isFilterDropdownActive &&
+                isPeriodFilterActive)
+            }
+          >
             Unduh
           </Button>
         </div>
@@ -505,6 +587,10 @@ export default function Page() {
               searchPlaceholder="Cari No. Pol atau Kode Pesanan"
               disabledByPeriod={false}
               multiSelect={true} // ✅ Gunakan multi-select untuk filter (checkbox)
+              isSearchNoResults={isSearchNoResults}
+              isSearching={isSearching}
+              isPeriodFilterActive={isPeriodFilterActive}
+              isFilterDropdownActive={isFilterDropdownActive}
             />
           ) : (
             <LaporanAktivitasDriverTable
@@ -531,6 +617,10 @@ export default function Page() {
               searchPlaceholder="Cari Nama Driver, Rute atau lainnya"
               disabledByPeriod={false}
               multiSelect={true} // ✅ Gunakan multi-select untuk driver filter (checkbox)
+              isSearchNoResults={isSearchNoResults}
+              isSearching={isSearching}
+              isPeriodFilterActive={isPeriodFilterActive}
+              isFilterDropdownActive={isFilterDropdownActive}
             />
           )}
         </>

@@ -12,6 +12,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetWithdrawalDetail } from "@/services/Transporter/laporan/pencairan-dana/getWithdrawalDetail";
 
 export default function DetailPencairanDanaPage({ params }) {
   const { t } = useTranslation();
@@ -22,62 +23,28 @@ export default function DetailPencairanDanaPage({ params }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  // Mock data - in real app this would come from API
-  const disbursementData = {
-    id: id,
-    disbursementDate: "4 Okt 2024 08:00 WIB",
-    account: "BCA 1234567890 an. DAFFA TOLDO",
-    bankLogo: "/icons/payment/va_bca.svg",
-    invoices: [
-      {
-        id: 1,
-        invoiceNumber: "INV/20240120/MPM/00001",
-        source: t(
-          "DetailPencairanDanaPage.sourceOrderRevenue",
-          {},
-          "Pendapatan Pesanan"
-        ),
-        totalIncome: 220000,
-      },
-      {
-        id: 2,
-        invoiceNumber: "INV/20240120/MPM/00002",
-        source: t(
-          "DetailPencairanDanaPage.sourceOrderRevenue",
-          {},
-          "Pendapatan Pesanan"
-        ),
-        totalIncome: 210000,
-      },
-      {
-        id: 3,
-        invoiceNumber: "INV/20240120/MPM/00003",
-        source: t(
-          "DetailPencairanDanaPage.sourceRevenueAdjustment",
-          {},
-          "Penyesuaian Pendapatan"
-        ),
-        totalIncome: 300000,
-      },
-      {
-        id: 4,
-        invoiceNumber: "COM/20240120/MPM/00004",
-        source: t(
-          "DetailPencairanDanaPage.sourceRevenueAdjustment",
-          {},
-          "Penyesuaian Pendapatan"
-        ),
-        totalIncome: 300000,
-      },
-    ],
-    summary: {
-      grossIncome: 1040600,
-      adminFee: 40600,
-      dpp: 109450,
-      ppn: 109450,
-      pph: 109450,
-    },
-  };
+  const { withdrawal, invoices, summary } = useGetWithdrawalDetail(id);
+  console.log("withdrawal:", withdrawal);
+  console.log("invoices:", invoices);
+  console.log("summary:", summary);
+
+  function formatDateToWIB(isoString) {
+    if (!isoString) return "4 Okt 2024 08:00 WIB"; // Fallback to match UI
+
+    const date = new Date(isoString);
+    const options = {
+      timeZone: "Asia/Jakarta",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    const formatted = new Intl.DateTimeFormat("id-ID", options).format(date);
+    return `${formatted.replace(".", ":")} WIB`;
+  }
 
   const columns = [
     {
@@ -88,11 +55,13 @@ export default function DetailPencairanDanaPage({ params }) {
       ),
       key: "invoiceNumber",
       width: "200px",
+      render: (row) => row.invoiceNumber || "N/A",
     },
     {
       header: t("DetailPencairanDanaPage.tableColumnSource", {}, "Sumber"),
       key: "source",
       width: "200px",
+      render: (row) => row.source || "N/A",
     },
     {
       header: t(
@@ -100,9 +69,9 @@ export default function DetailPencairanDanaPage({ params }) {
         {},
         "Total Pendapatan"
       ),
-      key: "totalIncome",
+      key: "amount",
       width: "150px",
-      render: (row) => formatCurrency(row.totalIncome),
+      render: (row) => formatCurrency(row.amount || 0),
     },
   ];
 
@@ -116,11 +85,6 @@ export default function DetailPencairanDanaPage({ params }) {
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const calculateTotal = () => {
-    const { grossIncome, adminFee, dpp, ppn, pph } = disbursementData.summary;
-    return grossIncome - adminFee + dpp + ppn - pph;
   };
 
   // Pagination handlers
@@ -187,7 +151,7 @@ export default function DetailPencairanDanaPage({ params }) {
                     )}
                   </label>
                   <p className="text-sm text-gray-900">
-                    {disbursementData.disbursementDate}
+                    {formatDateToWIB(withdrawal?.withdrawalDate)}
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -200,12 +164,19 @@ export default function DetailPencairanDanaPage({ params }) {
                   </label>
                   <div className="flex items-center gap-2">
                     <img
-                      src={disbursementData.bankLogo}
+                      src={
+                        withdrawal?.bankAccount?.logoUrl ||
+                        "/icons/payment/va_bca.svg"
+                      }
                       alt="Bank Logo"
                       className="h-6 w-6"
                     />
                     <p className="text-sm text-gray-900">
-                      {disbursementData.account}
+                      {withdrawal?.bankAccount?.bankCode || "BCA"}{" "}
+                      {withdrawal?.bankAccount?.accountNumber || "1234567890"}{" "}
+                      an.{" "}
+                      {withdrawal?.bankAccount?.accountHolderName ||
+                        "DAFFA TOLDO"}
                     </p>
                   </div>
                 </div>
@@ -215,7 +186,7 @@ export default function DetailPencairanDanaPage({ params }) {
               <div className="overflow-hidden rounded-lg border border-gray-200">
                 <Table
                   columns={columns}
-                  data={disbursementData.invoices}
+                  data={invoices || []}
                   emptyComponent={
                     <tr>
                       <td
@@ -241,9 +212,7 @@ export default function DetailPencairanDanaPage({ params }) {
               <div className="mt-4">
                 <Pagination
                   currentPage={currentPage}
-                  totalPages={Math.ceil(
-                    disbursementData.invoices.length / perPage
-                  )}
+                  totalPages={Math.ceil((invoices?.length || 0) / perPage)}
                   perPage={perPage}
                   onPageChange={handlePageChange}
                   onPerPageChange={handlePerPageChange}
@@ -286,7 +255,7 @@ export default function DetailPencairanDanaPage({ params }) {
                         )}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(disbursementData.summary.grossIncome)}
+                        {formatCurrency(summary?.grossIncome || 0)}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -298,7 +267,7 @@ export default function DetailPencairanDanaPage({ params }) {
                         )}
                       </span>
                       <span className="text-sm font-medium text-red-600">
-                        -{formatCurrency(disbursementData.summary.adminFee)}
+                        -{formatCurrency(summary?.adminFee || 0)}
                       </span>
                     </div>
                   </div>
@@ -319,7 +288,7 @@ export default function DetailPencairanDanaPage({ params }) {
                         {t("DetailPencairanDanaPage.labelDPP", {}, "DPP")}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(disbursementData.summary.dpp)}
+                        {formatCurrency(summary?.dpp || 0)}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -327,7 +296,7 @@ export default function DetailPencairanDanaPage({ params }) {
                         {t("DetailPencairanDanaPage.labelPPN", {}, "PPN 12%")}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(disbursementData.summary.ppn)}
+                        {formatCurrency(summary?.ppn || 0)}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -335,7 +304,7 @@ export default function DetailPencairanDanaPage({ params }) {
                         {t("DetailPencairanDanaPage.labelPPH", {}, "PPH 2%")}
                       </span>
                       <span className="text-sm font-medium text-red-600">
-                        -{formatCurrency(disbursementData.summary.pph)}
+                        -{formatCurrency(summary?.pph || 0)}
                       </span>
                     </div>
                   </div>
@@ -348,7 +317,7 @@ export default function DetailPencairanDanaPage({ params }) {
                       {t("DetailPencairanDanaPage.labelTotal", {}, "Total")}
                     </span>
                     <span className="text-lg font-bold text-gray-900">
-                      {formatCurrency(calculateTotal())}
+                      {formatCurrency(summary?.netAmount || 0)}
                     </span>
                   </div>
                 </div>

@@ -95,7 +95,7 @@ const OTP_TYPE_CONFIG = {
       "Mohon cek pesan email di perangkat kamu untuk melanjutkan perubahan",
     labelMessage: "Kode OTP dikirim ke email",
     inputLabel: "Masukkan OTP",
-    imageSrc: "/img/otp-transporter/security-amico.png",
+    imageSrc: "/img/otp-transporter/otp.png",
     imageSize: { width: 120, height: 108 },
     buttonText: "Kirim Ulang",
     buttonSize: "w-[125px] text-sm md:h-8",
@@ -287,8 +287,7 @@ const OtpContainer = ({
             {type === "change-email"
               ? searchParams.get("email") || "0872517235"
               : type === "change-email2"
-                ? searchParams.get("email") ||
-                  "public.relation.mrsby@midtownight.com"
+                ? searchParams.get("email") || "user@example.com"
                 : number || "0893435352125"}
           </div>
           {type !== "forgot-password" &&
@@ -533,7 +532,7 @@ const OtpContainer = ({
                 }}
                 disabled={!isCountdownFinished(countdown)}
                 className={cn(
-                  `mt-[10px] flex h-10 max-w-[319px] items-center justify-center text-nowrap font-bold transition-colors duration-300`,
+                  `mt-[10px] flex h-10 max-w-[319px] items-center justify-center text-nowrap text-[14px] font-bold transition-colors duration-300`,
                   config.buttonSize,
                   isCountdownFinished(countdown)
                     ? config.activeResendButtonClass ||
@@ -542,7 +541,10 @@ const OtpContainer = ({
                         "!bg-[#EBEBEB] !text-[#868686]"
                 )}
               >
-                {type === "change-number" || type === "whatsapp"
+                {type === "change-number" ||
+                type === "whatsapp" ||
+                type === "change-email" ||
+                type === "change-email2"
                   ? config.buttonText
                   : t("OtpContainer.buttonResendOtp", {}, config.buttonText)}
               </Button>

@@ -33,11 +33,11 @@ import {
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
 import DaftarArmadaCs from "@/container/CS/Monitoring/DaftarArmada/DaftarArmadaCs";
 import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import SOSCSContainer from "@/container/CS/Monitoring/SOS/SOSCSContainer";
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
-import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import { cn } from "@/lib/utils";
 import { useGetCsFleetLocations } from "@/services/CS/monitoring/getCsFleetLocation";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
@@ -406,7 +406,7 @@ const Page = () => {
               )}
             >
               {panels.leftPanelMode === "sos" ? (
-                <SOSContainer onClose={handleCloseLeftPanel} />
+                <SOSCSContainer onClose={handleCloseLeftPanel} />
               ) : (
                 <DaftarArmadaCs
                   onClose={handleCloseLeftPanel}

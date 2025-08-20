@@ -44,7 +44,7 @@ const ChangeEmailModal = ({
     // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
-      setErrorMessage("Format email tidak valid");
+      setErrorMessage("Penulisan email salah");
       return false;
     }
 
@@ -93,17 +93,14 @@ const ChangeEmailModal = ({
             <div
               className={`flex w-full flex-row items-center justify-center gap-x-2.5 rounded-md border border-[#F71717] bg-[#FFE5E5] px-3 py-[15px]`}
             >
-              <IconComponent
-                className="text-[#F71717]"
-                src="/icons/info16.svg"
-              />
+              <IconComponent src="/icons/Message-yellow.svg" alt="email" />
               <span className="text-xs font-semibold leading-[14.4px]">
                 {errorMessage}
               </span>
             </div>
           ) : null}
           <Input
-            icon={{ left: "/icons/email.svg" }}
+            icon={{ left: "/icons/Message-yellow.svg" }}
             placeholder={isChangeEmail2 ? "Masukan Email" : "Email"}
             value={email}
             onChange={(e) => {

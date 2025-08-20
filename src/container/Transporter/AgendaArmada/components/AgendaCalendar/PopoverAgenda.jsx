@@ -51,7 +51,7 @@ const PopoverAgenda = ({ agendaData }) => {
     agendaData.issues?.hasSosIssue
   );
   return (
-    <div className="w-[397px] max-w-[397px] rounded-lg border border-neutral-200 bg-white font-sans text-xs shadow-md">
+    <div className="w-[395px] max-w-[395px] rounded-lg border border-neutral-200 bg-white font-sans text-xs shadow-md">
       <div className="p-3">
         <div className="space-y-3">
           <p className={`text-xs font-semibold ${statusColor}`}>

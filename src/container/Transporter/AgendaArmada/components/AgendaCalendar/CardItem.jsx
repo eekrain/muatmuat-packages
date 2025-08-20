@@ -2,7 +2,12 @@ import { useMemo } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import {
+  Modal,
+  ModalContent,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/Modal/Modal";
 import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
@@ -116,7 +121,10 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
     lastDestinationName = "",
     estimatedTotalDistanceKm = 0,
     isConflicted = false,
-
+    scheduleDate,
+    scheduleEndDate,
+    additionalUnloadTimeStart,
+    additionalUnloadTimeEnd,
     driverName = "",
     licensePlate = "",
     truckType = "",
@@ -322,6 +330,9 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                 </button>
               </ModalTrigger>
               <ModalContent className="h-[413px] w-[908]">
+                <ModalTitle className="sr-only">
+                  Ubah Estimasi Waktu Bongkar
+                </ModalTitle>
                 <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
                   <div>
                     <img
@@ -345,7 +356,23 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <EditSchedule />
+                  <EditSchedule
+                    cardData={{
+                      agendaStatus,
+                      driverName,
+                      estimation,
+                      firstDestinationName,
+                      lastDestinationName,
+                      estimatedTotalDistanceKm,
+                      scheduled,
+                      additional,
+                      position,
+                      hasSosIssue,
+                      cellWidth,
+                      viewType,
+                      truckType,
+                    }}
+                  />
                 </div>
               </ModalContent>
             </Modal>

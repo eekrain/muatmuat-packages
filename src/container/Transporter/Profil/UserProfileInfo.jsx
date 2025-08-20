@@ -9,6 +9,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ChangeWhatsappNumberModal from "@/components/Modal/ChangeWhatsappNumberModal";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import ModalEmailBaru from "@/components/Modal/ModalEmailBaru";
+import ModalGantiPassword from "@/components/Modal/ModalGantiPassword";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -80,22 +81,36 @@ const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
 };
 
 // --- Reusable Field Component ---
-const EditableField = ({ label, value, href = "#" }) => (
+const EditableField = ({ label, value, href = "#", onClick }) => (
   <div className="flex flex-col gap-1">
     <span className="mb-3 text-xs font-medium text-neutral-600">{label}</span>
     <div className="flex items-center gap-3">
       <span className="text-xs text-neutral-900">{value}</span>
-      <Link href={href}>
-        <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
-          Ubah
-          <IconComponent
-            src="/icons/pencil-outline.svg"
-            alt="Edit"
-            width={16}
-            height={16}
-          />
-        </div>
-      </Link>
+      {onClick ? (
+        <button type="button" onClick={onClick}>
+          <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
+            Ubah
+            <IconComponent
+              src="/icons/pencil-outline.svg"
+              alt="Edit"
+              width={16}
+              height={16}
+            />
+          </div>
+        </button>
+      ) : (
+        <Link href={href}>
+          <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
+            Ubah
+            <IconComponent
+              src="/icons/pencil-outline.svg"
+              alt="Edit"
+              width={16}
+              height={16}
+            />
+          </div>
+        </Link>
+      )}
     </div>
   </div>
 );
@@ -114,6 +129,8 @@ const UserProfileInfo = ({ userProfile }) => {
   const [isChangeWhatsappModalOpen, setChangeWhatsappModalOpen] =
     useState(false);
   const [isEmailModalOpen, setEmailModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setChangePasswordModalOpen] =
+    useState(false);
 
   const [hasVerified, setHasVerified] = useState(false);
   const [hasVerifiedEmail, setHasVerifiedEmail] = useState(false);
@@ -247,7 +264,11 @@ const UserProfileInfo = ({ userProfile }) => {
               value={userData.email}
               href={"/otp?type=change-email"}
             />
-            <EditableField label="Password" value="********" />
+            <EditableField
+              label="Password"
+              value="********"
+              onClick={() => setChangePasswordModalOpen(true)}
+            />
           </div>
         </div>
       </div>
@@ -298,6 +319,12 @@ const UserProfileInfo = ({ userProfile }) => {
         open={isEmailModalOpen}
         onOpenChange={setEmailModalOpen}
         onSubmit={handleEmailSubmit}
+      />
+
+      {/* Modal for Changing Password */}
+      <ModalGantiPassword
+        open={isChangePasswordModalOpen}
+        onOpenChange={setChangePasswordModalOpen}
       />
     </>
   );
