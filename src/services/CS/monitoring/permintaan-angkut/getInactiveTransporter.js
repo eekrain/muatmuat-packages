@@ -22,6 +22,8 @@ const apiResultInactiveTransporter = {
         transporterId: "transporter-uuid-1",
         transporterName:
           "PT Batavia Prosperindo Angkut Teknologi Indonesi Trans Tbk",
+        current: 5,
+        total: 7,
         lastActivity: "2025-01-15T14:30:00Z",
         inactivityStatus: "ARMADA_INACTIVE",
       },
