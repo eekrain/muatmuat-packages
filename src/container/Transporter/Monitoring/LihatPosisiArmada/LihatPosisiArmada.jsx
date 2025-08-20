@@ -7,7 +7,6 @@ import { ChevronDown } from "lucide-react";
 import BadgeSOSPopover from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
-import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { cn } from "@/lib/utils";
@@ -157,9 +156,9 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
           {(vehicles || []).map((vehicle) => (
             <div
               key={vehicle.id}
-              className="flex flex-col rounded-lg border border-neutral-300 bg-white"
+              className="flex flex-col rounded-lg border border-neutral-300 p-4"
             >
-              <div className="relative p-4">
+              <div className="relative">
                 <div className="mb-3 flex items-center gap-2">
                   <BadgeStatus
                     variant={vehicle.statusVariant}
@@ -188,7 +187,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
                   />
                 </div>
 
-                <div className="flex items-center gap-4 pr-10">
+                <div className="flex items-center gap-4">
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-neutral-300 bg-white">
                     <img
                       src={vehicle.icon}
@@ -197,7 +196,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
                     />
                   </div>
 
-                  <div className="min-w-0 flex-1">
+                  <div className="max-w-[376px] flex-1">
                     <h3 className="text-sm font-bold text-neutral-900">
                       {vehicle.licensePlate}
                     </h3>
@@ -234,7 +233,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
               </div>
 
               {expandedVehicles[vehicle.id] && (
-                <div className="border-t border-neutral-300">
+                <div className="mt-4 border-t border-neutral-300 pt-4">
                   <div className="bg-neutral-100 p-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-neutral-500">
@@ -246,7 +245,7 @@ const LihatPosisiArmada = ({ onClose, orderData }) => {
                     </div>
                   </div>
 
-                  <div className="p-4">
+                  <div className="pt-4">
                     <h3 className="mb-4 text-sm font-semibold text-neutral-900">
                       Detail Status Driver
                     </h3>
