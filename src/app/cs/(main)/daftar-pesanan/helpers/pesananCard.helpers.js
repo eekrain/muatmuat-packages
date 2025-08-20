@@ -341,6 +341,7 @@ export const useGetActionItems = ({
     onViewFleet,
     onCancelFleet,
     onCancelOrder,
+    onViewCancellationReason,
   ]);
 };
 
