@@ -33,7 +33,9 @@ export default function DesktopLayout({ children }) {
         )}
       >
         {children}
-        {isOverlayActive && <div className="absolute inset-0 bg-black/25" />}
+        {isOverlayActive && (
+          <div className="absolute inset-0 z-20 bg-black/25" />
+        )}
       </main>
       {!isMonitoringPage && <FloatingButton />}
 

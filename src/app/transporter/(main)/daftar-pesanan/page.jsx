@@ -59,8 +59,6 @@ const DaftarPesananPage = () => {
     isLoading: isOrdersLoading,
   } = useGetOrderList(queryString);
 
-  if (!mounted) return null;
-
   const handleChangeQueryParams = (field, value) => {
     setQueryParams((prevState) => {
       // Reset to page 1 when changing filters
@@ -78,6 +76,8 @@ const DaftarPesananPage = () => {
     //   setLastFilterField(field);
     // }
   };
+
+  if (!mounted) return null;
 
   return (
     <DaftarPesanan
