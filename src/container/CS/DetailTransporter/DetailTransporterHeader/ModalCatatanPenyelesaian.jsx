@@ -19,6 +19,7 @@ const ModalCatatanPenyelesaian = ({
   onClose,
   onConfirm,
   isLoading = false,
+  fleetNoteData,
 }) => {
   const [catatan, setCatatan] = useState("");
   const [catatanError, setCatatanError] = useState("");
@@ -67,15 +68,23 @@ const ModalCatatanPenyelesaian = ({
     try {
       await onConfirm?.({
         catatan,
-        tidakMenanggapi,
         supportingFiles: uploadedFiles.filter((f) => f !== null),
       });
+      // Get transporterName from mock getLatestFleetNote
+      let transporterName = "";
+      if (fleetNoteData?.Data?.latestNote?.relatedEntities?.transporterName) {
+        transporterName =
+          fleetNoteData.Data.latestNote.relatedEntities.transporterName;
+      } else {
+        const mockFleetNote = require("@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote");
+        const mockData =
+          mockFleetNote?.apiResultLatestFleetNote?.Data?.latestNote;
+        transporterName = mockData?.relatedEntities?.transporterName || "";
+      }
       toast.success(
-        `Berhasil menyelesaikan masalah transporter${tidakMenanggapi ? " tidak menanggapi" : ""}${catatan ? `: ${catatan}` : ""}`
+        `Berhasil menyelesaikan masalah transporter tidak aktif ${transporterName}`
       );
       handleClose();
-    } catch (error) {
-      // handle error
     } finally {
       setIsSubmitting(false);
     }
