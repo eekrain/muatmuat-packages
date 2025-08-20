@@ -419,7 +419,7 @@ export const getHistoryDataSOS = async (params = {}) => {
   }
 
   return {
-    data: result?.data || {},
+    data: result,
     raw: result,
   };
 };
@@ -438,7 +438,7 @@ export const useGetHistoryDataSOS = (params = {}) => {
   );
 
   return {
-    data: data || {}, // Remove extra .data access
+    data: data?.data || {},
     raw: data?.raw,
     isLoading,
     isError: !!error,
