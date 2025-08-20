@@ -10,23 +10,9 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import DetailTransporterHeader from "@/container/CS/DetailTransporter/DetailTransporterHeader/DetailTransporterHeader";
 import ModalCatatanPenyelesaian from "@/container/CS/DetailTransporter/DetailTransporterHeader/ModalCatatanPenyelesaian";
+import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
 import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
-
-// Helper to format date and duration
-function formatDate(dateStr) {
-  if (!dateStr) return "-";
-  const date = new Date(dateStr);
-  return `${date.toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Asia/Jakarta",
-  })} WIB`;
-}
 
 function formatDuration(minutes) {
   if (minutes === null || minutes === undefined) return "-";
@@ -172,7 +158,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
   };
 
   return (
-    <div className="w-full p-6">
+    <div className="mx-auto max-w-7xl p-6">
       <BreadCrumb data={breadcrumbData} maxWidth={111} />
       <div className="my-4 flex gap-x-6">
         <div className="w-[340px] min-w-[320px]">
@@ -198,9 +184,9 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 </p>
               </div>
             </div>
-            <p className="text-xs font-medium text-neutral-600">
+            {/* <p className="text-xs font-medium text-neutral-600">
               {fleetNoteData?.Data?.latestNote?.content || "-"}
-            </p>
+            </p> */}
             <div className="flex justify-between gap-3">
               <Button
                 variant="muattrans-primary-secondary"
@@ -301,7 +287,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
 
         {/* Right Column: DataTable */}
         <div className="w-full flex-grow">
-          {fleetNoteData?.Data?.latestNote?.status === "active" && (
+          {/* {fleetNoteData?.Data?.latestNote?.status === "active" && (
             <div className="flex w-full rounded-xl bg-neutral-50 px-6 pt-5">
               <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
                 <p className="text-xs font-semibold text-error-400">
@@ -313,7 +299,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 </p>
               </div>
             </div>
-          )}
+          )} */}
 
           <DataTable
             data={armadaNonaktifData}
