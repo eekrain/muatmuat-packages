@@ -31,12 +31,12 @@ const ShipperParentCard = ({ group, userRole }) => {
             </span>
             <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-700">
               <span className="text-xs font-bold text-white">
-                {group.shipper.name.charAt(0)}
+                {group.shipper?.name?.charAt(0)}
               </span>
             </div>
             <div className="flex-grow overflow-hidden">
               <TruncatedTooltip
-                text={group.shipper.name}
+                text={group.shipper?.name}
                 className="break-all text-xs font-semibold text-black"
               />
             </div>
