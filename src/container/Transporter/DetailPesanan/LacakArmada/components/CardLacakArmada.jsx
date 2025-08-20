@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import Button from "@/components/Button/Button";
 import {
   SimpleDropdown,
   SimpleDropdownContent,
@@ -219,7 +220,7 @@ function CardLacakArmada({
   // --- Render Utama ---
   return (
     <>
-      <div className="flex w-full flex-col gap-4 rounded-xl border border-neutral-300 bg-white p-4">
+      <div className="flex w-full flex-col gap-4 rounded-xl border border-neutral-400 bg-neutral-50 p-4">
         {/* ... (kode JSX header dan info driver tidak berubah) ... */}
         {/* Header + Aksi */}
         <div className="flex items-center justify-between">
@@ -249,15 +250,16 @@ function CardLacakArmada({
 
             {isSOS && (
               <>
-                <div className="mb-2 inline-flex items-center justify-center rounded-md bg-red-500 px-3 py-1 text-xs font-bold text-white">
+                <div className="mb-2 flex h-[24px] items-center rounded-md bg-error-400 px-3 text-xs font-semibold text-error-50">
                   SOS
                 </div>
-                <button
+                <Button
+                  className="text-xs"
                   onClick={onViewSosClick}
-                  className="text-xs font-medium text-blue-600"
+                  variant="link"
                 >
                   Lihat SOS
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -333,7 +335,7 @@ function CardLacakArmada({
 
           {/* Stepper */}
           <div className="flex flex-1 items-center justify-end">
-            <div className="w-full max-w-2xl">
+            <div className="w-[742px]">
               <StepperContainer
                 activeIndex={activeIndex}
                 totalStep={currentSteps.length}

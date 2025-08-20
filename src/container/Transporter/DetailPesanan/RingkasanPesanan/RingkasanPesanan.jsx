@@ -5,7 +5,7 @@ import RingkasanPesananHeader from "@/container/Transporter/DetailPesanan/Ringka
 import RingkasanPendapatanAktif from "./RingkasanPendapatanAktif";
 
 const RingkasanPesanan = ({ dataOrderDetail }) => {
-  const ringkasanPendapatanAktif = true;
+  const ringkasanPendapatanAktif = false;
   return (
     <>
       <RingkasanPesananHeader dataOrderDetail={dataOrderDetail} />
