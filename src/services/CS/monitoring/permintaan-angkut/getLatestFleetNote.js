@@ -183,7 +183,7 @@ const apiResultLatestFleetNote = {
     // case transporter tidak aktif
     detailInactive: {
       lastActiveAt: "2025-01-10T10:00:00Z",
-      inactiveDuration: 7200,
+      inactiveDuration: 120,
     },
     pagination: {
       currentPage: 1,
