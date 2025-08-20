@@ -7,11 +7,11 @@ import { ChevronLeft } from "lucide-react";
 
 import { calculateMapBounds } from "@/app/transporter/(main)/monitoring/utils/mapUtils";
 import Button from "@/components/Button/Button";
-import { MapInterfaceOverlay } from "@/container/Shared/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
+import { MapInterfaceOverlay } from "../../../monitoring/components/Map/MapInterfaceOverlay";
 import LacakArmadaSidebar from "./components/LacakArmadaSidebar";
 
 const LacakArmadaPage = () => {
@@ -140,7 +140,7 @@ const LacakArmadaPage = () => {
           onMapCenterChange={handleMapCenterChange}
           showLicensePlate={mapState.showLicensePlate}
           mapContainerStyle={{
-            width: isSidebarVisible ? "100%" : "96vw",
+            width: isSidebarVisible ? "100%" : "97vw",
             height: "calc(100vh - 135px)",
             borderRadius: "24px",
             transition: "width 300ms ease-in-out",

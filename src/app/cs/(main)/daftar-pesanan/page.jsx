@@ -117,7 +117,12 @@ const DaftarPesananPage = () => {
       <Tabs
         className="w-full"
         value={activeTab}
-        onValueChange={(v) => setActiveTab(v)}
+        onValueChange={(v) => {
+          setIsLoading(true);
+          setActiveTab(v);
+          setPeriod(periodOptions[0]);
+          setLastAction("initial");
+        }}
       >
         {!isFirstTimer && (
           <div className="flex items-center justify-between">
@@ -181,7 +186,15 @@ const DaftarPesananPage = () => {
           )}
         </TabsContent>
         <TabsContent value="riwayat" className="pt-4">
-          <RiwayatTab />
+          <RiwayatTab
+            useMockData={useMockData}
+            userRole={userRole}
+            period={period}
+            urgentCounts={dashboardData.urgentCounts}
+            setIsLoading={setIsLoading}
+            setHasData={setHasData}
+            setLastAction={setLastAction}
+          />
         </TabsContent>
       </Tabs>
     </div>

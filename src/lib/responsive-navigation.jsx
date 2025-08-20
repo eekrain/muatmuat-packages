@@ -142,11 +142,17 @@ export const ResponsiveProvider = ({ children }) => {
       params.set("screen", stackString);
 
       // MODIFICATION 1: Use `push` to create browser history entries.
-      router.push(`${window.location.pathname}?${params.toString()}`, {
-        scroll: false,
-      });
+      if (searchParams.size > 0) {
+        router.push(`${window.location.pathname}?${params.toString()}`, {
+          scroll: false,
+        });
+      } else {
+        router.replace(`${window.location.pathname}?${params.toString()}`, {
+          scroll: false,
+        });
+      }
     }
-  }, [stack, screenSearchParam, isMobile, isNavigationHydrated]);
+  }, [stack, searchParams, screenSearchParam, isMobile, isNavigationHydrated]);
 
   // NEW: Listen for browser back/forward button clicks
   useEffect(() => {

@@ -16,6 +16,10 @@ export const ORDER_STATUS = {
   PROSES_BONGKAR: "PROSES_BONGKAR",
   DOKUMEN_SEDANG_DISIAPKAN: "DOKUMEN_SEDANG_DISIAPKAN",
   PROSES_PENGIRIMAN_DOKUMEN: "PROSES_PENGIRIMAN_DOKUMEN",
+  SELESAI: "SELESAI",
+  DIBATALKAN_SHIPPER: "DIBATALKAN_SHIPPER",
+  DIBATALKAN_TRANSPORTER: "DIBATALKAN_TRANSPORTER",
+  DIBATALKAN_SISTEM: "DIBATALKAN_SISTEM",
 };
 
 export const statusDisplayMap = {
@@ -49,6 +53,19 @@ export const statusDisplayMap = {
     text: "Proses Pengiriman Dokumen",
     variant: "primary",
   },
+  [ORDER_STATUS.SELESAI]: { text: "Selesai", variant: "success" },
+  [ORDER_STATUS.DIBATALKAN_SHIPPER]: {
+    text: "Dibatalkan Shipper",
+    variant: "error",
+  },
+  [ORDER_STATUS.DIBATALKAN_TRANSPORTER]: {
+    text: "Dibatalkan Transporter",
+    variant: "error",
+  },
+  [ORDER_STATUS.DIBATALKAN_SISTEM]: {
+    text: "Dibatalkan Sistem",
+    variant: "error",
+  },
 };
 
 // Helper Hooks and Functions
@@ -59,6 +76,7 @@ export const useGetActionItems = ({
   onViewFleet,
   onCancelFleet,
   onCancelOrder,
+  onViewCancellationReason,
 }) => {
   const { t } = useTranslation();
   return useMemo(() => {
@@ -266,6 +284,45 @@ export const useGetActionItems = ({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
           href: `/daftar-pesanan/${order.id}`,
+        });
+        break;
+      case ORDER_STATUS.SELESAI:
+        actions.push({
+          label: t(
+            "pesananCard.actionUploadArchive",
+            {},
+            "Unggah Dokumen Arsip"
+          ),
+        });
+        actions.push({
+          label: t(
+            "pesananCard.actionViewReceipt",
+            {},
+            "Lihat Resi Pengiriman"
+          ),
+        });
+        actions.push({
+          label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
+          isLink: true,
+          href: `/cs/daftar-pesanan/${order.id}`,
+        });
+        break;
+
+      case ORDER_STATUS.DIBATALKAN_SHIPPER:
+      case ORDER_STATUS.DIBATALKAN_TRANSPORTER:
+      case ORDER_STATUS.DIBATALKAN_SISTEM:
+        actions.push({
+          label: t(
+            "pesananCard.actionCancellationReason",
+            {},
+            "Alasan Pembatalan"
+          ),
+          onClick: onViewCancellationReason,
+        });
+        actions.push({
+          label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
+          isLink: true,
+          href: `/cs/daftar-pesanan/${order.id}`,
         });
         break;
       default:

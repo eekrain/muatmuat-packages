@@ -30,21 +30,7 @@ export const getDynamicDates = (startDate, position = 0, startOffset = 0) => {
     ];
     const dayName = dayNames[date.getDay()];
     const dateNum = date.getDate();
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "Mei",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des",
-    ];
-    const monthName = monthNames[date.getMonth()];
-    return `${dayName}, ${dateNum} ${monthName}`;
+
+    return `${dayName}, ${dateNum}`;
   });
 };
