@@ -124,7 +124,9 @@ const DaftarPesananAktifListItem = ({
   const handleActionClick = (actionType) => {
     switch (actionType) {
       case ORDER_ACTIONS.ASSIGN_FLEET.type:
+        break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
+        break;
       case ORDER_ACTIONS.CONFIRM_READY.type:
         onToggleDropdown(row.id, false);
         break;
@@ -390,17 +392,18 @@ const DaftarPesananAktifListItem = ({
               ? `${statusBadge.label} : ${row.truckCount || 0} Unit`
               : statusBadge.label}
           </BadgeStatus>
-          {/* {row.orderStatus === ORDER_STATUS.LOADING && (
+          {row.orderStatus === ORDER_STATUS.LOADING && (
             <Button
               variant="link"
               onClick={() => {
-                onViewFleetStatus?.(row);
+                _onViewFleetStatus?.(row);
               }}
               className="self-start text-xs font-semibold"
             >
               Lihat Status Lainnya
             </Button>
-          )} */}
+          )}
+
           {/* {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
             <Button
               variant="muattrans-primary"

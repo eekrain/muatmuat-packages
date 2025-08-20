@@ -1084,7 +1084,7 @@
   "daftarPesanan.searchNotFoundTitle": "Keyword Not Found",
   "daftarPesanan.filterNotFoundTitle": "Data not found.",
   "daftarPesanan.filterNotFoundSubtitle": "Please try removing some filters",
-  "daftarPesanan.periodNotFoundTitle": "No data in this period",
+  "daftarPesanan.periodNotFoundTitle": "No data",
   "daftarPesanan.historyTabPlaceholder": "History content will be implemented by another developer.",
   "pesananActionBar.searchPlaceholder": "Search Orders",
   "pesananActionBar.urgentStatus": "Urgent Status",

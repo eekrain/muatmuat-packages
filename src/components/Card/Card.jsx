@@ -3,7 +3,6 @@ import propTypes from "prop-types";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
-import style from "./Card.module.scss";
 
 // componen card terdiri dari beberapa fungsi yang dapat di export di childrennya, seperti header/content/footer (depends sesuai kebutuhan)
 // componen main card mempunyai 2 props yang dapat di isi yakni:
@@ -15,8 +14,7 @@ const Card = ({ className, keys, children }) => {
     <div
       key={keys}
       className={cn(
-        "h-full w-full rounded-md border border-neutral-600 bg-white text-neutral-900",
-        style.shadowmuat,
+        "h-full w-full rounded-md border border-neutral-600 bg-white text-neutral-900 shadow-muat",
         className
       )}
     >

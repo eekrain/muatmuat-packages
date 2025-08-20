@@ -1083,7 +1083,7 @@
   "daftarPesanan.searchNotFoundTitle": "Keyword Tidak Ditemukan",
   "daftarPesanan.filterNotFoundTitle": "Data tidak Ditemukan.",
   "daftarPesanan.filterNotFoundSubtitle": "Mohon coba hapus beberapa filter",
-  "daftarPesanan.periodNotFoundTitle": "Tidak ada data pada periode ini",
+  "daftarPesanan.periodNotFoundTitle": "Tidak ada data",
   "daftarPesanan.historyTabPlaceholder": "Konten Riwayat akan diimplementasikan oleh developer lain.",
   "pesananActionBar.searchPlaceholder": "Cari Pesanan",
   "pesananActionBar.urgentStatus": "Status Urgent",

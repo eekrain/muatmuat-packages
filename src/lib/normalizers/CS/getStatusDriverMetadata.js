@@ -18,7 +18,7 @@ const SHOULD_RETURNS_ORDER_STATUS = [
   OrderStatusEnum.CANCELED_BY_TRANSPORTER,
 ];
 
-export const getDriverStatusMetadata = ({
+export const getStatusDriverMetadataCS = ({
   driverStatus = null,
   orderStatus = null,
   t,

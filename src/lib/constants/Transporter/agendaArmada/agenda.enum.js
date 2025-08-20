@@ -5,3 +5,10 @@ export const StatusArmadaTypeEnum = {
   NON_AKTIF: "Non Aktif",
   PENGIRIMAN_SELESAI: "Pengiriman Selesai",
 };
+
+export const ChangeFleetTypeEnum = {
+  TERSEDIA: "Tersedia",
+  NON_AKTIF: "Menunggu",
+  BERTUGAS: "Bertugas",
+  MENUNGGU: "Menunggu",
+};

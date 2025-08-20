@@ -57,7 +57,7 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
             ? {
                 paddingLeft: `calc(${titleWidth}px / 2 - 16px)`,
                 paddingRight: `calc(${titleWidth}px / 2 - 16px)`,
-                height: `${32 + 8 + maxTitleHeight - 6}px`,
+                height: `${32 + 8 + maxTitleHeight - 0}px`,
               }
             : {
                 paddingLeft: `calc(${titleWidth}px / 2 - 14px)`,

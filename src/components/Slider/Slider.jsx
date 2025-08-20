@@ -40,13 +40,21 @@ const useSlider = () => {
  * @property {string} className - The class name to apply to the slider.
  * @property {function} onSlideChange - The function to call when the slide changes.
  * @property {function} onComplete - The function to call when the slider is completed.
+ * @property {boolean} loop - Whether the slider should loop infinitely or stop at boundaries.
  */
 
 /**
  * @param {RootProps} props
  * @returns {React.ReactNode}
  */
-const Root = ({ items, children, className, onSlideChange, onComplete }) => {
+const Root = ({
+  items,
+  children,
+  className,
+  onSlideChange,
+  onComplete,
+  loop = true,
+}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -70,12 +78,24 @@ const Root = ({ items, children, className, onSlideChange, onComplete }) => {
   );
 
   const nextSlide = useCallback(() => {
-    handleSlideChange((currentSlide + 1) % items.length);
-  }, [currentSlide, items.length, handleSlideChange]);
+    if (loop) {
+      handleSlideChange((currentSlide + 1) % items.length);
+    } else {
+      if (currentSlide < items.length - 1) {
+        handleSlideChange(currentSlide + 1);
+      }
+    }
+  }, [currentSlide, items.length, handleSlideChange, loop]);
 
   const prevSlide = useCallback(() => {
-    handleSlideChange((currentSlide - 1 + items.length) % items.length);
-  }, [currentSlide, items.length, handleSlideChange]);
+    if (loop) {
+      handleSlideChange((currentSlide - 1 + items.length) % items.length);
+    } else {
+      if (currentSlide > 0) {
+        handleSlideChange(currentSlide - 1);
+      }
+    }
+  }, [currentSlide, items.length, handleSlideChange, loop]);
 
   const goToSlide = (index) => {
     if (index !== currentSlide) {
@@ -90,6 +110,9 @@ const Root = ({ items, children, className, onSlideChange, onComplete }) => {
     nextSlide,
     prevSlide,
     goToSlide,
+    loop,
+    canGoNext: loop || currentSlide < items.length - 1,
+    canGoPrev: loop || currentSlide > 0,
   };
 
   return (
@@ -156,7 +179,8 @@ const DesktopNavigation = ({
   prevButtonClassName,
   nextButtonClassName,
 }) => {
-  const { prevSlide, nextSlide, isAnimating } = useSlider();
+  const { prevSlide, nextSlide, isAnimating, canGoNext, canGoPrev } =
+    useSlider();
 
   return (
     <div
@@ -167,16 +191,24 @@ const DesktopNavigation = ({
     >
       <button
         onClick={prevSlide}
-        disabled={isAnimating}
-        className={cn("text-primary-700", prevButtonClassName)}
+        disabled={isAnimating || !canGoPrev}
+        className={cn(
+          "text-primary-700",
+          !canGoPrev && "cursor-not-allowed opacity-30",
+          prevButtonClassName
+        )}
         aria-label="Previous slide"
       >
         <IconComponent src="/icons/chevron-left24.svg" width={24} height={24} />
       </button>
       <button
         onClick={nextSlide}
-        disabled={isAnimating}
-        className={cn("text-primary-700", nextButtonClassName)}
+        disabled={isAnimating || !canGoNext}
+        className={cn(
+          "text-primary-700",
+          !canGoNext && "cursor-not-allowed opacity-30",
+          nextButtonClassName
+        )}
         aria-label="Next slide"
       >
         <IconComponent
@@ -199,21 +231,29 @@ const DesktopNavigation = ({
  * }} props
  */
 const MobileNavigation = ({ className }) => {
-  const { prevSlide, nextSlide } = useSlider();
+  const { prevSlide, nextSlide, canGoNext, canGoPrev } = useSlider();
 
   return (
     <div className={cn("flex items-center justify-end gap-[14px]", className)}>
       <Button
         onClick={prevSlide}
+        disabled={!canGoPrev}
         variant="muatparts-primary-secondary"
-        className="size-[31px] rounded-xl"
+        className={cn(
+          "size-[31px] rounded-xl",
+          !canGoPrev && "cursor-not-allowed opacity-30"
+        )}
       >
         <IconComponent src="/icons/chevron-left24.svg" width={24} height={24} />
       </Button>
       <Button
         onClick={nextSlide}
+        disabled={!canGoNext}
         variant="muatparts-primary"
-        className="size-[31px] rounded-xl"
+        className={cn(
+          "size-[31px] rounded-xl",
+          !canGoNext && "cursor-not-allowed opacity-30"
+        )}
       >
         <IconComponent
           src="/icons/chevron-right24.svg"

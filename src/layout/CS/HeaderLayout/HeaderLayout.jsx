@@ -105,11 +105,11 @@ const HeaderLayout = ({
           label: "Laporan Permintaan Dibatalkan",
           href: "/laporan/permintaan-dibatalkan",
         },
-        // {
-        //   id: "laporan-aktivitas",
-        //   label: "Laporan Aktivitas",
-        //   href: "/laporan/aktivitas",
-        // },
+        {
+          id: "laporan-tambahan-biaya",
+          label: "Laporan Tambahan Biaya",
+          href: "/laporan/tambahan-biaya",
+        },
       ],
     },
   ];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 
 import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 import LoginRequiredModal from "./LoginRequiredModal";
@@ -121,7 +122,7 @@ const SewaArmadaHomeScreen = ({
   };
 
   return (
-    <DefaultResponsiveLayout mode="default">
+    <>
       <div ref={parentRef} className="w-full bg-neutral-100">
         <BannerCarousel banners={banners} showControls={false} />
         <AlertMultilineResponsive
@@ -197,8 +198,27 @@ const SewaArmadaHomeScreen = ({
         open={loginRequiredModalOpen}
         onOpenChange={setLoginRequiredModalOpen}
       />
-    </DefaultResponsiveLayout>
+    </>
   );
 };
 
-export default SewaArmadaHomeScreen;
+const HomeScreenLayout = (props) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
+
+  if (isEditPage) {
+    return (
+      <FormResponsiveLayout title={{ label: "Ubah Pesanan" }}>
+        <SewaArmadaHomeScreen {...props} />
+      </FormResponsiveLayout>
+    );
+  } else {
+    return (
+      <DefaultResponsiveLayout mode="default">
+        <SewaArmadaHomeScreen {...props} />
+      </DefaultResponsiveLayout>
+    );
+  }
+};
+
+export default HomeScreenLayout;

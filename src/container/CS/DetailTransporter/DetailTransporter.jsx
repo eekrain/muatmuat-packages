@@ -282,222 +282,226 @@ const DetailTransporter = ({ breadcrumbData }) => {
   };
 
   return (
-    <div className="w-full p-6">
-      <BreadCrumb data={breadcrumbData} maxWidth={111} />
-      <div className="my-4 flex gap-x-6">
-        <div className="w-[340px] min-w-[320px]">
-          <DetailTransporterHeader transporter={transporter} />
+    <div className="flex w-full justify-center">
+      <div className="w-[1280px] p-6">
+        <BreadCrumb data={breadcrumbData} maxWidth={111} />
+        <div className="my-4 flex gap-x-6">
+          <div className="w-[340px] min-w-[320px]">
+            <DetailTransporterHeader transporter={transporter} />
+          </div>
         </div>
-      </div>
-      <div className="flex w-full items-start gap-4">
-        {/* Left Column: Admin Info Card */}
-        <div className="flex flex-col gap-4">
-          <div className="flex w-[340px] flex-col gap-5 rounded-xl bg-neutral-50 p-6 shadow-lg">
-            <div className="flex items-center gap-4">
-              <img
-                src={transporter.logoUrl}
-                alt={transporter.name}
-                className="h-14 w-14 flex-shrink-0 rounded-full border border-neutral-400 bg-white object-cover"
-              />
-              <div className="flex flex-col justify-center">
-                <p className="text-xs font-bold text-neutral-900">
-                  {transporter.name}
+        <div className="flex w-full items-start gap-4">
+          {/* Left Column: Admin Info Card */}
+          <div className="flex flex-col gap-4">
+            <div className="flex w-[340px] flex-col gap-5 rounded-xl bg-neutral-50 p-6 shadow-lg">
+              <div className="flex items-center gap-4">
+                <img
+                  src={transporter.logoUrl}
+                  alt={transporter.name}
+                  className="h-14 w-14 flex-shrink-0 rounded-full border border-neutral-400 bg-white object-cover"
+                />
+                <div className="flex flex-col justify-center">
+                  <p className="text-xs font-bold text-neutral-900">
+                    {transporter.name}
+                  </p>
+                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                    "ARMADA_INACTIVE" && (
+                    <p className="text-xs font-medium text-error-400">
+                      Armada Nonaktif Terlalu Banyak (
+                      {fleetNoteData?.Data?.latestNote?.current ?? "-"}/
+                      {fleetNoteData?.Data?.latestNote?.total ?? "-"})
+                    </p>
+                  )}
+                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                    "TRANSPORTER_IDLE" && (
+                    <p className="text-xs font-medium text-error-400">
+                      Admin Terdeteksi Sering Idle (
+                      {fleetNoteData?.Data?.latestNote?.current ?? "-"}/
+                      {fleetNoteData?.Data?.latestNote?.total ?? "-"} Order)
+                    </p>
+                  )}
+                </div>
+              </div>
+              {fleetNoteData?.Data?.latestNote?.status === "active" && (
+                <p className="text-xs font-medium text-neutral-600">
+                  {fleetNoteData?.Data?.latestNote?.content || "-"}
                 </p>
-                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                  "ARMADA_INACTIVE" && (
-                  <p className="text-xs font-medium text-error-400">
-                    Armada Nonaktif Terlalu Banyak (
-                    {fleetNoteData?.Data?.latestNote?.current ?? "-"}/
-                    {fleetNoteData?.Data?.latestNote?.total ?? "-"})
-                  </p>
-                )}
-                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                  "TRANSPORTER_IDLE" && (
-                  <p className="text-xs font-medium text-error-400">
-                    Admin Terdeteksi Sering Idle (
-                    {fleetNoteData?.Data?.latestNote?.current ?? "-"}/
-                    {fleetNoteData?.Data?.latestNote?.total ?? "-"} Order)
-                  </p>
+              )}
+
+              <div className="flex justify-between gap-3">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold"
+                  onClick={() => setShowHubungiModal(true)}
+                >
+                  Hubungi
+                </Button>
+                {fleetNoteData?.Data?.latestNote?.status === "active" && (
+                  <Button
+                    variant="muattrans-warning"
+                    className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
+                    onClick={() => setShowCatatanModal(true)}
+                  >
+                    Selesaikan
+                  </Button>
                 )}
               </div>
             </div>
+            {fleetNoteData?.Data?.latestNote?.status === "completed" && (
+              <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
+                <div className="mb-6 flex items-center">
+                  <p className="text-xs font-semibold text-neutral-900">
+                    Detail Penyelesaian
+                  </p>
+                </div>
+                <div className="mb-3 flex flex-col gap-2">
+                  <p className="text-xs font-medium text-neutral-600">
+                    Tanggal Diselesaikan
+                  </p>
+                  <p className="text-xs font-medium text-neutral-900">
+                    {fleetNoteData?.Data?.latestNote?.history?.reportedAt
+                      ? new Date(
+                          fleetNoteData.Data.latestNote.history.reportedAt
+                        ).toLocaleDateString("id-ID", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : "-"}
+                  </p>
+                </div>
+                <div className="mb-3 flex flex-col gap-2">
+                  <p className="text-xs font-medium text-neutral-600">
+                    Catatan
+                  </p>
+                  <p className="text-xs font-medium text-neutral-900">
+                    {fleetNoteData?.Data?.latestNote?.history?.notes || "-"}
+                  </p>
+                </div>
+                <div className="mb-3 flex flex-col gap-2">
+                  <p className="text-xs font-medium text-neutral-600">
+                    Foto Pendukung
+                  </p>
+                  <LightboxProvider
+                    images={
+                      fleetNoteData?.Data?.latestNote?.history?.photos?.map(
+                        (photo) => photo.url
+                      ) || []
+                    }
+                    title="Foto Pendukung"
+                  >
+                    <div className="flex flex-row gap-2">
+                      {fleetNoteData?.Data?.latestNote?.history?.photos
+                        ?.length > 0 ? (
+                        fleetNoteData.Data.latestNote.history.photos.map(
+                          (photo, idx) => (
+                            <LightboxPreview
+                              key={idx}
+                              image={photo.url}
+                              index={idx}
+                              className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
+                              alt={`Foto Pendukung ${idx + 1}`}
+                            />
+                          )
+                        )
+                      ) : (
+                        <span className="text-xs text-neutral-500">
+                          Tidak ada foto
+                        </span>
+                      )}
+                    </div>
+                  </LightboxProvider>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Modals */}
+          <HubungiModal
+            isOpen={showHubungiModal}
+            onClose={() => setShowHubungiModal(false)}
+            transporterData={null} // TODO: pass actual transporter data
+          />
+          <ModalCatatanPenyelesaian
+            isOpen={showCatatanModal}
+            onClose={() => setShowCatatanModal(false)}
+            onConfirm={() => setShowCatatanModal(false)}
+            fleetNoteData={fleetNoteData}
+          />
+
+          {/* Right Column: DataTable */}
+          <div className="w-full flex-grow">
             {fleetNoteData?.Data?.latestNote?.status === "active" && (
-              <p className="text-xs font-medium text-neutral-600">
-                {fleetNoteData?.Data?.latestNote?.content || "-"}
-              </p>
+              <div className="relative top-2 flex w-full rounded-t-xl bg-neutral-50 px-6 pb-3 pt-5">
+                <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
+                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                    "ARMADA_INACTIVE" && (
+                    <p className="text-xs font-semibold text-error-400">
+                      Armada nonaktif bertambah {total} dari follow-up terakhir.
+                      <span className="ml-1 cursor-pointer font-medium text-primary-700">
+                        Lihat Catatan Terakhir
+                      </span>
+                    </p>
+                  )}
+                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+                    "TRANSPORTER_IDLE" && (
+                    <p className="text-xs font-semibold text-error-400">
+                      {transporterName} masih melewatkan {current} dari {total}{" "}
+                      pesanan dari follow-up terakhir.
+                      <span className="ml-1 cursor-pointer font-medium text-primary-700">
+                        Lihat Catatan Terakhir
+                      </span>
+                    </p>
+                  )}
+                </div>
+              </div>
             )}
 
-            <div className="flex justify-between gap-3">
-              <Button
-                variant="muattrans-primary-secondary"
-                className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold"
-                onClick={() => setShowHubungiModal(true)}
-              >
-                Hubungi
-              </Button>
-              {fleetNoteData?.Data?.latestNote?.status === "active" && (
-                <Button
-                  variant="muattrans-warning"
-                  className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
-                  onClick={() => setShowCatatanModal(true)}
-                >
-                  Selesaikan
-                </Button>
-              )}
-            </div>
+            {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+              "ARMADA_INACTIVE" && (
+              <DataTable
+                data={filteredArmadaNonaktifData}
+                columns={armadaNonaktifColumns}
+                searchPlaceholder="Cari Nama Driver / No. Polisi"
+                totalCountLabel="Armada Nonaktif"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                perPage={perPage}
+                onPageChange={setCurrentPage}
+                onPerPageChange={setPerPage}
+                showFilter={false}
+                showPagination={true}
+                showTotalCount={true}
+                onSort={handleSort}
+                onSearch={handleSearch}
+                loading={isFleetNoteLoading}
+                className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
+              />
+            )}
+            {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+              "TRANSPORTER_IDLE" && (
+              <DataTable
+                data={filteredIdleOrderData}
+                columns={idleOrderColumns}
+                searchPlaceholder="Cari No. Pesanan / Nama Transporter"
+                totalCountLabel="Order Terlewat"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredIdleOrderData.length}
+                perPage={perPage}
+                onPageChange={setCurrentPage}
+                onPerPageChange={setPerPage}
+                showFilter={false}
+                showPagination={true}
+                showTotalCount={true}
+                onSort={handleSort}
+                onSearch={handleSearch}
+                loading={isFleetNoteLoading}
+                className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
+              />
+            )}
           </div>
-          {fleetNoteData?.Data?.latestNote?.status === "completed" && (
-            <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
-              <div className="mb-6 flex items-center">
-                <p className="text-xs font-semibold text-neutral-900">
-                  Detail Penyelesaian
-                </p>
-              </div>
-              <div className="mb-3 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">
-                  Tanggal Diselesaikan
-                </p>
-                <p className="text-xs font-medium text-neutral-900">
-                  {fleetNoteData?.Data?.latestNote?.history?.reportedAt
-                    ? new Date(
-                        fleetNoteData.Data.latestNote.history.reportedAt
-                      ).toLocaleDateString("id-ID", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })
-                    : "-"}
-                </p>
-              </div>
-              <div className="mb-3 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">Catatan</p>
-                <p className="text-xs font-medium text-neutral-900">
-                  {fleetNoteData?.Data?.latestNote?.history?.notes || "-"}
-                </p>
-              </div>
-              <div className="mb-3 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">
-                  Foto Pendukung
-                </p>
-                <LightboxProvider
-                  images={
-                    fleetNoteData?.Data?.latestNote?.history?.photos?.map(
-                      (photo) => photo.url
-                    ) || []
-                  }
-                  title="Foto Pendukung"
-                >
-                  <div className="flex flex-row gap-2">
-                    {fleetNoteData?.Data?.latestNote?.history?.photos?.length >
-                    0 ? (
-                      fleetNoteData.Data.latestNote.history.photos.map(
-                        (photo, idx) => (
-                          <LightboxPreview
-                            key={idx}
-                            image={photo.url}
-                            index={idx}
-                            className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
-                            alt={`Foto Pendukung ${idx + 1}`}
-                          />
-                        )
-                      )
-                    ) : (
-                      <span className="text-xs text-neutral-500">
-                        Tidak ada foto
-                      </span>
-                    )}
-                  </div>
-                </LightboxProvider>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Modals */}
-        <HubungiModal
-          isOpen={showHubungiModal}
-          onClose={() => setShowHubungiModal(false)}
-          transporterData={null} // TODO: pass actual transporter data
-        />
-        <ModalCatatanPenyelesaian
-          isOpen={showCatatanModal}
-          onClose={() => setShowCatatanModal(false)}
-          onConfirm={() => setShowCatatanModal(false)}
-          fleetNoteData={fleetNoteData}
-        />
-
-        {/* Right Column: DataTable */}
-        <div className="w-full flex-grow">
-          {fleetNoteData?.Data?.latestNote?.status === "active" && (
-            <div className="flex w-full rounded-xl bg-neutral-50 px-6 pt-5">
-              <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
-                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                  "ARMADA_INACTIVE" && (
-                  <p className="text-xs font-semibold text-error-400">
-                    Armada nonaktif bertambah {total} dari follow-up terakhir.
-                    <span className="ml-1 cursor-pointer font-medium text-primary-700">
-                      Lihat Catatan Terakhir
-                    </span>
-                  </p>
-                )}
-                {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                  "TRANSPORTER_IDLE" && (
-                  <p className="text-xs font-semibold text-error-400">
-                    {transporterName} masih melewatkan {current} dari {total}{" "}
-                    pesanan dari follow-up terakhir.
-                    <span className="ml-1 cursor-pointer font-medium text-primary-700">
-                      Lihat Catatan Terakhir
-                    </span>
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-            "ARMADA_INACTIVE" && (
-            <DataTable
-              data={filteredArmadaNonaktifData}
-              columns={armadaNonaktifColumns}
-              searchPlaceholder="Cari Nama Driver / No. Polisi"
-              totalCountLabel="Armada Nonaktif"
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              perPage={perPage}
-              onPageChange={setCurrentPage}
-              onPerPageChange={setPerPage}
-              showFilter={false}
-              showPagination={true}
-              showTotalCount={true}
-              onSort={handleSort}
-              onSearch={handleSearch}
-              loading={isFleetNoteLoading}
-              className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
-            />
-          )}
-          {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-            "TRANSPORTER_IDLE" && (
-            <DataTable
-              data={filteredIdleOrderData}
-              columns={idleOrderColumns}
-              searchPlaceholder="Cari No. Pesanan / Nama Transporter"
-              totalCountLabel="Order Terlewat"
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={filteredIdleOrderData.length}
-              perPage={perPage}
-              onPageChange={setCurrentPage}
-              onPerPageChange={setPerPage}
-              showFilter={false}
-              showPagination={true}
-              showTotalCount={true}
-              onSort={handleSort}
-              onSearch={handleSearch}
-              loading={isFleetNoteLoading}
-              className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
-            />
-          )}
         </div>
       </div>
     </div>
