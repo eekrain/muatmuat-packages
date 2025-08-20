@@ -1,25 +1,53 @@
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { TransporterInactiveTypeEnum } from "@/lib/constants/Transporter/laporan/transporterInactive.enum";
+import { formatDate } from "@/lib/utils/dateFormat";
+import { useGetTransporterInactive } from "@/services/Transporter/laporan/riwayat-transporter-tidak-aktif/getTransporterInactive";
 
 import DataTable from "./DataTable";
 import NoOrderTable from "./NoOrderTable";
 
 const RiwayatTransporterTidakAktif = () => {
   const { t } = useTranslation();
-
+  const router = useRouter();
   // State management for dynamic functionality
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
-  const [loading, setLoading] = useState(false);
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [filters, setFilters] = useState({});
+
+  // Use the transporter inactive service
+  const params = {
+    page: currentPage,
+    limit: perPage,
+    ...(searchQuery && { search: searchQuery }),
+    ...(currentPeriodValue &&
+      currentPeriodValue.value !== "" && {
+        // Add period filtering logic here based on your API requirements
+        startDate: currentPeriodValue.startDate,
+        endDate: currentPeriodValue.endDate,
+      }),
+    // Apply condition filter to API params
+    ...(filters?.condition && {
+      condition: Array.isArray(filters.condition)
+        ? filters.condition[0]?.id
+        : filters.condition?.id,
+    }),
+  };
+
+  const {
+    data: apiData,
+    isLoading,
+    isError,
+  } = useGetTransporterInactive(params);
 
   const periodOptions = [
     {
@@ -54,127 +82,13 @@ const RiwayatTransporterTidakAktif = () => {
     },
   ];
 
-  const conditionFilters = useMemo(
-    () => ({
-      armadaNonaktif: "Armada Non Aktif Terlalu Banyak",
-      adminIdle: "Admin Terdeteksi Sering Idle",
-      transporterTidakAktif: "Transporter Tidak Aktif",
-    }),
-    []
-  );
-
-  // Mock data wrapped in useMemo to prevent unnecessary re-renders
-  const mockData = useMemo(
-    () => [
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "PT Siba Surya",
-        condition: `${conditionFilters.armadaNonaktif} (10/11)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter:
-          "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Nusantara Sejahtera Abadi Selalu Tbk",
-        condition: `${conditionFilters.adminIdle} (5/7 Order)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "Transporter AA",
-        condition: conditionFilters.transporterTidakAktif,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "PT Siba Surya",
-        condition: `${conditionFilters.armadaNonaktif} (10/11)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter:
-          "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Nusantara Sejahtera Abadi Selalu Tbk",
-        condition: `${conditionFilters.adminIdle} (5/7 Order)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "Transporter AA",
-        condition: conditionFilters.transporterTidakAktif,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "PT Siba Surya",
-        condition: `${conditionFilters.armadaNonaktif} (10/11)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter:
-          "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Nusantara Sejahtera Abadi Selalu Tbk",
-        condition: `${conditionFilters.adminIdle} (5/7 Order)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "Transporter AA",
-        condition: conditionFilters.transporterTidakAktif,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "PT Siba Surya",
-        condition: `${conditionFilters.armadaNonaktif} (10/11)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter:
-          "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Nusantara Sejahtera Abadi Selalu Tbk",
-        condition: `${conditionFilters.adminIdle} (5/7 Order)`,
-      },
-      {
-        date: "10 Jan 2025 10:00 WIB",
-        transporter: "Transporter AA",
-        condition: conditionFilters.transporterTidakAktif,
-      },
-    ],
-    [conditionFilters]
-  );
-
   // Filter and sort the data based on search query, filters, and sort configuration
   const filteredAndSortedData = useMemo(() => {
-    let filtered = [...mockData];
+    // For server-side filtering, we use the data as-is since filtering is handled by the API
+    // However, we can still apply client-side sorting if needed
+    const filtered = [...(apiData?.items || [])];
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(
-        (item) =>
-          item.transporter.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.condition.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.date.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Apply condition filter
-    if (filters?.condition) {
-      const conditionFiltersArray = Array.isArray(filters.condition)
-        ? filters.condition
-        : [filters.condition];
-
-      filtered = filtered.filter((item) => {
-        return conditionFiltersArray.some((filter) => {
-          if (filter.id === "armada_nonaktif") {
-            return item.condition.includes(
-              conditionFilters.armadaNonaktif.split(" ").slice(0, 3).join(" ")
-            );
-          } else if (filter.id === "admin_idle") {
-            return item.condition.includes(
-              conditionFilters.adminIdle.split(" ").slice(0, 3).join(" ")
-            );
-          } else if (filter.id === "transporter_tidak_aktif") {
-            return item.condition.includes(
-              conditionFilters.transporterTidakAktif
-            );
-          }
-          return false;
-        });
-      });
-    }
-
-    // Apply sorting
+    // Apply sorting (client-side sorting for enhanced UX)
     if (sortConfig.key && sortConfig.direction) {
       filtered.sort((a, b) => {
         const aValue = a[sortConfig.key];
@@ -189,14 +103,12 @@ const RiwayatTransporterTidakAktif = () => {
     }
 
     return filtered;
-  }, [mockData, searchQuery, filters, sortConfig, conditionFilters]);
+  }, [apiData?.items, sortConfig]);
 
-  // Calculate pagination
-  const totalItems = filteredAndSortedData.length;
-  const totalPages = Math.ceil(totalItems / perPage);
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = startIndex + perPage;
-  const currentData = filteredAndSortedData.slice(startIndex, endIndex);
+  // Use API pagination data
+  const totalItems = apiData?.pagination?.totalItems || 0;
+  const totalPages = apiData?.pagination?.totalPages || 1;
+  const currentData = filteredAndSortedData;
 
   // Event handlers
   const handlePageChange = (page) => {
@@ -238,42 +150,38 @@ const RiwayatTransporterTidakAktif = () => {
 
   const handleFilter = (newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset pagination when filtering
   };
 
   const handleDownload = () => {
     // Implement download functionality here
   };
 
-  // Filter configuration - using conditionFilters object
-  const filterConfig = useMemo(
-    () => ({
-      categories: [
+  const filterConfig = {
+    categories: [
+      {
+        key: "condition",
+        label: "Kondisi",
+        searchable: false,
+      },
+    ],
+    data: {
+      condition: [
         {
-          key: "condition",
-          label: "Kondisi",
-          searchable: false,
+          id: "INACTIVE_FLEET_TOO_MANY",
+          label: TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY,
+        },
+        {
+          id: "ADMIN_IDLE_DETECTED",
+          label: TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED,
+        },
+        {
+          id: "TRANSPORTER_INACTIVE",
+          label: TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE,
         },
       ],
-      data: {
-        condition: [
-          {
-            id: "armada_nonaktif",
-            label: conditionFilters.armadaNonaktif,
-          },
-          {
-            id: "admin_idle",
-            label: conditionFilters.adminIdle,
-          },
-          {
-            id: "transporter_tidak_aktif",
-            label: conditionFilters.transporterTidakAktif,
-          },
-        ],
-      },
-    }),
-    [conditionFilters]
-  );
+    },
+  };
 
   const columns = [
     {
@@ -283,7 +191,9 @@ const RiwayatTransporterTidakAktif = () => {
       className: "align-top !pl-6 !pr-2.5",
       headerClassName: "pl-6 pr-2.5",
       render: (row) => (
-        <span className="flex w-[150px] text-xs font-medium">{row.date}</span>
+        <span className="flex w-[150px] text-xs font-medium">
+          {formatDate(row.dateCompleted)}
+        </span>
       ),
     },
     {
@@ -301,7 +211,7 @@ const RiwayatTransporterTidakAktif = () => {
           />
           <div className="mt-1 flex flex-col gap-y-2">
             <span className="line-clamp-1 text-xs font-bold text-neutral-900">
-              {row.transporter}
+              {row.transporterName}
             </span>
 
             <div className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer">
@@ -320,7 +230,7 @@ const RiwayatTransporterTidakAktif = () => {
       headerClassName: "px-2.5",
       render: (row, _index) => (
         <span className="flex w-[430px] text-xs font-semibold text-error-400">
-          {row.condition}
+          {row.conditionText}
         </span>
       ),
     },
@@ -332,11 +242,15 @@ const RiwayatTransporterTidakAktif = () => {
       headerClassName: "pl2.5 pr-6",
       className: "align-top !pl-2.5 !pr-6",
       sortable: false,
-      render: (_row) => (
+      render: (row) => (
         <Button
           className="!px-[36.5px]"
           variant="muattrans-primary"
-          onClick={() => {}}
+          onClick={() =>
+            router.push(
+              `/laporan/riwayat-transporter-tidak-aktif/${row.transporterId}/riwayat-transporter`
+            )
+          }
         >
           Detail
         </Button>
@@ -366,7 +280,13 @@ const RiwayatTransporterTidakAktif = () => {
           </Button>
         </div>
       </div>
-      {mockData.length === 0 ? (
+      {isError ? (
+        <div className="flex items-center justify-center p-8">
+          <span className="text-error-500">
+            Terjadi kesalahan saat memuat data. Silakan coba lagi.
+          </span>
+        </div>
+      ) : !apiData?.items && !isLoading ? (
         <NoOrderTable />
       ) : (
         <DataTable
@@ -374,15 +294,15 @@ const RiwayatTransporterTidakAktif = () => {
           columns={columns}
           searchPlaceholder="Cari Transporter "
           totalCountLabel="Laporan"
-          currentPage={currentPage}
+          currentPage={apiData?.pagination?.currentPage || currentPage}
           totalPages={totalPages}
           totalItems={totalItems}
-          perPage={perPage}
+          perPage={apiData?.pagination?.itemsPerPage || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}
           onSearch={handleSearch}
           onSort={handleSort}
-          loading={loading}
+          loading={isLoading}
           showPagination
           showFilter={true}
           filterConfig={filterConfig}
