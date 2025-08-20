@@ -21,6 +21,47 @@ import { useGetFleetList } from "@/services/CS/monitoring/getCsFleetList";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
 
+const generalContacts = [
+  {
+    label: "PIC 1",
+    name: "Alexander Agak Beda",
+    role: "Staf Admin Operasional",
+    phone: "0821-2345-6869",
+  },
+  {
+    label: "PIC 2",
+    name: "Alexander krisna indra candra",
+    role: "Staf Admin Operasional",
+    phone: "0821-2345-8686",
+  },
+  {
+    label: "PIC 3",
+    name: "",
+    role: "",
+    phone: "",
+  },
+  {
+    label: "No. Telepon Perusahaan",
+    name: "",
+    role: "",
+    phone: "021-5550-1234",
+  },
+  {
+    label: "No. Darurat",
+    name: "Candra Ariansyah",
+    role: "Koordinator Staf Admin Operasional",
+    phone: "0812-9876-5432",
+  },
+];
+const generalContacts2 = [
+  {
+    label: "PIC 1",
+    name: "Alexander Test",
+    role: "Staf Admin Operasional",
+    phone: "08123456789",
+  },
+];
+
 const DaftarArmadaCs = ({
   onClose,
   onExpand,
@@ -375,7 +416,9 @@ const DaftarArmadaCs = ({
         <HubungiModal
           isOpen={isHubungiModalOpen}
           onClose={() => setIsHubungiModalOpen(false)}
-          transporterData={selectedTransporter}
+          showInitialChoice={true}
+          transporterContacts={generalContacts}
+          driverContacts={generalContacts2}
         />
       )}
     </div>

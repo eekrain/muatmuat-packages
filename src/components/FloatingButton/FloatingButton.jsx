@@ -31,7 +31,7 @@ const FloatingButton = () => {
       className={cn(
         "fixed bottom-[99px] z-50 transition-[right] duration-300 ease-out",
         isShow ? "right-[15px]" : "-right-10",
-        "md:bottom-4 md:right-10"
+        "md:bottom-20 md:right-10"
       )}
     >
       {!isOpen && (

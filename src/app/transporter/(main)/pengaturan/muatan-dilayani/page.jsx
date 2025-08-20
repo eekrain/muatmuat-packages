@@ -110,17 +110,25 @@ export default function AturMuatanDilayaniPage() {
       const isIndeterminate = selectedCount > 0 && !isAllSelected;
 
       const filteredCategories = hierarchy.categories
-        .map((category) => ({
-          id: category.cargoCategoryId,
-          name: category.cargoCategoryName,
-          items: category.cargoNames
+        .map((category) => {
+          const allCargoIdsInCategory = category.cargoNames.map(
+            (cn) => cn.cargoNameId
+          );
+          const filteredItems = category.cargoNames
             .map((cn) => ({ id: cn.cargoNameId, name: cn.name }))
             .filter(
               (item) =>
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
                 (!showSelectedOnly || selectedItems[item.id])
-            ),
-        }))
+            );
+
+          return {
+            id: category.cargoCategoryId,
+            name: category.cargoCategoryName,
+            items: filteredItems, // Filtered list for rendering
+            allCargoIds: allCargoIdsInCategory, // Full list for state calculation
+          };
+        })
         .filter((category) => category.items.length > 0);
 
       return {

@@ -54,6 +54,7 @@ const Input = forwardRef(
         containerClassName: "",
         inputClassName: "",
         errorMessageClassName: "",
+        supportiveTextClassName: "",
         iconClassName: "",
       },
       errorMessage,
@@ -113,7 +114,7 @@ const Input = forwardRef(
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              "w-full min-w-0 border-none border-transparent bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600 md:text-xs md:font-medium",
+              "w-full min-w-0 cursor-pointer border-none border-transparent bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600 md:text-xs md:font-medium",
               disabled && "cursor-not-allowed",
               appearance.inputClassName
             )}
@@ -154,7 +155,12 @@ const Input = forwardRef(
             </span>
 
             {supportiveText && (
-              <span className="ml-auto text-xs font-medium text-neutral-900">
+              <span
+                className={cn(
+                  "ml-auto text-xs font-medium text-neutral-900",
+                  appearance.supportiveTextClassName
+                )}
+              >
                 {supportiveText}
               </span>
             )}

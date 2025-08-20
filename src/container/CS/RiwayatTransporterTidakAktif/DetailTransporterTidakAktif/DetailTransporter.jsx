@@ -4,15 +4,10 @@ import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
-import {
-  LightboxPreview,
-  LightboxProvider,
-} from "@/components/Lightbox/Lightbox";
 import DetailTransporterHeader from "@/container/CS/DetailTransporter/DetailTransporterHeader/DetailTransporterHeader";
 import ModalCatatanPenyelesaian from "@/container/CS/DetailTransporter/DetailTransporterHeader/ModalCatatanPenyelesaian";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
-import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
+import { useGetTransporterInactiveFleetDetails } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactiveDetail";
 
 function formatDuration(minutes) {
   if (minutes === null || minutes === undefined) return "-";
@@ -79,33 +74,33 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [showCatatanModal, setShowCatatanModal] = useState(false);
 
-  // Fetch alert summary for totalIncrease
-  const { data: alertData } = useGetInactiveTransporter();
-  const totalIncrease = alertData?.alertSummary?.totalIncrease ?? 0;
-
   const [sortConfig, setSortConfig] = useState({
     sort: "licensePlate",
     order: "asc",
   });
 
-  // Fetch latest fleet note data
+  // Fetch fleet details data using the correct hook
   const transporterId = "transporter-uuid-2"; // Example, should be dynamic
-  const { data: fleetNoteData, isLoading: isFleetNoteLoading } =
-    useGetLatestFleetNote(transporterId, {
+  const { data: fleetDetailsData, isLoading: isFleetDetailsLoading } =
+    useGetTransporterInactiveFleetDetails(transporterId, {
       page: currentPage,
       limit: perPage,
     });
 
+  // Extract transporter info and fleet data
+  const transporterInfo = fleetDetailsData?.data?.Data?.transporterInfo || {};
+  const inactiveFleets = fleetDetailsData?.data?.Data?.inactiveFleets || [];
+  const pagination = fleetDetailsData?.data?.Data?.pagination || {};
+
   // Ambil nama transporter dari data
-  const transporterName =
-    fleetNoteData?.Data?.latestNote?.relatedEntities?.transporterName || "-";
+  const transporterName = transporterInfo.name || "-";
   const transporter = {
     name: transporterName,
     logoUrl: "/icons/company-placeholder.svg",
   };
 
   // Map data to DataTable format
-  let armadaNonaktifData = (fleetNoteData?.Data?.details || []).map((item) => ({
+  let armadaNonaktifData = inactiveFleets.map((item) => ({
     licensePlate: item.licensePlate,
     driverName: item.driverName,
     tanggalNonaktif: formatDate(item.inactiveDate),
@@ -149,7 +144,6 @@ const DetailTransporter = ({ breadcrumbData }) => {
   }
 
   // Use pagination from API response
-  const pagination = fleetNoteData?.Data?.pagination || {};
   const totalPages = pagination.totalPages || 1;
   const totalItems = pagination.totalItems || armadaNonaktifData.length;
 
@@ -195,82 +189,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
               >
                 Hubungi
               </Button>
-              {fleetNoteData?.Data?.latestNote?.status === "active" && (
-                <Button
-                  variant="muattrans-warning"
-                  className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
-                  onClick={() => setShowCatatanModal(true)}
-                >
-                  Selesaikan
-                </Button>
-              )}
             </div>
           </div>
-          {fleetNoteData?.Data?.latestNote?.status === "completed" && (
-            <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
-              <div className="mb-6 flex items-center">
-                <p className="text-xs font-semibold text-neutral-900">
-                  Detail Penyelesaian
-                </p>
-              </div>
-              <div className="mb-3 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">
-                  Tanggal Diselesaikan
-                </p>
-                <p className="text-xs font-medium text-neutral-900">
-                  {fleetNoteData?.Data?.latestNote?.history?.reportedAt
-                    ? new Date(
-                        fleetNoteData.Data.latestNote.history.reportedAt
-                      ).toLocaleDateString("id-ID", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })
-                    : "-"}
-                </p>
-              </div>
-              <div className="mb-3 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">Catatan</p>
-                <p className="text-xs font-medium text-neutral-900">
-                  {fleetNoteData?.Data?.latestNote?.history?.notes || "-"}
-                </p>
-              </div>
-              <div className="mb-3 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">
-                  Foto Pendukung
-                </p>
-                <LightboxProvider
-                  images={
-                    fleetNoteData?.Data?.latestNote?.history?.photos?.map(
-                      (photo) => photo.url
-                    ) || []
-                  }
-                  title="Foto Pendukung"
-                >
-                  <div className="flex flex-row gap-2">
-                    {fleetNoteData?.Data?.latestNote?.history?.photos?.length >
-                    0 ? (
-                      fleetNoteData.Data.latestNote.history.photos.map(
-                        (photo, idx) => (
-                          <LightboxPreview
-                            key={idx}
-                            image={photo.url}
-                            index={idx}
-                            className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
-                            alt={`Foto Pendukung ${idx + 1}`}
-                          />
-                        )
-                      )
-                    ) : (
-                      <span className="text-xs text-neutral-500">
-                        Tidak ada foto
-                      </span>
-                    )}
-                  </div>
-                </LightboxProvider>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Modals */}
@@ -316,7 +236,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             showPagination={true}
             showTotalCount={true}
             onSort={handleSort}
-            loading={isFleetNoteLoading}
+            loading={isFleetDetailsLoading}
             className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
           />
         </div>

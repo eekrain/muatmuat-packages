@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import NestedDropdown from "@/components/Dropdown/NestedDropdown";
+import MyDropdown from "@/components/Dropdown/MyDropdown";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { AgendaAutocomplete } from "../AgendaAutocomplete";
@@ -65,8 +65,8 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
   }
 
   return (
-    <NestedDropdown.Root>
-      <NestedDropdown.Trigger>
+    <MyDropdown.Root>
+      <MyDropdown.Trigger>
         <div className="flex cursor-pointer items-center gap-1 text-xxs font-semibold text-primary-700 hover:text-primary-800">
           <IconComponent
             src="/icons/agenda/chevron-down.svg"
@@ -75,29 +75,29 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
           />
           <span>Ubah Periode</span>
         </div>
-      </NestedDropdown.Trigger>
-      <NestedDropdown.Content>
+      </MyDropdown.Trigger>
+      <MyDropdown.Content>
         {availableYears.map((year) => (
-          <NestedDropdown.Item
+          <MyDropdown.HoverRoot
             key={year}
             subContent={
-              <NestedDropdown.SubContent>
+              <MyDropdown.HoverContent>
                 {getAvailableMonthsForYear(year).map((month) => (
-                  <NestedDropdown.SubItem
+                  <MyDropdown.HoverItem
                     key={month.id}
                     onClick={() => handleMonthClick(year, month.id)}
                   >
                     {month.label}
-                  </NestedDropdown.SubItem>
+                  </MyDropdown.HoverItem>
                 ))}
-              </NestedDropdown.SubContent>
+              </MyDropdown.HoverContent>
             }
           >
             {year}
-          </NestedDropdown.Item>
+          </MyDropdown.HoverRoot>
         ))}
-      </NestedDropdown.Content>
-    </NestedDropdown.Root>
+      </MyDropdown.Content>
+    </MyDropdown.Root>
   );
 });
 

@@ -18,7 +18,7 @@ import BottomSheetPreviousDriver from "@/container/Shipper/DetailPesanan/Respons
 import { useDrag } from "@/hooks/use-drag";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getDriverStatusMetadata } from "@/lib/normalizers/CS/getStatusDriverMetadata";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";

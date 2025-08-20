@@ -114,7 +114,7 @@ function Page() {
         sortable: true,
         render: (row) => (
           <div>
-            <p className="text-xs font-medium text-neutral-900">
+            <p className="w-40 text-xs font-medium text-neutral-900">
               {formatDate(row.completedDate)}
             </p>
           </div>
@@ -127,7 +127,7 @@ function Page() {
         render: (row) => (
           <div className="flex flex-row items-center">
             <AvatarDriver withIcon={false} image={row.transporterLogo} />
-            <p className="text-[14px] font-semibold text-neutral-900">
+            <p className="line-clamp-2 w-[124px] text-[14px] font-semibold text-neutral-900">
               {row.transporterName}
             </p>
           </div>
@@ -166,7 +166,7 @@ function Page() {
             </p>
             <div className="flex flex-row items-center gap-1">
               <IconComponent src="/icons/monitoring/daftar-pesanan-aktif/truck.svg" />
-              <p className="font-medim text-xxs">{row.fleet?.licensePlate}</p>
+              <p className="text-xxs font-medium">{row.fleet?.licensePlate}</p>
             </div>
           </div>
         ),

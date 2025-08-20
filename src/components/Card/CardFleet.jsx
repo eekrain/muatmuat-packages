@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import {
   AlertTriangle,
@@ -19,6 +20,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { formatDate } from "@/lib/utils/dateFormat";
@@ -422,11 +424,12 @@ export default function CardFleet({
   isExpanded,
   onToggleExpand,
   onOpenDriverModal,
-  onOpenResponseChangeModal,
   onOpenRiwayatSOS,
   className,
   onAcknowledge,
 }) {
+  const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
+
   const driverName = fleet?.driver?.name;
   const phone = fleet?.driver?.phoneNumber;
   const locationText = fleet?.lastLocation?.address
@@ -478,6 +481,12 @@ export default function CardFleet({
     );
     const missingDriver = !driverName || !phone;
 
+    const handleOpenResponseModal = (e) => {
+      e.stopPropagation(); // Prevents the card from collapsing when the button is clicked
+      setIsResponseModalOpen(true);
+    };
+
+    // Generic handler for actions that need to pass the fleet data up
     const handleActionClick = (e, action) => {
       e.stopPropagation();
       if (action) action(fleet);
@@ -506,7 +515,7 @@ export default function CardFleet({
           <Button
             variant="muattrans-primary"
             className="w-full"
-            onClick={(e) => handleActionClick(e, onOpenResponseChangeModal)}
+            onClick={handleOpenResponseModal}
           >
             Respon Perubahan
           </Button>
@@ -546,24 +555,39 @@ export default function CardFleet({
     }
   };
 
+  const orderDataForModal = fleet?.activeOrder
+    ? {
+        ...fleet.activeOrder,
+        id: fleet.activeOrder.orderId,
+      }
+    : null;
+
   return (
-    <div className={cardClasses}>
-      <div
-        className="cursor-pointer"
-        onClick={() => onToggleExpand?.(fleet?.fleetId)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        aria-expanded={isExpanded}
-      >
-        <CardHeader
-          isExpanded={isExpanded}
-          fleet={fleet}
-          showSOSBadge={isSOSNew}
-        />
-        {!isExpanded && <CollapsedContent />}
+    <>
+      <div className={cardClasses}>
+        <div
+          className="cursor-pointer"
+          onClick={() => onToggleExpand?.(fleet?.fleetId)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          aria-expanded={isExpanded}
+        >
+          <CardHeader
+            isExpanded={isExpanded}
+            fleet={fleet}
+            showSOSBadge={isSOSNew}
+          />
+          {!isExpanded && <CollapsedContent />}
+        </div>
+        {isExpanded && <ExpandedContent />}
       </div>
-      {isExpanded && <ExpandedContent />}
-    </div>
+
+      <RespondChangeModal
+        isOpen={isResponseModalOpen}
+        onClose={() => setIsResponseModalOpen(false)}
+        orderData={orderDataForModal}
+      />
+    </>
   );
 }

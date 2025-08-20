@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -7,13 +8,20 @@ import { FilterSelect } from "@/components/Form/FilterSelect";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import AssignArmadaModal from "@/container/Shared/OrderModal/AssignArmadaModal";
+import BatalkanArmadaModal from "@/container/Shared/OrderModal/BatalkanArmadaModal";
+import BatalkanPesananModal from "@/container/Shared/OrderModal/BatalkanPesananModal";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
+import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
+import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmadaModal";
 import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
 
@@ -21,9 +29,11 @@ const DaftarPesananAktif = ({
   onToggleExpand,
   isExpanded,
   onViewFleetStatus,
+  onTrackFleet,
   hasShownOnboarding,
   onOnboardingShown,
 }) => {
+  const router = useRouter();
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatusFilter, setSelectedStatusFilter] =
@@ -33,10 +43,32 @@ const DaftarPesananAktif = ({
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [assignArmadaModalOpen, setAssignArmadaModalOpen] = useState(false);
   const [selectedOrderForArmada, setSelectedOrderForArmada] = useState(null);
+  const [lihatArmadaModalOpen, setLihatArmadaModalOpen] = useState(false);
+  const [selectedOrderForViewFleet, setSelectedOrderForViewFleet] =
+    useState(null);
   const [confirmReadyModalOpen, setConfirmReadyModalOpen] = useState(false);
   const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
   const [respondChangeModalOpen, setRespondChangeModalOpen] = useState(false);
   const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
+  const [selectedOrderForCancel, setSelectedOrderForCancel] = useState(null);
+  const [batalkanArmadaModalOpen, setBatalkanArmadaModalOpen] = useState(false);
+  const [selectedOrderForFleetCancel, setSelectedOrderForFleetCancel] =
+    useState(null);
+  const [pilihArmadaBatalkanModalOpen, setPilihArmadaBatalkanModalOpen] =
+    useState(false);
+  const [batalkanPesananModalOpen, setBatalkanPesananModalOpen] =
+    useState(false);
+  const [selectedOrderForCancelOrder, setSelectedOrderForCancelOrder] =
+    useState(null);
+  const [ubahJumlahUnitModalOpen, setUbahJumlahUnitModalOpen] = useState(false);
+  const [selectedOrderForChangeUnit, setSelectedOrderForChangeUnit] =
+    useState(null);
+  const [alasanPembatalanArmadaModalOpen, setAlasanPembatalanArmadaModalOpen] =
+    useState(false);
+  const [selectedOrderForAlasanArmada, setSelectedOrderForAlasanArmada] =
+    useState(null);
+  const [selectedFleetsForCancellation, setSelectedFleetsForCancellation] =
+    useState([]);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
@@ -56,38 +88,181 @@ const DaftarPesananAktif = ({
     status: getFilterStatus(),
   });
 
+  const handleOpenFleetModal = (order) => {
+    setSelectedOrderForFleetCancel(order);
+    setPilihArmadaBatalkanModalOpen(true);
+  };
+
+  // Handler for confirming armada cancellation with reason
+  const handleCancelArmadaWithReason = async (cancellationData) => {
+    try {
+      // TODO: Implement API call to cancel selected fleets with reason
+      // await cancelSelectedFleets({
+      //   orderId: cancellationData.order.id,
+      //   fleetIds: cancellationData.selectedFleets,
+      //   reason: cancellationData.reason
+      // });
+
+      // Show success toast notification
+      const fleetCount = cancellationData.selectedFleets.length;
+      toast.success(
+        `Berhasil membatalkan ${fleetCount} armada dari pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch {
+      // Show error toast
+      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+    }
+  };
+
+  const handleCancelSelectedFleets = async (cancellationData) => {
+    // Open AlasanPembatalanArmadaModal instead of directly calling API
+    setSelectedOrderForAlasanArmada(cancellationData.order);
+    setSelectedFleetsForCancellation(cancellationData.selectedFleets);
+    setAlasanPembatalanArmadaModalOpen(true);
+    setPilihArmadaBatalkanModalOpen(false);
+  };
+
+  // Handler for confirming fleet cancellation
+  // eslint-disable-next-line no-unused-vars
+  const handleCancelFleet = async (order) => {
+    try {
+      // TODO: Implement API call to cancel fleet assignment
+      // console.log("Canceling fleet for order:", order);
+
+      // Example API call (replace with actual service)
+      // await cancelFleetAssignment(order.id);
+
+      // Show success toast notification
+      const truckCount = order?.truckCount || order?.vehicleCount || 1;
+      toast.success(
+        `Berhasil membatalkan ${truckCount} armada dari pesanan ${order?.orderCode || order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch {
+      // console.error("Error canceling fleet:", error);
+      // Show error toast
+      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+    }
+  };
+
+  // Handler for opening alasan pembatalan modal
+  const handleOpenAlasanModal = (order) => {
+    // Directly cancel the order without going to AlasanPembatalanModal
+    handleCancelOrderDirectly(order);
+  };
+
+  // Handler for confirming order cancellation directly
+  const handleCancelOrderDirectly = async (order) => {
+    try {
+      // TODO: Implement API call to cancel order
+      // await cancelOrder({
+      //   orderId: order.id
+      // });
+
+      // Show success toast notification
+      toast.success(
+        `Berhasil membatalkan pesanan ${order?.orderCode || order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch {
+      // Show error toast
+      toast.error("Gagal membatalkan pesanan. Silakan coba lagi.");
+    }
+  };
+
+  // Handler for confirming unit count change
+  const handleChangeUnitCount = async (changeData) => {
+    try {
+      // TODO: Implement API call to change unit count
+      // console.log("Changing unit count for order:", changeData);
+
+      // Example API call (replace with actual service)
+      // await changeUnitCount({
+      //   orderId: changeData.orderData.id,
+      //   newUnitCount: changeData.newUnitCount,
+      //   reason: changeData.reason,
+      //   supportingFiles: changeData.supportingFiles
+      // });
+
+      // Show success toast notification
+      toast.success(
+        `Berhasil melakukan perubahan jumlah unit pesanan ${changeData.orderData?.orderCode || changeData.orderData?.orderNumber || ""}`
+      );
+
+      // Open AssignArmadaModal after successful unit count change
+      setSelectedOrderForArmada({
+        ...changeData.orderData,
+        truckCount: changeData.newUnitCount, // Update with new unit count
+      });
+      setAssignArmadaModalOpen(true);
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch {
+      // console.error("Error changing unit count:", error);
+      // Show error toast
+      toast.error("Gagal mengubah jumlah unit. Silakan coba lagi.");
+    }
+  };
+
   // Handle action button clicks based on action type
   const handleActionClick = (actionType, row) => {
     switch (actionType) {
       case ORDER_ACTIONS.TRACK_FLEET.type:
-        // TODO: Implement fleet tracking navigation
+        onTrackFleet?.(row);
         break;
       case ORDER_ACTIONS.VIEW_FLEET.type:
-        // TODO: Implement view fleet
+        setSelectedOrderForViewFleet(row);
+        setLihatArmadaModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
-        // TODO: Implement view order detail
+        // console.log("Detail Pesanan", row);
+        if (row.sosStatus.hasSos) {
+          router.push(`/monitoring/riwayat-sos/${row.id}/detail-pesanan`);
+          break;
+        }
+        router.push(
+          `/monitoring/daftar-pesanan-aktif/${row.id}/detail-pesanan`
+        );
         break;
       case ORDER_ACTIONS.DETAIL_ARMADA.type:
-        // TODO: Implement detail armada
+        // console.log("Detail Armada", row);
         break;
       case ORDER_ACTIONS.CANCEL_ORDER.type:
-        // TODO: Implement cancel order
+        setSelectedOrderForCancelOrder(row);
+        setBatalkanPesananModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.ASSIGN_FLEET.type:
         setSelectedOrderForArmada(row);
         setAssignArmadaModalOpen(true);
         break;
       case ORDER_ACTIONS.CHANGE_UNIT_COUNT.type:
-        // TODO: Implement change unit count
+        setSelectedOrderForChangeUnit(row);
+        setUbahJumlahUnitModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
-        setSelectedOrderForChange(row);
-        setRespondChangeModalOpen(true);
+        // Navigate to respon-perubahan page if truckCount > 1
+        if (row.truckCount > 1) {
+          router.push(`/monitoring/${row.id}/respon-perubahan`);
+        } else {
+          // Use modal for single truck
+        }
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CANCEL_FLEET.type:
-        // TODO: Implement cancel fleet
+        setSelectedOrderForCancel(row);
+        setBatalkanArmadaModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CONFIRM_READY.type:
         setSelectedOrderForConfirm(row);
@@ -95,7 +270,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       default:
-        // TODO: Handle unknown action
+        // console.log("Unknown action:", actionType, row);
         break;
     }
   };
@@ -178,7 +353,6 @@ const DaftarPesananAktif = ({
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      {/* <pre>{JSON.stringify(orders, null, 2)}</pre> */}
       <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
           <h3 className="w-[80px] text-xs font-bold">Daftar Pesanan Aktif</h3>
@@ -369,6 +543,15 @@ const DaftarPesananAktif = ({
         orderData={selectedOrderForConfirm}
       />
 
+      <LihatArmadaModal
+        isOpen={lihatArmadaModalOpen}
+        onClose={() => {
+          setLihatArmadaModalOpen(false);
+          setSelectedOrderForViewFleet(null);
+        }}
+        orderData={selectedOrderForViewFleet}
+      />
+
       {/* Respond Change Modal */}
       <RespondChangeModal
         isOpen={respondChangeModalOpen}
@@ -377,6 +560,83 @@ const DaftarPesananAktif = ({
           setSelectedOrderForChange(null);
         }}
         orderData={selectedOrderForChange}
+      />
+
+      <BatalkanArmadaModal
+        isOpen={batalkanArmadaModalOpen}
+        onClose={() => {
+          setBatalkanArmadaModalOpen(false);
+          setSelectedOrderForCancel(null);
+        }}
+        order={selectedOrderForCancel}
+        onOpenFleetModal={handleOpenFleetModal}
+      />
+
+      {/* Batalkan Pesanan Modal */}
+      <BatalkanPesananModal
+        isOpen={batalkanPesananModalOpen}
+        onClose={() => {
+          setBatalkanPesananModalOpen(false);
+          setSelectedOrderForCancelOrder(null);
+        }}
+        order={selectedOrderForCancelOrder}
+        onOpenAlasanModal={handleOpenAlasanModal}
+      />
+
+      <PilihArmadaBatalkan
+        isOpen={pilihArmadaBatalkanModalOpen}
+        onClose={() => {
+          setPilihArmadaBatalkanModalOpen(false);
+          setSelectedOrderForFleetCancel(null);
+        }}
+        order={selectedOrderForFleetCancel}
+        fleetList={
+          selectedOrderForFleetCancel?.fleets || [
+            {
+              id: 1,
+              plateNumber: "AE 1111 LBA",
+              driverName: "Noel Gallagher",
+              status: "Armada Dijadwalkan",
+            },
+            {
+              id: 2,
+              plateNumber: "AE 1111 LBA",
+              driverName: "Noel Gallagher",
+              status: "Armada Dijadwalkan",
+            },
+            {
+              id: 3,
+              plateNumber: "AE 1111 LBA",
+              driverName: "Noel Gallagher",
+              status: "Armada Dijadwalkan",
+            },
+          ]
+        }
+        onConfirm={handleCancelSelectedFleets}
+      />
+
+      {/* Ubah Jumlah Unit Modal */}
+      <UbahJumlahUnitModal
+        isOpen={ubahJumlahUnitModalOpen}
+        onClose={() => {
+          setUbahJumlahUnitModalOpen(false);
+          setSelectedOrderForChangeUnit(null);
+        }}
+        orderData={selectedOrderForChangeUnit}
+        onConfirm={handleChangeUnitCount}
+      />
+
+      {/* Alasan Pembatalan Armada Modal */}
+      <AlasanPembatalanArmadaModal
+        isOpen={alasanPembatalanArmadaModalOpen}
+        onClose={() => {
+          setAlasanPembatalanArmadaModalOpen(false);
+          setSelectedOrderForAlasanArmada(null);
+          setSelectedFleetsForCancellation([]);
+        }}
+        order={selectedOrderForAlasanArmada}
+        selectedFleets={selectedFleetsForCancellation}
+        onConfirm={handleCancelArmadaWithReason}
       />
     </div>
   );

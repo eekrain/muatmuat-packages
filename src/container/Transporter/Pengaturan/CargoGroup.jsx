@@ -11,9 +11,12 @@ export const CargoGroup = ({
   onItemChange,
   isLast = false,
 }) => {
+  // This now correctly refers to the complete list of item IDs for the category,
+  // passed from the parent, to ensure the checkbox state is accurate even when
+  // the rendered items are filtered.
   const allItemIds = useMemo(
-    () => category.items.map((item) => item.id),
-    [category.items]
+    () => category.allCargoIds,
+    [category.allCargoIds]
   );
 
   const selectedItemCount = useMemo(
@@ -27,13 +30,15 @@ export const CargoGroup = ({
 
   const handleCategoryClick = () => {
     const shouldSelectAll = !isAllSelected;
+    // The onClick handler also uses the complete list of IDs to ensure
+    // all items are toggled, not just the visible/filtered ones.
     onCategoryChange(allItemIds, shouldSelectAll);
   };
 
   return (
     <div className="w-full overflow-hidden">
       <div className="flex flex-col">
-        <div className="flex items-center justify-between border-b border-neutral-400 py-3">
+        <div className="flex items-center justify-between py-3">
           <Checkbox
             id={category.id}
             checked={isAllSelected}
@@ -47,6 +52,7 @@ export const CargoGroup = ({
         </div>
 
         <div className="grid grid-cols-1 gap-x-[10px] pl-[25px] pt-3 md:grid-cols-2 lg:grid-cols-4">
+          {/* Render the list of items, which is correctly filtered by the parent */}
           {category.items.map((item) => (
             <Checkbox
               key={item.id}

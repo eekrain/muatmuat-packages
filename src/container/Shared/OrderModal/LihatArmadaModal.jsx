@@ -62,6 +62,7 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
                 onSearch={setSearchValue}
                 containerClassName="h-8 w-full"
                 inputClassName="text-sm"
+                autoSearch={true}
               />
             </div>
           )}

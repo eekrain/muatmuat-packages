@@ -40,7 +40,13 @@ const FormSchema = v.pipe(
   )
 );
 
-const RespondChangeFormModal = ({ isOpen, onClose, orderData }) => {
+const RespondChangeFormModal = ({
+  isOpen,
+  onClose,
+  orderData,
+  onBackClick,
+  formDaftarPesanan,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -302,7 +308,9 @@ const RespondChangeFormModal = ({ isOpen, onClose, orderData }) => {
           <div className="flex items-center justify-center gap-3 px-6 pb-6">
             <Button
               variant="muattrans-primary-secondary"
-              onClick={handleClose}
+              onClick={() => {
+                handleClose(), onBackClick();
+              }}
               disabled={isLoading}
               className="w-[112px]"
             >

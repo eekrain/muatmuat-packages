@@ -12,14 +12,17 @@ import Filter from "@/components/Filter/Filter";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import Pagination from "@/components/Pagination/Pagination";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
+import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
+import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+// Assuming path, adjust if necessary
+import RespondChangeFormModal from "@/container/Shared/OrderModal/RespondChangeFormModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { formatLoadTime } from "@/lib/utils/dateFormat";
-
-// Import the new function
 
 const DaftarPesanan = ({
   isFirstTimer,
@@ -32,7 +35,6 @@ const DaftarPesanan = ({
   const router = useRouter();
 
   const [tempSearch, setTempSearch] = useState("");
-
   const [selectedTab, setSelectedTab] = useState("semua");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -49,6 +51,16 @@ const DaftarPesanan = ({
   const [endDate, setEndDate] = useState(null);
   const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
   const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
+
+  // State for Assign Armada Modal
+  const [isAssignArmadaModalOpen, setIsAssignArmadaModalOpen] = useState(false);
+  const [selectedOrderForAssign, setSelectedOrderForAssign] = useState(null);
+
+  // State for Confirm Ready Modal
+  const [isConfirmReadyModalOpen, setIsConfirmReadyModalOpen] = useState(false);
+  const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
+  console.log("🚓 orderData :", orders);
 
   // Handle tab click
   const handleTabClick = (tabValue) => {
@@ -75,9 +87,45 @@ const DaftarPesanan = ({
     setIsRespondModalOpen(true);
   };
 
+  const handleBackFromRespondModal = () => {
+    setShowBackConfirmation(true);
+  };
+
   const handleCloseRespondModal = () => {
-    setSelectedOrderForChange(null);
     setIsRespondModalOpen(false);
+    setSelectedOrderForChange(null);
+  };
+
+  const confirmNavigation = () => {
+    setShowBackConfirmation(false);
+    handleCloseRespondModal();
+  };
+
+  const cancelNavigation = () => {
+    setShowBackConfirmation(false);
+    setIsRespondModalOpen(true);
+  };
+
+  // Handlers for Assign Armada Modal
+  const handleOpenAssignModal = (order) => {
+    setSelectedOrderForAssign(order);
+    setIsAssignArmadaModalOpen(true);
+  };
+
+  const handleCloseAssignModal = () => {
+    setIsAssignArmadaModalOpen(false);
+    setSelectedOrderForAssign(null);
+  };
+
+  // Handlers for Confirm Ready Modal
+  const handleOpenConfirmReadyModal = (order) => {
+    setSelectedOrderForConfirm(order);
+    setIsConfirmReadyModalOpen(true);
+  };
+
+  const handleCloseConfirmReadyModal = () => {
+    setIsConfirmReadyModalOpen(false);
+    setSelectedOrderForConfirm(null);
   };
 
   // Tab options sesuai design
@@ -292,17 +340,31 @@ const DaftarPesanan = ({
       render: (row, rowIndex) => (
         <div className="flex flex-col gap-y-3">
           {rowIndex === 4 ? (
-            <Button className="min-w-[174px]" variant="muattrans-primary">
+            <Button
+              className="min-w-[174px]"
+              variant="muattrans-primary"
+              onClick={() => handleOpenAssignModal(row)}
+            >
               Assign Armada
             </Button>
           ) : null}
+          {/* MODIFIED SECTION (Confirm Ready Modal) --- START */}
           {rowIndex === 5 ? (
-            <Button className="min-w-[174px]" variant="muattrans-primary">
+            <Button
+              className="min-w-[174px]"
+              variant="muattrans-primary"
+              onClick={() => handleOpenConfirmReadyModal(row)}
+            >
               Konfirmasi Siap
             </Button>
           ) : null}
+          {/* MODIFIED SECTION (Confirm Ready Modal) --- END */}
           {rowIndex === 6 ? (
-            <Button className="min-w-[174px]" variant="muattrans-primary">
+            <Button
+              className="min-w-[174px]"
+              variant="muattrans-primary"
+              onClick={() => handleOpenRespondModal(row)}
+            >
               Respon Perubahan
             </Button>
           ) : null}
@@ -737,13 +799,6 @@ const DaftarPesanan = ({
             onPerPageChange={setPerPage}
             variants="muatrans"
           />
-          {/* {selectedOrderForChange && (
-            <RespondChangeModal
-              isOpen={isRespondModalOpen}
-              onClose={handleCloseRespondModal}
-              orderData={selectedOrderForChange}
-            />
-          )} */}
         </>
       )}
       {isFirstTimer ? null : (
@@ -756,6 +811,60 @@ const DaftarPesanan = ({
           className="py-0"
         />
       )}
+
+      {/* Respond Change Modal */}
+      <RespondChangeFormModal
+        isOpen={isRespondModalOpen}
+        onClose={handleCloseRespondModal}
+        onBackClick={handleBackFromRespondModal}
+        orderData={selectedOrderForChange}
+        fromDaftarPesanan={true}
+      />
+
+      {/* Confirmation Modal for Respond Change */}
+      <ConfirmationModal
+        isOpen={showBackConfirmation}
+        setIsOpen={setShowBackConfirmation}
+        description={{
+          text: t(
+            "RespondChangeModal.descriptionConfirmNavigation",
+            {},
+            "Apakah kamu yakin ingin menutup modal? Data yang telah diisi tidak akan disimpan"
+          ),
+        }}
+        confirm={{
+          text: t("RespondChangeModal.buttonStay", {}, "Ya"),
+          onClick: cancelNavigation,
+          cancelClassname: "w-8",
+        }}
+        cancel={{
+          text: t("RespondChangeModal.buttonLeave", {}, "Batal"),
+          onClick: confirmNavigation,
+          confirmClassname: "w-8",
+        }}
+      >
+        {t(
+          "RespondChangeModal.messageConfirmNavigation",
+          {},
+          "Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin menutup modal ini?"
+        )}
+      </ConfirmationModal>
+
+      {/* Assign Armada Modal */}
+      <AssignArmadaWrapper
+        isOpen={isAssignArmadaModalOpen}
+        onClose={() => {
+          setIsAssignArmadaModalOpen(false);
+        }}
+        orderData={selectedOrderForAssign}
+      />
+
+      {/* Confirm Ready Modal */}
+      <ConfirmReadyModal
+        isOpen={isConfirmReadyModalOpen}
+        onClose={handleCloseConfirmReadyModal}
+        orderData={selectedOrderForConfirm}
+      />
     </div>
   );
 };

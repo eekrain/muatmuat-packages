@@ -12,9 +12,9 @@ const InfoRow = ({ iconSrc, children }) => (
       height={16}
       className="flex-shrink-0 text-[#461B02]"
     />
-    <p className="flex-1 text-xs font-medium leading-tight text-black">
+    <div className="flex-1 text-xs font-medium leading-tight text-black">
       {children}
-    </p>
+    </div>
   </div>
 );
 
