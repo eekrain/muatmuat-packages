@@ -483,7 +483,7 @@ const DaftarPesananAktif = ({
                     setRespondChangeModalOpen(true);
                   }
                 }}
-                className="mx-auto h-8 w-[147px] text-sm md:p-0"
+                className="mx-auto h-8 w-[170px] text-sm md:p-0"
               >
                 Respon Perubahan
               </Button>
