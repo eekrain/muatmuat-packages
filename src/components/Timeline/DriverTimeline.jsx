@@ -11,7 +11,7 @@ import {
   OrderStatusTitle,
 } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { DriverStatusLabel } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getDriverStatusMetadata } from "@/lib/normalizers/CS/getStatusDriverMetadata";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
