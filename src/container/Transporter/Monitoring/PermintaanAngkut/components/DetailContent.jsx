@@ -104,7 +104,7 @@ const DetailContent = ({
                 displayData?.isTaken
                   ? "text-neutral-700"
                   : displayData.orderType === "INSTANT"
-                    ? "bg-success-50 text-success-700"
+                    ? "bg-success-50 text-success-400"
                     : "bg-primary-50 text-primary-700"
               )}
             >
@@ -150,10 +150,10 @@ const DetailContent = ({
             let colorClass = "";
             if (diffDays === 0) {
               label = "Muat Hari Ini";
-              colorClass = "bg-success-50 text-success-700";
+              colorClass = "bg-success-50 text-success-400";
             } else if (diffDays === 1) {
               label = "Muat Besok";
-              colorClass = "bg-success-50 text-success-700";
+              colorClass = "bg-success-50 text-success-400";
             } else if (diffDays >= 2 && diffDays <= 5) {
               label = `Muat ${diffDays} Hari`;
               colorClass = "bg-warning-100 text-warning-900";
