@@ -16,7 +16,16 @@ export const filterOptionsData = {
   statuses: [
     { id: "MENUNGGU_KONFIRMASI", label: "Menunggu Konfirmasi" },
     { id: "ARMADA_DIJADWALKAN", label: "Armada Dijadwalkan" },
+    { id: "PERLU_ASSIGN_ARMADA", label: "Perlu Assign Armada" },
+    { id: "PERLU_KONFIRMASI_SIAP", label: "Perlu Konfirmasi Siap" },
+    { id: "PERLU_RESPON_PERUBAHAN", label: "Perlu Respon Perubahan" },
     { id: "PROSES_MUAT", label: "Proses Muat" },
     { id: "PROSES_BONGKAR", label: "Proses Bongkar" },
+    { id: "DOKUMEN_SEDANG_DISIAPKAN", label: "Dokumen Sedang Disiapkan" },
+    { id: "PROSES_PENGIRIMAN_DOKUMEN", label: "Proses Pengiriman Dokumen" },
+    { id: "DIBATALKAN_SHIPPER", label: "Dibatalkan Shipper" },
+    { id: "DIBATALKAN_TRANSPORTER", label: "Dibatalkan Transporter" },
+    { id: "DIBATALKAN_SISTEM", label: "Dibatalkan Sistem" },
+    { id: "SELESAI", label: "Selesai" },
   ],
 };
