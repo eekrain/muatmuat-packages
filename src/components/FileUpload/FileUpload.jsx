@@ -14,6 +14,7 @@ const FileUpload = ({
   value = null, // Can now be a File object, a URL string, or null
   acceptedFormats = [".jpg", ".jpeg", ".png"],
   errorMessage,
+  showFormatInfo = true, // New prop to control format info display
 }) => {
   const fileRef = useRef(null);
   const [internalError, setInternalError] = useState(null);
@@ -129,14 +130,16 @@ const FileUpload = ({
           >
             {label}
           </Button>
-          <div className="ml-4 flex w-full flex-1 flex-col">
-            <div className="text-xs leading-tight text-neutral-600">
-              Format file {displayFormats}
+          {showFormatInfo && (
+            <div className="ml-4 flex w-full flex-1 flex-col">
+              <div className="text-xs leading-tight text-neutral-600">
+                Format file {displayFormats} maks. {maxSize}MB
+              </div>
+              {/* <div className="text-xs leading-tight text-neutral-600">
+                maks. {maxSize}MB
+              </div> */}
             </div>
-            <div className="text-xs leading-tight text-neutral-600">
-              maks. {maxSize}MB
-            </div>
-          </div>
+          )}
         </div>
       )}
 

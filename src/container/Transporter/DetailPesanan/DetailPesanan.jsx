@@ -31,14 +31,19 @@ const DetailPesanan = ({ breadcrumbData }) => {
       },
       {
         value: "lacak-armada",
-        label: <LabelLacakArmada fleetCount={1} hasSOS={false} />,
+        label: (
+          <LabelLacakArmada
+            fleetCount={dataOrderDetail?.fleet?.length || 0}
+            hasSOS={dataOrderDetail?.hasSOSAlert || false}
+          />
+        ),
       },
       {
         value: "riwayat-perubahan",
         label: "Riwayat Perubahan",
       },
     ];
-  }, []);
+  }, [dataOrderDetail?.fleet?.length, dataOrderDetail?.hasSOSAlert]);
 
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">

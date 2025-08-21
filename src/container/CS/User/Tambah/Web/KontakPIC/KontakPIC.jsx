@@ -92,25 +92,22 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
     }
   }, [isDirty, onFormChange]);
 
+  const isPIC1Empty = (values) => {
+    const pic1 = values?.contacts?.[0] ?? {};
+    const empty = (v) => (typeof v === "string" ? v.trim() === "" : v === null);
+    return empty(pic1.name) && empty(pic1.position) && empty(pic1.phone);
+  };
+
   const onInvalid = (errors) => {
-    console.error("Validation Errors:", errors);
-    if (errors.contacts?.[0]) {
+    const values = watched;
+    if (isPIC1Empty(values)) {
       toast.error("Isi semua inputan yang bertanda bintang (*)");
+      return;
     }
   };
 
   const onSubmit = async (data) => {
     let hasError = false;
-
-    const validPIC1 = await trigger([
-      "contacts.0.name",
-      "contacts.0.position",
-      "contacts.0.phone",
-    ]);
-    if (!validPIC1) {
-      toast.error("Isi semua inputan yang bertanda bintang (*)");
-      hasError = true;
-    }
 
     const fieldNameMap = {
       name: "Nama",
@@ -143,7 +140,7 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
       });
     }
 
-    if (pic2.phone === pic3.phone) {
+    if (pic2.phone.length && pic3.phone.length && pic2.phone === pic3.phone) {
       hasError = true;
       setError("contacts.1.phone", {
         type: "manual",
@@ -201,7 +198,7 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
       onSave();
     }
     reset(data);
-    toast.success("Pendaftaran berhasil disimpan!");
+    toast.success("Kontak PIC berhasil disimpan!");
   };
 
   useEffect(() => {

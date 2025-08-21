@@ -162,15 +162,15 @@ const PermintaanAngkut = ({ onAcceptRequest }) => {
                   src="/icons/warning24.svg"
                   className="h-4 w-4 flex-shrink-0 text-[#F22C25]"
                 />
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col">
                   <span className="text-[12px] font-semibold text-[#F22C25]">
-                    {data?.userStatus?.suspensionReason}
+                    Akun Kamu Ditangguhkan
                   </span>
                   <span className="text-[10px] font-medium text-[#000000]">
-                    {data?.userStatus?.suspensionMessage}{" "}
+                    Hubungi dukungan pelanggan untuk aktivasi kembali
                     <a
                       href={data?.userStatus?.supportContactUrl}
-                      className="cursor-pointer font-medium text-primary-700 hover:text-primary-800"
+                      className="ml-1 cursor-pointer font-medium text-primary-700 hover:text-primary-800"
                     >
                       disini
                     </a>
@@ -180,59 +180,28 @@ const PermintaanAngkut = ({ onAcceptRequest }) => {
             )}
 
             {/* Driver Delegation Warning */}
-            {data?.userStatus?.driverDelegationEnabled &&
-              !data?.userStatus?.isSuspended && (
-                <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFECB4] px-3 py-2">
-                  <IconComponent
-                    src="/icons/warning24.svg"
-                    className="h-4 w-4 flex-shrink-0 text-[#FF7A00]"
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-[12px] font-semibold text-[#FF7A00]">
-                      Pengaturan Delegasi Driver Sedang Aktif
-                    </span>
-                    <span className="text-[10px] font-medium text-[#000000]">
-                      {data?.userStatus?.delegationWarningMessage}{" "}
-                      <a
-                        href={data?.userStatus?.delegationResetUrl}
-                        className="cursor-pointer font-medium text-primary-700 hover:text-primary-800"
-                      >
-                        Atur ulang
-                      </a>
-                    </span>
-                  </div>
+            {data?.userStatus?.driverDelegationEnabled && (
+              <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFECB4] px-3 py-2">
+                <IconComponent
+                  src="/icons/warning24.svg"
+                  className="h-4 w-4 flex-shrink-0 text-[#FF7A00]"
+                />
+                <div className="flex flex-col">
+                  <span className="text-[12px] font-semibold text-[#FF7A00]">
+                    Pengaturan Delegasi Driver Sedang Aktif
+                  </span>
+                  <span className="text-[10px] font-medium text-[#000000]">
+                    Tidak dapat menerima atau menolak pesanan secara langsung
+                    <a
+                      href={data?.userStatus?.delegationResetUrl}
+                      className="ml-1 cursor-pointer font-medium text-primary-700 hover:text-primary-800"
+                    >
+                      Atur ulang
+                    </a>
+                  </span>
                 </div>
-              )}
-
-            {/* Halal Certification Warning */}
-            {!data?.userStatus?.isHalalCertified &&
-              !data?.userStatus?.isSuspended &&
-              !data?.userStatus?.driverDelegationEnabled && (
-                <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFFBEB] px-3 py-2">
-                  <IconComponent
-                    src="/icons/warning24.svg"
-                    className="h-4 w-4 flex-shrink-0 text-[#F9A307]"
-                  />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[12px] font-semibold text-[#F9A307]">
-                      Memerlukan Pengiriman Dengan Sertifikasi Halal Logistik
-                    </span>
-                    <span className="text-[10px] font-medium text-[#000000]">
-                      {data?.userStatus?.halalCertificationMessage ||
-                        "Tambahkan sertifikasi halal dengan menghubungi kami"}{" "}
-                      <a
-                        href={
-                          data?.userStatus?.halalCertificationUrl ||
-                          "tel:+62-811-1234-5678"
-                        }
-                        className="cursor-pointer font-medium text-primary-700 hover:text-primary-800"
-                      >
-                        disini
-                      </a>
-                    </span>
-                  </div>
-                </div>
-              )}
+              </div>
+            )}
 
             {/* Search Input */}
             <div className="mb-4">
@@ -331,6 +300,30 @@ const PermintaanAngkut = ({ onAcceptRequest }) => {
                 </span>
               </button>
             </div>
+
+            {/* Halal Certification Warning */}
+            {!data?.userStatus?.isHalalCertified && (
+              <div className="mt-4 flex items-center gap-1 rounded-xl bg-secondary-100 px-3 py-2">
+                <IconComponent
+                  src="/icons/warning24.svg"
+                  className="h-4 w-4 flex-shrink-0 text-muat-trans-primary-400"
+                />
+                <div className="flex flex-col">
+                  <span className="text-[12px] font-semibold text-[#F9A307]">
+                    Memerlukan Pengiriman Dengan Sertifikasi Halal Logistik
+                  </span>
+                  <span className="text-[10px] font-medium text-[#000000]">
+                    Tambahkan sertifikasi halal dengan menghubungi kami
+                    <a
+                      href="#"
+                      className="ml-1 cursor-pointer font-semibold text-primary-700 hover:text-primary-800"
+                    >
+                      disini
+                    </a>
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Scrollable Content Area */}

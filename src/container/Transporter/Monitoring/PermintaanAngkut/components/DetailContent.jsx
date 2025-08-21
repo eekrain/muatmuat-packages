@@ -65,8 +65,13 @@ const DetailContent = ({
       )}
 
       {/* Halal Certification Notice */}
-      {displayData?.isHalalLogistics && (
-        <div className="flex-shrink-0 px-4 pb-4">
+      {!displayData?.isHalalCertified && (
+        <div
+          className={cn(
+            "flex-shrink-0 px-4 pb-4",
+            displayData?.isSuspended && "pt-2"
+          )}
+        >
           <div
             className={cn(
               "flex items-center gap-3 rounded-xl px-4 py-2",
@@ -83,28 +88,6 @@ const DetailContent = ({
               >
                 Memerlukan pengiriman dengan sertifikasi halal logistik
               </span>
-              {!displayData?.userHalalCertification?.isHalalCertified && (
-                <span
-                  className={cn(
-                    "text-[10px] font-medium",
-                    displayData?.isTaken
-                      ? "text-neutral-600"
-                      : "text-neutral-600"
-                  )}
-                >
-                  Tambahkan sertifikasi halal dengan menghubungi kami
-                  <span
-                    className={cn(
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-primary-700"
-                    )}
-                  >
-                    {" "}
-                    disini
-                  </span>
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -113,36 +96,86 @@ const DetailContent = ({
       {/* Status Tags Row */}
       <div className="flex-shrink-0 bg-white px-4">
         <div className="flex flex-wrap items-center gap-2">
-          {/* Order Type Tag */}
+          {/* Order Type Tag - custom color logic */}
           {displayData?.orderType && (
             <span
               className={cn(
-                "flex h-6 items-center rounded-[6px] px-2 py-2 text-xs font-semibold",
+                "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                 displayData?.isTaken
-                  ? "text-neutral-600"
-                  : getOrderTypeStyle(displayData.orderType)
+                  ? "text-neutral-700"
+                  : displayData.orderType === "INSTANT"
+                    ? "bg-success-50 text-success-700"
+                    : "bg-primary-50 text-primary-700"
               )}
             >
-              {displayData.orderType === "INSTANT"
-                ? "Instan"
-                : displayData.orderType === "SCHEDULED"
-                  ? "Terjadwal"
-                  : displayData.orderType}
+              {displayData.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
             </span>
           )}
-          {/* Load Time Text Tag */}
-          {displayData?.timeLabel?.text && (
-            <span
-              className={cn(
-                "flex h-6 items-center rounded-[6px] px-2 py-2 text-xs font-semibold",
-                displayData?.isTaken
-                  ? "text-neutral-600"
-                  : getTimeLabelStyle(displayData.timeLabel.text)
-              )}
-            >
-              {displayData.timeLabel.text}
-            </span>
-          )}
+
+          {/* Load Time Text Tag - custom calculation */}
+          {(() => {
+            // Ambil tanggal dari displayData, fallback ke request
+            const createdAt = displayData?.createdAt || request?.createdAt;
+            const loadTimeStart =
+              displayData?.loadTimeStart || request?.loadTimeStart;
+            if (!createdAt || !loadTimeStart) {
+              console.warn("Tanggal tidak ditemukan:", {
+                createdAt,
+                loadTimeStart,
+                displayData,
+                request,
+              });
+              return (
+                <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                  -
+                </span>
+              );
+            }
+            const createdDate = new Date(createdAt);
+            const loadDate = new Date(loadTimeStart);
+            if (isNaN(createdDate.getTime()) || isNaN(loadDate.getTime())) {
+              console.warn("Tanggal invalid:", {
+                createdAt,
+                loadTimeStart,
+              });
+              return (
+                <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                  -
+                </span>
+              );
+            }
+            const diffTime = loadDate - createdDate;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let label = "";
+            let colorClass = "";
+            if (diffDays === 0) {
+              label = "Muat Hari Ini";
+              colorClass = "bg-success-50 text-success-700";
+            } else if (diffDays === 1) {
+              label = "Muat Besok";
+              colorClass = "bg-success-50 text-success-700";
+            } else if (diffDays >= 2 && diffDays <= 5) {
+              label = `Muat ${diffDays} Hari`;
+              colorClass = "bg-warning-100 text-warning-900";
+            } else if (diffDays > 5) {
+              label = `Muat ${diffDays} Hari`;
+              colorClass = "bg-primary-50 text-primary-700";
+            } else {
+              label = "-";
+              colorClass = "bg-primary-50 text-primary-700";
+            }
+            return (
+              <span
+                className={cn(
+                  "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                  displayData?.isTaken ? "text-neutral-700" : colorClass
+                )}
+              >
+                {label}
+              </span>
+            );
+          })()}
+
           {/* Overload Badge */}
           {displayData?.overloadInfo?.hasOverload && (
             <span

@@ -7,7 +7,7 @@ const MOCK_CONFIG = {
   hasOverload: true,
   isSaved: false,
   isSuspended: true,
-  orderType: "SCHEDULED",
+  orderType: "INSTANT",
   timeLabel: "Muat 3 Hari Lagi",
   photoCount: 40,
   hasAdditionalServices: true,

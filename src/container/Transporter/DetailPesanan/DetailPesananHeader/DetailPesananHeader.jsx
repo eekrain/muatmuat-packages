@@ -48,6 +48,7 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
             ORDER_STATUS.HEADING_TO_LOADING,
             ORDER_STATUS.DOCUMENT_PREPARATION,
             ORDER_STATUS.DOCUMENT_DELIVERY,
+            ORDER_STATUS.CONFIRMED,
           ].includes(dataOrderDetail?.orderStatus) ? (
             <Button
               variant="muattrans-primary-secondary"
@@ -66,7 +67,8 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
             // Referensi: LDN-336
             ORDER_STATUS.NEED_CONFIRMATION_READY,
             // Referensi: LDN-337
-            // ORDER_STATUS.NEED_CHANGE_RESPONSE,
+            ORDER_STATUS.NEED_CHANGE_RESPONSE,
+            ORDER_STATUS.CONFIRMED,
           ].includes(dataOrderDetail?.orderStatus) &&
             dataOrderDetail?.orderStatus !== ORDER_STATUS.HEADING_TO_LOADING &&
             dataOrderDetail?.orderStatus !==

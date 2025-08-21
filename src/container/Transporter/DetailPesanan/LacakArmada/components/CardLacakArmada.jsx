@@ -55,9 +55,12 @@ function CardLacakArmada({
 
   // Data stepper
   const steps = stepperData || [
-    { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
-    { label: "Proses Bongkar", icon: "/icons/muatan16.svg" },
-    { label: "Proses Muat", icon: "/icons/stepper/stepper-box-opened.svg" },
+    {
+      label: "Armada Dijadwalkan",
+      icon: "/icons/stepper/stepper-scheduled.svg",
+    },
+    { label: "Proses Muat", icon: "/icons/stepper/stepper-box.svg" },
+    { label: "Proses Bongkar", icon: "/icons/stepper/stepper-box-opened.svg" },
     {
       label: "Dokumen Sedang Disiapkan",
       icon: "/icons/stepper/stepper-document-preparing.svg",
@@ -66,11 +69,14 @@ function CardLacakArmada({
       label: "Proses Pengiriman Dokumen",
       icon: "/icons/stepper/stepper-document-delivery.svg",
     },
-    { label: "Selesai", icon: "/icons/check16.svg" },
+    { label: "Selesai", icon: "/icons/stepper/stepper-completed.svg" },
   ];
 
   const cancelledSteps = [
-    { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
+    {
+      label: "Armada Dijadwalkan",
+      icon: "/icons/stepper/stepper-scheduled.svg",
+    },
     {
       label: "Dibatalkan",
       status: "CANCELED",
@@ -104,21 +110,28 @@ function CardLacakArmada({
       return 1;
     }
 
+    // Cek apakah stepper memiliki 6 step atau 4 step
+    const hasDocumentSteps = stepperData && stepperData.length === 6;
+
     switch (s) {
       case ORDER_STATUS.COMPLETED:
-        return 5;
+        return hasDocumentSteps ? 5 : 3; // Selesai (6 step: index 5, 4 step: index 3)
       case ORDER_STATUS.DOCUMENT_DELIVERY:
-        return 4;
+        return hasDocumentSteps ? 4 : 3; // Proses Pengiriman Dokumen (6 step: index 4, 4 step: index 3)
       case ORDER_STATUS.DOCUMENT_PREPARATION:
-        return 3;
+        return hasDocumentSteps ? 3 : 3; // Dokumen Sedang Disiapkan (6 step: index 3, 4 step: index 3)
       case ORDER_STATUS.LOADING:
-        return 2;
+        return hasDocumentSteps ? 2 : 1; // Proses Muat (6 step: index 2, 4 step: index 1)
       case ORDER_STATUS.HEADING_TO_LOADING:
-        return 1; // Proses Muat
+        return hasDocumentSteps ? 1 : 1; // Proses Muat
       case ORDER_STATUS.HEADING_TO_UNLOADING:
-        return 1; // Proses Muat
+        return hasDocumentSteps ? 1 : 1; // Proses Muat
       case ORDER_STATUS.UNLOADING:
-        return 1;
+        return hasDocumentSteps ? 2 : 2; // Proses Bongkar (6 step: index 2, 4 step: index 2)
+      case ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER:
+        return -1; // Tidak ada step yang aktif (semua abu-abu)
+      case ORDER_STATUS.SCHEDULED_FLEET:
+        return 0; // Armada Dijadwalkan (step 1, index 0)
       default:
         return 0;
     }
@@ -190,6 +203,10 @@ function CardLacakArmada({
         return "Dokumen Sedang Disiapkan";
       case ORDER_STATUS.DOCUMENT_DELIVERY:
         return "Proses Pengiriman Dokumen";
+      case ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER:
+        return "Menunggu Konfirmasi Shipper";
+      case ORDER_STATUS.SCHEDULED_FLEET:
+        return "Armada Dijadwalkan";
       case ORDER_STATUS.CANCELLED_BY_TRANSPORTER:
         return "Dibatalkan Transporter";
       case ORDER_STATUS.CANCELLED_BY_SHIPPER:
@@ -228,6 +245,9 @@ function CardLacakArmada({
 
     if (s === OrderStatusEnum.COMPLETED || s === ORDER_STATUS.COMPLETED)
       return "success";
+
+    if (s === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER) return "primary";
+
     return "primary";
   };
 
@@ -277,35 +297,53 @@ function CardLacakArmada({
             )}
           </div>
 
-          {isMonitoring &&
-            status !== ORDER_STATUS.HEADING_TO_UNLOADING &&
-            status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
-            status !== ORDER_STATUS.DOCUMENT_DELIVERY &&
-            status !== ORDER_STATUS.HEADING_TO_LOADING &&
-            status !== ORDER_STATUS.COMPLETED &&
-            status !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
-            status !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
-            status !== ORDER_STATUS.CANCELLED_BY_SYSTEM && (
-              <SimpleDropdown>
-                <SimpleDropdownTrigger asChild>
-                  <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
-                    Aksi Lainnya
-                    <ChevronDown className="ml-1 h-4 w-4" />
-                  </button>
-                </SimpleDropdownTrigger>
-                <SimpleDropdownContent align="end">
-                  <SimpleDropdownItem onClick={handleOpenUbahArmadaModal}>
-                    Ubah Armada
-                  </SimpleDropdownItem>
-                  <SimpleDropdownItem onClick={handleOpenDriverModal}>
-                    Ubah Driver
-                  </SimpleDropdownItem>
-                  <SimpleDropdownItem onClick={handleCancelFleet}>
-                    Batalkan Armada
-                  </SimpleDropdownItem>
-                </SimpleDropdownContent>
-              </SimpleDropdown>
+          <div className="flex items-center gap-2">
+            {/* Button Lihat Posisi Armada - tidak muncul untuk WAITING_CONFIRMATION_SHIPPER */}
+            {status !== ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
+              <Button
+                className="text-xs"
+                onClick={() => {
+                  // TODO: Implementasi untuk melihat posisi armada
+                  console.log("Lihat Posisi Armada clicked");
+                }}
+                variant="link"
+              >
+                Lihat Posisi Armada
+              </Button>
             )}
+
+            {/* Aksi Lainnya - tidak muncul untuk WAITING_CONFIRMATION_SHIPPER */}
+            {isMonitoring &&
+              status !== ORDER_STATUS.HEADING_TO_UNLOADING &&
+              status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
+              status !== ORDER_STATUS.DOCUMENT_DELIVERY &&
+              status !== ORDER_STATUS.HEADING_TO_LOADING &&
+              status !== ORDER_STATUS.COMPLETED &&
+              status !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
+              status !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
+              status !== ORDER_STATUS.CANCELLED_BY_SYSTEM &&
+              status !== ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
+                <SimpleDropdown>
+                  <SimpleDropdownTrigger asChild>
+                    <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+                      Aksi Lainnya
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </button>
+                  </SimpleDropdownTrigger>
+                  <SimpleDropdownContent align="end">
+                    <SimpleDropdownItem onClick={handleOpenUbahArmadaModal}>
+                      Ubah Armada
+                    </SimpleDropdownItem>
+                    <SimpleDropdownItem onClick={handleOpenDriverModal}>
+                      Ubah Driver
+                    </SimpleDropdownItem>
+                    <SimpleDropdownItem onClick={handleCancelFleet}>
+                      Batalkan Armada
+                    </SimpleDropdownItem>
+                  </SimpleDropdownContent>
+                </SimpleDropdown>
+              )}
+          </div>
         </div>
 
         <div className="flex w-full items-center justify-between">

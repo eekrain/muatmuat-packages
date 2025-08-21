@@ -189,7 +189,7 @@ export const formatDateRange = (startDate, endDate) => {
 export function formatLoadTime(
   loadTimeStart,
   loadTimeEnd,
-  showOneLine = false
+  options = { showOneLine: false, shortenSameDay: true }
 ) {
   const startDate = _parseDate(loadTimeStart);
   const endDate = _parseDate(loadTimeEnd);
@@ -207,18 +207,28 @@ export function formatLoadTime(
   const formattedEndTime = `${format(endDate, "HH:mm", { locale: id })} WIB`;
 
   if (isSameDay(startDate, endDate)) {
-    return (
-      <span>
-        {`${formattedStartDate} ${formattedStartTime} s/d `}
-        {showOneLine ? " " : <br />}
-        {`${formattedEndTime}`}
-      </span>
-    );
+    if (options.shortenSameDay) {
+      return (
+        <span>
+          {`${formattedStartDate} ${formattedStartTime} s/d `}
+          {options.showOneLine ? " " : <br />}
+          {`${formattedEndTime}`}
+        </span>
+      );
+    } else {
+      return (
+        <span>
+          {`${formattedStartDate} ${formattedStartTime} s/d `}
+          {options.showOneLine ? " " : <br />}
+          {`${formattedEndDate} ${formattedEndTime}`}
+        </span>
+      );
+    }
   } else {
     return (
       <span>
         {`${formattedStartDate} ${formattedStartTime} s/d `}
-        {showOneLine ? " " : <br />}
+        {options.showOneLine ? " " : <br />}
         {`${formattedEndDate} ${formattedEndTime}`}
       </span>
     );

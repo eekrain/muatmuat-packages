@@ -294,7 +294,6 @@ const DashboardFilter = ({
                               )}
                               name={`${category.key}-filter`}
                               value={item.id}
-                              className="pointer-events-none w-full"
                             >
                               <div className="flex items-center gap-1">
                                 {item.icon && (
@@ -316,12 +315,6 @@ const DashboardFilter = ({
                                 item,
                                 categoryType
                               )}
-                              value={item.id}
-                              className="pointer-events-none w-full"
-                              appearance={{
-                                labelClassName:
-                                  "text-xs font-medium line-clamp-2 break-all",
-                              }}
                             >
                               <div className="flex items-center gap-1">
                                 {item.icon && (
