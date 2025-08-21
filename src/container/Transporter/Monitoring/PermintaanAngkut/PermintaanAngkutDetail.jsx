@@ -5,16 +5,15 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestListDetail";
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
 
 import DetailContent from "./components/DetailContent";
 import ModalTerimaPermintaan from "./components/ModalTerimaPermintaan";
 
 const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
-  // Fetch detail data
-  const { data: detailData, isLoading } = useGetTransportRequestDetail(
-    request?.id
-  );
+  // Fetch detail data from list
+  const { data: listData, isLoading } = useGetTransportRequestList({});
+  const detailData = listData?.requests?.find((r) => r.id === request?.id);
   const displayData = detailData || request;
 
   // State
@@ -99,7 +98,7 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
         </h1>
         <button
           onClick={onBack}
-          className="flex h-8 w-8 items-center justify-center rounded-full pt-2 hover:bg-neutral-100"
+          className="flex h-8 w-8 items-center justify-center rounded-full pt-2"
         >
           <IconComponent
             src="/icons/close24.svg"

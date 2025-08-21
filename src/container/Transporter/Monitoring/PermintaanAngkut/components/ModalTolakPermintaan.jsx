@@ -235,7 +235,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
             {/* Header */}
             <div className="relative mb-4 flex flex-shrink-0 items-center justify-center">
               <h3 className="mx-auto text-base font-bold text-gray-900">
-                Terima Permintaan Jasa Angkut
+                Tolak Permintaan Jasa Angkut
               </h3>
               <button
                 onClick={onClose}
@@ -244,111 +244,11 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 <IconComponent src="/icons/close24.svg" className="h-5 w-5" />
               </button>
             </div>
-            {/* Armada Selection */}
-            <div className="mb-3 rounded-lg border border-neutral-400 p-4">
-              <span className="mb-3 text-xs font-medium text-gray-600">
-                Kebutuhan Armada :
-                <span className="ml-1 text-xs font-semibold text-gray-900">
-                  {detail.truckCount} Unit
-                </span>
-              </span>
-
-              <div className="mt-3 space-y-3">
-                <label className="flex cursor-pointer items-center">
-                  <input
-                    type="radio"
-                    name="acceptOption"
-                    value="all"
-                    checked={selectedOption === "all"}
-                    onChange={(e) => {
-                      setSelectedOption(e.target.value);
-                      setShowAlert(false);
-                    }}
-                    className="mr-3 h-4 w-4 text-primary-600"
-                  />
-                  <span className="text-xs font-medium text-gray-900">
-                    Terima semua kebutuhan armada
-                  </span>
-                </label>
-                <label className="flex cursor-pointer items-center">
-                  <input
-                    type="radio"
-                    name="acceptOption"
-                    value="partial"
-                    checked={selectedOption === "partial"}
-                    onChange={(e) => {
-                      setSelectedOption(e.target.value);
-                      setShowAlert(false);
-                      setShowPartialAlert(false);
-                    }}
-                    className="mr-3 h-4 w-4 text-primary-600"
-                  />
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-gray-900">
-                      Terima dengan
-                    </span>
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Jumlah"
-                      max={detail.truckCount || 2}
-                      value={
-                        selectedOption === "partial" && partialCount !== null
-                          ? partialCount
-                          : ""
-                      }
-                      onChange={(e) => {
-                        if (selectedOption === "partial") {
-                          const val = e.target.value;
-                          // Convert to number for comparison
-                          const numVal = val === "" ? null : Number(val);
-                          setPartialCount(val === "" ? null : val);
-                          setShowPartialAlert(false);
-                          if (numVal !== null && numVal > detail.truckCount) {
-                            setShowAlertExceedFleetUnit(true);
-                          } else {
-                            setShowAlertExceedFleetUnit(false);
-                          }
-                        }
-                      }}
-                      disabled={selectedOption !== "partial"}
-                      className={cn(
-                        "h-8 w-[65px] rounded p-3 text-center text-xs font-medium text-neutral-900",
-                        (showPartialAlert && selectedOption === "partial") ||
-                          showAlertExceedFleetUnit
-                          ? "border border-error-400"
-                          : "border border-neutral-600"
-                      )}
-                    />
-                    <span className="text-xs font-medium text-gray-900">
-                      unit armada
-                    </span>
-                  </div>
-                </label>
-              </div>
-              {/* Alert for armada validation */}
-              {showAlert && (
-                <p className="mt-3 px-7 text-xs font-medium text-error-400">
-                  Kebutuhan armada wajib diisi
-                </p>
-              )}
-              {/* Alert for partial count validation */}
-              {showPartialAlert && (
-                <p className="mt-3 px-7 text-xs font-medium text-error-400">
-                  Jumlah armada wajib diisi
-                </p>
-              )}
-              {showAlertExceedFleetUnit && (
-                <p className="mt-3 px-7 text-xs font-medium text-error-400">
-                  Jumlah armada melebihi kebutuhan
-                </p>
-              )}
-            </div>
 
             {/* Content */}
             {/* Scrollable content only for info box */}
-            <div className="mb-3 h-[175px] overflow-y-auto rounded-lg border border-neutral-400 p-4">
-              <div className="mb-4 flex justify-between">
+            <div className="mb-3 h-[335px] rounded-lg border border-neutral-400 p-4">
+              <div className="mb-2 flex justify-between">
                 <span className="text-xs font-medium text-gray-600">
                   Informasi Pesanan
                 </span>
@@ -356,7 +256,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   Potensi Pendapatan
                 </span>
               </div>
-              <div className="mb-4 flex justify-between">
+              <div className="mb-2 flex justify-between">
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Time Label */}
                   <span
@@ -365,7 +265,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                       detail.isTaken
                         ? "text-neutral-700"
                         : detail.orderType === "INSTANT"
-                          ? "bg-success-50 text-success-700"
+                          ? "bg-success-50 text-success-400"
                           : detail.orderType === "SCHEDULED"
                             ? "bg-primary-50 text-primary-700"
                             : "bg-primary-50 text-primary-700"
@@ -417,10 +317,10 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                     let colorClass = "";
                     if (diffDays === 0) {
                       label = "Muat Hari Ini";
-                      colorClass = "bg-success-50 text-success-700";
+                      colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays === 1) {
                       label = "Muat Besok";
-                      colorClass = "bg-success-50 text-success-700";
+                      colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays >= 2 && diffDays <= 5) {
                       label = `Muat ${diffDays} Hari`;
                       colorClass = "bg-warning-100 text-warning-900";
@@ -487,15 +387,15 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   )}
                 </div>
                 <div className="text-right">
-                  <span className="block text-sm font-bold text-blue-700">
+                  <span className="block text-sm font-bold text-primary-700">
                     {formatCurrency(detail.totalPrice)}
                   </span>
                 </div>
               </div>
-              <div className="mb-4 border-b border-[#C4C4C4]"></div>
+              <div className="mb-2 border-b border-[#C4C4C4]"></div>
 
               {/* Location Info */}
-              <div className="mb-4 flex justify-between">
+              <div className="mb-2 flex justify-between">
                 <div className="w-auto">
                   <TimelineContainer>
                     {[
@@ -541,10 +441,10 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   </div>
                 </div>
               </div>
-              <div className="mb-4 border-b border-[#C4C4C4]"></div>
+              <div className="mb-2 border-b border-[#C4C4C4]"></div>
 
               {/* cargo info */}
-              <div className="mb-4 flex w-full items-start justify-between">
+              <div className="mb-2 flex w-full items-start justify-between">
                 <div className="flex flex-1 items-start gap-3">
                   <IconComponent
                     src="/icons/box16.svg"
@@ -610,7 +510,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               </div>
 
               {/* Fleet Requirements Section */}
-              <div className="mb-4 flex items-start gap-3">
+              <div className="mb-2 flex items-start gap-3">
                 <IconComponent
                   src="/icons/truk16.svg"
                   className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
@@ -630,7 +530,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               </div>
 
               {/* Loading Time Section */}
-              <div className="mb-4 flex items-start gap-3">
+              <div className="mb-2 flex items-start gap-3">
                 <IconComponent
                   src="/icons/calendar16.svg"
                   className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
@@ -650,8 +550,8 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               {/* Additional Services Section */}
               {(detail.additionalServices?.length > 0 ||
                 request?.hasAdditionalService) && (
-                <div className="rounded-[4px] bg-warning-50 px-3 py-2">
-                  <div className="text-[12px] font-medium text-warning-800">
+                <div className="rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
+                  <div className="text-[12px] font-semibold text-neutral-900">
                     +{" "}
                     {detail.additionalServices?.[0]?.serviceName ||
                       request?.additionalServices?.[0]?.serviceName ||
@@ -698,12 +598,12 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 Batal
               </Button>
               <Button
-                variant="muattrans-primary"
+                variant="muatparts-error"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
                 onClick={handleAccept}
                 disabled={isMutating}
               >
-                Terima
+                Tolak
               </Button>
             </div>
           </>
