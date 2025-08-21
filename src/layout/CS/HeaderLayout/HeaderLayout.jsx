@@ -115,7 +115,7 @@ const HeaderLayout = ({
   ];
 
   return (
-    <header className="sticky left-0 top-0 z-20 w-full">
+    <header className="sticky left-0 top-0 z-[51] w-full">
       <div className="flex h-[60px] w-full items-center justify-between bg-muat-trans-primary-400 px-10 text-neutral-900">
         <div className="flex items-center gap-x-6">
           <ImageComponent src="/icons/muattrans.svg" width={136} height={27} />

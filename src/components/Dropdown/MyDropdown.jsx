@@ -83,7 +83,16 @@ const HoverRoot = ({ title, children }) => (
 // 5. SubContent Component (The second-level dropdown content that appears on hover)
 const HoverContent = React.forwardRef(
   (
-    { className, align = "start", sideOffset = 2, side = "right", ...props },
+    {
+      className,
+      appearance = {
+        wrapperClassName: "",
+      },
+      align = "start",
+      sideOffset = 2,
+      side = "right",
+      ...props
+    },
     ref
   ) => (
     <HoverCardPrimitive.Portal>
@@ -99,7 +108,12 @@ const HoverContent = React.forwardRef(
         {...props}
       >
         {/* Wrapper for fixed height and scrolling */}
-        <div className="flex max-h-48 flex-col overflow-y-auto">
+        <div
+          className={cn(
+            "flex max-h-48 flex-col overflow-y-auto",
+            appearance.wrapperClassName
+          )}
+        >
           {props.children}
         </div>
       </HoverCardPrimitive.Content>

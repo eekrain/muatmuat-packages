@@ -6,6 +6,29 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import { useLacakArmadaContext } from "./use-lacak-armada";
 
+// const MOCK = [
+//   "PT Arunika Global Sejahtera",
+//   "PT Cakrawala Nusantara Mandiri",
+//   "PT Lintas Bumi Persada",
+//   "PT Samudra Inovasi Internasional",
+//   "PT Pilar Mega Abadi",
+//   "PT Orbit Kreasi Dinamika",
+//   "PT Bintang Raya Mandiri",
+//   "PT Harmoni Cahaya Nusantara",
+//   "PT Sumberdaya Inti Global",
+//   "PT Aurora Teknologi Cemerlang",
+//   "PT Mitra Lestari Pratama",
+//   "PT Pundi Emas Sejahtera",
+//   "PT Visi Karya Nusantara",
+//   "PT Sentra Dinamika Abadi",
+//   "PT Gema Langit Persada",
+//   "PT Alpha Sigma Internasional",
+//   "PT Citra Mandala Utama",
+//   "PT Fortuna Prima Kreasi",
+//   "PT Garuda Inovasi Global",
+//   "PT Zenith Karya Mandiri",
+// ];
+
 export const AppliedFilterBubbles = () => {
   const { t } = useTranslation();
   const { appliedFilters, clearAllFilters, hasActiveFilters } =
@@ -69,32 +92,11 @@ export const AppliedFilterBubbles = () => {
             </div>
           ))}
 
-          {[
-            "PT Arunika Global Sejahtera",
-            "PT Cakrawala Nusantara Mandiri",
-            "PT Lintas Bumi Persada",
-            "PT Samudra Inovasi Internasional",
-            "PT Pilar Mega Abadi",
-            "PT Orbit Kreasi Dinamika",
-            "PT Bintang Raya Mandiri",
-            "PT Harmoni Cahaya Nusantara",
-            "PT Sumberdaya Inti Global",
-            "PT Aurora Teknologi Cemerlang",
-            "PT Mitra Lestari Pratama",
-            "PT Pundi Emas Sejahtera",
-            "PT Visi Karya Nusantara",
-            "PT Sentra Dinamika Abadi",
-            "PT Gema Langit Persada",
-            "PT Alpha Sigma Internasional",
-            "PT Citra Mandala Utama",
-            "PT Fortuna Prima Kreasi",
-            "PT Garuda Inovasi Global",
-            "PT Zenith Karya Mandiri",
-          ].map((item) => (
+          {/* {MOCK.map((item) => (
             <div key={item} className="flex-shrink-0">
               <TagBubble withRemove={{ onRemove: () => {} }}>{item}</TagBubble>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
 
