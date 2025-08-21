@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
 import * as v from "valibot";
 
 import Button from "@/components/Button/Button";
@@ -21,7 +20,6 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { normalizePostalCodeData } from "@/hooks/use-location/normalizer";
 import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useSWRMutateHook } from "@/hooks/use-swr";
-import { fetcherMuatrans } from "@/lib/axios";
 import { toast } from "@/lib/toast";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
@@ -30,31 +28,60 @@ import { SearchPostal } from "../../InputLocationDropdown/SearchPostal";
 
 const informasiPendaftarSchema = v.object({
   transporterId: v.optional(v.string()),
-  registrantName: v.pipe(v.string(), v.nonEmpty("Nama pendaftar wajib diisi")),
+
+  registrantName: v.pipe(
+    v.string(),
+    v.nonEmpty("Nama pendaftar wajib diisi"),
+    v.minLength(3, "Nama Lengkap minimal 3 karakter"),
+    v.regex(/^[a-zA-Z0-9 ]+$/, "Nama Lengkap tidak valid")
+  ),
+
   registrantPosition: v.pipe(
     v.string(),
     v.minLength(1, "Jabatan Pendaftar wajib diisi")
   ),
   registrantWhatsapp: v.pipe(
+    v.custom(
+      (value) => value && typeof value === "string" && value.trim() !== "",
+      "No. Whatsapp Pendaftar wajib diisi"
+    ),
     v.string(),
-    v.nonEmpty("No. Whatsapp Pendaftar wajib diisi"),
+    v.minLength(8, "Nomor Whatsapp minimal 8 digit"),
     v.regex(/^08[0-9]{6,11}$/, "Format No. Whatsapp salah")
   ),
+
   registrantEmail: v.pipe(
     v.string(),
-    v.nonEmpty("Email Pendaftar wajib diisi"),
+    v.minLength(1, "Email Pendaftar wajib diisi"),
     v.email("Penulisan email salah")
   ),
+
   companyLogo: v.pipe(
     v.string(),
     v.minLength(1, "Logo Perusahaan wajib diisi")
   ),
+
   companyName: v.pipe(
     v.string(),
     v.minLength(1, "Nama Perusahaan wajib diisi")
   ),
-  businessEntityType: v.pipe(v.string(), v.nonEmpty("Badan Usaha wajib diisi")),
-  companyPhone: v.pipe(v.string(), v.minLength(1, "Nomor telepon wajib diisi")),
+  businessEntityType: v.pipe(
+    v.string(),
+    v.nonEmpty("Badan Usaha wajib diisi"),
+    v.enum(
+      ["PT", "CV", "UD", "Koperasi", "Lainnya"],
+      "Bentuk usaha tidak valid"
+    )
+  ),
+  companyPhone: v.pipe(
+    v.string(),
+    v.minLength(1, "Nomor telepon wajib diisi"),
+    v.regex(
+      /^08[0-9]{8,11}$/,
+      "Format nomor telepon tidak valid (contoh: 08xxxxxxxxxx)"
+    )
+  ),
+
   companyAddress: v.pipe(v.string(), v.minLength(1, "Alamat wajib diisi")),
   locationData: v.object({
     location: v.pipe(v.string(), v.minLength(1, "Lokasi wajib diisi")),
@@ -63,14 +90,17 @@ const informasiPendaftarSchema = v.object({
     district: v.pipe(v.string(), v.minLength(1, "Kecamatan wajib diisi")),
     city: v.optional(v.string()),
     province: v.optional(v.string()),
+    provinceId: v.optional(v.number()),
+    cityId: v.optional(v.number()),
     postalCode: v.pipe(v.string(), v.minLength(1, "Kode pos wajib diisi")),
     placeId: v.pipe(
       v.string(),
       v.minLength(1, "Lokasi harus dipilih dari Google Maps")
     ),
-    kecamatanList: v.optional(v.array(v.any())),
-    postalCodeList: v.optional(v.array(v.any())),
+    kecamatanList: v.optional(v.array(v.any())), // Tambahkan ini
+    postalCodeList: v.optional(v.array(v.any())), // Tambahkan ini
   }),
+
   bankId: v.pipe(v.string(), v.minLength(1, "Nama Bank wajib diisi")),
   accountNumber: v.pipe(
     v.string(),
@@ -100,16 +130,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   const initialData = useTransporterFormStore((state) =>
     state.getForm(FORM_KEY)
   );
-  const transporterId = initialData?.transporterId || "uuid-transporter";
-
-  const {
-    data: initialApiData,
-    error: loadError,
-    isLoading: isLoadingData,
-  } = useSWR(
-    transporterId ? `/v1/cs/transporter/${transporterId}/form-data` : null,
-    fetcherMuatrans
-  );
 
   const {
     setValue,
@@ -120,7 +140,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     trigger,
     getValues,
     watch,
-    setError,
   } = useForm({
     resolver: valibotResolver(informasiPendaftarSchema),
     defaultValues: initialData || {
@@ -140,11 +159,13 @@ function InformasiPendaftar({ onSave, onFormChange }) {
         location: "",
         district: "",
         city: "",
+        cityId: "",
         province: "",
+        provinceId: "",
         postalCode: "",
         placeId: "",
-        kecamatanList: [],
-        postalCodeList: [],
+        kecamatanList: [], // Tambahkan ini
+        postalCodeList: [], // Tambahkan ini
       },
       bankId: "",
       accountNumber: "",
@@ -152,40 +173,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     },
   });
 
-  useEffect(() => {
-    if (initialApiData?.Data) {
-      const data = initialApiData.Data;
-      const primaryPic = data.contactPic?.find((pic) => pic.picLevel === 1);
-
-      const mappedData = {
-        transporterId: data.transporterId,
-        registrantName: primaryPic?.picName || "",
-        registrantPosition: primaryPic?.picPosition || "",
-        registrantWhatsapp: primaryPic?.picPhoneNumber || "",
-        registrantEmail: primaryPic?.picEmail || "",
-        companyName: data.companyData?.companyName || "",
-        businessEntityType: data.companyData?.businessEntityType || "",
-        companyAddress: data.companyData?.companyAddress || "",
-        locationData: {
-          latitude: data.companyData?.locationData?.latitude?.toString() || "",
-          longitude:
-            data.companyData?.locationData?.longitude?.toString() || "",
-          district: data.companyData?.locationData?.district || "",
-          city: data.companyData?.locationData?.city || "",
-          province: data.companyData?.locationData?.province || "",
-          postalCode: data.companyData?.locationData?.postalCode || "",
-          location: "",
-          placeId: "",
-        },
-      };
-      reset(mappedData);
-      toast.success("Data pendaftar berhasil dimuat.");
-    }
-    if (loadError) {
-      toast.error("Gagal memuat data pendaftar.");
-    }
-  }, [initialApiData, loadError, reset]);
-
+  console.log(errors);
   useEffect(() => {
     if (isDirty) {
       onFormChange();
@@ -200,40 +188,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   const [dynamicKodePosOptions, setDynamicKodePosOptions] = useState([]);
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
 
-  // --- Fetch Business Entities ---
-  const { data: businessEntitiesData, error: businessEntitiesError } = useSWR(
-    "/v1/cs/master/business-entities",
-    fetcherMuatrans,
-    { revalidateOnFocus: false }
-  );
-
-  const badanUsahaOptions = useMemo(() => {
-    if (businessEntitiesData?.Data) {
-      return businessEntitiesData.Data.map((entity) => ({
-        label: entity.displayName,
-        value: entity.entityCode,
-      }));
-    }
-    return [];
-  }, [businessEntitiesData]);
-
-  // --- Static Bank Data ---
-  const bankOptions = [
-    { label: "Bank BCA", value: "bca" },
-    { label: "Bank BNI", value: "bni" },
-    { label: "Bank BRI", value: "bri" },
-    { label: "Bank Mandiri", value: "mandiri" },
-    { label: "Bank CIMB Niaga", value: "cimb" },
-  ];
-
-  useEffect(() => {
-    if (businessEntitiesError) {
-      toast.error("Gagal memuat data badan usaha.");
-      console.error("Business Entities Error:", businessEntitiesError);
-    }
-  }, [businessEntitiesError]);
-
-  // ... (Sisa fungsi-fungsi helper seperti clearLocationData, updateFormWithLocationData, dll. tetap sama)
   const clearLocationData = () => {
     const fieldsToReset = [
       "locationData.location",
@@ -249,16 +203,18 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     ];
     fieldsToReset.forEach((field) => setValue(field, ""));
 
+    // Reset state & tampilan lainnya
     setDynamicKecamatanOptions([]);
     setDynamicKodePosOptions([]);
     locationSearch.setAutoCompleteSearchPhrase("");
-    setCoordinates({ latitude: -7.254235, longitude: 112.736583 });
+    setCoordinates({ latitude: -7.254235, longitude: 112.736583 }); // Reset ke default
   };
 
   const updateFormWithLocationData = (locationData) => {
     setValue("locationData.location", locationData.location?.name || "", {
       shouldValidate: true,
     });
+    console.log("INI DATA LOKASI", locationData);
     setValue(
       "locationData.latitude",
       locationData.coordinates?.latitude.toString() || "",
@@ -275,6 +231,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     setValue("locationData.city", locationData.city?.name || " ", {
       shouldValidate: true,
     });
+    console.log("HALO INI", locationData.city?.value);
     setValue("locationData.cityId", locationData.city?.value || "", {
       shouldValidate: true,
     });
@@ -323,7 +280,11 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   };
 
   useEffect(() => {
+    // Jalankan hanya jika ada data awal yang dipulihkan
     if (initialData) {
+      console.log("Rehydrating UI options from initialData...");
+
+      // Rehidrasi opsi kecamatan
       const savedKecamatanList = initialData.locationData?.kecamatanList;
       if (
         savedKecamatanList &&
@@ -337,6 +298,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
         setDynamicKecamatanOptions(formattedKecamatan);
       }
 
+      // Rehidrasi opsi kode pos
       const savedPostalCodeList = initialData.locationData?.postalCodeList;
       if (
         savedPostalCodeList &&
@@ -355,15 +317,21 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   const handleSelectLocation = (result) => {
     if (!result) return;
 
+    // Cek apakah data distrik/kecamatan ada
     if (!result.district?.value) {
+      // Jika TIDAK ADA:
+      // 1. Simpan data yang belum lengkap
       setTempLocation(result);
+      // 2. Siapkan frase pencarian untuk modal
       locationSearch.setLocationPostalCodeSearchPhrase(
         result.postalCode?.value === "00000"
           ? ""
           : result.postalCode?.value || ""
       );
+      // 3. Buka modal
       setIsPostalCodeModalOpen(true);
     } else {
+      // Jika LENGKAP: Langsung update form
       updateFormWithLocationData(result);
     }
   };
@@ -382,6 +350,22 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     setTempLocation(null);
   };
 
+  const badanUsahaOptions = [
+    { label: "PT (Perseroan Terbatas)", value: "PT" },
+    { label: "CV (Commanditaire Vennootschap)", value: "CV" },
+    { label: "UD (Usaha Dagang)", value: "UD" },
+    { label: "Koperasi", value: "Koperasi" },
+    { label: "Lainnya", value: "Lainnya" },
+  ];
+
+  const bankOptions = [
+    { label: "Bank BCA", value: "bca" },
+    { label: "Bank BNI", value: "bni" },
+    { label: "Bank BRI", value: "bri" },
+    { label: "Bank Mandiri", value: "mandiri" },
+    { label: "Bank CIMB Niaga", value: "cimb" },
+  ];
+
   const handleLocationInteraction = (isModal = false) => {
     if (watchedValues.locationData.placeId) {
       setIsConfirmClearOpen(true);
@@ -398,75 +382,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     }
   };
 
-  const { trigger: saveTransporterTrigger, isMutating: isSaving } =
-    useSWRMutateHook(
-      "/v1/cs/register/transporter/create",
-      "POST",
-      undefined,
-      undefined,
-      {
-        onSuccess: (data) => {
-          const updatedData = {
-            ...getValues(),
-            transporterId: data.Data.transporterId,
-          };
-          setForm(FORM_KEY, updatedData);
-          if (onSave) {
-            onSave();
-          }
-          reset(updatedData);
-          toast.success("Informasi pendaftar berhasil disimpan!");
-        },
-        onError: (error) => {
-          const errorMessages = error?.response?.data?.Data?.errors;
-          if (errorMessages && Array.isArray(errorMessages)) {
-            errorMessages.forEach((err) => {
-              if (err.field) {
-                setError(err.field, {
-                  type: "manual",
-                  message: err.message,
-                });
-              } else {
-                toast.error(err.message || "Terjadi kesalahan pada server.");
-              }
-            });
-          } else {
-            toast.error("Gagal menyimpan data. Silakan coba lagi.");
-          }
-        },
-      }
-    );
-
-  const onSubmit = async (data) => {
-    const payload = {
-      registrantName: data.registrantName,
-      registrantPosition: data.registrantPosition,
-      registrantWhatsapp: data.registrantWhatsapp,
-      registrantEmail: data.registrantEmail,
-      companyLogo: data.companyLogo,
-      companyName: data.companyName,
-      businessEntityType: data.businessEntityType,
-      companyPhone: data.companyPhone,
-      companyAddress: data.companyAddress,
-      locationData: {
-        location: data.locationData.location,
-        latitude: parseFloat(data.locationData.latitude),
-        longitude: parseFloat(data.locationData.longitude),
-        district: data.locationData.district,
-        city: data.locationData.city,
-        province: data.locationData.province,
-        postalCode: data.locationData.postalCode,
-        placeId: data.locationData.placeId,
-      },
-      bankId: data.bankId,
-      accountNumber: data.accountNumber,
-      accountName: data.accountName,
-    };
-
-    await saveTransporterTrigger(payload);
-  };
-
-  // ... (Sisa hooks dan fungsi lainnya tetap sama)
   const modalContentRef = useRef(null);
 
   const isAllRequiredFieldsEmpty = () => {
@@ -507,6 +422,21 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     }
   };
 
+  const onSubmit = (data) => {
+    const existingData =
+      useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+    const updatedData = {
+      ...existingData,
+      ...data,
+    };
+    setForm(FORM_KEY, updatedData);
+    if (onSave) {
+      onSave();
+    }
+    reset(data);
+    toast.success("Informasi pendaftar berhasil disimpan!");
+  };
+
   useEffect(() => {
     if (isSubmitSuccessful) {
       const latestData = useTransporterFormStore.getState().getForm(FORM_KEY);
@@ -514,12 +444,8 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     }
   }, [isSubmitSuccessful, reset]);
 
-  const { trigger: uploadLogoTrigger } = useSWRMutateHook(
-    "v1/orders/upload",
-    "POST",
-    undefined,
-    undefined,
-    {
+  const { trigger: uploadLogoTrigger, isMutating: isUploadingLogo } =
+    useSWRMutateHook("v1/orders/upload", "POST", undefined, undefined, {
       onSuccess: (data) => {
         if (data.Data && data.Data.photoUrl) {
           const imageUrl = data.Data.photoUrl;
@@ -535,8 +461,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
         toast.error(message);
         console.error("Upload Error:", error);
       },
-    }
-  );
+    });
 
   const handleLogoUpload = async (file) => {
     if (!file) return;
@@ -556,6 +481,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
 
     debounceTimeoutRef.current = setTimeout(async () => {
       try {
+        console.log("Fetching location for new coordinates:", newCoordinates);
         const result =
           await locationSearch.getLocationByLatLong(newCoordinates);
         if (result) {
@@ -568,14 +494,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     }, 500);
   };
 
-  if (isLoadingData) {
-    return (
-      <div className="flex h-96 w-full items-center justify-center">
-        <p>Memuat data...</p>
-      </div>
-    );
-  }
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
@@ -584,7 +502,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     >
       <Card className={"rounded-xl border-none p-8"}>
         <div className="max-w-[75%]">
-          {/* ... (Sisa JSX Form tetap sama) ... */}
           <h3 className="mb-4 text-lg font-semibold">Data Perusahaan</h3>
           <div>
             <h3 className="mb-6 text-sm font-semibold">Informasi Pendaftar</h3>
@@ -666,7 +583,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
               />
             </FormContainer>
           </div>
-          {/* ... Sisa Form ... */}
+
           <div className="flex flex-col">
             <h3 className="my-6 text-sm font-semibold">Informasi Lokasi</h3>
             <FormContainer>
@@ -852,6 +769,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
               </div>
             </FormContainer>
           </div>
+
           <div>
             <h3 className="my-6 text-sm font-semibold">
               Informasi Rekening Perusahaan
@@ -929,8 +847,8 @@ function InformasiPendaftar({ onSave, onFormChange }) {
               setSearchValue={locationSearch.setLocationPostalCodeSearchPhrase}
               icon={{ left: "/icons/search.svg" }}
               options={locationSearch.postalCodeAutoCompleteResult}
-              getOptionLabel={(option) => option.Description}
-              onSelectValue={handleConfirmPostalCode}
+              getOptionLabel={(option) => option.Description} // Sesuaikan dengan data Anda
+              onSelectValue={handleConfirmPostalCode} // Hubungkan ke handler baru
               errorMessage={postalCodeErrorMessage}
             />
           </div>
@@ -973,8 +891,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
           type="submit"
           variant="muattrans-primary"
           className="!w-[112px]"
-          disabled={isSaving}
-          isLoading={isSaving}
         >
           Simpan
         </Button>

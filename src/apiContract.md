@@ -165,7 +165,7 @@ Success Response (200 OK)
 },
 "Type": "USER_POPUP_PREFERENCE_UPDATE"
 } -->
-
+<!--
 ## **3. Download Excel Template**
 
 **Deskripsi**
@@ -298,4 +298,105 @@ Success Response (200 OK)
 }
 },
 "Type": "UPLOAD_HISTORY"
+} -->
+<!--
+6. Get Transporter Cancellations
+   Deskripsi
+   Mengambil rekap pembatalan untuk transporter tertentu
+
+Endpoint
+GET /v1/cs/transporters/{id}/cancellations
+
+LD References
+LDCI-39 - Tab Rekap Pembatalan First Timer
+LDCI-40 - Rekap Pembatalan dengan Data
+LDCI-41 - Detail Pembatalan
+
+Parameters
+Path Parameters
+| Parameter | Tipe | Wajib | Deskripsi |
+| :------------ | :--------------- | :---- | :-------------------------- |
+| Id | String | Ya | ID unik transporter |
+
+Request Headers
+| Header | Nilai | Wajib | Deskripsi |
+| :------------ | :--------------- | :---- | :-------------------------- |
+| Authorization | Bearer {token} | Ya | JWT token untuk autentikasi |
+
+Response Success (200 OK)
+{
+"Message": {
+"Code": 200,
+"Text": "Rekap pembatalan berhasil diambil"
+},
+"Data": {
+"cancellations": [
+{
+"id": "uuid-cancellation-1",
+"orderId": "uuid-order-1",
+"orderCode": "ORDER-2023-001",
+"orderType": "INSTANT",
+“pickupLocation”: “jakarta”,
+“dropoffLocation” :”surabaya”,
+“truckType”: ”Colt Diesel Double”,
+“truckCarrierType”: “Bak Terbuka”,
+“totalFleets”: 1,
+“cargos”:[
+{ name: ‘Besi 1’, weight: 100, weightUnit: ’Kg’ },
+{ name: ‘Besi 2’, weight: 100, weightUnit: ’Kg’ }
+{ name: ‘Besi 3’, weight: 100, weightUnit: ’Kg’ }
+],
+“totalCargos”: 1000,
+"cancelledAt": "2023-07-15T14:30:00Z",
+“cancelledImage”: [ “http://s3.webp”, “http://s3.webp”, “http://s3.webp” ]
+"reason": "Driver tidak tersedia",
+"penaltyPoin": 1,
+“status”: “”
 }
+],
+},
+"Type": "GET_TRANSPORTER_CANCELLATIONS"
+}
+
+8. Get Transporter Location
+
+Deskripsi
+Mengambil data lokasi transporter untuk ditampilkan di peta
+
+Endpoint
+GET /v1/cs/transporters/{id}/location
+
+LD References
+LDCI-43 - Melihat Lokasi Transporter di Peta
+
+Parameters
+Path Parameters
+Parameters
+Path Parameters
+| Parameter | Tipe | Wajib | Deskripsi |
+| :------------ | :--------------- | :---- | :-------------------------- |
+| Id | String | Ya | ID unik transporter |
+
+Request Headers
+| Header | Nilai | Wajib | Deskripsi |
+| :------------ | :--------------- | :---- | :-------------------------- |
+| Authorization | Bearer {token} | Ya | JWT token untuk autentikasi |
+
+Response Success (200 OK)
+{
+"Message": {
+"Code": 200,
+"Text": "Data lokasi berhasil diambil"
+},
+"Data": {
+"companyName": "PT Transport Jaya", // [dbm_mt_transporter.companyName]
+"address": "Jl. Sudirman No. 1, Jakarta", // [dbm_mt_transporter.companyAddress]
+"coordinates": {
+"latitude": -6.2088,
+"longitude": 106.8456
+},
+"city": "Jakarta",
+"province": "DKI Jakarta"
+},
+"Type": "GET_TRANSPORTER_LOCATION"
+} -->
