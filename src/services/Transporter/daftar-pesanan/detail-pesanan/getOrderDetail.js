@@ -1,23 +1,11 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
-import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 const useMockData = true;
 
-const otherStatus = [
-  {
-    status: OrderStatusEnum.UNLOADING,
-    count: 1,
-    description: "Status tidak diketahui",
-  },
-  {
-    status: OrderStatusEnum.LOADING,
-    count: 1,
-    description: "Status tidak diketahui",
-  },
-];
+const otherStatus = [];
 
 const mockApiResult = {
   Message: {
@@ -26,8 +14,8 @@ const mockApiResult = {
   },
   Data: {
     orderId: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1",
-    orderCode: "MT25A010A",
-    invoiceNumber: "INV/MT25A010A",
+    orderCode: "MT25A002A",
+    invoiceNumber: "INV/MT25A002A",
     // orderStatus: ORDER_STATUS.NEED_CHANGE_RESPONSE,
     // orderStatus: "CONFIRMED_ORDER",
     // orderStatus: "CANCELLED_TRANSPORTER",
@@ -37,15 +25,15 @@ const mockApiResult = {
     // orderStatus: ORDER_STATUS.COMPLETED,
     // orderStatus: ORDER_STATUS.LOADING,
     // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-    orderStatus: ORDER_STATUS.UNLOADING,
+    orderStatus: ORDER_STATUS.LOADING,
     orderStatusUnit: 1,
     truckCount: 1,
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
-    loadTimeEnd: "2024-10-10T08:00:00.000Z",
+    loadTimeEnd: "2024-10-04T08:00:00.000Z",
     estimatedDistance: 178,
     isHalalLogistics: true,
-    hasSOSAlert: false,
+    hasSOSAlert: true,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
       truckTypeName: "Colt Diesel Engkel",
@@ -264,9 +252,10 @@ const mockApiResult = {
         driverName: "Noel Galagher",
         driverAvatar: "/img/avatar.png",
         vehicleImage: "/img/truck.png",
+        hasSOSAlert: true,
         status: "ACTIVE",
-        currentStep: -1, // Tidak ada step yang aktif untuk WAITING_CONFIRMATION_SHIPPER
-        orderStatus: "WAITING_CONFIRMATION_SHIPPER", // Status dari order
+        currentStep: 1, // Proses Muat step
+        orderStatus: "LOADING", // Status dari order
       },
     ],
     otherStatus,

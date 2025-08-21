@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
+import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 
 import CardLacakArmada from "./components/CardLacakArmada";
 import LacakArmadaHeader from "./components/LacakArmadaHeader";
@@ -17,10 +17,10 @@ const LacakArmada = ({ dataOrderDetail }) => {
 
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
     const riwayatStatuses = [
-      ORDER_STATUS.COMPLETED,
-      ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-      ORDER_STATUS.CANCELLED_BY_SHIPPER,
-      ORDER_STATUS.CANCELLED_BY_SYSTEM,
+      TRACKING_STATUS.COMPLETED,
+      "CANCELLED_BY_TRANSPORTER",
+      "CANCELLED_BY_SHIPPER",
+      "CANCELLED_BY_SYSTEM",
     ];
 
     return riwayatStatuses.includes(dataOrderDetail.orderStatus)
@@ -41,120 +41,110 @@ const LacakArmada = ({ dataOrderDetail }) => {
     // Status pembatalan menggunakan cancelledSteps (index 1 untuk "Dibatalkan")
     if (
       [
-        ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-        ORDER_STATUS.CANCELLED_BY_SHIPPER,
-        ORDER_STATUS.CANCELLED_BY_SYSTEM,
+        "CANCELLED_BY_TRANSPORTER",
+        "CANCELLED_BY_SHIPPER",
+        "CANCELLED_BY_SYSTEM",
       ].includes(status)
     ) {
       return 1; // Step "Dibatalkan" dalam cancelledSteps
     }
 
-    // Cek apakah ada layanan tambahan "kirim berkas"
-    const hasDocumentService = dataOrderDetail?.additionalServices?.some(
-      (service) => service.serviceName === "Kirim Berkas"
-    );
-
     switch (status) {
-      case ORDER_STATUS.COMPLETED:
-        return hasDocumentService ? 5 : 3; // Selesai (6 step: index 5, 4 step: index 3)
-      case ORDER_STATUS.DOCUMENT_DELIVERY:
-        return hasDocumentService ? 4 : 3; // Proses Pengiriman Dokumen (6 step: index 4, 4 step: index 3)
-      case ORDER_STATUS.DOCUMENT_PREPARATION:
-        return hasDocumentService ? 3 : 3; // Dokumen Sedang Disiapkan (6 step: index 3, 4 step: index 3)
-      case ORDER_STATUS.LOADING:
-        return hasDocumentService ? 2 : 1; // Proses Muat (6 step: index 2, 4 step: index 1)
-      case ORDER_STATUS.HEADING_TO_LOADING:
-        return hasDocumentService ? 1 : 1; // Proses Muat
-      case ORDER_STATUS.HEADING_TO_UNLOADING:
-        return hasDocumentService ? 1 : 1; // Proses Muat
-      case ORDER_STATUS.UNLOADING:
-        return hasDocumentService ? 2 : 2; // Proses Bongkar (6 step: index 2, 4 step: index 2)
-      case ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER:
+      case TRACKING_STATUS.COMPLETED:
+        return 5; // Selesai (6 step: index 5)
+      case "DOCUMENT_DELIVERY":
+        return 4; // Proses Pengiriman Dokumen (6 step: index 4)
+      case "DOCUMENT_PREPARATION":
+        return 3; // Dokumen Sedang Disiapkan (6 step: index 3)
+      case TRACKING_STATUS.LOADING:
+        return 1; // Proses Muat (6 step: index 1)
+      case "HEADING_TO_LOADING":
+        return 1; // Proses Muat
+      case "HEADING_TO_UNLOADING":
+        return 2; // Proses Bongkar (6 step: index 2)
+      case TRACKING_STATUS.UNLOADING:
+        return 2; // Proses Bongkar (6 step: index 2)
+      case "WAITING_CONFIRMATION_SHIPPER":
         return -1; // Tidak ada step yang aktif (semua abu-abu)
-      case ORDER_STATUS.SCHEDULED_FLEET:
+      case "SCHEDULED_FLEET":
         return 0; // Armada Dijadwalkan (step 1, index 0)
       default:
         return 0; // Armada Dijadwalkan
     }
   };
 
-  // Data stepper untuk tracking progress armada - sesuai desain Figma
+  // Data stepper untuk tracking progress armada - selalu 6 steps untuk LOADING
   const stepperData = useShallowMemo(() => {
-    // Cek apakah ada layanan tambahan "kirim berkas" di data mock
-    const hasDocumentService = dataOrderDetail?.additionalServices?.some(
-      (service) => service.serviceName === "Kirim Berkas"
-    );
-
-    // Jika ada layanan "kirim berkas", tampilkan 6 step
-    if (hasDocumentService) {
+    // Jika status LOADING, tampilkan 6 step
+    if (dataOrderDetail?.orderStatus === "LOADING") {
       return [
         {
           label: "Armada Dijadwalkan",
-          status: ORDER_STATUS.SCHEDULED_FLEET,
+          status: "SCHEDULED_FLEET",
           icon: "/icons/stepper/stepper-scheduled.svg",
           subtitle: "",
         },
         {
           label: "Proses Muat",
-          status: ORDER_STATUS.LOADING,
+          status: TRACKING_STATUS.LOADING,
           icon: "/icons/stepper/stepper-box.svg",
           subtitle: "",
         },
         {
           label: "Proses Bongkar",
-          status: ORDER_STATUS.UNLOADING,
+          status: TRACKING_STATUS.UNLOADING,
           icon: "/icons/stepper/stepper-box-opened.svg",
           subtitle: "",
         },
         {
           label: "Dokumen Sedang Disiapkan",
-          status: ORDER_STATUS.DOCUMENT_PREPARATION,
+          status: "DOCUMENT_PREPARATION",
           icon: "/icons/stepper/stepper-document-preparing.svg",
           subtitle: "",
         },
         {
           label: "Proses Pengiriman Dokumen",
-          status: ORDER_STATUS.DOCUMENT_DELIVERY,
+          status: "DOCUMENT_DELIVERY",
           icon: "/icons/stepper/stepper-document-delivery.svg",
           subtitle: "",
         },
         {
           label: "Selesai",
-          status: ORDER_STATUS.COMPLETED,
+          status: TRACKING_STATUS.COMPLETED,
           icon: "/icons/stepper/stepper-completed.svg",
           subtitle: "",
         },
       ];
     }
 
-    // Jika tidak ada layanan "kirim berkas", tampilkan 4 step
+    // Jika tidak LOADING, tampilkan 4 step
     return [
       {
         label: "Armada Dijadwalkan",
-        status: ORDER_STATUS.SCHEDULED_FLEET,
+        status: "SCHEDULED_FLEET",
         icon: "/icons/stepper/stepper-scheduled.svg",
         subtitle: "",
       },
       {
         label: "Proses Muat",
-        status: ORDER_STATUS.LOADING,
+        status: TRACKING_STATUS.LOADING,
         icon: "/icons/stepper/stepper-box.svg",
         subtitle: "",
       },
       {
         label: "Proses Bongkar",
-        status: ORDER_STATUS.UNLOADING,
+        status: TRACKING_STATUS.UNLOADING,
         icon: "/icons/stepper/stepper-box-opened.svg",
         subtitle: "",
       },
       {
         label: "Selesai",
-        status: ORDER_STATUS.COMPLETED,
+        status: TRACKING_STATUS.COMPLETED,
         icon: "/icons/stepper/stepper-completed.svg",
         subtitle: "",
       },
     ];
-  }, [dataOrderDetail?.additionalServices]);
+  }, [dataOrderDetail?.orderStatus]);
   // Ambil data armada dari dataOrderDetail.fleet
   const armadaList =
     dataOrderDetail?.fleet?.map((fleet) => ({
@@ -163,17 +153,18 @@ const LacakArmada = ({ dataOrderDetail }) => {
       driverName: fleet.driverName,
       driverAvatar: fleet.driverAvatar,
       vehicleImage: fleet.vehicleImage,
-      currentStep: getCurrentStepFromStatus(dataOrderDetail?.orderStatus), // Index step yang sedang aktif (0-based)
-      status: dataOrderDetail?.orderStatus || ORDER_STATUS.SCHEDULED_FLEET, // Status dari order detail
+      hasSOSAlert: fleet.hasSOSAlert || false,
+      currentStep: getCurrentStepFromStatus(fleet.orderStatus), // Index step yang sedang aktif (0-based)
+      status: fleet.orderStatus || "SCHEDULED_FLEET", // Status dari fleet individual
     })) || [];
   // Kategorisasi armada berdasarkan status order
   const categorizeArmada = (armada) => {
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
     const riwayatStatuses = [
-      ORDER_STATUS.COMPLETED,
-      ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-      ORDER_STATUS.CANCELLED_BY_SHIPPER,
-      ORDER_STATUS.CANCELLED_BY_SYSTEM,
+      TRACKING_STATUS.COMPLETED,
+      "CANCELLED_BY_TRANSPORTER",
+      "CANCELLED_BY_SHIPPER",
+      "CANCELLED_BY_SYSTEM",
     ];
 
     return riwayatStatuses.includes(armada.status) ? "riwayat" : "aktif";
@@ -195,12 +186,16 @@ const LacakArmada = ({ dataOrderDetail }) => {
   const riwayatCount = armadaList.filter(
     (armada) => categorizeArmada(armada) === "riwayat"
   ).length;
+
+  // Hitung jumlah armada dengan SOS alert
+  const sosCount = armadaList.filter((armada) => armada.hasSOSAlert).length;
+
   // Cek apakah hanya ada satu data untuk menyembunyikan search
   const shouldShowSearch = armadaByTab.length > 1;
 
   // Cek apakah button "Lihat Posisi Armada" harus disembunyikan
   const shouldHidePositionButton =
-    dataOrderDetail?.orderStatus === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER;
+    dataOrderDetail?.orderStatus === "WAITING_CONFIRMATION_SHIPPER";
 
   // Cek apakah harus menampilkan DataNotFound (ketika ada search value tapi tidak ada hasil)
   const shouldShowDataNotFound =
@@ -232,6 +227,8 @@ const LacakArmada = ({ dataOrderDetail }) => {
           onDetailStatusClick={handleDetailStatusClick}
           hidePositionButton={shouldHidePositionButton}
           showDataNotFound={shouldShowDataNotFound}
+          sosUnit={sosCount}
+          isSOS={sosCount > 1}
         />
 
         {/* Fleet Cards */}
@@ -247,6 +244,7 @@ const LacakArmada = ({ dataOrderDetail }) => {
               vehicleId={armada.id}
               driverId={armada.id}
               order={dataOrderDetail}
+              hasSOSAlert={armada.hasSOSAlert}
             />
           ))}
         </div>

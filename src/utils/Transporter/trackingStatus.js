@@ -90,6 +90,23 @@ export const TRACKING_STATUS_CONFIG = {
     label: "Tiba di Lokasi Bongkar",
     variant: "primary",
   },
+  // Add mapping for order status that should use tracking status
+  ["LOADING"]: {
+    label: "Sedang Muat",
+    variant: "primary",
+  },
+  ["SCHEDULED_FLEET"]: {
+    label: "Armada Dijadwalkan",
+    variant: "primary",
+  },
+  ["UNLOADING"]: {
+    label: "Proses Bongkar",
+    variant: "primary",
+  },
+  ["COMPLETED"]: {
+    label: "Selesai",
+    variant: "success",
+  },
 };
 
 // Tracking Status Flow Groups

@@ -11,7 +11,7 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 function LacakArmadaHeader({
-  sosUnit = 2,
+  sosUnit = 0,
   activeCount = 0,
   historyCount = 1,
   activeTab = "aktif",
@@ -47,14 +47,16 @@ function LacakArmadaHeader({
           </h2>
 
           {/* SOS Badge */}
-          {isSOS && (
+          {isSOS && sosUnit > 0 && (
             <div className="flex items-center gap-2">
               <div className="inline-flex h-6 items-center justify-center rounded-md bg-red-500 px-3 text-xs font-semibold text-white">
                 SOS : {sosUnit} Unit
               </div>
-              <a href="#" className="text-sm font-medium text-blue-600">
-                Lihat SOS
-              </a>
+              {sosUnit > 1 && (
+                <a href="#" className="text-sm font-medium text-blue-600">
+                  Lihat SOS
+                </a>
+              )}
             </div>
           )}
 
