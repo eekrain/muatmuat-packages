@@ -9,8 +9,8 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Button from "@/components/Button/Button";
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardFleetSOS from "@/components/Card/CardFleetSOS";
+import CustomDropdown from "@/components/CustomDropdown";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import Dropdown from "@/components/Dropdown/Dropdown";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import {
@@ -229,21 +229,23 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
             </PopoverTrigger>
             <PopoverContent
               className="w-[300px] rounded-xl border-0 bg-white p-0 shadow-lg"
-              align="center"
-              sideOffset={16}
+              side="right"
+              align="start"
+              alignOffset={-4}
+              sideOffset={12}
             >
-              {/* Arrow pointing upward */}
+              {/* Arrow pointing left towards the button */}
               <div
                 className="absolute"
                 style={{
                   width: 0,
                   height: 0,
                   borderStyle: "solid",
-                  borderWidth: "0 12px 12px 12px",
-                  borderColor: "transparent transparent white transparent",
-                  top: "-12px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
+                  borderWidth: "8px 10px 8px 0",
+                  borderColor: "transparent white transparent transparent",
+                  left: "-9px",
+                  top: "12px",
+                  filter: "drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.1))",
                 }}
               />
 
@@ -271,8 +273,8 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                   <label className="mb-3 block text-sm font-medium">
                     Transporter
                   </label>
-                  <Dropdown
-                    className="!w-[250px]"
+                  <CustomDropdown
+                    className="w-[250px]"
                     options={[
                       { name: "Truk Jaya Abadi", value: "truk-jaya" },
                       { name: "Siba Surya", value: "siba-surya" },
@@ -293,7 +295,6 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                         transporter: transporterIds,
                       }));
                     }}
-                    onSearchValue={() => {}}
                   />
                 </div>
 
@@ -389,14 +390,16 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                 key={`${activeTab}-${fleet.fleetId || index}`}
                 className="border-neutral-400 p-0 !shadow-none"
               >
-                <CardHeader className="border-t-none rounded-t-md bg-red-500 p-1">
-                  <div className="flex items-center justify-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-white" />
-                    <p className="text-center text-xs font-semibold text-white">
-                      Laporan belum diproses Transporter
-                    </p>
-                  </div>
-                </CardHeader>
+                {!fleet.acknowledgeAt && (
+                  <CardHeader className="border-t-none rounded-t-md bg-red-500 p-1">
+                    <div className="flex items-center justify-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-white" />
+                      <p className="text-center text-xs font-semibold text-white">
+                        Laporan belum diproses Transporter
+                      </p>
+                    </div>
+                  </CardHeader>
+                )}
 
                 <CardHeader className="border-neutral-400 bg-[#FFE9ED] !p-0">
                   <div className="flex items-center justify-between p-4">
