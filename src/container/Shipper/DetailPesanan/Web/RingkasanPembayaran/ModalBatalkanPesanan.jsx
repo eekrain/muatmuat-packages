@@ -41,6 +41,8 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const { data: bankOptions } = useGetAvailableBankOptions();
   const params = useParams();
   const [cancelFormErrors, setCancelFormErrors] = useState({});
+  // const { mutate } = useGetDetailPesananData(orderId);
+
   const handleProceedCancelOrder = ({
     selectedReason,
     isOtherReason,

@@ -69,7 +69,7 @@ export function SelectedProvinces({
 
   const handleConfirmRemove = () => {
     if (provinceToRemove) {
-      onRemove(provinceToRemove);
+      onRemove(provinceToRemove.id);
       setIsConfirmationOpen(false);
       setProvinceToRemove(null);
     }

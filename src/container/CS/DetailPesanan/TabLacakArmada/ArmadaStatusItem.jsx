@@ -18,16 +18,19 @@ export const ArmadaStatusItem = ({ item }) => {
 
   return (
     <div className="flex flex-col gap-4 bg-white p-4">
-      <div className="flex items-center gap-2">
-        <BadgeStatusPesanan variant={status?.variant}>
-          {status?.label}
-        </BadgeStatusPesanan>
-        {item?.sosStatus?.hasSOS && (
-          <span className="flex h-6 items-center rounded-md bg-error-400 px-2 text-xs font-semibold text-error-50">
-            SOS
-          </span>
-        )}
-      </div>
+      {status && (
+        <div className="flex items-center gap-2">
+          <BadgeStatusPesanan variant={status?.variant}>
+            {status?.label}
+          </BadgeStatusPesanan>
+          {item?.sosStatus?.hasSOS && (
+            <span className="flex h-6 items-center rounded-md bg-error-400 px-2 text-xs font-semibold text-error-50">
+              SOS
+            </span>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -142,6 +142,25 @@ const ArmadaTable = ({
   const { t } = useTranslation();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
+  // Local search input state to avoid triggering parent on every keystroke.
+  const [localSearch, setLocalSearch] = useState(searchValue || "");
+
+  useEffect(() => {
+    // keep local input in sync when parent resets/clears searchValue
+    setLocalSearch(searchValue || "");
+  }, [searchValue]);
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key !== "Enter") return;
+
+    const value = (e.target && e.target.value) || localSearch || "";
+    // Only trigger search when empty (clear) or length > 3
+    if (value.length === 0 || value.length > 2) {
+      onSearchChange?.(value);
+    }
+    // Prevent default form submit if inside a form
+    e.preventDefault();
+  };
 
   const handleCheckboxChange = (index) => {
     if (selectedRows.includes(index)) {
@@ -196,20 +215,27 @@ const ArmadaTable = ({
             <div className="relative">
               <Input
                 icon={{ left: "/icons/search.svg" }}
-                appearance={{ iconClassName: "text-neutral-700" }}
+                appearance={{
+                  iconClassName: "text-neutral-700",
+                  containerClassName: "min-w-[272px]",
+                }}
                 className="!w-fit !p-0 pr-8 font-medium"
                 placeholder={t(
                   "ArmadaTable.placeholderCariArmada",
                   {},
                   "Cari Armada"
                 )}
-                value={searchValue}
-                onChange={(e) => onSearchChange?.(e.target.value)}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
               />
-              {searchValue && (
+              {localSearch && (
                 <button
                   type="button"
-                  onClick={() => onSearchChange?.("")}
+                  onClick={() => {
+                    setLocalSearch("");
+                    onSearchChange?.("");
+                  }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700"
                 >
                   <IconComponent
@@ -321,7 +347,7 @@ const ArmadaTable = ({
                       )}
                     </span>
                   </th>
-                  <th className="w-[180px]">
+                  <th className="w-[200px]">
                     <span className="text-xs font-semibold text-gray-500">
                       {t(
                         "ArmadaTable.headerTahunRegistrasi",
@@ -331,13 +357,25 @@ const ArmadaTable = ({
                     </span>
                   </th>
                   <th className="w-[261px]">
-                    <span className="text-xs font-semibold text-gray-500">
-                      {t(
+                    {/* Keep translation but render parenthetical part italic */}
+                    {(() => {
+                      const full = t(
                         "ArmadaTable.headerDimensiCarrier",
                         {},
                         "Dimensi Carrier (Opsional)"
-                      )}
-                    </span>
+                      );
+                      const match = full.match(/^(.*?)(\s*\(.*\))$/);
+                      const before = match ? match[1] : full;
+                      const paren = match ? match[2] : null;
+                      return (
+                        <span className="text-xs font-semibold text-gray-500">
+                          {before}
+                          {paren && (
+                            <span className="font-normal italic">{paren}</span>
+                          )}
+                        </span>
+                      );
+                    })()}
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">

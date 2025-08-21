@@ -11,67 +11,12 @@ import {
   ModalTitle,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
 import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
-const onboardingSlides = [
-  {
-    title: "Daftar Pesanan Aktif",
-    imgSrc: "/img/monitoring/onboarding/slide-1.png",
-    content:
-      "Kumpulan permintaan jasa angkut dari shipper yang telah kamu terima, baik yang belum berjalan maupun sedang berjalan dan akan otomatis hilang setelah pesanan selesai.",
-  },
-  {
-    title: "Respon Perubahan",
-    imgSrc: "/img/monitoring/onboarding/slide-2.png",
-    content:
-      "Status yang menandakan bahwa shipper telah mengubah informasi pada pesanan sehingga kamu perlu memeriksa dan merespon perubahan tersebut.",
-  },
-  {
-    title: "Perlu Konfirmasi Siap",
-    imgSrc: "/img/monitoring/onboarding/slide-3.png",
-    content:
-      "Status yang menandakan bahwa pesanan memerlukan konfirmasi kesiapan kamu untuk menangani pesanan tersebut.",
-  },
-  {
-    title: "Assign Armada",
-    imgSrc: "/img/monitoring/onboarding/slide-4.png",
-    content:
-      "Status yang menandakan bahwa pesanan telah mendekati hari muat dan memerlukan penugasan suatu armada.",
-  },
-  {
-    title: "Armada Dijadwalkan",
-    imgSrc: "/img/monitoring/onboarding/slide-5.png",
-    content:
-      "Status yang menandakan bahwa armada sudah ditugaskan untuk suatu pesanan terjadwal dan sedang menunggu waktu muat yang telah ditentukan.",
-  },
-  {
-    title: "Pesanan Terkonfirmasi",
-    imgSrc: "/img/monitoring/onboarding/slide-6.png",
-    content:
-      "Status yang menandakan bahwa armada telah ditugaskan untuk suatu pesanan instan dan sedang menunggu waktu muat yang telah ditentukan.",
-  },
-  {
-    title: "Menunggu Konfirmasi",
-    imgSrc: "/img/monitoring/onboarding/slide-7.png",
-    content:
-      "Status yang menandakan bahwa kamu telah menerima suatu pesanan instan namun masih menunggu pembayaran dari shipper sebelum proses dapat dilanjutkan.",
-  },
-  {
-    title: "Proses Muat",
-    imgSrc: "/img/monitoring/onboarding/slide-8.png",
-    content:
-      "Status yang mencakup rangkaian aktivitas pengambilan barang (muat), mulai dari perjalanan ke lokasi, kedatangan, antrian, hingga proses sedang memuat barang.",
-  },
-  {
-    title: "Proses Bongkar",
-    imgSrc: "/img/monitoring/onboarding/slide-9.png",
-    content:
-      "Status yang mencakup rangkaian aktivitas pengiriman barang (bongkar), mulai dari perjalanan ke lokasi, kedatangan, antrian, hingga proses sedang membongkar barang.",
-  },
-];
-
 const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -82,6 +27,95 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
     error,
     mutate,
   } = useGetUserPopupPreference();
+
+  // Move onboarding slides inside component to access t() function
+  const onboardingSlides = [
+    {
+      title: t("Onboarding.activeOrdersTitle", {}, "Daftar Pesanan Aktif"),
+      imgSrc: "/img/monitoring/onboarding/slide-1.png",
+      content: t(
+        "Onboarding.activeOrdersContent",
+        {},
+        "Kumpulan permintaan jasa angkut dari shipper yang telah kamu terima, baik yang belum berjalan maupun sedang berjalan dan akan otomatis hilang setelah pesanan selesai."
+      ),
+    },
+    {
+      title: t("Onboarding.responseChangeTitle", {}, "Respon Perubahan"),
+      imgSrc: "/img/monitoring/onboarding/slide-2.png",
+      content: t(
+        "Onboarding.responseChangeContent",
+        {},
+        "Status yang menandakan bahwa shipper telah mengubah informasi pada pesanan sehingga kamu perlu memeriksa dan merespon perubahan tersebut."
+      ),
+    },
+    {
+      title: t("Onboarding.needConfirmationTitle", {}, "Perlu Konfirmasi Siap"),
+      imgSrc: "/img/monitoring/onboarding/slide-3.png",
+      content: t(
+        "Onboarding.needConfirmationContent",
+        {},
+        "Status yang menandakan bahwa pesanan memerlukan konfirmasi kesiapan kamu untuk menangani pesanan tersebut."
+      ),
+    },
+    {
+      title: t("Onboarding.assignFleetTitle", {}, "Assign Armada"),
+      imgSrc: "/img/monitoring/onboarding/slide-4.png",
+      content: t(
+        "Onboarding.assignFleetContent",
+        {},
+        "Status yang menandakan bahwa pesanan telah mendekati hari muat dan memerlukan penugasan suatu armada."
+      ),
+    },
+    {
+      title: t("Onboarding.scheduledFleetTitle", {}, "Armada Dijadwalkan"),
+      imgSrc: "/img/monitoring/onboarding/slide-5.png",
+      content: t(
+        "Onboarding.scheduledFleetContent",
+        {},
+        "Status yang menandakan bahwa armada sudah ditugaskan untuk suatu pesanan terjadwal dan sedang menunggu waktu muat yang telah ditentukan."
+      ),
+    },
+    {
+      title: t("Onboarding.confirmedOrderTitle", {}, "Pesanan Terkonfirmasi"),
+      imgSrc: "/img/monitoring/onboarding/slide-6.png",
+      content: t(
+        "Onboarding.confirmedOrderContent",
+        {},
+        "Status yang menandakan bahwa armada telah ditugaskan untuk suatu pesanan instan dan sedang menunggu waktu muat yang telah ditentukan."
+      ),
+    },
+    {
+      title: t(
+        "Onboarding.waitingConfirmationTitle",
+        {},
+        "Menunggu Konfirmasi"
+      ),
+      imgSrc: "/img/monitoring/onboarding/slide-7.png",
+      content: t(
+        "Onboarding.waitingConfirmationContent",
+        {},
+        "Status yang menandakan bahwa kamu telah menerima suatu pesanan instan namun masih menunggu pembayaran dari shipper sebelum proses dapat dilanjutkan."
+      ),
+    },
+    {
+      title: t("Onboarding.loadingProcessTitle", {}, "Proses Muat"),
+      imgSrc: "/img/monitoring/onboarding/slide-8.png",
+      content: t(
+        "Onboarding.loadingProcessContent",
+        {},
+        "Status yang mencakup rangkaian aktivitas pengambilan barang (muat), mulai dari perjalanan ke lokasi, kedatangan, antrian, hingga proses sedang memuat barang."
+      ),
+    },
+    {
+      title: t("Onboarding.unloadingProcessTitle", {}, "Proses Bongkar"),
+      imgSrc: "/img/monitoring/onboarding/slide-9.png",
+      content: t(
+        "Onboarding.unloadingProcessContent",
+        {},
+        "Status yang mencakup rangkaian aktivitas pengiriman barang (bongkar), mulai dari perjalanan ke lokasi, kedatangan, antrian, hingga proses sedang membongkar barang."
+      ),
+    },
+  ];
 
   // useEffect hanya untuk membuka modal secara otomatis
   useEffect(() => {
@@ -117,11 +151,23 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
             });
           } else {
             throw new Error(
-              response?.Message?.Text || "Gagal memperbarui preferensi"
+              response?.Message?.Text ||
+                t(
+                  "Onboarding.updatePreferenceError",
+                  {},
+                  "Gagal memperbarui preferensi"
+                )
             );
           }
         } catch (err) {
-          console.error("Gagal memperbarui preferensi popup:", err);
+          console.error(
+            t(
+              "Onboarding.updatePreferenceErrorLog",
+              {},
+              "Gagal memperbarui preferensi popup:"
+            ),
+            err
+          );
         } finally {
           setIsUpdating(false);
         }
@@ -146,19 +192,32 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
           <ModalHeader size="small" />
           {/* Hidden title for accessibility */}
           <ModalTitle className="sr-only">
-            Panduan Daftar Pesanan Aktif
+            {t("Onboarding.modalTitle", {}, "Panduan Daftar Pesanan Aktif")}
           </ModalTitle>
           <div>
             {isLoading ? (
               <div className="flex h-[420px] items-center justify-center p-6">
-                <div className="text-center text-neutral-600">Loading...</div>
+                <div className="text-center text-neutral-600">
+                  {t("Onboarding.loading", {}, "Loading...")}
+                </div>
               </div>
             ) : error ? (
               <div className="flex h-[420px] items-center justify-center p-6">
                 <div className="text-center text-red-600">
-                  <div className="mb-2">Gagal memuat preferensi popup</div>
+                  <div className="mb-2">
+                    {t(
+                      "Onboarding.loadPreferenceError",
+                      {},
+                      "Gagal memuat preferensi popup"
+                    )}
+                  </div>
                   <div className="text-sm text-neutral-500">
-                    {error.message || "Terjadi kesalahan saat memuat data"}
+                    {error.message ||
+                      t(
+                        "Onboarding.loadDataError",
+                        {},
+                        "Terjadi kesalahan saat memuat data"
+                      )}
                   </div>
                 </div>
               </div>
@@ -207,7 +266,13 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
                         color: "#000000",
                       }}
                     >
-                      {isUpdating ? "Menyimpan..." : "Jangan Tampilkan Lagi"}
+                      {isUpdating
+                        ? t("Onboarding.saving", {}, "Menyimpan...")
+                        : t(
+                            "Onboarding.dontShowAgain",
+                            {},
+                            "Jangan Tampilkan Lagi"
+                          )}
                     </span>
                   </Checkbox>
                 </div>

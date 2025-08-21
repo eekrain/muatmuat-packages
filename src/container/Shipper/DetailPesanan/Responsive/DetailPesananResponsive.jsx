@@ -4,10 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import {
-  OrderStatusEnum,
-  getOrderStatusRank,
-} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import {
   ResponsiveProvider,
   ResponsiveRoute,
@@ -60,6 +57,7 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
   //   navigation.replace("/CariSemuaDriver");
   // }, []);
   const params = useParams();
+  console.log(params, "params");
   const { setIsGlobalLoading } = useLoadingAction();
 
   const { data } = useGetDetailPesananData(params.orderId);
@@ -83,8 +81,8 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
   }, []);
   const shouldFetchOldDriver =
     dataStatusPesanan?.orderStatus &&
-    getOrderStatusRank(dataStatusPesanan.orderStatus) >=
-      getOrderStatusRank(OrderStatusEnum.LOADING);
+    (dataStatusPesanan.orderStatus === OrderStatusEnum.LOADING ||
+      dataStatusPesanan.orderStatus === OrderStatusEnum.UNLOADING);
 
   const { data: oldDriverData } = useGetOldDriver(
     shouldFetchOldDriver ? params.orderId : null,

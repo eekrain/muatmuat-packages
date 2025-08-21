@@ -59,20 +59,21 @@ When user requests deep translation, follow these steps:
 ### Step 1: Build Component Dependency Tree
 
 ```javascript
-// Example: For MapInterfaceOverlay.jsx
-Main Component: src/container/Shared/Map/MapInterfaceOverlay.jsx
+// Example: For DaftarPesananAktif.jsx
+Main Component: src/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif.jsx
 ├── Local Imports (ALWAYS translate):
-│   ├── ./components/FilterPopover.jsx
-│   ├── ./components/LegendButton.jsx
-│   └── ./components/SearchWithSuggestions.jsx
+│   └── ../Onboarding/Onboarding.jsx
 ├── Project Components (TRANSLATE if UI component):
 │   ├── @/components/Button/Button.jsx
-│   ├── @/components/Form/InfoTooltip.jsx
-│   └── @/components/Badge/BadgeStatus.jsx
+│   ├── @/components/Badge/BadgeStatus.jsx
+│   ├── @/components/Search/Search.jsx
+│   ├── @/components/Table/Table.jsx
+│   └── @/container/Shared/OrderModal/* (various modals)
 └── Skip (libraries/hooks/utils):
-    ├── react, next/link (external libraries)
-    ├── @/hooks/use-auth (hooks)
-    └── @/lib/utils (utilities)
+    ├── react, next/navigation (external libraries)
+    ├── @/hooks/use-translation (hooks)
+    ├── @/lib/toast, @/lib/utils (utilities)
+    └── @/services/*, @/utils/* (services/utils)
 ```
 
 ### Step 2: Determine What to Translate
@@ -80,7 +81,7 @@ Main Component: src/container/Shared/Map/MapInterfaceOverlay.jsx
 **ALWAYS Translate:**
 
 - Main component
-- Local relative imports (./components/\*)
+- Local relative imports (./components/\*, ../Onboarding/\*, ../components/\*, etc.)
 - UI components from @/components/\* that render text
 - Container components from @/container/\*
 
@@ -401,6 +402,7 @@ npm run t merge <file>        # Merge translated keys back
 npm run t validate [path]     # Check for orphaned/missing translations
 npm run t cleanup             # Remove temporary files
 npm run t status              # Show translation status
+npm run t remove-duplicates   # Remove duplicate keys from all mock files
 ```
 
 ---
@@ -443,12 +445,10 @@ import { SearchWithSuggestions } from "./components/Search";
 
 ```bash
 # Order of processing:
-1. FilterPopover.jsx (no local imports)
-2. LegendButton.jsx (no local imports)
-3. SearchWithSuggestions.jsx (no local imports)
-4. Button.jsx (if has translatable text)
-5. InfoTooltip.jsx (if has translatable text)
-6. MapInterfaceOverlay.jsx (imports all above)
+1. Onboarding.jsx (no local imports)
+2. Button.jsx, Badge.jsx, Search.jsx, Table.jsx (if have translatable text)
+3. OrderModal components (if have translatable text)
+4. DaftarPesananAktif.jsx (imports all above)
 ```
 
 #### 3. For each file, add translations:

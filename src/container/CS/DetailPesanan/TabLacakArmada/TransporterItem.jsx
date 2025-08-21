@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
@@ -5,7 +7,15 @@ import { ArmadaStatusItem } from "./ArmadaStatusItem";
 
 export const TransporterItem = ({ data }) => {
   // Calculate total armada by summing all fleets from all transporters
-  const totalArmada = data?.fleets?.length || 0;
+  const asssignedFleets = data?.fleets?.length || 0;
+
+  const fleets = useMemo(() => {
+    return Array.from({ length: data?.fleetsOrdered || 0 }).map((_, index) => {
+      const temp = data?.fleets?.[index];
+      if (temp) return temp;
+      return null;
+    });
+  }, [data?.fleets, data?.fleetsOrdered]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-neutral-400">
@@ -27,7 +37,7 @@ export const TransporterItem = ({ data }) => {
                   src="/icons/transporter16.svg"
                   className="size-4 text-muat-trans-secondary-900"
                 />
-                <span>{totalArmada} Unit</span>
+                <span>{data?.fleetsOrdered} Unit</span>
               </div>
               <div className="size-0.5 rounded-full bg-neutral-600" />
               <div className="flex items-center gap-1">
@@ -50,9 +60,19 @@ export const TransporterItem = ({ data }) => {
 
       {/* List of Armada Items */}
       <div className="divide-y divide-neutral-400">
-        {data?.fleets?.map((fleet) => (
-          <ArmadaStatusItem key={fleet.id} item={fleet} />
-        ))}
+        {!data || data?.fleets?.length === 0 ? (
+          <div className="flex h-[72px] items-center justify-center">
+            <p className="text-center text-base font-semibold text-neutral-600">
+              Belum Ada Armada
+              <br />
+              Transporter Perlu Assign Armada
+            </p>
+          </div>
+        ) : (
+          data?.fleets?.map((fleet) => (
+            <ArmadaStatusItem key={fleet.id} item={fleet} />
+          ))
+        )}
       </div>
     </div>
   );

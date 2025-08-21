@@ -15,9 +15,11 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
-import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
-import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
+import {
+  TRACKING_STATUS,
+  getTrackingStatusBadge,
+} from "@/utils/Transporter/trackingStatus";
 
 import ModalUbahArmada from "./ModalUbahArmada";
 import ModalUbahDriver from "./ModalUbahDriver";
@@ -34,6 +36,7 @@ function CardLacakArmada({
   vehicleId, // Prop untuk modal
   driverId, // Prop untuk modal
   order,
+  hasSOSAlert = false,
 }) {
   const { isMobile } = useDevice();
   const pathname = usePathname();
@@ -53,8 +56,8 @@ function CardLacakArmada({
   const [isAlasanPembatalanModalOpen, setIsAlasanPembatalanModalOpen] =
     useState(false);
 
-  // Data stepper
-  const steps = stepperData || [
+  // Data stepper - always show 6 steps for loading status
+  const steps = [
     {
       label: "Armada Dijadwalkan",
       icon: "/icons/stepper/stepper-scheduled.svg",
@@ -98,9 +101,9 @@ function CardLacakArmada({
   // Fungsi untuk menentukan apakah status adalah pembatalan
   const isCancelledStatus = (s) => {
     return [
-      ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-      ORDER_STATUS.CANCELLED_BY_SHIPPER,
-      ORDER_STATUS.CANCELLED_BY_SYSTEM,
+      "CANCELLED_BY_TRANSPORTER",
+      "CANCELLED_BY_SHIPPER",
+      "CANCELLED_BY_SYSTEM",
     ].includes(s);
   };
 
@@ -110,27 +113,24 @@ function CardLacakArmada({
       return 1;
     }
 
-    // Cek apakah stepper memiliki 6 step atau 4 step
-    const hasDocumentSteps = stepperData && stepperData.length === 6;
-
     switch (s) {
-      case ORDER_STATUS.COMPLETED:
-        return hasDocumentSteps ? 5 : 3; // Selesai (6 step: index 5, 4 step: index 3)
-      case ORDER_STATUS.DOCUMENT_DELIVERY:
-        return hasDocumentSteps ? 4 : 3; // Proses Pengiriman Dokumen (6 step: index 4, 4 step: index 3)
-      case ORDER_STATUS.DOCUMENT_PREPARATION:
-        return hasDocumentSteps ? 3 : 3; // Dokumen Sedang Disiapkan (6 step: index 3, 4 step: index 3)
-      case ORDER_STATUS.LOADING:
-        return hasDocumentSteps ? 2 : 1; // Proses Muat (6 step: index 2, 4 step: index 1)
-      case ORDER_STATUS.HEADING_TO_LOADING:
-        return hasDocumentSteps ? 1 : 1; // Proses Muat
-      case ORDER_STATUS.HEADING_TO_UNLOADING:
-        return hasDocumentSteps ? 1 : 1; // Proses Muat
-      case ORDER_STATUS.UNLOADING:
-        return hasDocumentSteps ? 2 : 2; // Proses Bongkar (6 step: index 2, 4 step: index 2)
-      case ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER:
+      case TRACKING_STATUS.COMPLETED:
+        return 5; // Selesai (6 step: index 5)
+      case "DOCUMENT_DELIVERY":
+        return 4; // Proses Pengiriman Dokumen (6 step: index 4)
+      case "DOCUMENT_PREPARATION":
+        return 3; // Dokumen Sedang Disiapkan (6 step: index 3)
+      case TRACKING_STATUS.LOADING:
+        return 1; // Proses Muat (6 step: index 1)
+      case "HEADING_TO_LOADING":
+        return 1; // Proses Muat
+      case "HEADING_TO_UNLOADING":
+        return 2; // Proses Bongkar (6 step: index 2)
+      case TRACKING_STATUS.UNLOADING:
+        return 2; // Proses Bongkar (6 step: index 2)
+      case "WAITING_CONFIRMATION_SHIPPER":
         return -1; // Tidak ada step yang aktif (semua abu-abu)
-      case ORDER_STATUS.SCHEDULED_FLEET:
+      case "SCHEDULED_FLEET":
         return 0; // Armada Dijadwalkan (step 1, index 0)
       default:
         return 0;
@@ -185,71 +185,11 @@ function CardLacakArmada({
     // kalau perlu refresh data parent, panggil di sini
   };
 
-  const [isSOS] = useState(false);
+  // Use hasSOSAlert prop directly
+  const isSOS = hasSOSAlert;
 
-  const getStatusLabel = (s) => {
-    switch (s) {
-      case ORDER_STATUS.COMPLETED:
-        return "Selesai";
-      case ORDER_STATUS.LOADING:
-        return "Proses Muat";
-      case ORDER_STATUS.HEADING_TO_LOADING:
-        return "Menuju ke Lokasi Muat";
-      case ORDER_STATUS.HEADING_TO_UNLOADING:
-        return "Menuju ke Lokasi Bongkar 1";
-      case ORDER_STATUS.UNLOADING:
-        return "Proses Bongkar";
-      case ORDER_STATUS.DOCUMENT_PREPARATION:
-        return "Dokumen Sedang Disiapkan";
-      case ORDER_STATUS.DOCUMENT_DELIVERY:
-        return "Proses Pengiriman Dokumen";
-      case ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER:
-        return "Menunggu Konfirmasi Shipper";
-      case ORDER_STATUS.SCHEDULED_FLEET:
-        return "Armada Dijadwalkan";
-      case ORDER_STATUS.CANCELLED_BY_TRANSPORTER:
-        return "Dibatalkan Transporter";
-      case ORDER_STATUS.CANCELLED_BY_SHIPPER:
-        return "Dibatalkan Shipper";
-      case ORDER_STATUS.CANCELLED_BY_SYSTEM:
-        return "Dibatalkan Sistem";
-      case ORDER_STATUS.WAITING_CHANGE_FLEET:
-        return "Menunggu Armada Pengganti";
-      case ORDER_STATUS.FLEET_FOUND:
-        return "Muatan Pindah Armada";
-      default:
-        return "Armada Dijadwalkan";
-    }
-  };
-
-  const getBadgeVariant = (s) => {
-    if (
-      s === OrderStatusEnum.WAITING_PAYMENT_1 ||
-      s === OrderStatusEnum.WAITING_PAYMENT_2 ||
-      s === OrderStatusEnum.WAITING_PAYMENT_3 ||
-      s === OrderStatusEnum.WAITING_PAYMENT_4 ||
-      s === OrderStatusEnum.WAITING_REPAYMENT_1 ||
-      s === OrderStatusEnum.WAITING_REPAYMENT_2
-    )
-      return "warning";
-
-    if (
-      s === OrderStatusEnum.CANCELED_BY_SHIPPER ||
-      s === OrderStatusEnum.CANCELED_BY_SYSTEM ||
-      s === OrderStatusEnum.CANCELED_BY_TRANSPORTER ||
-      s === ORDER_STATUS.CANCELLED_BY_TRANSPORTER ||
-      s === ORDER_STATUS.CANCELLED_BY_SHIPPER ||
-      s === ORDER_STATUS.CANCELLED_BY_SYSTEM
-    )
-      return "error";
-
-    if (s === OrderStatusEnum.COMPLETED || s === ORDER_STATUS.COMPLETED)
-      return "success";
-
-    if (s === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER) return "primary";
-
-    return "primary";
-  };
+  // Get status badge using tracking status
+  const statusBadge = getTrackingStatusBadge(status);
 
   // --- Render Utama ---
   return (
@@ -258,13 +198,13 @@ function CardLacakArmada({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
-              status !== ORDER_STATUS.DOCUMENT_DELIVERY && (
+            {status !== "DOCUMENT_PREPARATION" &&
+              status !== "DOCUMENT_DELIVERY" && (
                 <BadgeStatusPesanan
-                  variant={getBadgeVariant(status)}
+                  variant={statusBadge.variant}
                   className="w-fit"
                 >
-                  {getStatusLabel(status)}
+                  {statusBadge.label}
                 </BadgeStatusPesanan>
               )}
 
@@ -298,31 +238,17 @@ function CardLacakArmada({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Button Lihat Posisi Armada - tidak muncul untuk WAITING_CONFIRMATION_SHIPPER */}
-            {status !== ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
-              <Button
-                className="text-xs"
-                onClick={() => {
-                  // TODO: Implementasi untuk melihat posisi armada
-                  console.log("Lihat Posisi Armada clicked");
-                }}
-                variant="link"
-              >
-                Lihat Posisi Armada
-              </Button>
-            )}
-
-            {/* Aksi Lainnya - tidak muncul untuk WAITING_CONFIRMATION_SHIPPER */}
+            {/* Aksi Lainnya - muncul untuk LOADING status */}
             {isMonitoring &&
-              status !== ORDER_STATUS.HEADING_TO_UNLOADING &&
-              status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
-              status !== ORDER_STATUS.DOCUMENT_DELIVERY &&
-              status !== ORDER_STATUS.HEADING_TO_LOADING &&
-              status !== ORDER_STATUS.COMPLETED &&
-              status !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
-              status !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
-              status !== ORDER_STATUS.CANCELLED_BY_SYSTEM &&
-              status !== ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
+              status !== "HEADING_TO_UNLOADING" &&
+              status !== "DOCUMENT_PREPARATION" &&
+              status !== "DOCUMENT_DELIVERY" &&
+              status !== "HEADING_TO_LOADING" &&
+              status !== TRACKING_STATUS.COMPLETED &&
+              status !== "CANCELLED_BY_TRANSPORTER" &&
+              status !== "CANCELLED_BY_SHIPPER" &&
+              status !== "CANCELLED_BY_SYSTEM" &&
+              status !== "WAITING_CONFIRMATION_SHIPPER" && (
                 <SimpleDropdown>
                   <SimpleDropdownTrigger asChild>
                     <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">

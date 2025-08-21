@@ -12,6 +12,9 @@ import ModalEmailBaru from "@/components/Modal/ModalEmailBaru";
 import ModalGantiPassword from "@/components/Modal/ModalGantiPassword";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useUpdatePassword } from "@/services/Transporter/updatePassword";
+import { useUploadProfilePhoto } from "@/services/Transporter/uploadProfilePhoto";
+import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtpProfilStore";
 
 // --- Internal Dropzone Component (logic from your modal file) ---
 const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
@@ -119,8 +122,14 @@ const EditableField = ({ label, value, href = "#", onClick }) => (
 const UserProfileInfo = ({ userProfile }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { trigger: uploadPhoto, isMutating: isUploading } =
+    useUploadProfilePhoto();
+  const { trigger: updatePassword, isMutating: isUpdatingPassword } =
+    useUpdatePassword();
+  const { generateOtp, updateWhatsAppNumber, reset } =
+    useRequestOtpProfilActions();
 
-  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(userProfile?.profileImage || null);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [isCropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
@@ -134,6 +143,7 @@ const UserProfileInfo = ({ userProfile }) => {
 
   const [hasVerified, setHasVerified] = useState(false);
   const [hasVerifiedEmail, setHasVerifiedEmail] = useState(false);
+  const [hasProcessedShowModal, setHasProcessedShowModal] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("hasVerified") === "true") {
@@ -181,12 +191,11 @@ const UserProfileInfo = ({ userProfile }) => {
   }, [searchParams, router]);
 
   const userData = {
-    initials: "DT",
-    whatsapp: "0823212345840",
-    email: "public.relation.mrsby@midtownight.com",
-    name: "Daffa Toldo Dharmawan",
+    initials: userProfile?.initials || "DT",
+    whatsapp: userProfile?.phone || "0823212345840",
+    email: userProfile?.email || "public.relation.mrsby@midtownight.com",
+    name: userProfile?.name || "Daffa Toldo Dharmawan",
   };
-
   const handleFileAccepted = (file) => {
     setSourceFile(file);
     setImageToCrop(URL.createObjectURL(file));
@@ -194,12 +203,46 @@ const UserProfileInfo = ({ userProfile }) => {
     setCropModalOpen(true);
   };
 
-  const handleCropSuccess = (file) => {
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarUrl(previewUrl);
-    console.log("New cropped file:", file);
-    // Add logic here to upload the file to your server
-    setCropModalOpen(false);
+  const handleCropSuccess = async (file, cropData) => {
+    try {
+      const uploadData = {
+        file: file,
+        cropData: cropData || {
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 200,
+          quality: 0.8,
+          rotation: 0,
+        },
+      };
+
+      const response = await uploadPhoto(uploadData);
+      console.log(response, file, cropData, uploadData, "tes");
+      if (response?.data?.Data?.profileImage) {
+        setAvatarUrl(response.data.Data.profileImage);
+        toast.success("Foto profil berhasil diperbarui");
+      } else {
+        // Fallback to preview URL if API doesn't return image URL
+        const previewUrl = URL.createObjectURL(file);
+        setAvatarUrl(previewUrl);
+        toast.success("Foto profil berhasil diperbarui");
+      }
+
+      setCropModalOpen(false);
+    } catch (error) {
+      console.error("Upload error:", error);
+
+      // Handle specific error cases
+      if (error?.response?.data?.Data?.errors) {
+        const errorMessage =
+          error.response.data.Data.errors[0]?.message ||
+          "Gagal mengupload foto";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Gagal mengupload foto profil");
+      }
+    }
   };
 
   const handleCropClose = () => {
@@ -208,7 +251,36 @@ const UserProfileInfo = ({ userProfile }) => {
     setSourceFile(null);
     setUploadModalOpen(true); // Re-open the upload modal if crop is cancelled
   };
+  // const handleWhatsappSubmit = async (newNumber) => {
+  //   try {
+  //     console.log("New WhatsApp number submitted:", newNumber);
+  //     setChangeWhatsappModalOpen(false);
 
+  //     // Store the new phone number for later use
+  //     updateWhatsAppNumber(newNumber);
+
+  //     // Generate OTP for new number
+  //     const result = await generateOtp(
+  //       newNumber,
+  //       "WHATSAPP",
+  //       "CHANGE_PHONE",
+  //       "VERIFY_NEW"
+  //     );
+
+  //     if (!result.success) {
+  //       toast.error(
+  //         result.error?.Message?.Text || "Gagal mengirim OTP ke nomor baru"
+  //       );
+  //       return;
+  //     }
+
+  //     // Navigate to OTP page for new number verification
+  //     router.push(`/profil/otp?type=change-number&whatsapp=${newNumber}`);
+  //   } catch (error) {
+  //     console.error("Error generating OTP for new number:", error);
+  //     toast.error(error.message || "Gagal mengirim OTP ke nomor baru");
+  //   }
+  // };
   const handleWhatsappSubmit = (newNumber) => {
     console.log("New WhatsApp number submitted:", newNumber);
     setChangeWhatsappModalOpen(false);
@@ -219,8 +291,42 @@ const UserProfileInfo = ({ userProfile }) => {
     console.log("New email submitted:", newEmail);
     setEmailModalOpen(false);
     router.push("/otp?type=change-email2");
-
+    // router.push("/profil/otp?type=change-email2");
     // Add logic here to handle email verification process
+  };
+
+  const handlePasswordSubmit = async (passwordData) => {
+    try {
+      const response = await updatePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        confirmPassword: passwordData.confirmPassword,
+      });
+
+      if (response?.data?.Message?.Code === 200) {
+        toast.success("Password berhasil diubah");
+        setChangePasswordModalOpen(false);
+
+        // Handle session invalidation if required
+        if (response.data.Data?.sessionInvalidated) {
+          toast.info("Sesi Anda telah berakhir. Silakan login kembali.");
+          // Redirect to login or handle session invalidation
+          if (response.data.Data?.redirectUrl) {
+            router.push(response.data.Data.redirectUrl);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Password update error:", error);
+
+      // // Handle API error responses
+      // if (error?.response?.data?.Message) {
+      //   const errorMessage = error.response.data.Message.Text;
+      //   toast.error(errorMessage);
+      // } else {
+      //   toast.error("Gagal mengubah password");
+      // }
+    }
   };
 
   return (
@@ -257,12 +363,40 @@ const UserProfileInfo = ({ userProfile }) => {
             <EditableField
               label="No. Whatsapp"
               value={userData.whatsapp}
-              href={"/otp?type=whatsapp"}
+              onClick={async () => {
+                try {
+                  // Reset any previous OTP state
+                  reset();
+
+                  // Generate OTP for current number verification
+                  // const result = await generateOtp(
+                  //   userData.whatsapp,
+                  //   "WHATSAPP",
+                  //   "CHANGE_PHONE",
+                  //   "VERIFY_OLD"
+                  // );
+
+                  // if (!result.success) {
+                  //   toast.error(
+                  //     result.error?.Message?.Text || "Gagal mengirim OTP"
+                  //   );
+                  //   return;
+                  // }
+
+                  // Navigate to OTP page for current number verification
+                  router.push(
+                    `/otp?type=whatsapp&whatsapp=${userData.whatsapp}`
+                  );
+                } catch (error) {
+                  console.error("Error generating OTP:", error);
+                  toast.error(error.message || "Gagal mengirim OTP");
+                }
+              }}
             />
             <EditableField
               label="Email"
               value={userData.email}
-              href={"/otp?type=change-email"}
+              href={"/profil/otp?type=change-email"}
             />
             <EditableField
               label="Password"
@@ -302,6 +436,7 @@ const UserProfileInfo = ({ userProfile }) => {
         isCircle={true}
         title="Ubah Foto Profil"
         aspectRatio={1}
+        isLoading={isUploading}
       />
 
       {/* Modal for Changing WhatsApp Number */}
@@ -325,6 +460,8 @@ const UserProfileInfo = ({ userProfile }) => {
       <ModalGantiPassword
         open={isChangePasswordModalOpen}
         onOpenChange={setChangePasswordModalOpen}
+        onSubmit={handlePasswordSubmit}
+        isLoading={isUpdatingPassword}
       />
     </>
   );

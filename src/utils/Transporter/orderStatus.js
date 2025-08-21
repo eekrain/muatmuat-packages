@@ -136,6 +136,10 @@ export const ORDER_STATUS_CONFIG = {
     label: "Dibatalkan Sistem",
     variant: "error",
   },
+  ["ARMADA_DIJADWALKAN"]: {
+    label: "Armada Dijadwalkan",
+    variant: "primary",
+  },
   [ORDER_STATUS.WAITING_CHANGE_FLEET]: {
     label: "Menunggu Armada Pengganti",
     variant: "primary",

@@ -11,6 +11,8 @@ import { getStatusPesananMetadataTransporter } from "@/lib/normalizers/transport
 import { cn } from "@/lib/utils";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
+import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
+
 const RingkasanPesananHeader = ({ dataOrderDetail }) => {
   const { t } = useTranslation();
   const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
@@ -65,6 +67,26 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                   {statusMeta?.label}
                 </BadgeStatusPesanan>
               </div>
+
+              {/* Link Lihat Status Lainnya untuk status UNLOADING */}
+              {dataOrderDetail?.orderStatus === ORDER_STATUS.UNLOADING &&
+                dataOrderDetail?.otherStatus?.length > 0 && (
+                  <ModalLihatStatusLainnya
+                    otherStatus={dataOrderDetail?.otherStatus}
+                  />
+                )}
+
+              {/* Link Lihat Detail Pembatalan untuk status yang dibatalkan */}
+              {(dataOrderDetail?.orderStatus ===
+                ORDER_STATUS.CANCELLED_BY_TRANSPORTER ||
+                dataOrderDetail?.orderStatus ===
+                  ORDER_STATUS.CANCELLED_BY_SHIPPER ||
+                dataOrderDetail?.orderStatus ===
+                  ORDER_STATUS.CANCELLED_BY_SYSTEM) && (
+                <a href="#" className="text-sm font-medium text-blue-600">
+                  Lihat Detail Pembatalan
+                </a>
+              )}
             </div>
           </div>
 

@@ -1,5 +1,7 @@
-import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { ORDER_STATUS_CONFIG } from "@/utils/Transporter/orderStatus";
+import {
+  ORDER_STATUS,
+  ORDER_STATUS_CONFIG,
+} from "@/utils/Transporter/orderStatus";
 
 export const getStatusPesananMetadataTransporter = ({
   orderStatus,
@@ -12,11 +14,12 @@ export const getStatusPesananMetadataTransporter = ({
   const orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[orderStatus];
 
   if (
-    orderStatus !== OrderStatusEnum.COMPLETED &&
-    !orderStatus.startsWith("CANCELED") &&
-    !orderStatus.startsWith("WAITING_PAYMENT") &&
+    orderStatus !== ORDER_STATUS.COMPLETED &&
+    orderStatus !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
+    orderStatus !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
+    orderStatus !== ORDER_STATUS.CANCELLED_BY_SYSTEM &&
     orderStatusUnit &&
-    truckCount > 1
+    orderStatusUnit > 1
   ) {
     return {
       ...orderStatusBadgeMetadata,

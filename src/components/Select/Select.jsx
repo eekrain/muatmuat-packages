@@ -62,6 +62,7 @@ const SelectTrigger = ({
   children,
   errorMessage,
   isError = false,
+  onFocus,
 }) => {
   const { value, disabled, open } = useSelect();
 
@@ -71,6 +72,8 @@ const SelectTrigger = ({
         <button
           type="button"
           disabled={disabled}
+          onFocus={onFocus}
+          onMouseDown={onFocus}
           className={cn(
             "flex h-8 w-full items-center justify-between gap-2 rounded-md border bg-white px-3 text-xs font-medium leading-[14.4px] transition-colors duration-200",
             disabled &&

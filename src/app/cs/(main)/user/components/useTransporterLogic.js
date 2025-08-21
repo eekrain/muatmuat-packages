@@ -70,8 +70,7 @@ export const useTransporterLogic = ({
         await patchTransporterStatus({
           id: modalState.data.id,
           data: {
-            isActive,
-            reason,
+            isActive: isActive,
           },
         });
 

@@ -9,11 +9,16 @@ import Input from "../Form/Input";
 import IconComponent from "../IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "./Modal";
 
-const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
-  const [oldPassword, setOldPassword] = useState("");
+const ModalGantiPassword = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isLoading = false,
+}) => {
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showOld, setShowOld] = useState(false);
+  const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState({});
@@ -29,44 +34,68 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
     }
   };
 
+  // Function to reset form and errors when modal closes
+  const handleModalChange = (isOpen) => {
+    if (!isOpen) {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setErrors({});
+      setShowCurrent(false);
+      setShowNew(false);
+      setShowConfirm(false);
+    }
+    onOpenChange(isOpen);
+  };
+
   const validate = () => {
     const err = {};
-    if (!oldPassword) err.oldPassword = "Password Lama wajib diisi";
-    if (!newPassword) err.newPassword = "Password Baru wajib diisi";
-    if (!confirmPassword) err.confirmPassword = "Ulangi Password wajib diisi";
-    if (newPassword && newPassword.length < 8) {
-      err.newPassword =
-        "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 Karakter";
+
+    // Current password validation
+    if (!currentPassword) {
+      err.currentPassword = "Password Lama wajib diisi";
     }
-    if (oldPassword && oldPassword.length < 8) {
-      err.oldPassword =
-        "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 Karakter";
+
+    // New password validation
+    if (!newPassword) {
+      err.newPassword = "Password Baru wajib diisi";
+    } else if (newPassword.length < 8) {
+      err.newPassword = "Password minimal 8 karakter";
+    } else {
+      const hasUpperCase = /[A-Z]/.test(newPassword);
+      const hasLowerCase = /[a-z]/.test(newPassword);
+      const hasNumbers = /\d/.test(newPassword);
+
+      if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
+        err.newPassword =
+          "Password harus terdapat huruf besar, kecil dan angka";
+      }
     }
-    if (oldPassword !== "12345678") {
-      err.oldPassword = "Password lama salah";
-    }
-    if (confirmPassword && confirmPassword.length < 8) {
-      err.confirmPassword =
-        "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 Karakter";
-    }
-    if (newPassword && oldPassword && newPassword === oldPassword) {
-      err.newPassword = "Password Baru tidak dapat sama dengan password lama";
-    }
-    if (confirmPassword && newPassword && confirmPassword !== newPassword) {
+
+    // Confirm password validation
+    if (!confirmPassword) {
+      err.confirmPassword = "Ulangi Password wajib diisi";
+    } else if (confirmPassword !== newPassword) {
       err.confirmPassword = "Password tidak sama";
     }
+
+    // Check if new password is same as current password
+    if (newPassword && currentPassword && newPassword === currentPassword) {
+      err.newPassword = "Password Baru tidak dapat sama dengan password lama";
+    }
+
     setErrors(err);
     return Object.keys(err).length === 0;
   };
 
   const handleSubmit = () => {
     if (validate()) {
-      onSubmit?.({ oldPassword, newPassword, confirmPassword });
+      onSubmit?.({ currentPassword, newPassword, confirmPassword });
     }
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={handleModalChange}>
       <ModalContent size="small" className="h-[446px] w-[695px]">
         <ModalHeader />
         <div className="flex flex-col items-center gap-6 px-8 py-6">
@@ -78,25 +107,29 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
             <FormLabel required>Password Lama</FormLabel>
             <div className="relative h-[40px]">
               <Input
-                type={showOld ? "text" : "password"}
-                value={oldPassword}
+                type={showCurrent ? "text" : "password"}
+                value={currentPassword}
                 onChange={(e) => {
-                  setOldPassword(e.target.value);
-                  clearError("oldPassword");
+                  setCurrentPassword(e.target.value);
+                  clearError("currentPassword");
                 }}
                 placeholder="Masukkan Password Lama"
-                name="oldPassword"
-                errorMessage={errors.oldPassword}
+                name="currentPassword"
+                errorMessage={errors.currentPassword}
+                disabled={isLoading}
                 icon={{
                   left: "/icons/lock-orange.svg",
                   right: (
                     <button
                       type="button"
-                      onClick={() => setShowOld((v) => !v)}
+                      onClick={() => setShowCurrent((v) => !v)}
                       className="flex items-center"
+                      disabled={isLoading}
                     >
                       <IconComponent
-                        src={showOld ? "/icons/eye.svg" : "/icons/eye-off.svg"}
+                        src={
+                          showCurrent ? "/icons/eye.svg" : "/icons/eye-off.svg"
+                        }
                         height={24}
                         width={24}
                       />
@@ -132,6 +165,7 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
                   placeholder="Masukkan Password Baru"
                   name="newPassword"
                   errorMessage={errors.newPassword}
+                  disabled={isLoading}
                   icon={{
                     left: "/icons/lock-orange.svg",
                     right: (
@@ -139,6 +173,7 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
                         type="button"
                         onClick={() => setShowNew((v) => !v)}
                         className="flex items-center"
+                        disabled={isLoading}
                         aria-label={
                           showNew
                             ? "Sembunyikan password"
@@ -217,6 +252,7 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
                 placeholder="Ulangi Password Baru"
                 name="confirmPassword"
                 errorMessage={errors.confirmPassword}
+                disabled={isLoading}
                 icon={{
                   left: "/icons/lock-orange.svg",
                   right: (
@@ -224,6 +260,7 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
                       type="button"
                       onClick={() => setShowConfirm((v) => !v)}
                       className="flex items-center"
+                      disabled={isLoading}
                     >
                       <IconComponent
                         src={
@@ -248,9 +285,10 @@ const ModalGantiPassword = ({ open, onOpenChange, onSubmit }) => {
           <Button
             onClick={handleSubmit}
             variant="muattrans-primary"
-            className="!h-8 !w-auto rounded-full bg-muat-trans-primary-400 text-base font-[600px] text-muat-trans-secondary-900 hover:bg-muat-trans-primary-500"
+            disabled={isLoading}
+            className="!h-8 !w-auto rounded-full bg-muat-trans-primary-400 text-base font-[600px] text-muat-trans-secondary-900 hover:bg-muat-trans-primary-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Ubah Password
+            {isLoading ? "Mengubah..." : "Ubah Password"}
           </Button>
         </div>
       </ModalContent>

@@ -339,6 +339,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             onSort={handleSort}
             loading={isFleetDetailsLoading}
             className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
+            paginationCounter={true}
           />
         </div>
       </div>

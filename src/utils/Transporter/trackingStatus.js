@@ -26,6 +26,8 @@ export const TRACKING_STATUS = {
   // Legacy/Unused (kept for backward compatibility)
   WAITING_PICKUP: "WAITING_PICKUP",
   WAITING_DROPOFF: "WAITING_DROPOFF",
+  WAITING_CHANGE_FLEET: "WAITING_CHANGE_FLEET",
+  FLEET_FOUND: "FLEET_FOUND",
 };
 
 // Tracking Status badge configurations
@@ -88,6 +90,31 @@ export const TRACKING_STATUS_CONFIG = {
   },
   [TRACKING_STATUS.TIBA_DI_LOKASI_BONGKAR]: {
     label: "Tiba di Lokasi Bongkar",
+    variant: "primary",
+  },
+  // Add mapping for order status that should use tracking status
+  ["LOADING"]: {
+    label: "Sedang Muat",
+    variant: "primary",
+  },
+  ["SCHEDULED_FLEET"]: {
+    label: "Armada Dijadwalkan",
+    variant: "primary",
+  },
+  ["UNLOADING"]: {
+    label: "Proses Bongkar",
+    variant: "primary",
+  },
+  ["COMPLETED"]: {
+    label: "Selesai",
+    variant: "success",
+  },
+  [TRACKING_STATUS.WAITING_CHANGE_FLEET]: {
+    label: "Menunggu Armada Pengganti",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.FLEET_FOUND]: {
+    label: "Muatan Pindah Armada",
     variant: "primary",
   },
 };

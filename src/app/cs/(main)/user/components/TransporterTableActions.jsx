@@ -33,7 +33,7 @@ const TransporterTableActions = ({ row, onOpenModal, onOpenHubungiModal }) => {
             </SimpleDropdownItem>
           </>
         );
-      case "Non Aktif":
+      case "NON_ACTIVE":
         return (
           <>
             <SimpleDropdownItem

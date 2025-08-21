@@ -5,6 +5,19 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import { useLacakArmadaContext } from "./use-lacak-armada";
 
+// const MOCK = [
+//   { label: "PT Nusantara Jaya", value: "PT Nusantara Jaya" },
+//   { label: "PT Sinar Abadi", value: "PT Sinar Abadi" },
+//   { label: "PT Bumi Persada", value: "PT Bumi Persada" },
+//   { label: "PT Cahaya Mandiri", value: "PT Cahaya Mandiri" },
+//   { label: "PT Mitra Sejahtera", value: "PT Mitra Sejahtera" },
+//   { label: "PT Mega Karya", value: "PT Mega Karya" },
+//   { label: "PT Surya Utama", value: "PT Surya Utama" },
+//   { label: "PT Anugerah Bersama", value: "PT Anugerah Bersama" },
+//   { label: "PT Prima Global", value: "PT Prima Global" },
+//   { label: "PT Mandiri Sentosa", value: "PT Mandiri Sentosa" },
+// ];
+
 export const Filter = () => {
   const { t } = useTranslation();
   const {
@@ -24,11 +37,15 @@ export const Filter = () => {
     <MyDropdown.Root>
       <MyDropdown.FilterTrigger
         isActive={hasActiveFilters}
-        disabled={hasNoSearchResults}
+        disabled={hasNoSearchResults && !hasActiveFilters}
       />
       <MyDropdown.Content align="start">
         <MyDropdown.HoverRoot title="Transporter">
-          <MyDropdown.HoverContent>
+          <MyDropdown.HoverContent
+            appearance={{
+              wrapperClassName: "max-h-[218px]",
+            }}
+          >
             <div className="p-2.5">
               <Input
                 icon={{ left: "/icons/search.svg" }}
@@ -38,40 +55,40 @@ export const Filter = () => {
                 onChange={(e) => setTransporterSearchQuery(e.target.value)}
               />
             </div>
-            {filteredTransporters?.map((item) => (
-              <MyDropdown.HoverItem key={item.value} asChild>
-                <Checkbox
-                  label={item.label}
-                  className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
-                  checked={selectedTransporters.has(item.value)}
-                  onChange={() => toggleTransporterFilter(item.value)}
-                />
-              </MyDropdown.HoverItem>
-            ))}
-            {[
-              { label: "PT Nusantara Jaya", value: "PT Nusantara Jaya" },
-              { label: "PT Sinar Abadi", value: "PT Sinar Abadi" },
-              { label: "PT Bumi Persada", value: "PT Bumi Persada" },
-              { label: "PT Cahaya Mandiri", value: "PT Cahaya Mandiri" },
-              { label: "PT Mitra Sejahtera", value: "PT Mitra Sejahtera" },
-              { label: "PT Mega Karya", value: "PT Mega Karya" },
-              { label: "PT Surya Utama", value: "PT Surya Utama" },
-              { label: "PT Anugerah Bersama", value: "PT Anugerah Bersama" },
-              { label: "PT Prima Global", value: "PT Prima Global" },
-              { label: "PT Mandiri Sentosa", value: "PT Mandiri Sentosa" },
-            ].map((item) => (
+            {filteredTransporters?.length === 0 ? (
+              <div className="px-2.5 pb-5 pt-2 text-center text-xs font-medium">
+                Data Tidak Ditemukan
+              </div>
+            ) : (
+              filteredTransporters?.map((item) => (
+                <MyDropdown.HoverItem key={item.value} asChild>
+                  <Checkbox
+                    label={item.label}
+                    className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
+                    checked={selectedTransporters.has(item.value)}
+                    onChange={() => toggleTransporterFilter(item.value)}
+                  />
+                </MyDropdown.HoverItem>
+              ))
+            )}
+
+            {/* {MOCK.map((item) => (
               <MyDropdown.HoverItem key={item.value} asChild>
                 <Checkbox
                   label={item.label}
                   className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
                 />
               </MyDropdown.HoverItem>
-            ))}
+            ))} */}
           </MyDropdown.HoverContent>
         </MyDropdown.HoverRoot>
 
         <MyDropdown.HoverRoot title="Status Armada">
-          <MyDropdown.HoverContent>
+          <MyDropdown.HoverContent
+            appearance={{
+              wrapperClassName: "max-h-[160px]",
+            }}
+          >
             {filterOptions.status?.map((item) => (
               <MyDropdown.HoverItem key={item.value} asChild>
                 <Checkbox
@@ -82,6 +99,17 @@ export const Filter = () => {
                 />
               </MyDropdown.HoverItem>
             ))}
+
+            {/* {Object.entries(OrderStatusTitle).map(([key, value]) => (
+              <MyDropdown.HoverItem key={key} asChild>
+                <Checkbox
+                  label={t(value)}
+                  className="h-8 min-h-8 flex-shrink-0 md:px-2.5"
+                  checked={selectedStatuses.has(key)}
+                  onChange={() => toggleStatusFilter(key)}
+                />
+              </MyDropdown.HoverItem>
+            ))} */}
           </MyDropdown.HoverContent>
         </MyDropdown.HoverRoot>
       </MyDropdown.Content>
