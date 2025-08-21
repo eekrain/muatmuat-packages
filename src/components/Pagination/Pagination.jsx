@@ -113,8 +113,8 @@ const Pagination = ({
           disabled={currentPage === 1}
           className={cn(
             "rounded p-1",
-            currentPage === 1
-              ? paginationCounter
+            currentPage === 1 || totalPages === 1
+              ? paginationCounter && totalPages > 1
                 ? "cursor-not-allowed text-neutral-400"
                 : "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
@@ -152,8 +152,8 @@ const Pagination = ({
           onClick={handleNextPage}
           disabled={currentPage === totalPages}
           className={`rounded p-1 ${
-            currentPage === totalPages
-              ? paginationCounter
+            currentPage === totalPages || totalPages === 1
+              ? paginationCounter && totalPages > 1
                 ? "cursor-not-allowed text-neutral-400"
                 : "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
