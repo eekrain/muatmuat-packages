@@ -11,6 +11,9 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTerimaPermintaan from "./ModalTerimaPermintaan";
+import ModalTolakPermintaan from "./ModalTolakPermintaan";
+
 const TransportRequestCard = ({
   request,
   isSuspended = false,
@@ -43,21 +46,27 @@ const TransportRequestCard = ({
     router.push(`/monitoring?id=${request.id}`);
   };
 
+  const [showRejectModal, setShowRejectModal] = useState(false);
   const handleReject = () => {
-    // TODO: Implement reject functionality
-  };
-
-  const router = useRouter();
-  const handleAccept = () => {
-    if (onAccept) {
-      onAccept(request);
-    }
-    router.push(`/monitoring?id=${request.id}`);
+    setShowRejectModal(true);
   };
 
   const handleUnderstand = () => {
     toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
     if (onUnderstand) onUnderstand(request.id);
+  };
+
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const handleAccept = () => {
+    if (request.orderType === "SCHEDULED") {
+      setShowModal(true);
+    } else {
+      if (onAccept) {
+        onAccept(request);
+      }
+      router.push(`/monitoring?id=${request.id}`);
+    }
   };
 
   const formatCurrency = (amount) => {
@@ -76,6 +85,23 @@ const TransportRequestCard = ({
 
   return (
     <div className="relative">
+      {/* Modal for accepting scheduled request */}
+      <ModalTerimaPermintaan
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        request={request}
+        onAccept={(data) => {
+          setShowModal(false);
+          if (onAccept) onAccept(data);
+          router.push(`/monitoring?id=${request.id}`);
+        }}
+      />
+      {/* Modal for rejecting request */}
+      <ModalTolakPermintaan
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        request={request}
+      />
       <div
         className={cn(
           "overflow-hidden rounded-[8px] border border-[#C4C4C4] bg-white shadow-sm",

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import LoadingStatic from "@/components/Loading/LoadingStatic";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
@@ -24,18 +23,15 @@ const formatCurrency = (amount) => {
     .replace("IDR", "Rp");
 };
 
-const ModalTerimaPermintaanInstant = ({
-  isOpen,
-  onClose,
-  request,
-  onAccept,
-}) => {
+const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [partialCount, setPartialCount] = useState(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [showTermsAlert, setShowTermsAlert] = useState(false);
   const [showPartialAlert, setShowPartialAlert] = useState(false);
+  const [showAlertExceedFleetUnit, setShowAlertExceedFleetUnit] =
+    useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalType, setModalType] = useState(""); // "taken", "unit-change", "suspended"
   const [modalData, setModalData] = useState({});
@@ -55,6 +51,7 @@ const ModalTerimaPermintaanInstant = ({
     error,
   } = useGetTransportRequestList({ id });
   const detail = listData?.requests?.find((r) => r.id === id) || {};
+
   // Check if order is already taken and show modal
   useEffect(() => {
     if (detail && detail.isTaken && isOpen) {
@@ -79,6 +76,18 @@ const ModalTerimaPermintaanInstant = ({
         message:
           "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
       },
+      {
+        type: "unit-change",
+        title: "Perubahan Kebutuhan Unit",
+        message:
+          "Maaf, terdapat perubahan pada kebutuhan unit armada. Periksa kembali sebelum menerima permintaan.",
+      },
+      {
+        type: "suspended",
+        title: "Akun Ditangguhkan",
+        message:
+          "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali.",
+      },
     ];
 
     setModalQueue(modals);
@@ -94,6 +103,18 @@ const ModalTerimaPermintaanInstant = ({
   };
 
   const handleAccept = () => {
+    // Validasi kebutuhan armada
+    if (!selectedOption) {
+      setShowAlert(true);
+      return;
+    }
+
+    // Validasi jumlah armada jika memilih "partial"
+    if (selectedOption === "partial" && (!partialCount || partialCount < 1)) {
+      setShowPartialAlert(true);
+      return;
+    }
+
     // Validasi syarat dan ketentuan
     if (!acceptTerms) {
       setShowTermsAlert(true);
@@ -202,8 +223,8 @@ const ModalTerimaPermintaanInstant = ({
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-      <div className="flex h-auto w-[600px] flex-col rounded-xl bg-white p-6">
-        {isLoading && <LoadingStatic />}
+      <div className="flex h-[460px] w-[600px] flex-col rounded-xl bg-white p-6">
+        {isLoading && <div className="py-8 text-center">Loading...</div>}
         {error && (
           <div className="py-8 text-center text-red-500">
             Gagal memuat detail
@@ -214,7 +235,7 @@ const ModalTerimaPermintaanInstant = ({
             {/* Header */}
             <div className="relative mb-4 flex flex-shrink-0 items-center justify-center">
               <h3 className="mx-auto text-base font-bold text-gray-900">
-                Terima Permintaan Jasa Angkut
+                Tolak Permintaan Jasa Angkut
               </h3>
               <button
                 onClick={onClose}
@@ -223,63 +244,11 @@ const ModalTerimaPermintaanInstant = ({
                 <IconComponent src="/icons/close24.svg" className="h-5 w-5" />
               </button>
             </div>
-            {/* Armada Selection */}
-            <div className="mb-3 rounded-lg border border-neutral-400 p-4">
-              <span className="mb-2 text-xs font-medium text-gray-600">
-                Informasi Armada
-              </span>
-              <div className="flex items-center justify-between">
-                <div className="w-[351px]">
-                  <span className="text-xs font-bold text-gray-900">
-                    {request?.licensePlate || detail.licensePlate || "-"}
-                  </span>
-                  <span className="ml-1 text-xs font-medium text-gray-900">
-                    ({request?.truckTypeName || detail.truckTypeName || "-"} -{" "}
-                    {request?.carrierName || detail.carrierName || "-"})
-                  </span>
-                </div>
-                {request?.operationalStatus === "READY_FOR_ORDER" && (
-                  <span className="rounded bg-success-50 px-3 py-1 text-xs font-semibold text-success-600">
-                    Siap Menerima Order
-                  </span>
-                )}
-              </div>
-              <div className="mt-2 flex h-5 w-[371px] items-center gap-1">
-                <IconComponent
-                  src="/icons/profile-driver.svg"
-                  className="h-[14px] w-[14px] shrink-0"
-                />
-                <span className="text-[10px] font-medium text-gray-900">
-                  {request?.driver?.name || detail.driver?.name || "-"}
-                </span>
-              </div>
-
-              <div className="mt-2 flex w-[371px] items-center gap-1">
-                <IconComponent
-                  src="/icons/location-driver.svg"
-                  className="h-[14px] w-[14px] shrink-0"
-                />
-                <span className="text-xs font-medium text-gray-900">
-                  {request?.location?.address ||
-                    detail.location?.address ||
-                    "-"}
-                  {typeof (
-                    request?.distanceFromPickup ?? detail.distanceFromPickup
-                  ) === "number" && (
-                    <span className="ml-1 text-xs font-medium text-neutral-600">
-                      (
-                      {request?.distanceFromPickup ?? detail.distanceFromPickup}{" "}
-                      km dari lokasi muat)
-                    </span>
-                  )}
-                </span>
-              </div>
-            </div>
 
             {/* Content */}
             {/* Scrollable content only for info box */}
-            <div className="mb-3 h-[175px] overflow-y-auto rounded-lg border border-neutral-400 p-4">
-              <div className="mb-4 flex justify-between">
+            <div className="mb-3 h-[335px] rounded-lg border border-neutral-400 p-4">
+              <div className="mb-2 flex justify-between">
                 <span className="text-xs font-medium text-gray-600">
                   Informasi Pesanan
                 </span>
@@ -287,7 +256,7 @@ const ModalTerimaPermintaanInstant = ({
                   Potensi Pendapatan
                 </span>
               </div>
-              <div className="mb-4 flex justify-between">
+              <div className="mb-2 flex justify-between">
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Time Label */}
                   <span
@@ -418,15 +387,15 @@ const ModalTerimaPermintaanInstant = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <span className="block text-sm font-bold text-blue-700">
+                  <span className="block text-sm font-bold text-primary-700">
                     {formatCurrency(detail.totalPrice)}
                   </span>
                 </div>
               </div>
-              <div className="mb-4 border-b border-[#C4C4C4]"></div>
+              <div className="mb-2 border-b border-[#C4C4C4]"></div>
 
               {/* Location Info */}
-              <div className="mb-4 flex justify-between">
+              <div className="mb-2 flex justify-between">
                 <div className="w-auto">
                   <TimelineContainer>
                     {[
@@ -472,10 +441,10 @@ const ModalTerimaPermintaanInstant = ({
                   </div>
                 </div>
               </div>
-              <div className="mb-4 border-b border-[#C4C4C4]"></div>
+              <div className="mb-2 border-b border-[#C4C4C4]"></div>
 
               {/* cargo info */}
-              <div className="mb-4 flex w-full items-start justify-between">
+              <div className="mb-2 flex w-full items-start justify-between">
                 <div className="flex flex-1 items-start gap-3">
                   <IconComponent
                     src="/icons/box16.svg"
@@ -541,7 +510,7 @@ const ModalTerimaPermintaanInstant = ({
               </div>
 
               {/* Fleet Requirements Section */}
-              <div className="mb-4 flex items-start gap-3">
+              <div className="mb-2 flex items-start gap-3">
                 <IconComponent
                   src="/icons/truk16.svg"
                   className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
@@ -561,7 +530,7 @@ const ModalTerimaPermintaanInstant = ({
               </div>
 
               {/* Loading Time Section */}
-              <div className="mb-4 flex items-start gap-3">
+              <div className="mb-2 flex items-start gap-3">
                 <IconComponent
                   src="/icons/calendar16.svg"
                   className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
@@ -581,8 +550,8 @@ const ModalTerimaPermintaanInstant = ({
               {/* Additional Services Section */}
               {(detail.additionalServices?.length > 0 ||
                 request?.hasAdditionalService) && (
-                <div className="rounded-[4px] bg-warning-50 px-3 py-2">
-                  <div className="text-[12px] font-medium text-warning-800">
+                <div className="rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
+                  <div className="text-[12px] font-semibold text-neutral-900">
                     +{" "}
                     {detail.additionalServices?.[0]?.serviceName ||
                       request?.additionalServices?.[0]?.serviceName ||
@@ -629,12 +598,12 @@ const ModalTerimaPermintaanInstant = ({
                 Batal
               </Button>
               <Button
-                variant="muattrans-primary"
+                variant="muatparts-error"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
                 onClick={handleAccept}
                 disabled={isMutating}
               >
-                Terima
+                Tolak
               </Button>
             </div>
           </>
@@ -656,8 +625,6 @@ const ModalTerimaPermintaanInstant = ({
         withCancel={false}
         confirm={{
           text: modalType === "suspended" ? "Hubungi Customer Service" : "OK",
-          className:
-            "bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700",
           onClick: () => {
             setShowConfirmModal(false);
 
@@ -705,4 +672,4 @@ const ModalTerimaPermintaanInstant = ({
   );
 };
 
-export default ModalTerimaPermintaanInstant;
+export default ModalTerimaPermintaan;
