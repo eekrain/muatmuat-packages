@@ -327,7 +327,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             searchPlaceholder="Cari Nama Driver / No. Polisi"
             totalCountLabel="Armada Nonaktif"
             currentPage={currentPage}
-            totalPages={20}
+            totalPages={totalPages}
             totalItems={totalItems}
             perPage={perPage}
             onPageChange={setCurrentPage}
