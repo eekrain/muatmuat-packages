@@ -33,6 +33,26 @@ export const mockAPIResult = {
           quantity: 10, // [dbt_mt_cargo.quantity]
           unit: "pcs", // [dbt_mt_cargo.unit]
         },
+        {
+          name: "Besi", // [dbt_mt_cargo.name]
+          quantity: 10, // [dbt_mt_cargo.quantity]
+          unit: "pcs", // [dbt_mt_cargo.unit]
+        },
+        {
+          name: "Besi", // [dbt_mt_cargo.name]
+          quantity: 10, // [dbt_mt_cargo.quantity]
+          unit: "pcs", // [dbt_mt_cargo.unit]
+        },
+        {
+          name: "Besi", // [dbt_mt_cargo.name]
+          quantity: 10, // [dbt_mt_cargo.quantity]
+          unit: "pcs", // [dbt_mt_cargo.unit]
+        },
+        {
+          name: "Besi", // [dbt_mt_cargo.name]
+          quantity: 10, // [dbt_mt_cargo.quantity]
+          unit: "pcs", // [dbt_mt_cargo.unit]
+        },
       ],
       driver: {
         name: "John Doe", // [dbt_mt_drivers.name]

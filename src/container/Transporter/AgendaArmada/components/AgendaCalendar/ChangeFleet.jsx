@@ -6,6 +6,7 @@ import Checkbox from "@/components/Form/Checkbox";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Select } from "@/components/Select";
+import { useTranslation } from "@/hooks/use-translation";
 import { ChangeFleetTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 
 import CardDetail from "./CardDetail";
@@ -88,6 +89,7 @@ const conflictingSchedules = [
   },
 ];
 const ChangeFleet = ({ cardData }) => {
+  const { t } = useTranslation();
   const { dateRange } = useDateNavigator();
 
   // Mock fleet data - replace with actual data from API
@@ -148,15 +150,29 @@ const ChangeFleet = ({ cardData }) => {
   return (
     <div className="space-y-7">
       <div className="flex flex-col items-center justify-center space-y-4">
-        <div className="font-bold text-neutral-900">Jadwal Bermasalah</div>
+        <div className="font-bold text-neutral-900">
+          {t("ChangeFleet.problemSchedule", {}, "Jadwal Bermasalah")}
+        </div>
         <div className="text-center text-sm font-medium text-neutral-900">
-          <div>Terdapat masalah pada agenda armada atau driver kamu.</div>
-          <div>Atur ulang pesanan agar masalah terselesaikan.</div>
+          <div>
+            {t(
+              "ChangeFleet.problemDescription1",
+              {},
+              "Terdapat masalah pada agenda armada atau driver kamu."
+            )}
+          </div>
+          <div>
+            {t(
+              "ChangeFleet.problemDescription2",
+              {},
+              "Atur ulang pesanan agar masalah terselesaikan."
+            )}
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-8 border-neutral-200">
         <div className="mb-6 text-sm font-medium text-neutral-600">
-          Pilih Armada
+          {t("ChangeFleet.selectFleet", {}, "Pilih Armada")}
         </div>
         <div className="space-y-2.5">
           <div className="">
@@ -166,7 +182,11 @@ const ChangeFleet = ({ cardData }) => {
               onSearch={setSearchValue}
             >
               <Select.Trigger
-                placeholder="L 9812 AX - Tractor Head 6 x 4"
+                placeholder={t(
+                  "ChangeFleet.selectPlaceholder",
+                  {},
+                  "L 9812 AX - Tractor Head 6 x 4"
+                )}
                 className="w-[264px]"
               >
                 <Select.Value>
@@ -183,7 +203,11 @@ const ChangeFleet = ({ cardData }) => {
               </Select.Trigger>
               <Select.Content
                 searchable
-                searchPlaceholder="Cari No. Polisi"
+                searchPlaceholder={t(
+                  "ChangeFleet.searchPlaceholder",
+                  {},
+                  "Cari No. Polisi"
+                )}
                 className="w-[264px]"
               >
                 {availableFleets?.filter((fleet) =>
@@ -218,8 +242,12 @@ const ChangeFleet = ({ cardData }) => {
                               <span
                                 className={`flex h-6 min-w-[78px] max-w-[78px] items-center justify-center rounded-md text-xs font-semibold ${statusStyles[fleet.statusKey]}`}
                               >
-                                {ChangeFleetTypeEnum[fleet.statusKey] ||
-                                  fleet.status}
+                                {t(
+                                  `ChangeFleet.status.${fleet.statusKey}`,
+                                  {},
+                                  ChangeFleetTypeEnum[fleet.statusKey] ||
+                                    fleet.status
+                                )}
                               </span>
                             )}
                           </div>
@@ -227,12 +255,20 @@ const ChangeFleet = ({ cardData }) => {
                       );
                     })
                 ) : (
-                  <Select.Empty>Data Tidak Ditemukan</Select.Empty>
+                  <Select.Empty>
+                    {t("ChangeFleet.dataNotFound", {}, "Data Tidak Ditemukan")}
+                  </Select.Empty>
                 )}
               </Select.Content>
             </Select.Root>
           </div>
-          <Checkbox label="Tampilkan Armada Serupa" />
+          <Checkbox
+            label={t(
+              "ChangeFleet.showSimilarFleet",
+              {},
+              "Tampilkan Armada Serupa"
+            )}
+          />
         </div>
       </div>
       <div
@@ -334,7 +370,7 @@ const ChangeFleet = ({ cardData }) => {
       </div>
       <div className="flex justify-center">
         <Button className="w-[112px]" disabled={!selectedFleet}>
-          Simpan
+          {t("ChangeFleet.save", {}, "Simpan")}
         </Button>
       </div>
     </div>
