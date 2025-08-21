@@ -1,93 +1,81 @@
-// import { useState } from "react";
+import RadioButton from "@/components/Radio/RadioButton";
+import { cn } from "@/lib/utils";
 
-// import Dropdown from "@/components/Dropdown/Dropdown";
-// import RadioButton from "@/components/Radio/RadioButton";
-// import { cn } from "@/lib/utils";
+import { CustomTransporterSelect } from "./CustomTransporterSelect";
 
-// export const ChangeAssignmentCard = ({
-//   armadaImage,
-//   armadaName,
-//   transporterOptions,
-//   className,
-// }) => {
-//   const [assignment, setAssignment] = useState({
-//     type: "SAME_TRANSPORTER",
-//     transporterId: null,
-//   });
+const ChangeAssignmentCard = ({
+  armadaImage = "/img/truck.png",
+  armadaName,
+  value,
+  onChange,
+  transporterOptions,
+  uniqueGroupName,
+  className,
+}) => {
+  const handleTypeChange = (newType) => {
+    const newTransporterId =
+      newType === "CHOOSE_TRANSPORTER" ? value.transporterId : null;
+    onChange({ type: newType, transporterId: newTransporterId });
+  };
 
-//   const handleTypeChange = (newType) => {
-//     // Reset transporterId unless the user is specifically choosing a transporter
-//     const newTransporterId =
-//       newType === "CHOOSE_TRANSPORTER" ? assignment.transporterId : null;
-//     setAssignment({ type: newType, transporterId: newTransporterId });
-//   };
+  // --- FIX IS HERE ---
+  // The 'selectedId' is the ID string itself, not an object.
+  // We use it directly.
+  const handleTransporterChange = (selectedId) => {
+    onChange({ type: "CHOOSE_TRANSPORTER", transporterId: selectedId });
+  };
 
-//   const handleTransporterChange = (selected) => {
-//     // Ensure the type is set correctly when a transporter is selected
-//     setAssignment({
-//       type: "CHOOSE_TRANSPORTER",
-//       transporterId: selected.value,
-//     });
-//   };
+  return (
+    <div
+      className={cn(
+        "flex h-[88px] w-full items-center justify-between border-b border-neutral-200 bg-white p-4 last:border-b-0",
+        className
+      )}
+    >
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-neutral-300 bg-neutral-50">
+          <img
+            src={armadaImage}
+            alt={armadaName}
+            className="h-full w-full object-contain"
+          />
+        </div>
+        <p className="text-sm font-bold text-neutral-900">{armadaName}</p>
+      </div>
 
-//   // Find the selected transporter object to pass to the Dropdown value prop
-//   const selectedValue =
-//     transporterOptions.find(
-//       (option) => option.value === assignment.transporterId
-//     ) || null;
+      <div className="flex items-center gap-4">
+        <span className="text-xs font-medium text-neutral-600">Ubah Ke</span>
+        <div className="flex items-center gap-4">
+          <RadioButton
+            name={uniqueGroupName}
+            checked={value.type === "SAME_TRANSPORTER"}
+            onClick={() => handleTypeChange("SAME_TRANSPORTER")}
+            label="Tidak Diubah (Transporter yang sama)"
+          />
+          <RadioButton
+            name={uniqueGroupName}
+            checked={value.type === "REBLAST"}
+            onClick={() => handleTypeChange("REBLAST")}
+            label="Blast Ulang"
+          />
+          <div className="flex items-center gap-2">
+            <RadioButton
+              name={uniqueGroupName}
+              checked={value.type === "CHOOSE_TRANSPORTER"}
+              onClick={() => handleTypeChange("CHOOSE_TRANSPORTER")}
+            />
+            <CustomTransporterSelect
+              options={transporterOptions}
+              placeholder="Pilih Transporter"
+              value={value.transporterId}
+              onChange={handleTransporterChange}
+              disabled={value.type !== "CHOOSE_TRANSPORTER"}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-//   return (
-//     <div
-//       className={cn(
-//         "flex h-[88px] w-full items-center justify-between border-b border-neutral-400 bg-white p-4",
-//         className
-//       )}
-//     >
-//       {/* Left Section: Armada Info */}
-//       <div className="flex items-center gap-4">
-//         <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-neutral-500 bg-neutral-50">
-//           <img
-//             src={armadaImage}
-//             alt={armadaName}
-//             className="h-full w-full object-contain"
-//           />
-//         </div>
-//         <p className="text-sm font-bold text-neutral-900">{armadaName}</p>
-//       </div>
-
-//       {/* Right Section: Change Options */}
-//       <div className="flex items-center gap-4">
-//         <span className="text-xs font-medium text-neutral-600">Ubah Ke</span>
-//         <div className="flex items-center gap-4">
-//           <RadioButton
-//             name={`assignment-${armadaName}`}
-//             checked={value.type === "SAME_TRANSPORTER"}
-//             onClick={() => handleTypeChange("SAME_TRANSPORTER")}
-//             label="Tidak Diubah (Transporter yang sama)"
-//           />
-//           <RadioButton
-//             name={`assignment-${armadaName}`}
-//             checked={value.type === "REBLAST"}
-//             onClick={() => handleTypeChange("REBLAST")}
-//             label="Blast Ulang"
-//           />
-//           <div className="flex items-center gap-2">
-//             <RadioButton
-//               name={`assignment-${armadaName}`}
-//               checked={value.type === "CHOOSE_TRANSPORTER"}
-//               onClick={() => handleTypeChange("CHOOSE_TRANSPORTER")}
-//             />
-//             <Dropdown
-//               options={transporterOptions}
-//               placeholder="Pilih Transporter"
-//               onSelected={handleTransporterChange}
-//               disabled={value.type !== "CHOOSE_TRANSPORTER"}
-//               value={selectedValue}
-//               className="w-[202px]"
-//             />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+export default ChangeAssignmentCard;
