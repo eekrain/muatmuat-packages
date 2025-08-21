@@ -148,6 +148,15 @@ export const formatShortDate = (isoString) => {
 };
 
 /**
+ * Formats an ISO string to "DD Mon YYYY" (e.g., "21 Agu 2025").
+ */
+export const formatDateToDDMonYYYY = (isoString) => {
+  const date = _parseDate(isoString);
+  if (!date) return "";
+  return format(date, "dd MMM yyyy", { locale: id });
+};
+
+/**
  * Formats a date range, intelligently showing time remaining for upcoming end dates.
  */
 export const formatDateRange = (startDate, endDate) => {
