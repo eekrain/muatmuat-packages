@@ -89,6 +89,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
   // State for pagination (should be declared first)
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // State for Modals
   const [showHubungiModal, setShowHubungiModal] = useState(false);
@@ -129,6 +130,20 @@ const DetailTransporter = ({ breadcrumbData }) => {
     _rawTanggalNonaktif: item.inactiveDate,
     _rawLamaNonaktif: item.inactiveDuration,
   }));
+
+  // Filter data based on search query (when character count is 0 or > 2)
+  if (searchQuery.trim().length === 0 || searchQuery.trim().length > 2) {
+    if (searchQuery.trim().length > 2) {
+      armadaNonaktifData = armadaNonaktifData.filter((item) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          item.licensePlate?.toLowerCase().includes(query) ||
+          item.driverName?.toLowerCase().includes(query)
+        );
+      });
+    }
+    // If length is 0, show all data (no filtering)
+  }
 
   // Sorting
   if (sortConfig?.sort) {
@@ -172,6 +187,11 @@ const DetailTransporter = ({ breadcrumbData }) => {
     setSortConfig({ sort, order });
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
   return (
     <div className="mx-auto max-w-7xl p-6">
       <BreadCrumb data={breadcrumbData} maxWidth={111} />
@@ -195,7 +215,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                   {transporter.name}
                 </p>
                 <p className="text-xs font-medium text-error-400">
-                  Armada Nonaktif Terlalu Banyak (10/11)
+                  Admin Terdeteksi Sering Idle (5/7 Order)
                 </p>
               </div>
             </div>
@@ -312,6 +332,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             perPage={perPage}
             onPageChange={setCurrentPage}
             onPerPageChange={setPerPage}
+            onSearch={handleSearch}
             showFilter={false}
             showPagination={true}
             showTotalCount={true}

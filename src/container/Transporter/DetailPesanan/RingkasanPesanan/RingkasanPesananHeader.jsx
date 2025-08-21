@@ -70,14 +70,16 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
 
           <div className="flex items-center gap-x-3">
             {/* Referensi: LDG-7 */}
-            {false && (
+            {dataOrderDetail?.orderStatus ===
+              ORDER_STATUS.NEED_CHANGE_RESPONSE && (
               <BadgeStatusPesanan variant="muted" className="w-fit">
                 Respon Perubahan Disimpan Sebagai Draf
               </BadgeStatusPesanan>
             )}
 
             {/* Referensi: LDG-7 */}
-            {dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING && (
+            {(dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING ||
+              dataOrderDetail?.orderStatus === ORDER_STATUS.UNLOADING) && (
               <Button onClick={() => {}} variant="muattrans-primary">
                 Lihat Posisi Armada
               </Button>
