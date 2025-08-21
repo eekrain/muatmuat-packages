@@ -8,48 +8,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { useTranslation } from "@/hooks/use-translation";
 
-const TRUCK_STATUS_OPTIONS = [
-  {
-    id: "ON_DUTY",
-    label: "Bertugas",
-    icon: "/img/monitoring/truck/blue.png",
-    count: 3,
-  },
-  {
-    id: "WAITING_LOADING_TIME",
-    label: "Akan Muat Hari Ini",
-    icon: "/img/monitoring/truck/yellow.png",
-    count: 5,
-  },
-  {
-    id: "READY_FOR_ORDER",
-    label: "Siap Menerima Order",
-    icon: "/img/monitoring/truck/green.png",
-    count: 4,
-  },
-  {
-    id: "INACTIVE",
-    label: "Nonaktif",
-    icon: "/img/monitoring/truck/red.png",
-    count: 1,
-  },
-  {
-    id: "NOT_PAIRED",
-    label: "Belum Dipasangkan",
-    icon: "/img/monitoring/truck/gray.png",
-    count: 1,
-  },
-];
-
-const ORDER_STATUS_OPTIONS = [
-  {
-    id: "NEEDS_RESPONSE",
-    label: "Perlu Respon Perubahan",
-    icon: "warning",
-    count: 1,
-  },
-];
+// ...existing code...
 
 export const FilterPopover = ({
   onApplyFilter,
@@ -63,6 +24,54 @@ export const FilterPopover = ({
   const [selectedOrderStatuses, setSelectedOrderStatuses] = useState(
     activeFilters.order
   );
+  const { t } = useTranslation();
+
+  // Truck status options with translation
+  const TRUCK_STATUS_OPTIONS = [
+    {
+      id: "ON_DUTY",
+      label: t("FilterPopover.truckOnDuty", {}, "Bertugas"),
+      icon: "/img/monitoring/truck/blue.png",
+      count: 3,
+    },
+    {
+      id: "WAITING_LOADING_TIME",
+      label: t("FilterPopover.truckWaitingLoading", {}, "Akan Muat Hari Ini"),
+      icon: "/img/monitoring/truck/yellow.png",
+      count: 5,
+    },
+    {
+      id: "READY_FOR_ORDER",
+      label: t("FilterPopover.truckReadyForOrder", {}, "Siap Menerima Order"),
+      icon: "/img/monitoring/truck/green.png",
+      count: 4,
+    },
+    {
+      id: "INACTIVE",
+      label: t("FilterPopover.truckInactive", {}, "Nonaktif"),
+      icon: "/img/monitoring/truck/red.png",
+      count: 1,
+    },
+    {
+      id: "NOT_PAIRED",
+      label: t("FilterPopover.truckNotPaired", {}, "Belum Dipasangkan"),
+      icon: "/img/monitoring/truck/gray.png",
+      count: 1,
+    },
+  ];
+
+  const ORDER_STATUS_OPTIONS = [
+    {
+      id: "NEEDS_RESPONSE",
+      label: t(
+        "FilterPopover.orderNeedsResponse",
+        {},
+        "Perlu Respon Perubahan"
+      ),
+      icon: "warning",
+      count: 1,
+    },
+  ];
 
   // Sync with parent state when activeFilters change
   useEffect(() => {
@@ -119,7 +128,8 @@ export const FilterPopover = ({
             />
           }
         >
-          Filter {totalActiveFilters > 0 && `(${totalActiveFilters})`}
+          {t("FilterPopover.filterButton", {}, "Filter")}{" "}
+          {totalActiveFilters > 0 && `(${totalActiveFilters})`}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -145,12 +155,16 @@ export const FilterPopover = ({
         <div className="flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-start px-6 py-4">
-            <h3 className="text-base font-bold text-black">Filter Armada</h3>
+            <h3 className="text-base font-bold text-black">
+              {t("FilterPopover.title", {}, "Filter Armada")}
+            </h3>
           </div>
 
           {/* Truck Status Section */}
           <div className="flex flex-col gap-4 px-6 pb-4">
-            <div className="text-xs font-semibold text-black">Status Truk</div>
+            <div className="text-xs font-semibold text-black">
+              {t("FilterPopover.truckStatusSection", {}, "Status Truk")}
+            </div>
 
             {/* Two column layout for truck statuses */}
             <div className="grid grid-cols-2 gap-3">
@@ -188,7 +202,7 @@ export const FilterPopover = ({
           {/* Order Status Section */}
           <div className="flex flex-col gap-4 px-6 pb-5">
             <div className="text-xs font-semibold text-black">
-              Status Pesanan
+              {t("FilterPopover.orderStatusSection", {}, "Status Pesanan")}
             </div>
 
             <div className="flex flex-col gap-3">
@@ -231,7 +245,7 @@ export const FilterPopover = ({
               onClick={handleReset}
               className="min-w-[112px]"
             >
-              Reset
+              {t("FilterPopover.resetButton", {}, "Reset")}
             </Button>
             <Button
               variant="muattrans-primary"
@@ -239,7 +253,7 @@ export const FilterPopover = ({
               onClick={handleApply}
               className="min-w-[115px]"
             >
-              Tampilkan
+              {t("FilterPopover.applyButton", {}, "Tampilkan")}
             </Button>
           </div>
         </div>

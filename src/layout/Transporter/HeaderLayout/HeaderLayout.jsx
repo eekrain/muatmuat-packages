@@ -19,128 +19,31 @@ import {
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useAuth } from "@/hooks/Transporter/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useOverlayAction } from "@/store/Shared/overlayStore";
 
-// Constants
-const MENU_NOTIFICATIONS = [
-  { src: "/icons/header-transporter/report.svg", count: "99+" },
-  { src: "/icons/header-transporter/message.svg", countKey: "chat" },
-  {
-    src: "/icons/header-transporter/notification.svg",
-    countKey: "notification",
-  },
-];
-
-const NAVIGATION_MENU = [
-  {
-    id: "dashboard",
-    label: "Dashboard",
-    icon: "/icons/header-transporter/dashboard.svg",
-    isDropdown: true,
-    activePattern: "/dashboard",
-    dropdownItems: [
-      {
-        id: "dashboard-analytics",
-        label: "Dashboard Analytics",
-        href: "/dashboard/analytics",
-      },
-      {
-        id: "dashboard-real-time",
-        label: "Dashboard Real-time",
-        href: "/dashboard/real-time",
-      },
-    ],
-  },
-  {
-    id: "monitoring",
-    label: "Monitoring",
-    href: "/monitoring",
-    icon: "/icons/header-transporter/monitoring.svg",
-  },
-  {
-    id: "manajemen-armada",
-    label: "Manajemen Armada",
-    href: "/manajemen-armada",
-    icon: "/icons/header-transporter/armada.svg",
-  },
-  {
-    id: "manajemen-driver",
-    label: "Manajemen Driver",
-    href: "/manajemen-driver",
-    icon: "/icons/header-transporter/driver.svg",
-  },
-  {
-    id: "agenda-armada-driver",
-    label: "Agenda Armada-Driver",
-    href: "/agenda-armada-driver",
-    icon: "/icons/header-transporter/agenda.svg",
-  },
-  {
-    id: "daftar-pesanan",
-    label: "Daftar Pesanan",
-    href: "/daftar-pesanan",
-    icon: "/icons/header-transporter/pesanan.svg",
-  },
-  {
-    id: "laporan",
-    label: "Laporan",
-    icon: "/icons/header-transporter/laporan.svg",
-    isDropdown: true,
-    activePattern: "/laporan",
-    dropdownItems: [
-      {
-        id: "laporan-pendapatan",
-        label: "Laporan Pendapatan",
-        href: "/laporan/pendapatan",
-      },
-      {
-        id: "laporan-pencairan-dana",
-        label: "Laporan Pencairan Dana",
-        href: "/laporan/pencairan-dana",
-      },
-      {
-        id: "laporan-aktivitas-armada-driver",
-        label: "Laporan Aktivitas Armada & Driver",
-        href: "/laporan/aktivitas-armada-driver",
-      },
-    ],
-  },
-  {
-    id: "pengaturan",
-    label: "Pengaturan",
-    href: "/pengaturan",
-    icon: "/icons/header-transporter/pengaturan.svg",
-  },
-];
-
-const USER_MENU_ITEMS = [
-  { imgUrl: "/icons/profil-user.svg", title: "Profil Saya" },
-  { imgUrl: "/icons/profile-user-setting.svg", title: "Pengaturan Akun" },
-  {
-    imgUrl: "/icons/profil-logout.svg",
-    title: "Keluar",
-    variant: "danger",
-    action: "logout",
-  },
-];
-
 // Sub-components
-const MenuItem = ({ imgUrl, title, variant, onClick }) => (
-  <button
-    className={cn(
-      "flex w-full cursor-pointer items-center gap-2 px-[18px] py-2 font-medium text-neutral-900 hover:bg-neutral-100",
-      variant === "danger" && "text-error-400"
-    )}
-    onClick={onClick}
-  >
-    <IconComponent src={imgUrl} width={16} height={16} alt="profile" />
-    <span className="pt-1 text-xs">{title}</span>
-  </button>
-);
+const MenuItem = ({ imgUrl, title, variant, onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <button
+      className={cn(
+        "flex w-full cursor-pointer items-center gap-2 px-[18px] py-2 font-medium text-neutral-900 hover:bg-neutral-100",
+        variant === "danger" && "text-error-400"
+      )}
+      onClick={onClick}
+    >
+      <IconComponent src={imgUrl} width={16} height={16} alt="profile" />
+      <span className="pt-1 text-xs">
+        {t(`HeaderLayout.userMenu.${title.replace(/\s+/g, "")}`, {}, title)}
+      </span>
+    </button>
+  );
+};
 
 const NotificationIcon = ({ src, count }) => (
-  <Link href="#" className="relative">
+  <Link href="#" className="relative" aria-label={count}>
     <div className="absolute bottom-3 left-3 z-20 flex h-4 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1">
       <span className="text-xxs font-medium leading-[8px] text-neutral-50">
         {count}
@@ -157,6 +60,7 @@ const NotificationIcon = ({ src, count }) => (
 const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
   const [open, setOpen] = useState(false);
   const { setIsOverlayActive } = useOverlayAction();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsOverlayActive(open);
@@ -169,12 +73,30 @@ const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
       >
         <Button variant="muatparts-primary">
           <span className="text-sm font-semibold leading-[1] text-neutral-50">
-            Masuk
+            {t("HeaderLayout.loginButton", {}, "Masuk")}
           </span>
         </Button>
       </a>
     );
   }
+
+  // User menu items inside component for translation
+  const USER_MENU_ITEMS = [
+    {
+      imgUrl: "/icons/profil-user.svg",
+      title: t("HeaderLayout.userMenu.ProfilSaya", {}, "Profil Saya"),
+    },
+    {
+      imgUrl: "/icons/profile-user-setting.svg",
+      title: t("HeaderLayout.userMenu.PengaturanAkun", {}, "Pengaturan Akun"),
+    },
+    {
+      imgUrl: "/icons/profil-logout.svg",
+      title: t("HeaderLayout.userMenu.Keluar", {}, "Keluar"),
+      variant: "danger",
+      action: "logout",
+    },
+  ];
 
   return (
     <HoverCard.Root
@@ -220,6 +142,7 @@ const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
 };
 
 const NavigationMenuItem = ({ item, pathname }) => {
+  const { t } = useTranslation();
   if (item.isDropdown) {
     const isActive =
       (item.activePattern && pathname.startsWith(item.activePattern)) ||
@@ -234,7 +157,9 @@ const NavigationMenuItem = ({ item, pathname }) => {
             )}
           >
             <IconComponent src={item.icon} />
-            <span>{item.label}</span>
+            <span>
+              {t(`HeaderLayout.navigation.${item.id}`, {}, item.label)}
+            </span>
             <ChevronDown className="h-4 w-4" />
           </button>
         </SimpleHoverTrigger>
@@ -252,7 +177,13 @@ const NavigationMenuItem = ({ item, pathname }) => {
                     href={dropdownItem.href}
                     className="flex w-full items-center justify-between"
                   >
-                    <span>{dropdownItem.label}</span>
+                    <span>
+                      {t(
+                        `HeaderLayout.navigation.${dropdownItem.id}`,
+                        {},
+                        dropdownItem.label
+                      )}
+                    </span>
                     {isSelected && (
                       <ImageComponent
                         src="/img/checkedblue.png"
@@ -263,7 +194,11 @@ const NavigationMenuItem = ({ item, pathname }) => {
                   </Link>
                 ) : (
                   <span className="flex w-full items-center justify-between">
-                    {dropdownItem.label}
+                    {t(
+                      `HeaderLayout.navigation.${dropdownItem.id}`,
+                      {},
+                      dropdownItem.label
+                    )}
                   </span>
                 )}
               </SimpleHoverItem>
@@ -283,16 +218,144 @@ const NavigationMenuItem = ({ item, pathname }) => {
       )}
     >
       <IconComponent src={item.icon} />
-      <span>{item.label}</span>
+      <span>{t(`HeaderLayout.navigation.${item.id}`, {}, item.label)}</span>
     </Link>
   );
 };
 
-// Main Component
 const HeaderLayout = ({ notifCounter = { notification: 0, chat: 0 } }) => {
   const pathname = usePathname();
   const { dataUser, logout } = useAuth();
   const isLoggedIn = Boolean(dataUser?.fullName);
+  const { t } = useTranslation();
+
+  // Notifications menu inside component for translation
+  const MENU_NOTIFICATIONS = [
+    {
+      src: "/icons/header-transporter/report.svg",
+      count: "99+",
+    },
+    { src: "/icons/header-transporter/message.svg", countKey: "chat" },
+    {
+      src: "/icons/header-transporter/notification.svg",
+      countKey: "notification",
+    },
+  ];
+
+  // Navigation menu inside component for translation
+  const NAVIGATION_MENU = [
+    {
+      id: "dashboard",
+      label: t("HeaderLayout.navigation.dashboard", {}, "Dashboard"),
+      icon: "/icons/header-transporter/dashboard.svg",
+      isDropdown: true,
+      activePattern: "/dashboard",
+      dropdownItems: [
+        {
+          id: "dashboard-analytics",
+          label: t(
+            "HeaderLayout.navigation.dashboardAnalytics",
+            {},
+            "Dashboard Analytics"
+          ),
+          href: "/dashboard/analytics",
+        },
+        {
+          id: "dashboard-real-time",
+          label: t(
+            "HeaderLayout.navigation.dashboardRealTime",
+            {},
+            "Dashboard Real-time"
+          ),
+          href: "/dashboard/real-time",
+        },
+      ],
+    },
+    {
+      id: "monitoring",
+      label: t("HeaderLayout.navigation.monitoring", {}, "Monitoring"),
+      href: "/monitoring",
+      icon: "/icons/header-transporter/monitoring.svg",
+    },
+    {
+      id: "manajemen-armada",
+      label: t(
+        "HeaderLayout.navigation.manajemenArmada",
+        {},
+        "Manajemen Armada"
+      ),
+      href: "/manajemen-armada",
+      icon: "/icons/header-transporter/armada.svg",
+    },
+    {
+      id: "manajemen-driver",
+      label: t(
+        "HeaderLayout.navigation.manajemenDriver",
+        {},
+        "Manajemen Driver"
+      ),
+      href: "/manajemen-driver",
+      icon: "/icons/header-transporter/driver.svg",
+    },
+    {
+      id: "agenda-armada-driver",
+      label: t(
+        "HeaderLayout.navigation.agendaArmadaDriver",
+        {},
+        "Agenda Armada-Driver"
+      ),
+      href: "/agenda-armada-driver",
+      icon: "/icons/header-transporter/agenda.svg",
+    },
+    {
+      id: "daftar-pesanan",
+      label: t("HeaderLayout.navigation.daftarPesanan", {}, "Daftar Pesanan"),
+      href: "/daftar-pesanan",
+      icon: "/icons/header-transporter/pesanan.svg",
+    },
+    {
+      id: "laporan",
+      label: t("HeaderLayout.navigation.laporan", {}, "Laporan"),
+      icon: "/icons/header-transporter/laporan.svg",
+      isDropdown: true,
+      activePattern: "/laporan",
+      dropdownItems: [
+        {
+          id: "laporan-pendapatan",
+          label: t(
+            "HeaderLayout.navigation.laporanPendapatan",
+            {},
+            "Laporan Pendapatan"
+          ),
+          href: "/laporan/pendapatan",
+        },
+        {
+          id: "laporan-pencairan-dana",
+          label: t(
+            "HeaderLayout.navigation.laporanPencairanDana",
+            {},
+            "Laporan Pencairan Dana"
+          ),
+          href: "/laporan/pencairan-dana",
+        },
+        {
+          id: "laporan-aktivitas-armada-driver",
+          label: t(
+            "HeaderLayout.navigation.laporanAktivitasArmadaDriver",
+            {},
+            "Laporan Aktivitas Armada & Driver"
+          ),
+          href: "/laporan/aktivitas-armada-driver",
+        },
+      ],
+    },
+    {
+      id: "pengaturan",
+      label: t("HeaderLayout.navigation.pengaturan", {}, "Pengaturan"),
+      href: "/pengaturan",
+      icon: "/icons/header-transporter/pengaturan.svg",
+    },
+  ];
 
   return (
     <header className="sticky left-0 top-0 z-20 w-full">
@@ -307,15 +370,13 @@ const HeaderLayout = ({ notifCounter = { notification: 0, chat: 0 } }) => {
             className="text-xs font-medium leading-[12px]"
             href={process.env.NEXT_PUBLIC_INTERNAL_WEB}
           >
-            Kembali ke muatmuat
+            {t("HeaderLayout.backToMuatmuat", {}, "Kembali ke muatmuat")}
           </Link>
           <Link
             className="text-xs font-medium leading-[12px]"
-            href={`${
-              process.env.NEXT_PUBLIC_INTERNAL_WEB
-            }traffic/redirect_faq?from=gen`}
+            href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}traffic/redirect_faq?from=gen`}
           >
-            Pusat Bantuan
+            {t("HeaderLayout.helpCenter", {}, "Pusat Bantuan")}
           </Link>
 
           <div className="flex items-center gap-x-3">
@@ -344,7 +405,9 @@ const HeaderLayout = ({ notifCounter = { notification: 0, chat: 0 } }) => {
 
       {isLoggedIn && (
         <div className="flex h-8 items-center gap-6 bg-muat-trans-secondary-900 px-10 text-xs font-medium leading-[1] text-neutral-50">
-          <span className="block">Menu :</span>
+          <span className="block">
+            {t("HeaderLayout.menuLabel", {}, "Menu :")}
+          </span>
 
           {NAVIGATION_MENU.map((item) => (
             <NavigationMenuItem key={item.id} item={item} pathname={pathname} />
