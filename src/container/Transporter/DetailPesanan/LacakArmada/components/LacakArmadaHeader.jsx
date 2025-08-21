@@ -1,6 +1,6 @@
-"use client";
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
-import { usePathname } from "next/navigation";
+"use client";
 
 import { X } from "lucide-react";
 
@@ -9,6 +9,10 @@ import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
+
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
 function LacakArmadaHeader({
   sosUnit = 0,
@@ -21,28 +25,22 @@ function LacakArmadaHeader({
   onSearchChange,
   onDetailStatusClick,
   isSOS = false,
-  hidePositionButton = false, // New prop to hide position button
-  showDataNotFound = false, // New prop to show DataNotFound component
+  hidePositionButton = false,
+  showDataNotFound = false,
 }) {
-  // Nanti disesuaikan lagi
-  const pathname = usePathname();
-
-  const segments = pathname.replace(/\/+$/, "").split("/");
-  const root = `/${segments[1] || ""}`;
-  const isDaftarPesanan = root === "/daftar-pesanan";
-
-  // Handler untuk clear search
+  // Handler to clear the search input
   const handleClearSearch = () => {
     onSearchChange?.({ target: { value: "" } });
   };
 
-  // Cek apakah search value lebih dari 2 karakter
-  const shouldShowClearIcon = searchValue.length > 2;
+  // Show clear icon if there is any text in the search input
+  const shouldShowClearIcon = searchValue.length > 0;
+
   return (
     <>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-semibold text-neutral-900">
+          <h2 className="text-lg font-semibold text-neutral-900">
             Lacak Armada
           </h2>
 
@@ -93,30 +91,21 @@ function LacakArmadaHeader({
         </div>
 
         <div className="flex w-auto items-center gap-3">
-          {/* Referensi: LDN-93 */}
-          {false && (
-            <Button variant="muattrans-primary" onClick={() => {}}>
-              Lihat Posisi Armada
-            </Button>
-          )}
-          {!hidePositionButton && activeTab === "aktif" ? (
+          {/* Ref: LDN-93 - Refactored for conciseness */}
+          {!hidePositionButton && (
             <Button
-              variant="muattrans-primary"
+              variant={
+                activeTab === "aktif"
+                  ? "muattrans-primary"
+                  : "muattrans-primary-secondary"
+              }
               className="h-8 whitespace-nowrap px-4 md:px-6"
               onClick={onDetailStatusClick}
             >
-              Lihat Posisi Armada
+              {activeTab === "aktif"
+                ? "Lihat Posisi Armada"
+                : "Detail Status Armada"}
             </Button>
-          ) : (
-            !hidePositionButton && (
-              <Button
-                variant="muattrans-primary-secondary"
-                className="h-8 whitespace-nowrap px-4 md:px-6"
-                onClick={onDetailStatusClick}
-              >
-                Detail Status Armada
-              </Button>
-            )
           )}
 
           {showSearch && (
@@ -152,7 +141,7 @@ function LacakArmadaHeader({
         </div>
       </div>
 
-      {/* DataNotFound component */}
+      {/* Render DataNotFound component below the header if needed */}
       {showDataNotFound && (
         <DataNotFound
           type="search"

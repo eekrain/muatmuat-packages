@@ -29,6 +29,7 @@ import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
 import PilihArmadaBatalkanModal from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
@@ -51,6 +52,7 @@ const DaftarPesananAktif = ({
   hasShownOnboarding,
   onOnboardingShown,
 }) => {
+  const { t } = useTranslation();
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
@@ -169,7 +171,14 @@ const DaftarPesananAktif = ({
       // Show success toast notification
       const truckCount = order?.truckCount || order?.vehicleCount || 1;
       toast.success(
-        `Berhasil membatalkan ${truckCount} armada dari pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.cancelFleetSuccess",
+          {
+            truckCount,
+            orderCode: order?.orderCode || order?.orderNumber || "",
+          },
+          `Berhasil membatalkan ${truckCount} armada dari pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        )
       );
 
       // TODO: Refresh data or update state as needed
@@ -177,7 +186,13 @@ const DaftarPesananAktif = ({
     } catch (error) {
       console.error("Error canceling fleet:", error);
       // Show error toast
-      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.cancelFleetError",
+          {},
+          "Gagal membatalkan armada. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -202,7 +217,16 @@ const DaftarPesananAktif = ({
 
       // Show success toast notification
       toast.success(
-        `Berhasil membatalkan pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.cancelOrderSuccess",
+          {
+            orderCode:
+              cancellationData.order?.orderCode ||
+              cancellationData.order?.orderNumber ||
+              "",
+          },
+          `Berhasil membatalkan pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+        )
       );
 
       // TODO: Refresh data or update state as needed
@@ -210,7 +234,13 @@ const DaftarPesananAktif = ({
     } catch (error) {
       console.error("Error canceling order:", error);
       // Show error toast
-      toast.error("Gagal membatalkan pesanan. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.cancelOrderError",
+          {},
+          "Gagal membatalkan pesanan. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -235,7 +265,17 @@ const DaftarPesananAktif = ({
       // Show success toast notification
       const fleetCount = cancellationData.selectedFleets.length;
       toast.success(
-        `Berhasil membatalkan ${fleetCount} armada dari pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.cancelSelectedFleetsSuccess",
+          {
+            fleetCount,
+            orderCode:
+              cancellationData.order?.orderCode ||
+              cancellationData.order?.orderNumber ||
+              "",
+          },
+          `Berhasil membatalkan ${fleetCount} armada dari pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+        )
       );
 
       // TODO: Refresh data or update state as needed
@@ -243,7 +283,13 @@ const DaftarPesananAktif = ({
     } catch (error) {
       console.error("Error canceling selected fleets:", error);
       // Show error toast
-      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.cancelSelectedFleetsError",
+          {},
+          "Gagal membatalkan armada. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -263,7 +309,16 @@ const DaftarPesananAktif = ({
 
       // Show success toast notification
       toast.success(
-        `Berhasil melakukan perubahan jumlah unit pesanan ${changeData.orderData?.orderCode || changeData.orderData?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.changeUnitCountSuccess",
+          {
+            orderCode:
+              changeData.orderData?.orderCode ||
+              changeData.orderData?.orderNumber ||
+              "",
+          },
+          `Berhasil melakukan perubahan jumlah unit pesanan ${changeData.orderData?.orderCode || changeData.orderData?.orderNumber || ""}`
+        )
       );
 
       // Open AssignArmadaModal after successful unit count change
@@ -278,13 +333,19 @@ const DaftarPesananAktif = ({
     } catch (error) {
       console.error("Error changing unit count:", error);
       // Show error toast
-      toast.error("Gagal mengubah jumlah unit. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.changeUnitCountError",
+          {},
+          "Gagal mengubah jumlah unit. Silakan coba lagi."
+        )
+      );
     }
   };
 
   const columns = [
     {
-      header: "No. Pesanan",
+      header: t("DaftarPesananAktif.orderNumberHeader", {}, "No. Pesanan"),
       key: "orderCode",
       sortable: true,
       headerClassName: "px-4 py-3",
@@ -299,7 +360,7 @@ const DaftarPesananAktif = ({
       ),
     },
     {
-      header: "Waktu Muat",
+      header: t("DaftarPesananAktif.loadTimeHeader", {}, "Waktu Muat"),
       key: "loadTimeStart",
       sortable: true,
       headerClassName: "px-4 py-3",
@@ -317,7 +378,7 @@ const DaftarPesananAktif = ({
       },
     },
     {
-      header: "Rute Muat & Bongkar",
+      header: t("DaftarPesananAktif.routeHeader", {}, "Rute Muat & Bongkar"),
       key: "route",
       sortable: false,
       width: "350px",
@@ -334,7 +395,7 @@ const DaftarPesananAktif = ({
       ),
     },
     {
-      header: "Armada",
+      header: t("DaftarPesananAktif.fleetHeader", {}, "Armada"),
       key: "armada",
       sortable: false,
       headerClassName: "px-4 py-3",
@@ -345,7 +406,9 @@ const DaftarPesananAktif = ({
             {row.truckType.name}
           </span>
           <span className="line-clamp-1 break-all text-xs font-medium">
-            <span className="text-neutral-600">Carrier :</span>{" "}
+            <span className="text-neutral-600">
+              {t("DaftarPesananAktif.carrierLabel", {}, "Carrier")} :
+            </span>{" "}
             {row.carrierTruck.name}
           </span>
           <div className="mt-1 flex items-center gap-4">
@@ -355,7 +418,11 @@ const DaftarPesananAktif = ({
                 className="h-4 w-4 text-gray-600"
               />
               <span className="text-xxs font-medium">
-                {row.truckCount} Unit
+                {t(
+                  "DaftarPesananAktif.unitCount",
+                  { count: row.truckCount },
+                  `${row.truckCount} Unit`
+                )}
               </span>
             </div>
             <span className="text-gray-300">•</span>
@@ -376,7 +443,11 @@ const DaftarPesananAktif = ({
               <div className="mt-1 flex items-center gap-2">
                 <div className="flex h-[14px] items-center gap-1 rounded bg-error-400 px-1">
                   <span className="text-[8px] font-bold leading-[130%] text-white">
-                    SOS : {row.sosStatus.sosCount} Unit
+                    {t(
+                      "DaftarPesananAktif.sosCount",
+                      { count: row.sosStatus.sosCount },
+                      `SOS : ${row.sosStatus.sosCount} Unit`
+                    )}
                   </span>
                 </div>
                 <Button
@@ -384,7 +455,7 @@ const DaftarPesananAktif = ({
                   onClick={() => console.log("View SOS Details", row.sosStatus)}
                   className="h-auto p-0 text-xs font-medium"
                 >
-                  Lihat SOS
+                  {t("DaftarPesananAktif.viewSos", {}, "Lihat SOS")}
                 </Button>
               </div>
             )}
@@ -392,7 +463,7 @@ const DaftarPesananAktif = ({
       ),
     },
     {
-      header: "Status",
+      header: t("DaftarPesananAktif.statusHeader", {}, "Status"),
       key: "orderStatus",
       sortable: false,
       headerClassName: "px-4 py-3 ",
@@ -414,8 +485,11 @@ const DaftarPesananAktif = ({
                   }}
                 >
                   <p>
-                    Armada kamu telah tercatat untuk pesanan ini, harap menunggu
-                    maks. 1 jam untuk konfirmasi dari Shipper
+                    {t(
+                      "DaftarPesananAktif.waitingConfirmationTooltip",
+                      {},
+                      "Armada kamu telah tercatat untuk pesanan ini, harap menunggu maks. 1 jam untuk konfirmasi dari Shipper"
+                    )}
                   </p>
                 </InfoTooltip>
               )}
@@ -443,7 +517,11 @@ const DaftarPesananAktif = ({
                 }}
                 className="self-start text-xs font-semibold"
               >
-                Lihat Status Lainnya
+                {t(
+                  "DaftarPesananAktif.viewOtherStatus",
+                  {},
+                  "Lihat Status Lainnya"
+                )}
               </Button>
             )}
             {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
@@ -455,7 +533,7 @@ const DaftarPesananAktif = ({
                 }}
                 className="mx-auto h-8 w-[147px] text-sm md:p-0"
               >
-                Assign Armada
+                {t("DaftarPesananAktif.assignFleet", {}, "Assign Armada")}
               </Button>
             )}
             {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
@@ -467,7 +545,7 @@ const DaftarPesananAktif = ({
                 }}
                 className="mx-auto h-8 w-[147px] text-sm md:p-0"
               >
-                Konfirmasi Siap
+                {t("DaftarPesananAktif.confirmReady", {}, "Konfirmasi Siap")}
               </Button>
             )}
             {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
@@ -485,7 +563,7 @@ const DaftarPesananAktif = ({
                 }}
                 className="mx-auto h-8 w-[170px] text-sm md:p-0"
               >
-                Respon Perubahan
+                {t("DaftarPesananAktif.respondChange", {}, "Respon Perubahan")}
               </Button>
             )}
           </div>
@@ -590,10 +668,18 @@ const DaftarPesananAktif = ({
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              Belum ada pesanan aktif
+              {t(
+                "DaftarPesananAktif.noActiveOrders",
+                {},
+                "Belum ada pesanan aktif"
+              )}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              Pesanan aktif akan muncul di sini
+              {t(
+                "DaftarPesananAktif.activeOrdersWillAppear",
+                {},
+                "Pesanan aktif akan muncul di sini"
+              )}
             </p>
           </div>
         </div>
@@ -609,19 +695,27 @@ const DaftarPesananAktif = ({
   const filterConfig = [
     {
       key: "NEED_CHANGE_RESPONSE",
-      label: "Respon Perubahan",
+      label: t(
+        "DaftarPesananAktif.responseChangeFilter",
+        {},
+        "Respon Perubahan"
+      ),
       hasFilter: !!availableStatuses?.totalNeedChangeResponse,
       count: availableStatuses?.totalNeedChangeResponse || 0,
     },
     {
       key: "NEED_CONFIRMATION_READY",
-      label: "Perlu Konfirmasi Siap",
+      label: t(
+        "DaftarPesananAktif.needConfirmationFilter",
+        {},
+        "Perlu Konfirmasi Siap"
+      ),
       hasFilter: !!availableStatuses?.totalNeedConfirmationReady,
       count: availableStatuses?.totalNeedConfirmationReady || 0,
     },
     {
       key: "NEED_ASSIGN_VEHICLE",
-      label: "Assign Armada",
+      label: t("DaftarPesananAktif.assignFleetFilter", {}, "Assign Armada"),
       hasFilter: !!availableStatuses?.totalNeedAssignVehicle,
       count: availableStatuses?.totalNeedAssignVehicle || 0,
     },
@@ -632,7 +726,9 @@ const DaftarPesananAktif = ({
       {/* Header */}
       <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
-          <h3 className="w-[80px] text-xs font-bold">Daftar Pesanan Aktif</h3>
+          <h3 className="w-[80px] text-xs font-bold">
+            {t("DaftarPesananAktif.title", {}, "Daftar Pesanan Aktif")}
+          </h3>
           <Onboarding
             hasShownOnboarding={hasShownOnboarding}
             onOnboardingShown={onOnboardingShown}
@@ -677,7 +773,11 @@ const DaftarPesananAktif = ({
             )}
           </div>
           <Search
-            placeholder="Cari Pesanan"
+            placeholder={t(
+              "DaftarPesananAktif.searchPlaceholder",
+              {},
+              "Cari Pesanan"
+            )}
             onSearch={(value) => {
               console.log("🔍 Search triggered with value:", value);
               console.log("🔍 Value length:", value.length);
@@ -721,10 +821,18 @@ const DaftarPesananAktif = ({
               <DataNotFound className="h-full gap-y-5 pb-10" type="data">
                 <div className="flex flex-col items-center gap-2">
                   <p className="text-center text-base font-semibold leading-tight text-neutral-600">
-                    Oops, daftar pesananmu masih kosong
+                    {t(
+                      "DaftarPesananAktif.emptyOrderList",
+                      {},
+                      "Oops, daftar pesananmu masih kosong"
+                    )}
                   </p>
                   <p className="text-center text-xs font-medium leading-tight text-neutral-600">
-                    Mohon bersabar untuk menanti permintaan baru
+                    {t(
+                      "DaftarPesananAktif.waitForNewRequests",
+                      {},
+                      "Mohon bersabar untuk menanti permintaan baru"
+                    )}
                   </p>
                 </div>
               </DataNotFound>

@@ -215,7 +215,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                   {transporter.name}
                 </p>
                 <p className="text-xs font-medium text-error-400">
-                  Armada Nonaktif Terlalu Banyak (10/11)
+                  Admin Terdeteksi Sering Idle (5/7 Order)
                 </p>
               </div>
             </div>

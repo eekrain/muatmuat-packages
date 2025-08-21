@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import {
   Tooltip as RadixTooltip,
@@ -17,7 +17,16 @@ import {
 import { cn } from "@/lib/utils";
 import { formatNumberShorthand } from "@/lib/utils/formatNumberShorthand";
 
-const CustomRechartsTooltip = ({ active, payload, tooltipClassname }) => {
+// --- MODIFICATION START ---
+// Added textLabel to the props
+const CustomRechartsTooltip = ({
+  active,
+  payload,
+  tooltipClassname,
+  textTooltipClassname,
+  textLabel,
+}) => {
+  // --- MODIFICATION END ---
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -27,10 +36,16 @@ const CustomRechartsTooltip = ({ active, payload, tooltipClassname }) => {
           tooltipClassname
         )}
       >
-        <div className="flex flex-col text-xxs font-semibold text-neutral-900">
+        <div
+          className={cn(
+            "flex flex-col text-xxs font-semibold text-neutral-900",
+            textTooltipClassname
+          )}
+        >
           <p className="">{data.name}:</p>
           <p className="">
-            {`${data.value.toLocaleString("id-ID")} ${data.unit}`}
+            {/* This will now work correctly */}
+            {`${data.value.toLocaleString("id-ID")} ${textLabel}`}
           </p>
         </div>
       </div>
@@ -74,20 +89,20 @@ const CustomLegend = ({
 // The main Donut Chart component
 const DonutChart = ({
   data,
+
   className,
   tooltipClassname,
   legendClassname,
   itemLegendClassname,
   chartClassname,
+  textTooltipClassname,
+  centerTooltipClassname,
+  textCenterTooltipClassname,
   showThirdRow = false,
 }) => {
-  const totalValue = useMemo(
-    () => data.reduce((sum, entry) => sum + entry.value, 0),
-    [data]
-  );
-
-  const centerTextValue = totalValue;
-  const centerTextLabel = "Pesanan";
+  const textLabel = data[0]?.unit || "";
+  const centerTextValue = data[0]?.value || 0;
+  const centerTextLabel = textLabel;
 
   return (
     <TooltipProvider>
@@ -102,7 +117,14 @@ const DonutChart = ({
             <PieChart>
               <RechartsTooltip
                 content={
-                  <CustomRechartsTooltip tooltipClassname={tooltipClassname} />
+                  // --- MODIFICATION START ---
+                  // Pass the textLabel prop down to the custom tooltip
+                  <CustomRechartsTooltip
+                    tooltipClassname={tooltipClassname}
+                    textLabel={textLabel}
+                    textTooltipClassname={textTooltipClassname}
+                  />
+                  // --- MODIFICATION END ---
                 }
                 cursor={{ fill: "transparent" }}
                 wrapperStyle={{ zIndex: 999 }}
@@ -140,8 +162,18 @@ const DonutChart = ({
                 </p>
               </div>
             </TooltipTrigger>
-            <TooltipContent className="z-50 flex h-[36px] w-[112px] items-center justify-start rounded-lg border border-neutral-200 bg-white p-2 shadow-lg">
-              <div className="flex flex-col items-start text-start text-xxs font-semibold text-neutral-900">
+            <TooltipContent
+              className={cn(
+                "z-50 flex h-[36px] w-[112px] items-center justify-start rounded-lg border border-neutral-200 bg-white p-2 shadow-lg",
+                centerTooltipClassname
+              )}
+            >
+              <div
+                className={cn(
+                  "flex flex-col items-start text-start text-xxs font-semibold text-neutral-900",
+                  textCenterTooltipClassname
+                )}
+              >
                 <p>{centerTextValue.toLocaleString("id-ID")}</p>
                 <p>{centerTextLabel}</p>
               </div>

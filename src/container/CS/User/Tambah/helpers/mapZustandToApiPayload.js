@@ -1,70 +1,126 @@
-// Helper function to map Zustand data to the API payload format
-
-const mapZustandToApiPayload = (zustandData) => {
+// Mapper terbaru: dari data Zustand (local storage) -> payload API baru
+const mapZustandToApiPayloadV2 = (zustandData) => {
   if (!zustandData) return null;
 
-  // Helper untuk mencari nama dari list berdasarkan value/id
+  // --- Helpers ---
+  const toFloat = (v) =>
+    v === null || v === undefined || v === "" ? null : parseFloat(v);
+  const toInt = (v) =>
+    v === null || v === undefined || v === "" ? null : parseInt(v, 10);
+  const safeStr = (v) => (typeof v === "string" ? v.trim() : v);
+
   const findNameById = (list, id) =>
-    list?.find((item) => item.value === id)?.name || "";
+    list?.find((item) => String(item.value) === String(id))?.name || "";
 
-  // Transformasi dokumen: dari array of objects ke array of URLs
-  const mappedDocuments = {};
-  for (const key in zustandData.documents) {
-    const docArray = zustandData.documents[key];
-    if (Array.isArray(docArray) && docArray.length > 0) {
-      // Untuk NPWP/KTP yang 'single', ambil URL pertama. Untuk yang lain, ambil semua URL.
-      // API contract Anda sedikit ambigu, jadi kita asumsikan 'npwp' & 'ktp' hanya 1 file.
-      if (key === "npwp" || key === "ktp") {
-        mappedDocuments[key] = docArray[0]?.url;
-      } else {
-        mappedDocuments[key] = docArray.map((doc) => doc.url);
-      }
-    } else {
-      mappedDocuments[key] = []; // Kirim array kosong jika tidak ada
-    }
-  }
+  // Pastikan semua key dokumen ada, walau kosong
+  const DOCUMENT_KEYS = [
+    "nib",
+    "npwp",
+    "ktp",
+    "aktaPendirian",
+    "skKemenkumham",
+    "aktaPerubahan", // opsional
+    "skKemenkumhamPerubahan", // opsional
+    "sertifikatStandar", // opsional
+  ];
 
-  // Filter kontak PIC yang kosong
-  const filteredContacts = zustandData.contacts.filter(
-    (contact) =>
-      contact.name?.trim() && contact.position?.trim() && contact.phone?.trim()
+  // Label default dokumen bila tidak ada 'name' di local storage
+  const DEFAULT_DOC_LABEL = {
+    nib: "NIB",
+    npwp: "NPWP",
+    ktp: "KTP",
+    aktaPendirian: "Akta Pendirian",
+    skKemenkumham: "SK Kemenkumham",
+    aktaPerubahan: "Akta Perubahan",
+    skKemenkumhamPerubahan: "SK Kemenkumham Perubahan",
+    sertifikatStandar: "Sertifikat Standar",
+  };
+
+  const normalizeDocuments = (docs) => {
+    const out = {};
+    DOCUMENT_KEYS.forEach((key) => {
+      const arr = Array.isArray(docs?.[key]) ? docs[key] : [];
+      out[key] = arr
+        .filter((d) => d?.url) // hanya yang ada URL
+        .map((d) => ({
+          name: safeStr(d.name) || DEFAULT_DOC_LABEL[key] || "Dokumen",
+          url: d.url,
+        }));
+    });
+    return out;
+  };
+
+  // Filter PIC kosong, lalu beri level berurutan mulai 1
+  const filteredContacts = (
+    Array.isArray(zustandData.contacts) ? zustandData.contacts : []
+  )
+    .filter(
+      (c) => safeStr(c?.name) && safeStr(c?.position) && safeStr(c?.phone)
+    )
+    .map((c, idx) => ({
+      name: safeStr(c.name),
+      position: safeStr(c.position),
+      phone: safeStr(c.phone),
+      level: idx + 1, // PIC 1 mandatory (kalau ada), sisanya opsional
+    }));
+
+  // Ambil district name dari daftar kecamatan
+  const districtName = findNameById(
+    zustandData.locationData?.kecamatanList,
+    zustandData.locationData?.district
   );
 
-  return {
-    registrantName: zustandData.registrantName,
-    registrantPosition: zustandData.registrantPosition,
-    registrantWhatsapp: zustandData.registrantWhatsapp,
-    registrantEmail: zustandData.registrantEmail,
-    companyLogo: zustandData.companyLogo,
-    companyName: zustandData.companyName,
-    businessEntityType: zustandData.businessEntityType,
-    companyPhone: zustandData.companyPhone,
-    companyAddress: zustandData.companyAddress,
+  // --- Build payload sesuai API baru ---
+  const payload = {
+    registrantName: safeStr(zustandData.registrantName),
+    registrantPosition: safeStr(zustandData.registrantPosition),
+    registrantWhatsapp: safeStr(zustandData.registrantWhatsapp),
+    registrantEmail: safeStr(zustandData.registrantEmail),
+
+    companyLogo: safeStr(zustandData.companyLogo),
+    companyName: safeStr(zustandData.companyName),
+    businessEntityType: safeStr(zustandData.businessEntityType),
+
+    companyPhone: safeStr(zustandData.companyPhone),
+    companyAddress: safeStr(zustandData.companyAddress),
+
     locationData: {
-      location: zustandData.locationData.location,
-      latitude: parseFloat(zustandData.locationData.latitude),
-      longitude: parseFloat(zustandData.locationData.longitude),
-      district: findNameById(
-        zustandData.locationData.kecamatanList,
-        zustandData.locationData.district
-      ),
-      districtId: parseInt(zustandData.locationData.district),
-      city: zustandData.locationData.city,
-      cityId: parseInt(zustandData.locationData.cityId),
-      province: zustandData.locationData.province,
-      provinceId: parseInt(zustandData.locationData.provinceId),
-      postalCode: zustandData.locationData.postalCode,
-      placeId: zustandData.locationData.placeId,
+      locationDetail: safeStr(zustandData.companyAddress),
+      location: safeStr(zustandData.locationData?.location),
+      latitude: toFloat(zustandData.locationData?.latitude),
+      longitude: toFloat(zustandData.locationData?.longitude),
+
+      // API minta name + id
+      district: districtName,
+      districtId: toInt(zustandData.locationData?.district),
+
+      city: safeStr(zustandData.locationData?.city),
+      cityId: toInt(zustandData.locationData?.cityId),
+
+      province: safeStr(zustandData.locationData?.province),
+      provinceId: toInt(zustandData.locationData?.provinceId),
+
+      postalCode: safeStr(zustandData.locationData?.postalCode),
+      // placeId opsional: hanya kirim jika ada
+      ...(zustandData.locationData?.placeId
+        ? { placeId: safeStr(zustandData.locationData.placeId) }
+        : {}),
     },
-    bankId: zustandData.bankId,
-    accountNumber: zustandData.accountNumber,
-    accountName: zustandData.accountName,
-    nibNumber: zustandData.nibNumber,
-    npwpNumber: zustandData.npwpNumber,
-    ktpNumber: zustandData.ktpNumber,
-    documents: mappedDocuments,
+
+    bankId: safeStr(zustandData.bankId),
+    accountNumber: safeStr(zustandData.accountNumber),
+    accountName: safeStr(zustandData.accountName),
+
+    nibNumber: safeStr(zustandData.nibNumber),
+    npwpNumber: safeStr(zustandData.npwpNumber),
+    ktpNumber: safeStr(zustandData.ktpNumber),
+
+    documents: normalizeDocuments(zustandData.documents),
+
     contacts: filteredContacts,
   };
+
+  return payload;
 };
 
-export default mapZustandToApiPayload;
+export default mapZustandToApiPayloadV2;

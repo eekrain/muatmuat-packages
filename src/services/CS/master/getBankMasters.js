@@ -1,37 +1,19 @@
 import useSWR from "swr";
-import xior from "xior";
+
+// 1. Impor fetcher yang sudah dikonfigurasi dari file terpusat
+import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
 
 /**
- * Fetcher function for getting the list of master banks.
- * Logika Basic Auth didefinisikan langsung di sini menggunakan xior.
- * @param {Array} key - The SWR key array, [url, params].
+ * Fetcher function for getting the list of master banks using the pre-configured fetcher.
+ * @param {Array} key - The SWR key array, e.g., [url, params].
  * @returns {Promise<object>} A promise that resolves to the API response data.
  */
-export const getMasterBanks = async ([url, params]) => {
-  const USERNAME_BASIC = "az_muattrans";
-  const PASSWORD_BASIC = "Zci01Y4zh2IHCupULvXbTdDM";
-  const base64Credentials = Buffer.from(
-    `${USERNAME_BASIC}:${PASSWORD_BASIC}`
-  ).toString("base64");
-
-  const baseURL = process.env.NEXT_PUBLIC_MUATRANS_API;
-  const fullURL = `${baseURL}${url}`;
-
-  try {
-    const response = await xior.get(fullURL, {
-      params,
-      headers: {
-        Authorization: `Basic ${base64Credentials}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Gagal mengambil data Bank:",
-      error.response?.data || error.message
-    );
-    throw error.response?.data || new Error("Terjadi kesalahan pada server");
-  }
+// 2. Sederhanakan fetcher: Hapus semua logika Basic Auth manual
+export const getMasterBanks = ([url, params]) => {
+  // 3. Gunakan fetcherMuatransCS. Interceptor-nya akan menangani header Authorization secara otomatis.
+  //    Kita tambahkan .then() untuk memastikan SWR menerima langsung `data`-nya,
+  //    sesuai perilaku kode asli.
+  return fetcherMuatransCS.get(url, { params }).then((res) => res.data);
 };
 
 /**
@@ -39,7 +21,9 @@ export const getMasterBanks = async ([url, params]) => {
  * @param {object} params - An object containing query parameters.
  * @returns {{data: object, error: any, isLoading: boolean, mutate: function}}
  */
+// 4. Hook SWR tidak perlu diubah. Ia sekarang menggunakan getMasterBanks versi baru yang lebih bersih.
 export const useGetMasterBanks = (params) => {
+  // Key tetap "/v1/cs/master/banks" karena baseURL sudah di-set di dalam fetcherMuatransCS.
   const key = params ? ["/v1/cs/master/banks", params] : null;
 
   const { data, error, isLoading, mutate } = useSWR(key, getMasterBanks);

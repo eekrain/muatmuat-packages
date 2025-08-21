@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import { SearchSuggestions } from "./SearchSuggestions";
@@ -16,6 +17,7 @@ export const SearchWithSuggestions = ({
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const { t } = useTranslation();
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -61,7 +63,11 @@ export const SearchWithSuggestions = ({
     <div className={cn("relative", containerClassName)}>
       <Input
         type="text"
-        placeholder={placeholder}
+        placeholder={t(
+          "SearchWithSuggestions.searchPlaceholder",
+          {},
+          placeholder
+        )}
         value={searchValue}
         onChange={handleInputChange}
         onKeyUp={handleKeyUp}

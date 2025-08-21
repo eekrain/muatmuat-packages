@@ -198,7 +198,7 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
       onSave();
     }
     reset(data);
-    toast.success("Pendaftaran berhasil disimpan!");
+    toast.success("Kontak PIC berhasil disimpan!");
   };
 
   useEffect(() => {
