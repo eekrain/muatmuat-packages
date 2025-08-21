@@ -61,19 +61,34 @@ function CardLacakArmada({
 
   // Fungsi untuk menentukan apakah status adalah pembatalan
   const isCancelledStatus = (s) => {
+    // Check if status contains a number (e.g., "CANCELLED_BY_TRANSPORTER_1")
+    const statusWithNumber = s?.match(/^(.+)_(\d+)$/);
+    const baseStatus = statusWithNumber ? statusWithNumber[1] : s;
+
     return [
       TRACKING_STATUS.CANCELLED_BY_TRANSPORTER,
       TRACKING_STATUS.CANCELLED_BY_SHIPPER,
       TRACKING_STATUS.CANCELLED_BY_SYSTEM,
-    ].includes(s);
+    ].includes(baseStatus);
   };
 
   // Process milestones data to add icons
   const processedMilestones = milestones.map((milestone) => {
+    // Check if status contains a number (e.g., "MENUJU_KE_LOKASI_BONGKAR_1")
+    const statusWithNumber = milestone.status?.match(/^(.+)_(\d+)$/);
+    let baseStatus = milestone.status;
+    let statusNumber = null;
+
+    if (statusWithNumber) {
+      const [, base, number] = statusWithNumber;
+      baseStatus = base;
+      statusNumber = number;
+    }
+
     // Map status to appropriate icons
     let icon = "/icons/stepper/stepper-scheduled.svg"; // default icon
 
-    switch (milestone.status) {
+    switch (baseStatus) {
       case "SCHEDULED":
       case "SCHEDULED_FLEET":
         icon = "/icons/stepper/stepper-scheduled.svg";
@@ -93,13 +108,25 @@ function CardLacakArmada({
       case "COMPLETED":
         icon = "/icons/stepper/stepper-completed.svg";
         break;
+      case "MENUJU_KE_LOKASI_BONGKAR":
+        icon = "/icons/stepper/stepper-box-opened.svg";
+        break;
+      case "MENUJU_KE_LOKASI_MUAT":
+        icon = "/icons/stepper/stepper-box.svg";
+        break;
       default:
         icon = "/icons/stepper/stepper-scheduled.svg";
     }
 
+    // Create label with number if status has number
+    let label = milestone.statusName;
+    if (statusNumber) {
+      label = `${milestone.statusName} ${statusNumber}`;
+    }
+
     return {
       ...milestone,
-      label: milestone.statusName,
+      label,
       icon,
     };
   });
@@ -193,7 +220,9 @@ function CardLacakArmada({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {status !== TRACKING_STATUS.DOCUMENT_PREPARATION &&
-              status !== TRACKING_STATUS.DOCUMENT_DELIVERY && (
+              status !== TRACKING_STATUS.DOCUMENT_DELIVERY &&
+              !status?.startsWith("DOCUMENT_PREPARATION_") &&
+              !status?.startsWith("DOCUMENT_DELIVERY_") && (
                 <BadgeStatusPesanan
                   variant={statusBadge.variant}
                   className="w-fit"
@@ -234,15 +263,15 @@ function CardLacakArmada({
           <div className="flex items-center gap-2">
             {/* Aksi Lainnya - muncul untuk LOADING status */}
             {isMonitoring &&
-              status !== TRACKING_STATUS.HEADING_TO_UNLOADING &&
-              status !== TRACKING_STATUS.DOCUMENT_PREPARATION &&
-              status !== TRACKING_STATUS.DOCUMENT_DELIVERY &&
-              status !== TRACKING_STATUS.HEADING_TO_LOADING &&
+              !status?.startsWith("HEADING_TO_UNLOADING") &&
+              !status?.startsWith("DOCUMENT_PREPARATION") &&
+              !status?.startsWith("DOCUMENT_DELIVERY") &&
+              !status?.startsWith("HEADING_TO_LOADING") &&
               status !== TRACKING_STATUS.COMPLETED &&
-              status !== TRACKING_STATUS.CANCELLED_BY_TRANSPORTER &&
-              status !== TRACKING_STATUS.CANCELLED_BY_SHIPPER &&
-              status !== TRACKING_STATUS.CANCELLED_BY_SYSTEM &&
-              status !== TRACKING_STATUS.WAITING_CONFIRMATION_SHIPPER && (
+              !status?.startsWith("CANCELLED_BY_TRANSPORTER") &&
+              !status?.startsWith("CANCELLED_BY_SHIPPER") &&
+              !status?.startsWith("CANCELLED_BY_SYSTEM") &&
+              !status?.startsWith("WAITING_CONFIRMATION_SHIPPER") && (
                 <SimpleDropdown>
                   <SimpleDropdownTrigger asChild>
                     <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">

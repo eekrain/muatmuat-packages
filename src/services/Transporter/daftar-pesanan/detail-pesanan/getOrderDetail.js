@@ -24,8 +24,8 @@ const mockApiResult = {
     // orderStatus: ORDER_STATUS.COMPLETED,
     // orderStatus: ORDER_STATUS.LOADING,
     // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-    orderStatus: ORDER_STATUS.LOADING,
-    orderStatusUnit: 1,
+    orderStatus: "LOADING_2", // Status dengan angka untuk testing
+    orderStatusUnit: 2, // Unit untuk testing
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
     loadTimeEnd: "2024-10-04T08:00:00.000Z",
@@ -198,7 +198,7 @@ const mockApiResult = {
           profileImage: "https://example.com/driver2.jpg",
         },
         hasSOSAlert: false,
-        currentStatus: TRACKING_STATUS.SCHEDULED,
+        currentStatus: "MENUJU_KE_LOKASI_BONGKAR_1", // Status dengan angka
         milestones: [
           {
             status: TRACKING_STATUS.SCHEDULED,
@@ -208,7 +208,12 @@ const mockApiResult = {
           {
             status: TRACKING_STATUS.LOADING,
             statusName: "Proses Muat",
-            completed: false,
+            completed: true,
+          },
+          {
+            status: "MENUJU_KE_LOKASI_BONGKAR_1", // Status dengan angka
+            statusName: "Menuju ke Lokasi Bongkar 1",
+            completed: true,
           },
           {
             status: TRACKING_STATUS.UNLOADING,

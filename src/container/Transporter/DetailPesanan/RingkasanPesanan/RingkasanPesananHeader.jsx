@@ -9,7 +9,6 @@ import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal
 import { useTranslation } from "@/hooks/use-translation";
 import { getStatusPesananMetadataTransporter } from "@/lib/normalizers/transporter/getStatusPesananMetadata";
 import { cn } from "@/lib/utils";
-import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
@@ -69,7 +68,7 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
               </div>
 
               {/* Link Lihat Status Lainnya untuk status UNLOADING */}
-              {dataOrderDetail?.orderStatus === ORDER_STATUS.UNLOADING &&
+              {dataOrderDetail?.orderStatus?.startsWith("UNLOADING") &&
                 dataOrderDetail?.otherStatus?.length > 0 && (
                   <ModalLihatStatusLainnya
                     otherStatus={dataOrderDetail?.otherStatus}
@@ -77,12 +76,15 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                 )}
 
               {/* Link Lihat Detail Pembatalan untuk status yang dibatalkan */}
-              {(dataOrderDetail?.orderStatus ===
-                ORDER_STATUS.CANCELLED_BY_TRANSPORTER ||
-                dataOrderDetail?.orderStatus ===
-                  ORDER_STATUS.CANCELLED_BY_SHIPPER ||
-                dataOrderDetail?.orderStatus ===
-                  ORDER_STATUS.CANCELLED_BY_SYSTEM) && (
+              {(dataOrderDetail?.orderStatus?.startsWith(
+                "CANCELLED_BY_TRANSPORTER"
+              ) ||
+                dataOrderDetail?.orderStatus?.startsWith(
+                  "CANCELLED_BY_SHIPPER"
+                ) ||
+                dataOrderDetail?.orderStatus?.startsWith(
+                  "CANCELLED_BY_SYSTEM"
+                )) && (
                 <a href="#" className="text-sm font-medium text-blue-600">
                   Lihat Detail Pembatalan
                 </a>
@@ -99,29 +101,30 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
             )}
 
             {/* Referensi: LDG-7 */}
-            {(dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING ||
-              dataOrderDetail?.orderStatus === ORDER_STATUS.UNLOADING) && (
+            {(dataOrderDetail?.orderStatus?.startsWith("LOADING") ||
+              dataOrderDetail?.orderStatus?.startsWith("UNLOADING")) && (
               <Button onClick={() => {}} variant="muattrans-primary">
                 Lihat Posisi Armada
               </Button>
             )}
             {/* Referensi: LDN-334 */}
-            {dataOrderDetail?.orderStatus ===
-              ORDER_STATUS.NEED_ASSIGN_FLEET && (
+            {dataOrderDetail?.orderStatus?.startsWith("NEED_ASSIGN_FLEET") && (
               <Button onClick={() => {}} variant="muattrans-primary">
                 Assign Armada
               </Button>
             )}
             {/* Referensi: LDN-336 */}
-            {dataOrderDetail?.orderStatus ===
-              ORDER_STATUS.NEED_CONFIRMATION_READY && (
+            {dataOrderDetail?.orderStatus?.startsWith(
+              "NEED_CONFIRMATION_READY"
+            ) && (
               <Button onClick={() => {}} variant="muattrans-primary">
                 Konfirmasi Siap
               </Button>
             )}
             {/* Referensi: LDN-337 */}
-            {dataOrderDetail?.orderStatus ===
-              ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+            {dataOrderDetail?.orderStatus?.startsWith(
+              "NEED_CHANGE_RESPONSE"
+            ) && (
               <Button
                 onClick={handleResponPerubahan}
                 variant="muattrans-primary"

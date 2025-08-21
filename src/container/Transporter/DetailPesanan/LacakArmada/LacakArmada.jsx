@@ -88,9 +88,9 @@ const LacakArmada = ({ dataOrderDetail }) => {
   const shouldShowSearch = armadaByTab.length > 1;
 
   // Cek apakah button "Lihat Posisi Armada" harus disembunyikan
-  const shouldHidePositionButton =
-    dataOrderDetail?.orderStatus ===
-    TRACKING_STATUS.WAITING_CONFIRMATION_SHIPPER;
+  const shouldHidePositionButton = dataOrderDetail?.orderStatus?.startsWith(
+    "WAITING_CONFIRMATION_SHIPPER"
+  );
 
   // Cek apakah harus menampilkan DataNotFound (ketika ada search value tapi tidak ada hasil)
   const shouldShowDataNotFound =

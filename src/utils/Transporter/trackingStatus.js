@@ -198,6 +198,22 @@ export const TRACKING_STATUS_FLOW = {
 
 // Helper function to get tracking status badge configuration
 export const getTrackingStatusBadge = (status) => {
+  // Check if status contains a number (e.g., "MENUJU_LOKASI_BONGKAR_1")
+  const statusWithNumber = status?.match(/^(.+)_(\d+)$/);
+
+  if (statusWithNumber) {
+    const [, baseStatus, number] = statusWithNumber;
+    const config = TRACKING_STATUS_CONFIG[baseStatus];
+
+    if (config) {
+      return {
+        ...config,
+        label: `${config.label} ${number}`,
+      };
+    }
+  }
+
+  // Fallback to direct lookup
   const config = TRACKING_STATUS_CONFIG[status];
   if (!config) {
     return {

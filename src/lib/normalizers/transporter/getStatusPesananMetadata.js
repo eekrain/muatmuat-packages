@@ -11,21 +11,48 @@ export const getStatusPesananMetadataTransporter = ({
 }) => {
   if (!orderStatus) return { variant: "primary", label: "" };
 
-  const orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[orderStatus];
+  // Check if status contains a number (e.g., "MENUJU_LOKASI_BONGKAR_1")
+  const statusWithNumber = orderStatus?.match(/^(.+)_(\d+)$/);
+
+  let baseOrderStatus = orderStatus;
+  let statusNumber = null;
+
+  if (statusWithNumber) {
+    const [, baseStatus, number] = statusWithNumber;
+    baseOrderStatus = baseStatus;
+    statusNumber = number;
+  }
+
+  const orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[baseOrderStatus];
 
   if (
-    orderStatus !== ORDER_STATUS.COMPLETED &&
-    orderStatus !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
-    orderStatus !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
-    orderStatus !== ORDER_STATUS.CANCELLED_BY_SYSTEM &&
+    baseOrderStatus !== ORDER_STATUS.COMPLETED &&
+    baseOrderStatus !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
+    baseOrderStatus !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
+    baseOrderStatus !== ORDER_STATUS.CANCELLED_BY_SYSTEM &&
     orderStatusUnit &&
     orderStatusUnit > 1
   ) {
+    let label = `${orderStatusBadgeMetadata.label} : ${orderStatusUnit} Unit`;
+
+    // If status has a number, append it to the label
+    if (statusNumber) {
+      label = `${orderStatusBadgeMetadata.label} ${statusNumber} : ${orderStatusUnit} Unit`;
+    }
+
     return {
       ...orderStatusBadgeMetadata,
-      label: `${orderStatusBadgeMetadata.label} : ${orderStatusUnit} Unit`,
+      label,
     };
   } else {
+    // If status has a number, append it to the label
+    if (statusNumber) {
+      return {
+        ...orderStatusBadgeMetadata,
+        label: `${orderStatusBadgeMetadata.label} ${statusNumber}`,
+      };
+    }
+
     return orderStatusBadgeMetadata;
   }
 };
