@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -9,8 +10,14 @@ import { useGetTransportRequestList } from "@/services/Transporter/monitoring/pe
 
 import DetailContent from "./components/DetailContent";
 import ModalTerimaPermintaan from "./components/ModalTerimaPermintaan";
+import ModalTolakPermintaan from "./components/ModalTolakPermintaan";
 
-const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
+const PermintaanAngkutDetail = ({
+  request,
+  onBack,
+  onUnderstand,
+  onAccept,
+}) => {
   // Fetch detail data from list
   const { data: listData, isLoading } = useGetTransportRequestList({});
   const detailData = listData?.requests?.find((r) => r.id === request?.id);
@@ -19,6 +26,7 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
   // State
   const [isSaved, setIsSaved] = useState(displayData?.isSaved || false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showTolakModal, setShowTolakModal] = useState(false);
 
   // Bookmark handler
   const handleSave = () => {
@@ -26,8 +34,24 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
     // TODO: API call for bookmark
   };
 
+  const router = useRouter();
+
   // Accept modal handler
-  const handleAcceptClick = () => setShowAcceptModal(true);
+  const handleAcceptClick = () => {
+    if (request.orderType === "SCHEDULED") {
+      setShowAcceptModal(true);
+    } else {
+      if (onAccept) {
+        onAccept(request);
+      }
+      router.push(`/monitoring?id=${request.id}`);
+    }
+  };
+
+  // Tolak modal handler
+  const handleTolakClick = () => {
+    setShowTolakModal(true);
+  };
   const handleModalAccept = (acceptData) => {
     toast.success(
       `Permintaan ${displayData?.orderCode} berhasil diterima dengan ${acceptData.truckCount} unit`
@@ -151,7 +175,7 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
               <Button
                 variant="muattrans-error-secondary"
                 className="flex-1 py-2 text-[14px] font-semibold"
-                onClick={onBack}
+                onClick={handleTolakClick}
               >
                 Tolak
               </Button>
@@ -173,6 +197,13 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
         onClose={() => setShowAcceptModal(false)}
         request={displayData}
         onAccept={handleModalAccept}
+      />
+
+      {/* Modal Tolak Permintaan */}
+      <ModalTolakPermintaan
+        isOpen={showTolakModal}
+        onClose={() => setShowTolakModal(false)}
+        request={displayData}
       />
     </div>
   );

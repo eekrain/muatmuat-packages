@@ -480,7 +480,7 @@ const DetailContent = ({
 
           <div className="space-y-2">
             {displayData?.cargos?.map((cargo, index) => (
-              <div key={cargo.id} className="flex items-center">
+              <div key={cargo.id || index} className="flex items-center">
                 <IconComponent
                   src="/icons/box16.svg"
                   className={cn(
@@ -695,7 +695,7 @@ const DetailContent = ({
                 ]
               ).map((photo, index) => (
                 <LightboxPreview
-                  key={photo.id}
+                  key={photo.id || index}
                   image={photo.photoUrl}
                   index={index}
                   className="h-14 w-14 overflow-hidden rounded-md border border-neutral-200 object-cover"
@@ -727,7 +727,7 @@ const DetailContent = ({
 
               <div className="space-y-2">
                 {displayData.additionalServices.map((service, index) => (
-                  <div key={service.id} className="flex items-center">
+                  <div key={service.id || index} className="flex items-center">
                     <IconComponent
                       src={
                         service.serviceName === "Kirim Berkas"
