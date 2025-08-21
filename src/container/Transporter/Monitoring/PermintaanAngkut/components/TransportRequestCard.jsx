@@ -434,9 +434,12 @@ const TransportRequestCard = ({
           {/* Additional Services */}
           {request.hasAdditionalService &&
             request.additionalServices?.length > 0 && (
-              <div className="mb-3 rounded-[4px] bg-warning-50 px-3 py-2">
-                <div className="text-[12px] font-medium text-warning-800">
-                  + {request.additionalServices[0].serviceName}
+              <div className="mb-3 rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
+                <div className="text-[12px] font-semibold text-neutral-900">
+                  +{" "}
+                  {request.additionalServices
+                    .map((service) => service.serviceName)
+                    .join(", ")}
                 </div>
               </div>
             )}
