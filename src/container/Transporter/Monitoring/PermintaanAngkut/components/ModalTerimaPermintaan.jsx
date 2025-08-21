@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -7,7 +8,7 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestListDetail";
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
 import { usePostAcceptScheduledTransportRequest } from "@/services/Transporter/monitoring/postAcceptScheduledTransportRequest";
 
 // Utility function for currency formatting
@@ -36,6 +37,8 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const [modalData, setModalData] = useState({});
   const [modalQueue, setModalQueue] = useState([]); // Queue for showing modals in sequence
   const [currentModalIndex, setCurrentModalIndex] = useState(0);
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   // API hooks
   const { trigger: acceptScheduledRequest, isMutating } =
@@ -43,11 +46,11 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
 
   // Ambil detail data berdasarkan request.id
   const {
-    data: detailData,
+    data: listData,
     isLoading,
     error,
-  } = useGetTransportRequestDetail(request?.id);
-  const detail = detailData || {};
+  } = useGetTransportRequestList({ id });
+  const detail = listData?.requests?.find((r) => r.id === id) || {};
 
   // Check if order is already taken and show modal
   useEffect(() => {
@@ -354,30 +357,108 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 </span>
               </div>
               <div className="mb-4 flex justify-between">
-                <div className="flex gap-2">
-                  {detail?.orderType && (
-                    <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700">
-                      {detail.orderType === "INSTANT"
-                        ? "Instan"
-                        : detail.orderType === "SCHEDULED"
-                          ? "Terjadwal"
-                          : detail.orderType}
-                    </span>
-                  )}
-                  {detail?.timeLabel && (
-                    <span className="flex h-6 items-center rounded-[6px] bg-success-50 px-2 py-2 text-xs font-semibold text-success-400">
-                      {typeof detail.timeLabel === "object"
-                        ? detail.timeLabel.text
-                        : detail.timeLabel}
-                    </span>
-                  )}
-                  {(detail?.hasOverload ||
-                    detail?.overloadInfo?.hasOverload) && (
-                    <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 py-2 text-xs font-semibold text-error-400">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Time Label */}
+                  <span
+                    className={cn(
+                      "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                      detail.isTaken
+                        ? "text-neutral-700"
+                        : detail.orderType === "INSTANT"
+                          ? "bg-success-50 text-success-700"
+                          : detail.orderType === "SCHEDULED"
+                            ? "bg-primary-50 text-primary-700"
+                            : "bg-primary-50 text-primary-700"
+                    )}
+                  >
+                    {detail.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
+                  </span>
+
+                  {/* Load Time Label */}
+                  {(() => {
+                    // Ambil tanggal dari detail, fallback ke request
+                    const createdAt = detail.createdAt || request.createdAt;
+                    const loadTimeStart =
+                      detail.loadTimeStart || request.loadTimeStart;
+                    if (!createdAt || !loadTimeStart) {
+                      console.warn("Tanggal tidak ditemukan:", {
+                        createdAt,
+                        loadTimeStart,
+                        detail,
+                        request,
+                      });
+                      return (
+                        <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                          -
+                        </span>
+                      );
+                    }
+                    const createdDate = new Date(createdAt);
+                    const loadDate = new Date(loadTimeStart);
+                    if (
+                      isNaN(createdDate.getTime()) ||
+                      isNaN(loadDate.getTime())
+                    ) {
+                      console.warn("Tanggal invalid:", {
+                        createdAt,
+                        loadTimeStart,
+                      });
+                      return (
+                        <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                          -
+                        </span>
+                      );
+                    }
+                    const diffTime = loadDate - createdDate;
+                    const diffDays = Math.ceil(
+                      diffTime / (1000 * 60 * 60 * 24)
+                    );
+                    let label = "";
+                    let colorClass = "";
+                    if (diffDays === 0) {
+                      label = "Muat Hari Ini";
+                      colorClass = "bg-success-50 text-success-700";
+                    } else if (diffDays === 1) {
+                      label = "Muat Besok";
+                      colorClass = "bg-success-50 text-success-700";
+                    } else if (diffDays >= 2 && diffDays <= 5) {
+                      label = `Muat ${diffDays} Hari`;
+                      colorClass = "bg-warning-100 text-warning-900";
+                    } else if (diffDays > 5) {
+                      label = `Muat ${diffDays} Hari`;
+                      colorClass = "bg-primary-50 text-primary-700";
+                    } else {
+                      label = "-";
+                      colorClass = "bg-primary-50 text-primary-700";
+                    }
+                    return (
+                      <span
+                        className={cn(
+                          "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                          request.isTaken ? "text-neutral-700" : colorClass
+                        )}
+                      >
+                        {label}
+                      </span>
+                    );
+                  })()}
+
+                  {/* Overload Badge */}
+                  {detail.hasOverload && (
+                    <span
+                      className={cn(
+                        "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                        detail.isTaken
+                          ? "text-neutral-700"
+                          : "bg-error-50 text-error-700"
+                      )}
+                    >
                       Potensi Overload
                     </span>
                   )}
-                  {detail?.isHalalLogistics && (
+
+                  {/* Halal Certification Required Badge */}
+                  {detail.isHalalLogistics && (
                     <InfoTooltip
                       side="left"
                       align="center"
@@ -407,7 +488,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 </div>
                 <div className="text-right">
                   <span className="block text-sm font-bold text-blue-700">
-                    {formatCurrency(detail?.totalPrice)}
+                    {formatCurrency(detail.totalPrice)}
                   </span>
                 </div>
               </div>
@@ -472,9 +553,14 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   <div className="flex-1">
                     <div className="text-xs font-medium text-neutral-600">
                       Informasi Muatan (Total :{" "}
-                      {detail.cargos
-                        ?.reduce((sum, cargo) => sum + (cargo.weight || 0), 0)
-                        ?.toLocaleString("id-ID") || "2.500"}{" "}
+                      {Array.isArray(detail.cargos)
+                        ? detail.cargos
+                            .reduce(
+                              (sum, cargo) => sum + (Number(cargo.weight) || 0),
+                              0
+                            )
+                            .toLocaleString("id-ID")
+                        : "0"}{" "}
                       kg)
                     </div>
                     <div className="text-xs font-semibold text-neutral-900">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -39,16 +40,19 @@ const TransportRequestCard = ({
 
   const handleDetail = () => {
     if (onShowDetail) onShowDetail(request);
+    router.push(`/monitoring?id=${request.id}`);
   };
 
   const handleReject = () => {
     // TODO: Implement reject functionality
   };
 
+  const router = useRouter();
   const handleAccept = () => {
     if (onAccept) {
       onAccept(request);
     }
+    router.push(`/monitoring?id=${request.id}`);
   };
 
   const handleUnderstand = () => {
@@ -104,37 +108,66 @@ const TransportRequestCard = ({
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                   request.isTaken
                     ? "text-neutral-700"
-                    : request.timeLabel?.color === "green"
+                    : request.orderType === "INSTANT"
                       ? "bg-success-50 text-success-700"
-                      : request.timeLabel?.color === "blue"
-                        ? "bg-primary-50 text-primary-700"
-                        : request.orderType === "INSTANT"
-                          ? "bg-success-50 text-success-700"
-                          : "bg-primary-50 text-primary-700"
+                      : "bg-primary-50 text-primary-700"
                 )}
               >
                 {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
               </span>
 
               {/* Load Time Label */}
-              <span
-                className={cn(
-                  "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
-                  request.isTaken
-                    ? "text-neutral-700"
-                    : request.loadTimeText?.includes("Hari Ini") ||
-                        request.loadTimeText?.includes("Besok")
-                      ? "bg-success-50 text-success-700"
-                      : request.loadTimeText?.includes("2 Hari") ||
-                          request.loadTimeText?.includes("3 Hari") ||
-                          request.loadTimeText?.includes("4 Hari") ||
-                          request.loadTimeText?.includes("5 Hari")
-                        ? "bg-warning-50 text-warning-700"
-                        : "bg-primary-50 text-primary-700"
-                )}
-              >
-                {request.loadTimeText || "Muat 7 Hari Lagi"}
-              </span>
+              {(() => {
+                // Ambil tanggal dari request
+                const createdAt = request.createdAt;
+                const loadTimeStart = request.loadTimeStart;
+                if (!createdAt || !loadTimeStart) {
+                  return (
+                    <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                      -
+                    </span>
+                  );
+                }
+                const createdDate = new Date(createdAt);
+                const loadDate = new Date(loadTimeStart);
+                if (isNaN(createdDate.getTime()) || isNaN(loadDate.getTime())) {
+                  return (
+                    <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                      -
+                    </span>
+                  );
+                }
+                const diffTime = loadDate - createdDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                let label = "";
+                let colorClass = "";
+                if (diffDays === 0) {
+                  label = "Muat Hari Ini";
+                  colorClass = "bg-success-50 text-success-700";
+                } else if (diffDays === 1) {
+                  label = "Muat Besok";
+                  colorClass = "bg-success-50 text-success-700";
+                } else if (diffDays >= 2 && diffDays <= 5) {
+                  label = `Muat ${diffDays} Hari`;
+                  colorClass = "bg-warning-100 text-warning-900";
+                } else if (diffDays > 5) {
+                  label = `Muat ${diffDays} Hari`;
+                  colorClass = "bg-primary-50 text-primary-700";
+                } else {
+                  label = "-";
+                  colorClass = "bg-primary-50 text-primary-700";
+                }
+                return (
+                  <span
+                    className={cn(
+                      "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                      request.isTaken ? "text-neutral-700" : colorClass
+                    )}
+                  >
+                    {label}
+                  </span>
+                );
+              })()}
 
               {/* Overload Badge */}
               {request.hasOverload && (
