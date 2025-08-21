@@ -34,6 +34,8 @@ const mockApiResult = {
     estimatedDistance: 178,
     isHalalLogistics: true,
     hasSOSAlert: true,
+    hasResponseDraft: true,
+    isCancellable: true,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
       truckTypeName: "Colt Diesel Engkel",

@@ -26,6 +26,8 @@ export const TRACKING_STATUS = {
   // Legacy/Unused (kept for backward compatibility)
   WAITING_PICKUP: "WAITING_PICKUP",
   WAITING_DROPOFF: "WAITING_DROPOFF",
+  WAITING_CHANGE_FLEET: "WAITING_CHANGE_FLEET",
+  FLEET_FOUND: "FLEET_FOUND",
 };
 
 // Tracking Status badge configurations
@@ -106,6 +108,14 @@ export const TRACKING_STATUS_CONFIG = {
   ["COMPLETED"]: {
     label: "Selesai",
     variant: "success",
+  },
+  [TRACKING_STATUS.WAITING_CHANGE_FLEET]: {
+    label: "Menunggu Armada Pengganti",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.FLEET_FOUND]: {
+    label: "Muatan Pindah Armada",
+    variant: "primary",
   },
 };
 
