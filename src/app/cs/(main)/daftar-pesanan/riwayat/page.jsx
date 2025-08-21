@@ -15,7 +15,7 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useTranslation } from "@/hooks/use-translation";
 
-import PesananAktifTab from "./components/PesananAktifTab";
+import RiwayatTab from "../components/RiwayatTab";
 
 const DaftarPesananPage = () => {
   const { t } = useTranslation();
@@ -73,7 +73,6 @@ const DaftarPesananPage = () => {
   );
 
   useEffect(() => {
-    // Set initial period once options are available
     if (periodOptions.length > 0 && !period) {
       setPeriod(periodOptions[0]);
     }
@@ -93,7 +92,6 @@ const DaftarPesananPage = () => {
   const disablePeriodButton =
     isLoading || (!hasData && lastAction !== "period");
 
-  // LOGIKA RENDER EMPTY STATE SESUAI PERMINTAAN ANDA
   const renderEmpty = () => {
     if (isEmptyState) {
       return (
@@ -116,7 +114,7 @@ const DaftarPesananPage = () => {
         />
       );
     }
-    return null; // Explicitly return null if no condition is met
+    return null;
   };
 
   const handleSelectPeriod = (selectedOption) => {
@@ -135,7 +133,7 @@ const DaftarPesananPage = () => {
       <PageTitle withBack={false}>
         {t("daftarPesanan.title", {}, "Daftar Pesanan")}
       </PageTitle>
-      <Tabs value="pesanan-aktif" className="w-full">
+      <Tabs value="riwayat" className="w-full">
         {!isFirstTimer && (
           <div className="flex items-center justify-between">
             <TabsList className="w-[380px]">
@@ -143,18 +141,18 @@ const DaftarPesananPage = () => {
                 value="pesanan-aktif"
                 activeColor="primary-700"
                 className={"!text-base"}
+                onClick={() => router.push("/daftar-pesanan")}
               >
                 {t("daftarPesanan.tabActive", {}, "Pesanan Aktif")}
-                {dashboardData.active > 0 ? ` (${dashboardData.active})` : ""}
               </TabsTriggerWithSeparator>
               <TabsTriggerWithSeparator
                 value="riwayat"
                 activeColor="primary-700"
                 showSeparator={false}
                 className={"!text-base"}
-                onClick={() => router.push("/daftar-pesanan/riwayat")}
               >
                 {t("daftarPesanan.tabHistory", {}, "Riwayat")}
+                {dashboardData.history > 0 ? ` (${dashboardData.history})` : ""}
               </TabsTriggerWithSeparator>
             </TabsList>
             {!isEmptyState && (
@@ -185,11 +183,11 @@ const DaftarPesananPage = () => {
             )}
           </div>
         )}
-        <TabsContent value="pesanan-aktif" className="pt-4">
+        <TabsContent value="riwayat" className="pt-4">
           {isFirstTimer || isEmptyState ? (
             renderEmpty()
           ) : (
-            <PesananAktifTab
+            <RiwayatTab
               useMockData={useMockData}
               userRole={userRole}
               period={period}
