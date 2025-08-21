@@ -37,7 +37,7 @@ const mockApiResult = {
     // orderStatus: ORDER_STATUS.COMPLETED,
     // orderStatus: ORDER_STATUS.LOADING,
     // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-    orderStatus: ORDER_STATUS.LOADING,
+    orderStatus: ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER,
     orderStatusUnit: 1,
     truckCount: 3,
     orderType: "SCHEDULED",
@@ -661,10 +661,10 @@ const mockApiResult = {
       },
     ],
     additionalServices: [
-      {
-        id: "0f678054-8459-4a36-8b1d-662e8de7580c",
-        serviceName: "Kirim Berkas",
-      },
+      // {
+      //   id: "0f678054-8459-4a36-8b1d-662e8de7580c",
+      //   serviceName: "Kirim Berkas",
+      // },
       {
         id: "a0f1778f-0ee2-4ec1-8be8-3e7737832fe2",
         serviceName: "Bantuan Tambahan",
@@ -685,20 +685,29 @@ const mockApiResult = {
         driverAvatar: "/img/avatar.png",
         vehicleImage: "/img/truck.png",
         status: "ACTIVE",
-        currentStep: 2, // Akan dihitung berdasarkan orderStatus
-        orderStatus: "LOADING", // Status dari order
+        currentStep: -1, // Tidak ada step yang aktif untuk WAITING_CONFIRMATION_SHIPPER
+        orderStatus: "WAITING_CONFIRMATION_SHIPPER", // Status dari order
       },
-      // Uncomment untuk testing multiple fleet
-      // {
-      //   id: "fleet-002",
-      //   plateNumber: "B 2222 XYZ",
-      //   driverName: "Muklason",
-      //   driverAvatar: "/img/avatar2.png",
-      //   vehicleImage: "/img/truck.png",
-      //   status: "ACTIVE",
-      //   currentStep: 2,
-      //   orderStatus: "LOADING",
-      // },
+      {
+        id: "fleet-002",
+        plateNumber: "AE 2222 LBA",
+        driverName: "Yoel Galagher",
+        driverAvatar: "/img/avatar.png",
+        vehicleImage: "/img/truck.png",
+        status: "ACTIVE",
+        currentStep: -1,
+        orderStatus: "WAITING_CONFIRMATION_SHIPPER",
+      },
+      {
+        id: "fleet-003",
+        plateNumber: "AE 3333 LBA",
+        driverName: "Gamma Galagher",
+        driverAvatar: "/img/avatar.png",
+        vehicleImage: "/img/truck.png",
+        status: "ACTIVE",
+        currentStep: -1,
+        orderStatus: "WAITING_CONFIRMATION_SHIPPER",
+      },
     ],
     otherStatus,
   },

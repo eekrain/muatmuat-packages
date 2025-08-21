@@ -113,11 +113,6 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const inactiveFleets = fleetDetailsData?.Data?.inactiveFleets || [];
   const pagination = fleetDetailsData?.Data?.pagination || {};
 
-  // Debug logging
-  console.log("🔍 Debug - fleetDetailsData:", fleetDetailsData);
-  console.log("📊 Debug - inactiveFleets:", inactiveFleets);
-  console.log("🏢 Debug - transporterInfo:", transporterInfo);
-
   // Ambil nama transporter dari data
   const transporterName = transporterInfo.name || "-";
   const transporter = {
@@ -195,7 +190,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 alt={transporter.name}
                 className="h-14 w-14 flex-shrink-0 rounded-full border border-neutral-400 bg-white object-cover"
               />
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col justify-center space-y-2">
                 <p className="text-xs font-bold text-neutral-900">
                   {transporter.name}
                 </p>
@@ -218,7 +213,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             </div>
           </div>
           <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
-            <div className="mb-6 flex items-center">
+            <div className="mb-4 flex items-center">
               <p className="text-xs font-semibold text-neutral-900">
                 Detail Penyelesaian
               </p>
@@ -245,7 +240,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 {fleetNoteData?.history?.notes || "-"}
               </p>
             </div>
-            <div className="mb-3 flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <p className="text-xs font-medium text-neutral-600">
                 Foto Pendukung
               </p>
