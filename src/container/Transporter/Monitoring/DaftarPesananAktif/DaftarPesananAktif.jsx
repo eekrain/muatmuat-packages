@@ -42,6 +42,7 @@ import {
 } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
+import AlertPerubahanLokasi from "./components/AlertPerubahanLokasi";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -711,7 +712,6 @@ const DaftarPesananAktif = ({
           </button>
         </div>
       </div>
-
       {/* Content */}
       {isExpanded && (
         <div className="flex-1 overflow-hidden">
@@ -731,6 +731,7 @@ const DaftarPesananAktif = ({
             </div>
           ) : (
             <div className="h-full border-0">
+              <AlertPerubahanLokasi />
               <Table
                 data={orders}
                 columns={columns}
