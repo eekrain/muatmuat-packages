@@ -196,7 +196,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
       if (npwpResult?.Data?.duplicate === true) {
         setError("npwpNumber", {
           type: "manual",
-          message: "Nomor NPWP sudah terdaftar",
+          message: "No. NPWP Perusahaan sudah terdaftar",
         });
         toast.error("Gagal menyimpan, NPWP sudah terdaftar.");
         scrollToFirstError(["npwpNumber"]);
