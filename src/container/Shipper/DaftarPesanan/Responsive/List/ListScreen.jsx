@@ -299,6 +299,7 @@ const ListScreen = ({
                 Mulai buat pesanan sekarang untuk kebutuhan pengiriman kamu
               </div>
               <Button
+                className="h-7 text-xs leading-[1.1]"
                 variant="muatparts-primary"
                 onClick={() => router.push("/sewaarmada")}
               >

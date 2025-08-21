@@ -8,7 +8,7 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Pagination from "@/components/Pagination/Pagination";
 import { TabsContent } from "@/components/Tabs/Tabs";
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetTransporterCancellations } from "@/services/CS/transporters/getTransporterCancellations";
+import { useGetTransporterCancellationsWithParams } from "@/services/CS/transporters/getTransporterCancellations";
 
 const RekapPembatalanTab = () => {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ const RekapPembatalanTab = () => {
     error,
     isLoading,
     mutate,
-  } = useGetTransporterCancellations(transporterId);
+  } = useGetTransporterCancellationsWithParams(transporterId, apiParams); // Use useGetTransporterCancellationsWithParams and pass apiParams
 
   // Extract data from API response with memoization
   const cancellationsData = useMemo(() => {

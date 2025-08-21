@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,8 @@ import FileUploadMultiple from "@/components/FileUpload/FileUploudMultiple";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { toast } from "@/lib/toast";
+// 1. Import hook untuk validasi
+import { useCheckTransporterField } from "@/services/CS/register/checkTransporterField";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -19,10 +21,7 @@ const ACCEPTED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 const fileValidation = (isRequired = false) =>
   v.custom((value) => {
-    // Jika tidak ada nilai, valid jika tidak wajib
     if (!value) return !isRequired;
-
-    // Jika nilainya adalah File (saat baru dipilih, sebelum diunggah)
     if (value instanceof File) {
       if (value.size > MAX_FILE_SIZE) {
         throw new Error("Ukuran file maksimal 10MB");
@@ -32,13 +31,9 @@ const fileValidation = (isRequired = false) =>
       }
       return true;
     }
-
-    // Jika nilainya adalah objek dengan URL (setelah diunggah)
     if (typeof value === "object" && value.url) {
-      return true; // Anggap valid jika sudah punya URL
+      return true;
     }
-
-    // Jika bukan keduanya, berarti tidak valid
     return false;
   }, "File tidak valid. Pastikan format .jpg/.png/.pdf dan ukuran maks. 10MB.");
 
@@ -80,8 +75,7 @@ export const kelengkapanLegalitasSchema = v.object({
       true,
       "Cover Akta Pendirian wajib diisi"
     ),
-    skKemenkumham: fileArrayValidation(true, "SK Kemenkumham wajib diisi"), // Optional files
-
+    skKemenkumham: fileArrayValidation(true, "SK Kemenkumham wajib diisi"),
     aktaPerubahan: fileArrayValidation(false),
     skKemenkumhamPerubahan: fileArrayValidation(false),
     sertifikatStandar: fileArrayValidation(false),
@@ -95,15 +89,20 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
     state.getForm(FORM_KEY)
   );
 
+  // 2. Tambahkan state loading dan inisialisasi hook
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { trigger: checkField } = useCheckTransporterField();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty, isSubmitSuccessful },
     reset,
     setValue,
-    trigger,
     getValues,
     watch,
+    // Ambil setError untuk validasi API
+    setError,
   } = useForm({
     resolver: valibotResolver(kelengkapanLegalitasSchema),
     defaultValues: initialData?.nibNumber
@@ -113,19 +112,18 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
           npwpNumber: null,
           ktpNumber: null,
           documents: {
-            nib: [], // Required
-            npwp: [], // Required
-            ktp: [], // Required
-            aktaPendirian: [], // Required
-            skKemenkumham: [], // Required
-            aktaPerubahan: [], // Optional
-            skKemenkumhamPerubahan: [], // Optional
-            sertifikatStandar: [], // Optional
+            nib: [],
+            npwp: [],
+            ktp: [],
+            aktaPendirian: [],
+            skKemenkumham: [],
+            aktaPerubahan: [],
+            skKemenkumhamPerubahan: [],
+            sertifikatStandar: [],
           },
         },
   });
 
-  // Watch form values for real-time validation
   const watchedValues = watch();
 
   useEffect(() => {
@@ -134,7 +132,26 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
     }
   }, [isDirty, onFormChange]);
 
-  console.log("watchedValues", watchedValues);
+  // 3. Tambahkan fungsi helper untuk auto-scroll
+  const scrollToFirstError = (fieldNames) => {
+    const elements = fieldNames
+      .map((name) => document.querySelector(`[name="${name}"]`))
+      .filter((el) => el);
+
+    if (elements.length === 0) return;
+
+    const firstErrorElement = elements.reduce((first, current) => {
+      return current.getBoundingClientRect().top <
+        first.getBoundingClientRect().top
+        ? current
+        : first;
+    });
+
+    firstErrorElement.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
 
   const isAllRequiredLegalitasFieldsEmpty = (values) => {
     const requiredFields = [
@@ -155,54 +172,54 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
     });
   };
 
-  const onInvalidSubmit = async () => {
-    const isValid = await trigger();
+  // 4. Perbarui onInvalidSubmit untuk scroll
+  const onInvalidSubmit = (errors) => {
     const values = getValues();
+    if (isAllRequiredLegalitasFieldsEmpty(values)) {
+      toast.error("Isi semua inputan yang bertanda bintang (*)");
+    } else {
+      toast.error("Periksa kembali data Anda, ada input yang belum valid.");
+    }
+    scrollToFirstError(Object.keys(errors));
+  };
 
-    if (!isValid) {
-      if (isAllRequiredLegalitasFieldsEmpty(values)) {
-        toast.error("Isi semua inputan yang bertanda bintang (*)");
+  // 5. Perbarui onSubmit dengan validasi API
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+
+    try {
+      const npwpResult = await checkField({
+        type: "NPWP",
+        value: data.npwpNumber,
+      });
+
+      if (npwpResult?.Data?.duplicate === true) {
+        setError("npwpNumber", {
+          type: "manual",
+          message: "Nomor NPWP sudah terdaftar",
+        });
+        toast.error("Gagal menyimpan, NPWP sudah terdaftar.");
+        scrollToFirstError(["npwpNumber"]);
+        return; // Hentikan proses
       }
-      return;
+
+      // Lanjutkan penyimpanan ke Zustand jika NPWP unik
+      const existingData =
+        useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+      const updatedData = { ...existingData, ...data };
+      setForm(FORM_KEY, updatedData);
+      if (onSave) {
+        onSave();
+      }
+      reset(data);
+      toast.success("Kelengkapan legalitas berhasil disimpan!");
+    } catch (error) {
+      console.error("API Validation Error:", error);
+      toast.error("Terjadi kesalahan saat validasi data. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-
-    const existingData =
-      useTransporterFormStore.getState().getForm(FORM_KEY) || {};
-    const updatedData = { ...existingData, ...data };
-    setForm(FORM_KEY, updatedData);
-    if (onSave) {
-      onSave();
-    }
-    reset(data);
-    toast.success("Kelengkapan legalitas berhasil disimpan!");
-  };
-
-  // const handleValidateAndSubmit = handleSubmit((data) => {
-  //   const values = getValues();
-
-  //   if (isAllRequiredLegalitasFieldsEmpty(values)) {
-  //     toast.error("Isi semua inputan yang bertanda bintang (*)");
-  //     return;
-  //   }
-  //   console.log("NOT TRIGGERED");
-  //   console.log("Form submitted:", data);
-
-  //   const existingData =
-  //     useTransporterFormStore.getState().getForm(FORM_KEY) || {};
-  //   const updatedData = { ...existingData, ...data };
-  //   setForm(FORM_KEY, updatedData);
-  //   if (onSave) {
-  //     onSave();
-  //   }
-
-  //   reset(data);
-
-  //   toast.success("Kelengkapan legalitas berhasil disimpan!");
-  // });
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -220,6 +237,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
   };
 
   return (
+    // 6. Hubungkan kedua handler ke form
     <form onSubmit={handleSubmit(onSubmit, onInvalidSubmit)} className="w-full">
       <Card className={"rounded-xl border-none p-8"}>
         <div className="w-full max-w-[75%]">
@@ -382,6 +400,8 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
           type="submit"
           variant="muattrans-primary"
           className="!w-[112px]"
+          // 7. Tambahkan state loading ke tombol
+          isLoading={isSubmitting}
         >
           Simpan
         </Button>

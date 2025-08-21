@@ -50,6 +50,7 @@ export const Select = forwardRef(
       disabled = false,
       className = "w-full",
       errorMessage = null,
+      contentClassName,
       searchable = false,
       ...props
     },
@@ -94,7 +95,8 @@ export const Select = forwardRef(
               data-slot="select-content"
               className={cn(
                 "z-50 overflow-hidden rounded-md border border-neutral-300 bg-white text-xs font-medium shadow-lg",
-                "max-h-64"
+                "max-h-64",
+                contentClassName
               )}
               position="popper"
               sideOffset={4}

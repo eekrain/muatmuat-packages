@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 
-import { isSameDay } from "date-fns";
+import { format, isSameDay } from "date-fns";
+import { id } from "date-fns/locale";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -12,7 +13,30 @@ import {
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
-import { formatLoadTime } from "@/lib/utils/dateFormat";
+
+// Custom function to format load time always on one line
+const formatLoadTimeOnOneLine = (loadTimeStart, loadTimeEnd) => {
+  if (!loadTimeStart) return "";
+
+  const startDate = new Date(loadTimeStart);
+  const endDate = loadTimeEnd ? new Date(loadTimeEnd) : null;
+
+  const formattedStartDate = format(startDate, "dd MMM yyyy", { locale: id });
+  const formattedStartTime = `${format(startDate, "HH:mm", { locale: id })} WIB`;
+
+  if (!endDate) {
+    return `${formattedStartDate} ${formattedStartTime}`;
+  }
+
+  const formattedEndDate = format(endDate, "dd MMM yyyy", { locale: id });
+  const formattedEndTime = `${format(endDate, "HH:mm", { locale: id })} WIB`;
+
+  if (isSameDay(startDate, endDate)) {
+    return `${formattedStartDate} ${formattedStartTime} s/d ${formattedEndTime}`;
+  } else {
+    return `${formattedStartDate} ${formattedStartTime} s/d ${formattedEndDate} ${formattedEndTime}`;
+  }
+};
 
 const SectionRow = ({ label, children }) => (
   <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-8">
@@ -107,7 +131,13 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
   );
 
   const totalWeightKg = dataOrderDetail?.cargo
-    ?.reduce((sum, item) => sum + item.weight * 1000, 0)
+    ?.reduce((sum, item) => {
+      let weightInKg = item.weight;
+      if (item.weightUnit === "ton") {
+        weightInKg = item.weight * 1000; // Convert tons to kg
+      }
+      return sum + weightInKg;
+    }, 0)
     .toLocaleString("id-ID");
 
   const displayedCargo = dataOrderDetail?.cargo
@@ -123,19 +153,28 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
       }
       const formattedWeight = convertedWeight.toLocaleString("id-ID");
 
-      let convertedLength = item.length;
-      let convertedWidth = item.width;
-      let convertedHeight = item.height;
+      // Handle null dimensions
+      const hasDimensions =
+        item.length && item.width && item.height && item.dimensionUnit;
+      let dimensionText = "";
 
-      if (item.dimensionUnit === "m") {
-        convertedLength = item.length * 100; // Convert meters to cm
-        convertedWidth = item.width * 100; // Convert meters to cm
-        convertedHeight = item.height * 100; // Convert meters to cm
+      if (hasDimensions) {
+        let convertedLength = item.length;
+        let convertedWidth = item.width;
+        let convertedHeight = item.height;
+
+        if (item.dimensionUnit === "m") {
+          convertedLength = item.length * 100; // Convert meters to cm
+          convertedWidth = item.width * 100; // Convert meters to cm
+          convertedHeight = item.height * 100; // Convert meters to cm
+        }
+
+        const formattedLength = convertedLength.toLocaleString("id-ID");
+        const formattedWidth = convertedWidth.toLocaleString("id-ID");
+        const formattedHeight = convertedHeight.toLocaleString("id-ID");
+
+        dimensionText = ` (${formattedLength}x${formattedWidth}x${formattedHeight} cm)`;
       }
-
-      const formattedLength = convertedLength.toLocaleString("id-ID");
-      const formattedWidth = convertedWidth.toLocaleString("id-ID");
-      const formattedHeight = convertedHeight.toLocaleString("id-ID");
 
       return (
         <div key={index} className="flex items-center gap-3">
@@ -147,7 +186,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           <p className="text-xs font-medium text-neutral-900">
             {item.name}
             <span className="text-neutral-600">
-              {` (${formattedWeight} kg) ${item.dimensionUnit ? `(${formattedLength}x${formattedWidth}x${formattedHeight} cm)` : ""}`}
+              {` (${formattedWeight} kg)${dimensionText}`}
             </span>
           </p>
         </div>
@@ -201,10 +240,10 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
 
         <SectionRow label="Waktu Muat">
           <p className="text-xs font-medium text-neutral-900">
-            {formatLoadTime(
+            {formatLoadTimeOnOneLine(
               dataOrderDetail?.loadTimeStart,
               dataOrderDetail?.loadTimeEnd,
-              true
+              { showOneLine: true }
             )}
           </p>
         </SectionRow>
@@ -267,14 +306,12 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                   </LightboxProvider>
                 </SectionRow>
 
-                {true ? (
+                {dataOrderDetail?.deliveryOrders?.length > 0 ? (
                   <SectionRow label="No. Delivery Order">
                     <div className="flex flex-wrap gap-2">
-                      {["DO-20241023-001", "DO-20241023-002"]?.map(
-                        (order, index) => (
-                          <TagBubble key={index}>{order}</TagBubble>
-                        )
-                      )}
+                      {dataOrderDetail?.deliveryOrders?.map((order, index) => (
+                        <TagBubble key={index}>{order}</TagBubble>
+                      ))}
                     </div>
                   </SectionRow>
                 ) : null}

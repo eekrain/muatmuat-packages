@@ -89,6 +89,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
   // State for pagination (should be declared first)
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // State for Modals
   const [showHubungiModal, setShowHubungiModal] = useState(false);
@@ -113,11 +114,6 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const inactiveFleets = fleetDetailsData?.Data?.inactiveFleets || [];
   const pagination = fleetDetailsData?.Data?.pagination || {};
 
-  // Debug logging
-  console.log("🔍 Debug - fleetDetailsData:", fleetDetailsData);
-  console.log("📊 Debug - inactiveFleets:", inactiveFleets);
-  console.log("🏢 Debug - transporterInfo:", transporterInfo);
-
   // Ambil nama transporter dari data
   const transporterName = transporterInfo.name || "-";
   const transporter = {
@@ -134,6 +130,20 @@ const DetailTransporter = ({ breadcrumbData }) => {
     _rawTanggalNonaktif: item.inactiveDate,
     _rawLamaNonaktif: item.inactiveDuration,
   }));
+
+  // Filter data based on search query (when character count is 0 or > 2)
+  if (searchQuery.trim().length === 0 || searchQuery.trim().length > 2) {
+    if (searchQuery.trim().length > 2) {
+      armadaNonaktifData = armadaNonaktifData.filter((item) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          item.licensePlate?.toLowerCase().includes(query) ||
+          item.driverName?.toLowerCase().includes(query)
+        );
+      });
+    }
+    // If length is 0, show all data (no filtering)
+  }
 
   // Sorting
   if (sortConfig?.sort) {
@@ -177,6 +187,11 @@ const DetailTransporter = ({ breadcrumbData }) => {
     setSortConfig({ sort, order });
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
   return (
     <div className="mx-auto max-w-7xl p-6">
       <BreadCrumb data={breadcrumbData} maxWidth={111} />
@@ -195,12 +210,12 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 alt={transporter.name}
                 className="h-14 w-14 flex-shrink-0 rounded-full border border-neutral-400 bg-white object-cover"
               />
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col justify-center space-y-2">
                 <p className="text-xs font-bold text-neutral-900">
                   {transporter.name}
                 </p>
                 <p className="text-xs font-medium text-error-400">
-                  Armada Nonaktif Terlalu Banyak (10/11)
+                  Admin Terdeteksi Sering Idle (5/7 Order)
                 </p>
               </div>
             </div>
@@ -218,7 +233,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             </div>
           </div>
           <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
-            <div className="mb-6 flex items-center">
+            <div className="mb-4 flex items-center">
               <p className="text-xs font-semibold text-neutral-900">
                 Detail Penyelesaian
               </p>
@@ -245,7 +260,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 {fleetNoteData?.history?.notes || "-"}
               </p>
             </div>
-            <div className="mb-3 flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <p className="text-xs font-medium text-neutral-600">
                 Foto Pendukung
               </p>
@@ -317,6 +332,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
             perPage={perPage}
             onPageChange={setCurrentPage}
             onPerPageChange={setPerPage}
+            onSearch={handleSearch}
             showFilter={false}
             showPagination={true}
             showTotalCount={true}

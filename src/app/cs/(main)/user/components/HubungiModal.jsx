@@ -5,40 +5,35 @@ import { useEffect, useState } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
+import { formatPhoneNumber } from "@/lib/utils/phoneFormatter";
 
-const generalContacts = [
-  // for dev purpose change to [] for production
-  {
-    label: "PIC 1",
-    name: "Alexander",
-    role: "Staf Admin Operasional",
-    phone: "0821-2345-6869",
+const generalContacts = {
+  pic: [
+    {
+      name: "Alexander",
+      role: "Staf Admin Operasional",
+      phone: "082123456869",
+    },
+    {
+      name: "Alexander krisna indra candra",
+      role: "Staf Admin Operasional",
+      phone: "082123458686",
+    },
+    {
+      name: "",
+      role: "",
+      phone: "",
+    },
+  ],
+  company: {
+    phone: "02155501234",
   },
-  {
-    label: "PIC 2",
-    name: "Alexander krisna indra candra",
-    role: "Staf Admin Operasional",
-    phone: "0821-2345-8686",
-  },
-  {
-    label: "PIC 3",
-    name: "",
-    role: "",
-    phone: "",
-  },
-  {
-    label: "No. Telepon Perusahaan",
-    name: "",
-    role: "",
-    phone: "021-5550-1234",
-  },
-  {
-    label: "No. Darurat",
+  emergency: {
     name: "Candra Ariansyah",
     role: "Koordinator Staf Admin Operasional",
-    phone: "0812-9876-5432",
+    phone: "081298765432",
   },
-];
+};
 /**
  * HubungiModal Component - A reusable modal for displaying contact information
  *
@@ -115,8 +110,19 @@ const HubungiModal = ({
         data = driverContacts;
       }
     } else {
-      // If the initial choice screen was skipped
-      data = contacts;
+      // If the initial choice screen was skipped, use generalContacts structure
+      if (contacts === generalContacts) {
+        // Convert generalContacts object to array format for rendering
+        data = [
+          { ...contacts.pic[0], label: "PIC 1" },
+          { ...contacts.pic[1], label: "PIC 2" },
+          { ...contacts.pic[2], label: "PIC 3" },
+          { ...contacts.company, label: "No. Telepon Perusahaan" },
+          { ...contacts.emergency, label: "No. Darurat" },
+        ];
+      } else {
+        data = contacts;
+      }
     }
     setDataToDisplay(data);
     setModalView("details");
@@ -138,14 +144,14 @@ const HubungiModal = ({
         >
           <ModalHeader />
 
-          <div className="flex flex-col items-center justify-center gap-6 bg-white pb-9">
+          <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white pb-9">
             {/* --- Modal Title --- */}
-            <div className="w-full px-[50px] pt-9 text-center text-sm font-bold leading-[17px] text-black">
+            <div className="w-full pt-9 text-center text-sm font-bold leading-[17px] text-black">
               No Telepon/WhatsApp Yang Bisa Dihubungi
             </div>
 
             {/* --- Contacts List --- */}
-            <div className="flex max-w-[386px] flex-col gap-6 px-[50px]">
+            <div className="flex w-[286px] flex-col gap-6">
               {dataToDisplay.map((contact, index) => (
                 <div key={index} className="flex flex-row items-start gap-x-4">
                   {/* Label Column */}
@@ -155,18 +161,21 @@ const HubungiModal = ({
 
                   {/* Details Column */}
                   <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-                    {/* Name */}
-                    <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
-                      {contact.name || "-"}
-                    </div>
+                    {/* Name & Role - show for all contacts except company */}
+                    {contact.label !== "No. Telepon Perusahaan" && (
+                      <>
+                        <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
+                          {contact.name || "-"}
+                        </div>
 
-                    {/* Role */}
-                    <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
-                      {contact.role || "-"}
-                    </div>
+                        <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
+                          {contact.role || "-"}
+                        </div>
+                      </>
+                    )}
 
                     {/* Phone & Copy Button */}
-                    <div className="flex w-full flex-row items-center justify-between gap-2 pt-1">
+                    <div className="relative flex w-full flex-row items-center justify-between gap-2 pt-1">
                       <div
                         className={`text-sm font-medium leading-none ${
                           contact.phone
@@ -174,13 +183,13 @@ const HubungiModal = ({
                             : "text-blue-600"
                         }`}
                       >
-                        {contact.phone || "-"}
+                        {formatPhoneNumber(contact.phone) || "-"}
                       </div>
 
                       {contact.phone && contact.phone !== "-" && (
                         <button
                           onClick={() => handleCopyPhone(contact.phone)}
-                          className="flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                          className="absolute right-0 flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
                         >
                           <span className="text-xs font-medium leading-[14px] text-blue-600">
                             Salin
@@ -222,12 +231,12 @@ const HubungiModal = ({
           className="flex flex-col items-start overflow-hidden rounded-xl p-0 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]"
         >
           <ModalHeader className="w-full" />
-          <div className="flex flex-col items-center justify-center gap-6 bg-white px-6 py-9">
+          <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white px-6 py-9">
             <div className="flex flex-col items-center gap-2">
-              <p className="text-center text-sm font-bold leading-[17px] text-black">
+              <p className="text-center text-sm font-bold text-[#1B1B1B]">
                 Anda Ingin Menghubungi Via
               </p>
-              <p className="text-center text-xs font-semibold leading-[14px] text-gray-500">
+              <p className="text-center text-xs font-semibold text-gray-500">
                 Anda dapat memilih menghubungi melalui pilihan berikut
               </p>
             </div>
@@ -238,10 +247,10 @@ const HubungiModal = ({
               >
                 <div className="h-6 w-6">
                   <IconComponent
-                    src="/icons/call16.svg"
-                    className="text-blue-500"
-                    width={20}
-                    height={20}
+                    src="/icons/call-blue.svg"
+                    className="text-blue-700"
+                    width={24}
+                    height={24}
                     alt="Phone Icon"
                   />
                 </div>

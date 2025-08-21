@@ -64,7 +64,7 @@ export const ORDER_ACTIONS = {
 
 export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER]: {
-    label: "Menunggu Konfirmasi",
+    label: "Menunggu Konfirmasi Shipper",
     variant: "primary",
   },
   [ORDER_STATUS.CONFIRMED]: {
