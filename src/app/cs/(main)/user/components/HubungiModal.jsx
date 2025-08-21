@@ -6,39 +6,33 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
 
-const generalContacts = [
-  // for dev purpose change to [] for production
-  {
-    label: "PIC 1",
-    name: "Alexander",
-    role: "Staf Admin Operasional",
-    phone: "0821-2345-6869",
-  },
-  {
-    label: "PIC 2",
-    name: "Alexander krisna indra candra",
-    role: "Staf Admin Operasional",
-    phone: "0821-2345-8686",
-  },
-  {
-    label: "PIC 3",
-    name: "",
-    role: "",
-    phone: "",
-  },
-  {
-    label: "No. Telepon Perusahaan",
-    name: "",
-    role: "",
+const generalContacts = {
+  pic: [
+    {
+      name: "Alexander",
+      role: "Staf Admin Operasional",
+      phone: "0821-2345-6869",
+    },
+    {
+      name: "Alexander krisna indra candra",
+      role: "Staf Admin Operasional",
+      phone: "0821-2345-8686",
+    },
+    {
+      name: "",
+      role: "",
+      phone: "",
+    },
+  ],
+  company: {
     phone: "021-5550-1234",
   },
-  {
-    label: "No. Darurat",
+  emergency: {
     name: "Candra Ariansyah",
     role: "Koordinator Staf Admin Operasional",
     phone: "0812-9876-5432",
   },
-];
+};
 /**
  * HubungiModal Component - A reusable modal for displaying contact information
  *
@@ -115,8 +109,19 @@ const HubungiModal = ({
         data = driverContacts;
       }
     } else {
-      // If the initial choice screen was skipped
-      data = contacts;
+      // If the initial choice screen was skipped, use generalContacts structure
+      if (contacts === generalContacts) {
+        // Convert generalContacts object to array format for rendering
+        data = [
+          { ...contacts.pic[0], label: "PIC 1" },
+          { ...contacts.pic[1], label: "PIC 2" },
+          { ...contacts.pic[2], label: "PIC 3" },
+          { ...contacts.company, label: "No. Telepon Perusahaan" },
+          { ...contacts.emergency, label: "No. Darurat" },
+        ];
+      } else {
+        data = contacts;
+      }
     }
     setDataToDisplay(data);
     setModalView("details");
@@ -155,15 +160,18 @@ const HubungiModal = ({
 
                   {/* Details Column */}
                   <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-                    {/* Name */}
-                    <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
-                      {contact.name || "-"}
-                    </div>
+                    {/* Name & Role - show for all contacts except company */}
+                    {contact.label !== "No. Telepon Perusahaan" && (
+                      <>
+                        <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
+                          {contact.name || "-"}
+                        </div>
 
-                    {/* Role */}
-                    <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
-                      {contact.role || "-"}
-                    </div>
+                        <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
+                          {contact.role || "-"}
+                        </div>
+                      </>
+                    )}
 
                     {/* Phone & Copy Button */}
                     <div className="flex w-full flex-row items-center justify-between gap-2 pt-1">
