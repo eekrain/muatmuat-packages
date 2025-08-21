@@ -11,6 +11,9 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTerimaPermintaan from "./ModalTerimaPermintaan";
+import ModalTolakPermintaan from "./ModalTolakPermintaan";
+
 const TransportRequestCard = ({
   request,
   isSuspended = false,
@@ -43,21 +46,27 @@ const TransportRequestCard = ({
     router.push(`/monitoring?id=${request.id}`);
   };
 
+  const [showRejectModal, setShowRejectModal] = useState(false);
   const handleReject = () => {
-    // TODO: Implement reject functionality
-  };
-
-  const router = useRouter();
-  const handleAccept = () => {
-    if (onAccept) {
-      onAccept(request);
-    }
-    router.push(`/monitoring?id=${request.id}`);
+    setShowRejectModal(true);
   };
 
   const handleUnderstand = () => {
     toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
     if (onUnderstand) onUnderstand(request.id);
+  };
+
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const handleAccept = () => {
+    if (request.orderType === "SCHEDULED") {
+      setShowModal(true);
+    } else {
+      if (onAccept) {
+        onAccept(request);
+      }
+      router.push(`/monitoring?id=${request.id}`);
+    }
   };
 
   const formatCurrency = (amount) => {
@@ -76,6 +85,23 @@ const TransportRequestCard = ({
 
   return (
     <div className="relative">
+      {/* Modal for accepting scheduled request */}
+      <ModalTerimaPermintaan
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        request={request}
+        onAccept={(data) => {
+          setShowModal(false);
+          if (onAccept) onAccept(data);
+          router.push(`/monitoring?id=${request.id}`);
+        }}
+      />
+      {/* Modal for rejecting request */}
+      <ModalTolakPermintaan
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        request={request}
+      />
       <div
         className={cn(
           "overflow-hidden rounded-[8px] border border-[#C4C4C4] bg-white shadow-sm",
@@ -109,7 +135,7 @@ const TransportRequestCard = ({
                   request.isTaken
                     ? "text-neutral-700"
                     : request.orderType === "INSTANT"
-                      ? "bg-success-50 text-success-700"
+                      ? "bg-success-50 text-success-400"
                       : "bg-primary-50 text-primary-700"
                 )}
               >
@@ -143,10 +169,10 @@ const TransportRequestCard = ({
                 let colorClass = "";
                 if (diffDays === 0) {
                   label = "Muat Hari Ini";
-                  colorClass = "bg-success-50 text-success-700";
+                  colorClass = "bg-success-50 text-success-400";
                 } else if (diffDays === 1) {
                   label = "Muat Besok";
-                  colorClass = "bg-success-50 text-success-700";
+                  colorClass = "bg-success-50 text-success-400";
                 } else if (diffDays >= 2 && diffDays <= 5) {
                   label = `Muat ${diffDays} Hari`;
                   colorClass = "bg-warning-100 text-warning-900";
@@ -408,9 +434,12 @@ const TransportRequestCard = ({
           {/* Additional Services */}
           {request.hasAdditionalService &&
             request.additionalServices?.length > 0 && (
-              <div className="mb-3 rounded-[4px] bg-warning-50 px-3 py-2">
-                <div className="text-[12px] font-medium text-warning-800">
-                  + {request.additionalServices[0].serviceName}
+              <div className="mb-3 rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
+                <div className="text-[12px] font-semibold text-neutral-900">
+                  +{" "}
+                  {request.additionalServices
+                    .map((service) => service.serviceName)
+                    .join(", ")}
                 </div>
               </div>
             )}

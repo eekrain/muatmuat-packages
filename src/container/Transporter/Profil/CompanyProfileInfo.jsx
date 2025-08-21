@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import PropTypes from "prop-types";
+
 import { Alert } from "@/components/Alert/Alert";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
@@ -7,7 +9,6 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { Modal, ModalContent } from "@/components/Modal";
-import { ModalTrigger } from "@/components/Modal/Modal";
 
 // --- Lihat Lokasi Modal Component ---
 const LihatLokasiModal = ({ isOpen, onClose }) => {
@@ -90,7 +91,7 @@ const DetailRow = ({
 };
 
 // --- Main Page Component ---
-const CompanyProfileInfo = () => {
+const CompanyProfileInfo = ({ userProfile }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCloseModal = () => {
@@ -104,26 +105,34 @@ const CompanyProfileInfo = () => {
 
   const companyData = {
     registrant: {
-      name: "Fernando Torres",
-      title: "Chief Marketing Officer",
-      whatsapp: "081234567910",
-      email: "torres.marketing@mail.com",
+      name: userProfile?.name || "Fernando Torres",
+      title: userProfile?.position || "Chief Marketing Officer",
+      whatsapp: userProfile?.phone || "081234567910",
+      email: userProfile?.email || "torres.marketing@mail.com",
     },
     company: {
-      logoUrl: "https://picsum.photos/100?random=1",
-      name: "PT Kalimantan Timur Jaya Sentosa Makmur Sejahtera Internasional",
-      entity: "PT/ PT Tbk",
-      phone: "0812-0987-6543",
+      logoUrl:
+        userProfile.transporter?.companyLogo &&
+        !userProfile.transporter.companyLogo.endsWith(".webp")
+          ? userProfile.transporter.companyLogo
+          : "https://picsum.photos/100?random=1",
+      name:
+        userProfile.transporter?.companyName ||
+        "PT Kalimantan Timur Jaya Sentosa Makmur Sejahtera Internasional",
+      entity: userProfile.transporter?.companyEntity || "PT/ PT Tbk",
+      phone: userProfile.transporter?.companyPhone || "0812-0987-6543",
     },
     location: {
       fullAddress:
+        userProfile.transporter?.companyAddress ||
         "Jl. Anggrek No. 123, RT 05 RW 09, Kel. Mekarsari, Kec. Cimanggis, Kota Depok, Provinsi Jawa Barat, Kode Pos 16452, Dekat Warung Bu Tini, belakang minimarket, sebelah bengkel motor, sekitar 200 meter dari halte Transdepok Mekarsari.",
       shortAddress:
+        userProfile.transporter?.companyAddress ||
         "Jl. Anggrek No. 123, RT 05 RW 09, Kel. Mekarsari, Kec. Cimanggis, Kota Depok, Provinsi Jawa Barat, Kode Pos 16452",
-      district: "Cimanggis",
-      city: "Depok",
-      province: "Jawa Barat",
-      postalCode: "16452",
+      district: userProfile.transporter?.district || "Cimanggis",
+      city: userProfile.transporter?.city || "Depok",
+      province: userProfile.transporter?.province || "Jawa Barat",
+      postalCode: userProfile.transporter?.postalCode || "16452",
       pinLocation: (
         <div className="relative col-span-2 w-1/2 overflow-hidden rounded-lg">
           <div className="relative h-36 w-full">
@@ -148,9 +157,10 @@ const CompanyProfileInfo = () => {
       ),
     },
     bank: {
-      name: "Bank Central Asia (BCA)",
-      accountNumber: "21454322",
-      accountHolder: "Fernando Torres",
+      name: userProfile?.banks?.[0]?.bankName || "Bank Central Asia (BCA)",
+      accountNumber: userProfile?.banks?.[0]?.accountNumber || "21454322",
+      accountHolder:
+        userProfile?.banks?.[0]?.accountHolderName || "Fernando Torres",
     },
   };
 
@@ -230,6 +240,7 @@ const CompanyProfileInfo = () => {
       value: companyData.bank.accountHolder,
     },
   ];
+  console.log(userProfile, "transporter");
 
   return (
     <>
@@ -281,6 +292,10 @@ const CompanyProfileInfo = () => {
       <LihatLokasiModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </>
   );
+};
+
+CompanyProfileInfo.propTypes = {
+  userProfile: PropTypes.object,
 };
 
 export default CompanyProfileInfo;

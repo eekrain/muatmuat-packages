@@ -29,7 +29,7 @@ export default function ModalAddOption({
     onClose();
   };
   return (
-    <Modal open={isOpen} onOpenChange={handleClose}>
+    <Modal open={isOpen} onOpenChange={handleClose} closeOnOutsideClick={true}>
       {/* Modal content goes here */}
 
       <ModalContent className="w-full max-w-[386px]">
@@ -53,7 +53,11 @@ export default function ModalAddOption({
 
           {/* Button */}
           <div className="flex w-full items-center justify-center gap-2">
-            <Button variant="muattrans-primary-secondary" className="w-fit">
+            <Button
+              onClick={handleClose}
+              variant="muattrans-primary-secondary"
+              className="w-fit"
+            >
               Batal
             </Button>
             <Button

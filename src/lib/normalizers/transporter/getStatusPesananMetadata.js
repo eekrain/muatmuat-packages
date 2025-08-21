@@ -1,5 +1,7 @@
-import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { ORDER_STATUS_CONFIG } from "@/utils/Transporter/orderStatus";
+import {
+  ORDER_STATUS,
+  ORDER_STATUS_CONFIG,
+} from "@/utils/Transporter/orderStatus";
 
 export const getStatusPesananMetadataTransporter = ({
   orderStatus,
@@ -9,20 +11,48 @@ export const getStatusPesananMetadataTransporter = ({
 }) => {
   if (!orderStatus) return { variant: "primary", label: "" };
 
-  const orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[orderStatus];
+  // Check if status contains a number (e.g., "MENUJU_LOKASI_BONGKAR_1")
+  const statusWithNumber = orderStatus?.match(/^(.+)_(\d+)$/);
+
+  let baseOrderStatus = orderStatus;
+  let statusNumber = null;
+
+  if (statusWithNumber) {
+    const [, baseStatus, number] = statusWithNumber;
+    baseOrderStatus = baseStatus;
+    statusNumber = number;
+  }
+
+  const orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[baseOrderStatus];
 
   if (
-    orderStatus !== OrderStatusEnum.COMPLETED &&
-    !orderStatus.startsWith("CANCELED") &&
-    !orderStatus.startsWith("WAITING_PAYMENT") &&
+    baseOrderStatus !== ORDER_STATUS.COMPLETED &&
+    baseOrderStatus !== ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
+    baseOrderStatus !== ORDER_STATUS.CANCELLED_BY_SHIPPER &&
+    baseOrderStatus !== ORDER_STATUS.CANCELLED_BY_SYSTEM &&
     orderStatusUnit &&
-    truckCount > 1
+    orderStatusUnit > 1
   ) {
+    let label = `${orderStatusBadgeMetadata.label} : ${orderStatusUnit} Unit`;
+
+    // If status has a number, append it to the label
+    if (statusNumber) {
+      label = `${orderStatusBadgeMetadata.label} ${statusNumber} : ${orderStatusUnit} Unit`;
+    }
+
     return {
       ...orderStatusBadgeMetadata,
-      label: `${orderStatusBadgeMetadata.label} : ${orderStatusUnit} Unit`,
+      label,
     };
   } else {
+    // If status has a number, append it to the label
+    if (statusNumber) {
+      return {
+        ...orderStatusBadgeMetadata,
+        label: `${orderStatusBadgeMetadata.label} ${statusNumber}`,
+      };
+    }
+
     return orderStatusBadgeMetadata;
   }
 };

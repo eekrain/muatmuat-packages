@@ -10,6 +10,7 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
+import { useUpdatePicContacts } from "@/services/Transporter/updatePicContacts";
 
 // Pastikan komponen Modal diimpor
 
@@ -236,15 +237,19 @@ const PICFormSection = ({
 );
 
 // --- Main Component (MODIFIED) ---
-const PicContactInfo = () => {
+const PicContactInfo = ({ picContacts, banks, mutate }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [pics, setPics] = useState(initialPicData);
+  const [pics, setPics] = useState(picContacts || initialPicData);
   const [formState, setFormState] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
   // --- ⬇️ TAMBAHAN: State untuk Modal ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("confirmSave");
+
+  // --- API Hook ---
+  const { trigger: updatePicContactsAPI, isMutating: isUpdating } =
+    useUpdatePicContacts();
 
   // Validasi Form (Tidak diubah)
   const validateForm = (formData) => {
@@ -314,7 +319,7 @@ const PicContactInfo = () => {
     toast.success("Berhasil membtalkan perubahan kontak PIC");
   };
 
-  const executeSave = () => {
+  const executeSave = async () => {
     const errors = validateForm(formState);
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -340,11 +345,62 @@ const PicContactInfo = () => {
         return pic;
       });
 
-    setPics(filledPicData);
-    setIsEditing(false);
-    setFormState(null);
-    setIsModalOpen(false); // Tutup modal
-    toast.success("Berhasil menyimpan perubahan kontak PIC");
+    try {
+      // Transform data to match API contract
+      const apiPayload = {
+        picContacts: filledPicData.map((pic) => ({
+          picOrder: pic.picOrder,
+          picName: pic.picName,
+          picPosition: pic.picPosition,
+          phoneNumber: pic.phoneNumber,
+        })),
+      };
+
+      const response = await updatePicContactsAPI(apiPayload);
+
+      if (response?.data?.Message?.Code === 200) {
+        // Update local state with response data
+        if (response.data.Data?.picContacts) {
+          setPics(response.data.Data.picContacts);
+        } else {
+          setPics(filledPicData);
+        }
+
+        setIsEditing(false);
+        setFormState(null);
+        setIsModalOpen(false);
+        toast.success("Berhasil menyimpan perubahan kontak PIC");
+        mutate();
+      }
+    } catch (error) {
+      console.error("Error updating PIC contacts:", error);
+
+      // Handle specific API error responses
+      if (error?.response?.data?.Message) {
+        const errorMessage = error.response.data.Message.Text;
+        toast.error(errorMessage);
+
+        // Handle validation errors from API
+        if (error.response.data.Data?.errors) {
+          const apiErrors = {};
+          error.response.data.Data.errors.forEach((err) => {
+            if (err.field && err.message) {
+              // Convert API field format to component format
+              const fieldMatch = err.field.match(/picContacts\[(\d+)\]\.(\w+)/);
+              if (fieldMatch) {
+                const [, index, fieldName] = fieldMatch;
+                apiErrors[`${index}-${fieldName}`] = err.message;
+              }
+            }
+          });
+          setValidationErrors(apiErrors);
+        }
+      } else {
+        toast.error("Gagal menyimpan perubahan kontak PIC");
+      }
+
+      setIsModalOpen(false);
+    }
   };
 
   // --- ⬇️ MODIFIKASI: Handler tombol yang sekarang hanya membuka modal ---
@@ -428,8 +484,9 @@ const PicContactInfo = () => {
                 variant="muattrans-warning"
                 className="text-muat-trans-secondary-900"
                 onClick={handleSaveClick}
+                disabled={isUpdating}
               >
-                Simpan Data
+                {isUpdating ? "Menyimpan..." : "Simpan Data"}
               </Button>
             </div>
           </div>
@@ -499,6 +556,11 @@ const PicContactInfo = () => {
       </div>
     </Card>
   );
+};
+
+PicContactInfo.propTypes = {
+  picContacts: PropTypes.array,
+  banks: PropTypes.array,
 };
 
 export default PicContactInfo;

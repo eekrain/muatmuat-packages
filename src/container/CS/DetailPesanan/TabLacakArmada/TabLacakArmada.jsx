@@ -1,12 +1,12 @@
 import Button from "@/components/Button/Button";
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import { TabsContent } from "@/components/Tabs/Tabs";
 import { cn } from "@/lib/utils";
 
+import { Alert } from "./Alert";
 import { AppliedFilterBubbles } from "./AppliedFilterBubbles";
+import { Content } from "./Content";
 import { Filter } from "./Filter";
-import { TransporterItem } from "./TransporterItem";
 import { LacakArmadaProvider, useLacakArmadaContext } from "./use-lacak-armada";
 
 export const TabLacakArmada = (props) => {
@@ -22,13 +22,12 @@ export const Inner = () => {
     data,
     totalArmada,
     totalSos,
-    hasActiveFilters,
-    hasActiveSearch,
-    filteredDataByFilters,
-    mainSearchQuery,
     setMainSearchQuery,
     searchInputValue,
     setSearchInputValue,
+
+    isEdit,
+    setIsEdit,
   } = useLacakArmadaContext();
 
   const handleSearchKeyPress = (e) => {
@@ -37,33 +36,10 @@ export const Inner = () => {
     }
   };
 
-  // Check if we have filtered data but no results (filter-based)
-  const hasNoFilteredData =
-    hasActiveFilters &&
-    !hasActiveSearch &&
-    (!filteredDataByFilters ||
-      filteredDataByFilters.length === 0 ||
-      filteredDataByFilters.every(
-        (transporter) => !transporter.fleets || transporter.fleets.length === 0
-      ));
-
-  // Check if we have search results but no data found (search-based)
-  const hasNoSearchResults =
-    hasActiveSearch &&
-    (!data ||
-      data.length === 0 ||
-      data.every(
-        (transporter) => !transporter.fleets || transporter.fleets.length === 0
-      )) &&
-    // But we do have data when only filters are applied (or no filters at all)
-    filteredDataByFilters &&
-    filteredDataByFilters.length > 0 &&
-    filteredDataByFilters.some(
-      (transporter) => transporter.fleets && transporter.fleets.length > 0
-    );
-
   return (
     <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
+      <Alert />
+
       <div className="min flex w-full max-w-[1200px] flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
         {/* Card Header */}
         <div
@@ -108,61 +84,45 @@ export const Inner = () => {
               </div>
             )}
 
-            <div className="flex items-center gap-3">
-              <Button
-                variant="muattrans-primary-secondary"
-                className="h-8 min-w-[160px] !rounded-full !text-sm"
-              >
-                Ubah Transporter
-              </Button>
-              <Button
-                variant="muattrans-primary"
-                className="h-8 min-w-[174px] !rounded-full !text-sm"
-              >
-                Lihat Posisi Armada
-              </Button>
-            </div>
+            {data?.length > 0 && !isEdit ? (
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  className="h-8 min-w-[160px] !rounded-full !text-sm"
+                  onClick={() => setIsEdit((prev) => !prev)}
+                >
+                  Ubah Transporter
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  className="h-8 min-w-[174px] !rounded-full !text-sm"
+                >
+                  Lihat Posisi Armada
+                </Button>
+              </div>
+            ) : data?.length > 0 && isEdit ? (
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="muattrans-error-secondary"
+                  className="h-8 w-[105px] !rounded-full !text-sm"
+                  onClick={() => setIsEdit((prev) => !prev)}
+                >
+                  Batalkan
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  className="h-8 w-[112px] !rounded-full !text-sm"
+                >
+                  Simpan
+                </Button>
+              </div>
+            ) : null}
           </div>
 
           <AppliedFilterBubbles />
         </div>
 
-        {/* Armada Items Container */}
-        {hasNoFilteredData ? (
-          <div className="flex h-full min-h-[230px] w-full flex-1 items-center justify-center">
-            <DataNotFound
-              type="data"
-              className="gap-4"
-              textClass="!w-auto max-w-[400px]"
-            >
-              <div className="text-center">
-                <p className="text-base font-semibold text-neutral-600">
-                  Data tidak Ditemukan.
-                  <br />
-                  Mohon coba hapus beberapa filter
-                </p>
-              </div>
-            </DataNotFound>
-          </div>
-        ) : hasNoSearchResults ? (
-          <div className="flex h-full min-h-[300px] w-full flex-1 items-center justify-center">
-            <DataNotFound
-              type="search"
-              className="gap-4"
-              textClass="!w-auto max-w-[400px]"
-            >
-              <div className="text-center">
-                <p className="text-base font-semibold text-neutral-600">
-                  Keyword Tidak Ditemukan
-                </p>
-              </div>
-            </DataNotFound>
-          </div>
-        ) : (
-          data?.map((item) => (
-            <TransporterItem key={item?.transporterId} data={item} />
-          ))
-        )}
+        <Content />
       </div>
 
       {false && (

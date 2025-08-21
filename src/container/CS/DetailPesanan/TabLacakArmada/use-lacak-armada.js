@@ -242,6 +242,8 @@ export const LacakArmadaProvider = ({ children }) => {
     );
   }, [hasActiveSearch, finalData]);
 
+  const [isEdit, setIsEdit] = useState(false);
+
   return (
     <Context.Provider
       value={{
@@ -266,6 +268,9 @@ export const LacakArmadaProvider = ({ children }) => {
         hasActiveFilters,
         hasActiveSearch,
         hasNoSearchResults,
+
+        isEdit,
+        setIsEdit,
       }}
     >
       {children}

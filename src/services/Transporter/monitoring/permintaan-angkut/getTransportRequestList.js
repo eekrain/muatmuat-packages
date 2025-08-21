@@ -165,8 +165,29 @@ const apiResultTransportRequestList = {
               id: "550e8400-e29b-41d4-a716-446655440014",
               serviceName: "Kirim Berkas",
             },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              serviceName: "Tanda Tangan Digital",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440016",
+              serviceName: "Arsip Online",
+            },
           ],
-          photos: [],
+          photos: [
+            {
+              photoUrl: "https://picsum.photos/400/300?random=1",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=2",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=3",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=4",
+            },
+          ],
           createdAt: "2025-01-15T08:00:00+07:00",
         },
         {
@@ -316,8 +337,29 @@ const apiResultTransportRequestList = {
               id: "550e8400-e29b-41d4-a716-446655440014",
               serviceName: "Kirim Berkas",
             },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              serviceName: "Tanda Tangan Digital",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440016",
+              serviceName: "Arsip Online",
+            },
           ],
-          photos: [],
+          photos: [
+            {
+              photoUrl: "https://picsum.photos/400/300?random=1",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=2",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=3",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=4",
+            },
+          ],
           createdAt: "2025-01-15T08:00:00+07:00",
         },
         {
@@ -467,8 +509,29 @@ const apiResultTransportRequestList = {
               id: "550e8400-e29b-41d4-a716-446655440014",
               serviceName: "Kirim Berkas",
             },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              serviceName: "Tanda Tangan Digital",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440016",
+              serviceName: "Arsip Online",
+            },
           ],
-          photos: [],
+          photos: [
+            {
+              photoUrl: "https://picsum.photos/400/300?random=1",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=2",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=3",
+            },
+            {
+              photoUrl: "https://picsum.photos/400/300?random=4",
+            },
+          ],
           createdAt: "2025-01-15T08:00:00+07:00",
         },
       ],
@@ -500,11 +563,12 @@ export const fetcherTransportRequestList = async (params = {}) => {
       return result.data.Data;
     }
 
-    // Simpan semua request original dan inject isSuspended from userStatus
+    // Simpan semua request original dan inject isSuspended & isHalalCertified from userStatus
     const userStatus = result.data.Data.userStatus || {};
     const originalRequests = result.data.Data.requests.map((req) => ({
       ...req,
       isSuspended: userStatus.isSuspended,
+      isHalalCertified: userStatus.isHalalCertified,
     }));
 
     // Hitung tabCounts sekali di awal

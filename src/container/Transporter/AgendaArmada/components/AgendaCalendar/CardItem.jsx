@@ -254,7 +254,11 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                     Konflik
                   </span>
                 )}
-                <InfoPopover data={item} />
+                <InfoPopover
+                  data={item}
+                  status={StatusArmadaTypeEnum[agendaStatus]}
+                  hasSosIssue={hasSosIssue}
+                />
               </div>
 
               <div className="flex flex-col gap-1.5">

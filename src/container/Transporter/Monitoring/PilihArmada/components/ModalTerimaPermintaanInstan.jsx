@@ -79,18 +79,6 @@ const ModalTerimaPermintaanInstant = ({
         message:
           "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
       },
-      {
-        type: "unit-change",
-        title: "Perubahan Kebutuhan Unit",
-        message:
-          "Maaf, terdapat perubahan pada kebutuhan unit armada. Periksa kembali sebelum menerima permintaan.",
-      },
-      {
-        type: "suspended",
-        title: "Akun Ditangguhkan",
-        message:
-          "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali.",
-      },
     ];
 
     setModalQueue(modals);
@@ -106,18 +94,6 @@ const ModalTerimaPermintaanInstant = ({
   };
 
   const handleAccept = () => {
-    // Validasi kebutuhan armada
-    if (!selectedOption) {
-      setShowAlert(true);
-      return;
-    }
-
-    // Validasi jumlah armada jika memilih "partial"
-    if (selectedOption === "partial" && (!partialCount || partialCount < 1)) {
-      setShowPartialAlert(true);
-      return;
-    }
-
     // Validasi syarat dan ketentuan
     if (!acceptTerms) {
       setShowTermsAlert(true);
@@ -226,7 +202,7 @@ const ModalTerimaPermintaanInstant = ({
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-      <div className="flex h-[460px] w-[600px] flex-col rounded-xl bg-white p-6">
+      <div className="flex h-auto w-[600px] flex-col rounded-xl bg-white p-6">
         {isLoading && <LoadingStatic />}
         {error && (
           <div className="py-8 text-center text-red-500">
@@ -263,8 +239,18 @@ const ModalTerimaPermintaanInstant = ({
                   </span>
                 </div>
                 {request?.operationalStatus === "READY_FOR_ORDER" && (
-                  <span className="rounded bg-success-50 px-3 py-1 text-xs font-semibold text-success-600">
+                  <span className="rounded bg-success-50 px-3 py-1 text-xs font-semibold text-success-400">
                     Siap Menerima Order
+                  </span>
+                )}
+                {request?.operationalStatus === "ON_DUTY" && (
+                  <span className="rounded bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
+                    Sedang Bertugas
+                  </span>
+                )}
+                {request?.operationalStatus === "WAITING_LOADING_TIME" && (
+                  <span className="rounded bg-warning-100 px-3 py-1 text-xs font-semibold text-warning-900">
+                    Menunggu Waktu Muat
                   </span>
                 )}
               </div>
@@ -320,7 +306,7 @@ const ModalTerimaPermintaanInstant = ({
                       detail.isTaken
                         ? "text-neutral-700"
                         : detail.orderType === "INSTANT"
-                          ? "bg-success-50 text-success-700"
+                          ? "bg-success-50 text-success-400"
                           : detail.orderType === "SCHEDULED"
                             ? "bg-primary-50 text-primary-700"
                             : "bg-primary-50 text-primary-700"
@@ -372,10 +358,10 @@ const ModalTerimaPermintaanInstant = ({
                     let colorClass = "";
                     if (diffDays === 0) {
                       label = "Muat Hari Ini";
-                      colorClass = "bg-success-50 text-success-700";
+                      colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays === 1) {
                       label = "Muat Besok";
-                      colorClass = "bg-success-50 text-success-700";
+                      colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays >= 2 && diffDays <= 5) {
                       label = `Muat ${diffDays} Hari`;
                       colorClass = "bg-warning-100 text-warning-900";
@@ -405,7 +391,7 @@ const ModalTerimaPermintaanInstant = ({
                         "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                         detail.isTaken
                           ? "text-neutral-700"
-                          : "bg-error-50 text-error-700"
+                          : "bg-error-50 text-error-400"
                       )}
                     >
                       Potensi Overload
@@ -604,13 +590,16 @@ const ModalTerimaPermintaanInstant = ({
 
               {/* Additional Services Section */}
               {(detail.additionalServices?.length > 0 ||
-                request?.hasAdditionalService) && (
-                <div className="rounded-[4px] bg-warning-50 px-3 py-2">
-                  <div className="text-[12px] font-medium text-warning-800">
+                request?.additionalServices?.length > 0) && (
+                <div className="rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
+                  <div className="text-[12px] font-semibold text-neutral-900">
                     +{" "}
-                    {detail.additionalServices?.[0]?.serviceName ||
-                      request?.additionalServices?.[0]?.serviceName ||
-                      "Bantuan Tambahan, Kirim Berkas"}
+                    {(detail.additionalServices?.length > 0
+                      ? detail.additionalServices
+                      : request?.additionalServices || []
+                    )
+                      .map((service) => service.serviceName)
+                      .join(", ")}
                   </div>
                 </div>
               )}

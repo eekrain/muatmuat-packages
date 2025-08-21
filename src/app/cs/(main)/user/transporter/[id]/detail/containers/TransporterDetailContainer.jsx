@@ -449,7 +449,9 @@ const TransporterDetailContainer = ({ transporterId }) => {
               </h1>
               <div className="mt-2 flex items-center space-x-2 text-sm">
                 <StatusIndicator
-                  status={transporterData.isActive ? "Aktif" : "Non Aktif"}
+                  status={
+                    transporterData.status === "ACTIVE" ? "Aktif" : "Non Aktif"
+                  }
                 />
                 <span>&bull;</span>
                 <div className="flex items-center space-x-1">
@@ -461,7 +463,7 @@ const TransporterDetailContainer = ({ transporterId }) => {
                   />
 
                   <span className="font-medium text-neutral-900">
-                    {transporterData.cityLocation || "-"}
+                    {transporterData.company.city || "-"}
                   </span>
                 </div>
               </div>

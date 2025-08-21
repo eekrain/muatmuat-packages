@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { CSOrderStatusEnum } from "@/lib/constants/CS/detailpesanan/detailpesanan-cs.enum";
 
-const useMockData = true;
+const useMockData = true; // cs detailpesanan
 
 const mockApiResult = {
   data: {
@@ -19,6 +19,7 @@ const mockApiResult = {
         orderStatusUnit: 1, // dipake kalo ada otherStatus, misal: Proses Bongkar : 1 Unit
         hasSos: false, // dipake di tab Lacak Armada buat nampilin badge SOS
         totalAssignedTruck: 1, // dipake di tab Lacak Armada buat nampilin jumlah truck yang bertugas (mau itu SOS ataupun tidak)
+        isCancelable: false, // dipake di tab Lacak Armada buat nampilin tombol batalkan pesanan
       },
       otherStatus: [
         // {

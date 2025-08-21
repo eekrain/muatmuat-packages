@@ -43,6 +43,7 @@ const DataTable = ({
   displayOptions = null,
 
   tableTitle = null,
+  paginationCounter = false,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
@@ -282,6 +283,7 @@ const DataTable = ({
           onPerPageChange={onPerPageChange}
           variants={paginationVariant}
           className="pb-0"
+          paginationCounter={paginationCounter}
         />
       )}
     </>

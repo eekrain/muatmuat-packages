@@ -200,6 +200,7 @@ const DaftarPesananWeb = ({
             onSelect={handleSelectPeriod}
             recentSelections={recentPeriodOptions}
             value={currentPeriodValue} // Pass the current value to control the dropdown
+            buttonVariant="muatparts-primary"
           />
         </div>
 

@@ -13,6 +13,7 @@ const CardMenu = ({
   onClick,
   status,
   className,
+  containerClassname,
   iconContainerClassName,
   titleClassName,
   descriptionClassName,
@@ -27,7 +28,12 @@ const CardMenu = ({
       )}
     >
       {/* Container for Icon, Title, and Description */}
-      <div className="flex flex-1 items-center gap-x-4 overflow-hidden">
+      <div
+        className={cn(
+          "flex flex-1 items-center gap-x-4 overflow-hidden",
+          containerClassname
+        )}
+      >
         <div
           className={cn(
             "flex h-12 w-12 flex-shrink-0 items-center justify-center",

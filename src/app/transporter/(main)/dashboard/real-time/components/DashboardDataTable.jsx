@@ -97,14 +97,25 @@ const DashboardDataTable = ({
     );
   }, [activeFilters]);
 
-  const disableSearch = hasNoData && lastActionType !== "search";
-  const disableFilter = hasNoData && lastActionType !== "filter";
+  const disableSearch =
+    loading ||
+    (hasNoData && lastActionType !== "search" && localSearchValue === "");
+  const disableFilter =
+    loading || (hasNoData && lastActionType !== "filter" && !hasActiveFilters);
 
   useEffect(() => {
     onControlsStateChange?.({
-      disablePeriod: hasNoData && lastActionType !== "period",
+      disablePeriod:
+        loading ||
+        (hasNoData && lastActionType !== "period" && !isPeriodActive),
     });
-  }, [hasNoData, lastActionType, onControlsStateChange]);
+  }, [
+    hasNoData,
+    lastActionType,
+    onControlsStateChange,
+    loading,
+    isPeriodActive,
+  ]);
 
   const handleSearchKeyUp = (e) => {
     if (e.key === "Enter") onSearchChange(localSearchValue);

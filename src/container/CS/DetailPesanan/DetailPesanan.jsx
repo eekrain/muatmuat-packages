@@ -12,10 +12,11 @@ import { useGetOrderDetailCS } from "@/services/CS/monitoring/detail-pesanan-cs/
 
 import { TabLacakArmada } from "./TabLacakArmada/TabLacakArmada";
 import { TabRingkasanPesanan } from "./TabRingkasanPesanan/TabRingkasanPesanan";
+import { TabRiwayatAktivitas } from "./TabRiwayatAktivitas/TabRiwayatAktivitas";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
-  const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
+  const [activeTab, setActiveTab] = useState("riwayat-aktivitas");
 
   const { data: dataDetailPesanan } = useGetOrderDetailCS(params.orderId);
 
@@ -47,7 +48,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
       label: "Ringkasan Transaksi",
     },
     {
-      value: "riwayat-perubahan",
+      value: "riwayat-aktivitas",
       label: "Riwayat Aktivitas",
     },
   ];
@@ -55,7 +56,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
       <BreadCrumb data={breadcrumbData} maxWidth={111} />
-      <DetailPesananHeader dataOrderDetail={dataDetailPesanan} />
+      <DetailPesananHeader data={dataDetailPesanan} />
       <Tabs
         className="flex flex-col gap-y-4"
         value={activeTab}
@@ -74,8 +75,10 @@ const DetailPesanan = ({ breadcrumbData }) => {
             </TabsTriggerWithSeparator>
           ))}
         </TabsList>
+
         <TabRingkasanPesanan data={dataDetailPesanan} />
         <TabLacakArmada />
+        <TabRiwayatAktivitas />
       </Tabs>
     </div>
   );

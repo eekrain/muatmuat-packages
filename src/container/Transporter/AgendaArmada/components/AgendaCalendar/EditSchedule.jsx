@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 // import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -13,6 +14,7 @@ import { useDateNavigator } from "./use-date-navigator";
 // --- Main Component ---
 
 const EditSchedule = ({ cardData }) => {
+  const { t } = useTranslation();
   const { dateRange } = useDateNavigator();
 
   const [days, setDays] = useState(cardData?.additional || 0);
@@ -65,16 +67,20 @@ const EditSchedule = ({ cardData }) => {
   return (
     <div className="space-y-7">
       <div className="flex flex-col items-center justify-center">
-        <div className="font-bold text-neutral-900">Ubah Estimasi</div>
+        <div className="font-bold text-neutral-900">
+          {t("EditSchedule.title", {}, "Ubah Estimasi")}
+        </div>
       </div>
       <div className="flex items-center gap-8 border-neutral-200">
         <div className="text-sm font-medium text-neutral-600">
-          Estimasi Waktu Bongkar
+          {t("EditSchedule.estimateUnloadTime", {}, "Estimasi Waktu Bongkar")}
         </div>
         <div className="flex items-center gap-2">
           {/* Assuming ButtonPlusMinus is a number input with steppers */}
           <ButtonPlusMinus value={days} onChange={setDays} />
-          <span className="text-sm font-medium text-neutral-900">Hari</span>
+          <span className="text-sm font-medium text-neutral-900">
+            {t("EditSchedule.days", {}, "Hari")}
+          </span>
         </div>
       </div>
       <div
@@ -148,7 +154,9 @@ const EditSchedule = ({ cardData }) => {
         </div>
       </div>
       <div className="flex justify-center">
-        <Button className="w-[112px]">Simpan</Button>
+        <Button className="w-[112px]">
+          {t("EditSchedule.save", {}, "Simpan")}
+        </Button>
       </div>
     </div>
   );

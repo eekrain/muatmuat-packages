@@ -207,7 +207,7 @@ const DaftarPesananAktifListItem = ({
                 Armada kamu telah tercatat untuk pesanan ini, harap menunggu
                 maks. 1 jam untuk konfirmasi dari Shipper
               </p>
-            </InfoTooltip> */}
+            </InfoTooltip>{" "} */}
             {row.orderStatus === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
               <InfoTooltip
                 side="right"
@@ -250,6 +250,21 @@ const DaftarPesananAktifListItem = ({
                 </p>
               </InfoTooltip>
             )}
+            {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
+              <InfoTooltip
+                icon="/icons/warning20.svg"
+                side="right"
+                appearance={{
+                  iconClassName: "text-warning-900 mr-1 size-3.5",
+                }}
+              >
+                <p className="max-w-[312px]">
+                  Pesanan ini belum memiliki armada yang ditugaskan. Silakan
+                  lakukan Assign Armada secepatnya agar jadwal muat dan
+                  pengiriman berjalan sesuai rencana.
+                </p>
+              </InfoTooltip>
+            )}
             <span className="text-primary-700 hover:cursor-pointer hover:text-primary-800">
               {row.orderCode}
             </span>
@@ -280,11 +295,15 @@ const DaftarPesananAktifListItem = ({
         <div className="flex w-full flex-col gap-1">
           <TruncatedTextWithTooltip
             text={row.truckType.name}
-            className="line-clamp-1 break-all text-xs font-bold"
+            className="line-clamp-1 break-all text-xs font-semibold"
           />
           <span className="line-clamp-1 break-all text-xs font-medium">
-            <span className="text-neutral-600">Carrier :</span>{" "}
-            {row.carrierTruck.name}
+            {/* <span className="text-neutral-600">Carrier :</span>{" "}
+            {row.carrierTruck.name} */}
+            <TruncatedTextWithTooltip
+              text={`${row.carrierTruck.name}`}
+              className="line-clamp-1 break-all text-[10px] font-semibold"
+            />
           </span>
           <div className="mt-1 flex items-center gap-4">
             <div className="flex shrink-0 items-center gap-1">

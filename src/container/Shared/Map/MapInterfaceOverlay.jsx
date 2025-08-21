@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
@@ -34,6 +36,7 @@ export const MapInterfaceOverlay = ({
   const { data: sosStatusSummary } = useGetSosStatusSummary();
   const [centerButtonClicked, setCenterButtonClicked] =
     useState(!hasMapInteraction);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (hasMapInteraction) {
@@ -56,27 +59,50 @@ export const MapInterfaceOverlay = ({
     onZoomOut();
   };
 
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+
+  // New handler for the button's onClick event
+  const handleButtonClick = () => {
+    // If the button's text is "Kembali" (Back)
+    if (showPilihArmada) {
+      // Open the confirmation modal instead of navigating directly
+      setIsConfirmationModalOpen(true);
+    } else {
+      // Otherwise, perform the default action immediately
+      onClickDaftarArmada();
+    }
+  };
+
+  // The function to be called when the user confirms the action in the modal
+  const handleConfirmNavigation = () => {
+    onClickDaftarArmada();
+    setIsConfirmationModalOpen(false); // Close the modal after action
+  };
+
+  // Map controls with translated tooltips
   const mapControls = [
     {
       icon: isFullscreen
         ? "/icons/monitoring/min-screen.svg"
         : "/icons/monitoring/full-screen.svg",
-      tooltip: isFullscreen ? "Kecilkan" : "Besarkan",
+      tooltip: isFullscreen
+        ? t("MapInterfaceOverlay.minimize", {}, "Kecilkan")
+        : t("MapInterfaceOverlay.maximize", {}, "Besarkan"),
       onClick: onToggleFullscreen,
     },
     {
       icon: "/icons/monitoring/center.svg",
-      tooltip: "Pusatkan",
+      tooltip: t("MapInterfaceOverlay.center", {}, "Pusatkan"),
       onClick: handleCenterClick,
     },
     {
       icon: "/icons/monitoring/plus.svg",
-      tooltip: "Zoom In",
+      tooltip: t("MapInterfaceOverlay.zoomIn", {}, "Zoom In"),
       onClick: handleZoomIn,
     },
     {
       icon: "/icons/monitoring/minus.svg",
-      tooltip: "Zoom Out",
+      tooltip: t("MapInterfaceOverlay.zoomOut", {}, "Zoom Out"),
       onClick: handleZoomOut,
     },
   ];
@@ -87,7 +113,7 @@ export const MapInterfaceOverlay = ({
       {!hasData && (
         <div className="absolute left-1/2 top-40 z-10 flex h-[52px] w-[300px] -translate-x-1/2 transform items-center justify-center rounded-md border border-neutral-400 bg-white px-[10px] py-[22px] shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
           <span className="text-center text-xs font-medium text-black">
-            Data Tidak Ditemukan
+            {t("MapInterfaceOverlay.dataNotFound", {}, "Data Tidak Ditemukan")}
           </span>
         </div>
       )}
@@ -100,14 +126,37 @@ export const MapInterfaceOverlay = ({
             variant="muattrans-primary"
             iconLeft={showPilihArmada ? <ChevronLeft size={16} /> : null}
             iconRight={!showPilihArmada ? <ChevronRight size={16} /> : null}
-            onClick={onClickDaftarArmada}
+            // Use the new handler function here
+            onClick={handleButtonClick}
           >
-            {showPilihArmada ? "Kembali" : "Daftar Armada"}
+            {showPilihArmada
+              ? t("MapInterfaceOverlay.back", {}, "Kembali")
+              : t("MapInterfaceOverlay.fleetList", {}, "Daftar Armada")}
           </Button>
+
+          <ConfirmationModal
+            // Control visibility with the new state
+            isOpen={isConfirmationModalOpen}
+            setIsOpen={setIsConfirmationModalOpen}
+            description={{
+              text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+            }}
+            cancel={{
+              text: "Ya",
+              onClick: handleConfirmNavigation,
+              classname: "w-[112px]",
+            }}
+            // The confirm button now triggers the actual navigation
+            confirm={{ text: "Batal", classname: "w-[112px]" }}
+          />
 
           {/* Search Input with Suggestions */}
           <SearchWithSuggestions
-            placeholder="Cari No. Polisi / Nama Driver"
+            placeholder={t(
+              "MapInterfaceOverlay.searchPlaceholder",
+              {},
+              "Cari No. Polisi / Nama Driver"
+            )}
             onSearch={onSearch}
             containerClassName="max-w-[300px] flex-1"
             inputClassName="w-full"
@@ -138,8 +187,12 @@ export const MapInterfaceOverlay = ({
             onClick={onClickSOS}
           >
             {sosStatusSummary?.Data?.active === 0
-              ? "Riwayat SOS"
-              : `SOS (${sosStatusSummary?.Data?.active})`}
+              ? t("MapInterfaceOverlay.sosHistory", {}, "Riwayat SOS")
+              : t(
+                  "MapInterfaceOverlay.sosActive",
+                  { count: sosStatusSummary?.Data?.active },
+                  `SOS (${sosStatusSummary?.Data?.active})`
+                )}
           </Button>
         </div>
       )}
@@ -201,7 +254,9 @@ export const MapInterfaceOverlay = ({
             />
             <div className="peer h-6 w-11 rounded-full bg-neutral-800 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-700 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
           </label>
-          <span className="text-xs font-medium">No. Polisi</span>
+          <span className="text-xs font-medium">
+            {t("MapInterfaceOverlay.licensePlate", {}, "No. Polisi")}
+          </span>
         </div>
       </div>
     </>

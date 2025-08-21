@@ -9,7 +9,8 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "prepare": "husky",
-    "zip": "node ./scripts/zip.js"
+    "zip": "node ./scripts/zip.js",
+    "t": "node scripts/translate.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",

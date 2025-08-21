@@ -90,7 +90,10 @@ const DaftarPesananPage = () => {
   const disableDownloadButton = isLoading || !hasData;
   const disableUploadButton = isLoading || !hasData;
   const disablePeriodButton =
-    isLoading || (!hasData && lastAction !== "period");
+    isLoading ||
+    (!hasData &&
+      lastAction !== "period" &&
+      period?.value === periodOptions?.[0]?.value);
 
   const renderEmpty = () => {
     if (isEmptyState) {

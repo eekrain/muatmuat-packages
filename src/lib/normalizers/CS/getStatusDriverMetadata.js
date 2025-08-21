@@ -7,15 +7,15 @@ import {
   DriverStatusLabel,
 } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 
-const SHOULD_RETURNS_ORDER_STATUS = [
-  OrderStatusEnum.WAITING_REPAYMENT_1,
-  OrderStatusEnum.WAITING_REPAYMENT_2,
-  OrderStatusEnum.PREPARE_DOCUMENT,
-  OrderStatusEnum.DOCUMENT_DELIVERY,
-  OrderStatusEnum.COMPLETED,
-  OrderStatusEnum.CANCELED_BY_SHIPPER,
-  OrderStatusEnum.CANCELED_BY_SYSTEM,
-  OrderStatusEnum.CANCELED_BY_TRANSPORTER,
+const SHOULD_RETURNS_DRIVER_STATUS = [
+  OrderStatusEnum.LOADING,
+  OrderStatusEnum.UNLOADING,
+];
+const SHOULD_SHOW = [
+  OrderStatusEnum.CONFIRMED,
+  OrderStatusEnum.SCHEDULED_FLEET,
+  OrderStatusEnum.LOADING,
+  OrderStatusEnum.UNLOADING,
 ];
 
 export const getStatusDriverMetadataCS = ({
@@ -23,6 +23,7 @@ export const getStatusDriverMetadataCS = ({
   orderStatus = null,
   t,
 }) => {
+  if (!SHOULD_SHOW.includes(orderStatus)) return null;
   let variant = "primary";
   let label = "";
   const splitStatus = driverStatus?.split?.("_");
@@ -38,7 +39,7 @@ export const getStatusDriverMetadataCS = ({
   else if (orderStatus?.startsWith("CANCELED")) variant = "error";
   else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
 
-  if (SHOULD_RETURNS_ORDER_STATUS.includes(orderStatus)) {
+  if (!SHOULD_RETURNS_DRIVER_STATUS.includes(orderStatus)) {
     label = t(OrderStatusTitle[orderStatus]);
     return { variant, label };
   }

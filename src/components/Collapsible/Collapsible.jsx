@@ -31,7 +31,7 @@ export const Collapsible = React.forwardRef(
           ref={ref}
           open={contextValue.open}
           onOpenChange={contextValue.onOpenChange}
-          className={cn("w-full", className)}
+          className={cn("w-full overflow-hidden", className)}
           {...props}
         >
           {children}

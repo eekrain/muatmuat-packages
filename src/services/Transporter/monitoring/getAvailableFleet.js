@@ -218,7 +218,7 @@ const apiResultAvailableFleet = {
         chassisNumber: "CHASSIS789123456",
         fleetStatus: "ACTIVE",
         verificationStatus: "VERIFICATION_COMPLETE",
-        operationalStatus: "READY_FOR_ORDER",
+        operationalStatus: "WAITING_LOADING_TIME",
         truckTypeName: "Tractor head 6 x 4 dan Semi Trailer",
         carrierName: "Skeletal Container Jumbo 45 ft  (3 As)",
         vehicleBrandName: "Mitsubishi",

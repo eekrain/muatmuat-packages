@@ -3,6 +3,7 @@ export const TRACKING_STATUS = {
   // Initial Status
   CONFIRMED: "CONFIRMED",
   SCHEDULED: "SCHEDULED",
+  SCHEDULED_FLEET: "SCHEDULED_FLEET",
 
   // Pickup/Loading Flow
   MENUJU_KE_LOKASI_MUAT: "MENUJU_KE_LOKASI_MUAT",
@@ -20,12 +21,26 @@ export const TRACKING_STATUS = {
   SEDANG_BONGKAR: "SEDANG_BONGKAR",
   UNLOADING: "UNLOADING",
 
+  // Document Flow
+  DOCUMENT_PREPARATION: "DOCUMENT_PREPARATION",
+  DOCUMENT_DELIVERY: "DOCUMENT_DELIVERY",
+
   // Final Status
   COMPLETED: "COMPLETED",
+
+  // Cancelled Status
+  CANCELLED_BY_TRANSPORTER: "CANCELLED_BY_TRANSPORTER",
+  CANCELLED_BY_SHIPPER: "CANCELLED_BY_SHIPPER",
+  CANCELLED_BY_SYSTEM: "CANCELLED_BY_SYSTEM",
 
   // Legacy/Unused (kept for backward compatibility)
   WAITING_PICKUP: "WAITING_PICKUP",
   WAITING_DROPOFF: "WAITING_DROPOFF",
+  WAITING_CHANGE_FLEET: "WAITING_CHANGE_FLEET",
+  FLEET_FOUND: "FLEET_FOUND",
+  WAITING_CONFIRMATION_SHIPPER: "WAITING_CONFIRMATION_SHIPPER",
+  HEADING_TO_LOADING: "HEADING_TO_LOADING",
+  HEADING_TO_UNLOADING: "HEADING_TO_UNLOADING",
 };
 
 // Tracking Status badge configurations
@@ -52,6 +67,10 @@ export const TRACKING_STATUS_CONFIG = {
   },
   [TRACKING_STATUS.SCHEDULED]: {
     label: "Dijadwalkan",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.SCHEDULED_FLEET]: {
+    label: "Armada Dijadwalkan",
     variant: "primary",
   },
   [TRACKING_STATUS.WAITING_PICKUP]: {
@@ -90,11 +109,72 @@ export const TRACKING_STATUS_CONFIG = {
     label: "Tiba di Lokasi Bongkar",
     variant: "primary",
   },
+  [TRACKING_STATUS.DOCUMENT_PREPARATION]: {
+    label: "Dokumen Sedang Disiapkan",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.DOCUMENT_DELIVERY]: {
+    label: "Proses Pengiriman Dokumen",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.CANCELLED_BY_TRANSPORTER]: {
+    label: "Dibatalkan Transporter",
+    variant: "error",
+  },
+  [TRACKING_STATUS.CANCELLED_BY_SHIPPER]: {
+    label: "Dibatalkan Shipper",
+    variant: "error",
+  },
+  [TRACKING_STATUS.CANCELLED_BY_SYSTEM]: {
+    label: "Dibatalkan Sistem",
+    variant: "error",
+  },
+  [TRACKING_STATUS.WAITING_CONFIRMATION_SHIPPER]: {
+    label: "Menunggu Konfirmasi Shipper",
+    variant: "warning",
+  },
+  [TRACKING_STATUS.HEADING_TO_LOADING]: {
+    label: "Menuju ke Lokasi Muat",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.HEADING_TO_UNLOADING]: {
+    label: "Menuju ke Lokasi Bongkar",
+    variant: "primary",
+  },
+  // Add mapping for order status that should use tracking status
+  [TRACKING_STATUS.LOADING]: {
+    label: "Sedang Muat",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.SCHEDULED_FLEET]: {
+    label: "Armada Dijadwalkan",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.UNLOADING]: {
+    label: "Proses Bongkar",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.COMPLETED]: {
+    label: "Selesai",
+    variant: "success",
+  },
+  [TRACKING_STATUS.WAITING_CHANGE_FLEET]: {
+    label: "Menunggu Armada Pengganti",
+    variant: "primary",
+  },
+  [TRACKING_STATUS.FLEET_FOUND]: {
+    label: "Muatan Pindah Armada",
+    variant: "primary",
+  },
 };
 
 // Tracking Status Flow Groups
 export const TRACKING_STATUS_FLOW = {
-  INITIAL: [TRACKING_STATUS.CONFIRMED, TRACKING_STATUS.SCHEDULED],
+  INITIAL: [
+    TRACKING_STATUS.CONFIRMED,
+    TRACKING_STATUS.SCHEDULED,
+    TRACKING_STATUS.SCHEDULED_FLEET,
+  ],
   PICKUP: [
     TRACKING_STATUS.MENUJU_KE_LOKASI_MUAT,
     TRACKING_STATUS.TIBA_DI_LOKASI_MUAT,
@@ -109,11 +189,31 @@ export const TRACKING_STATUS_FLOW = {
     TRACKING_STATUS.SEDANG_BONGKAR,
     TRACKING_STATUS.UNLOADING,
   ],
+  DOCUMENT: [
+    TRACKING_STATUS.DOCUMENT_PREPARATION,
+    TRACKING_STATUS.DOCUMENT_DELIVERY,
+  ],
   FINAL: [TRACKING_STATUS.COMPLETED],
 };
 
 // Helper function to get tracking status badge configuration
 export const getTrackingStatusBadge = (status) => {
+  // Check if status contains a number (e.g., "MENUJU_LOKASI_BONGKAR_1")
+  const statusWithNumber = status?.match(/^(.+)_(\d+)$/);
+
+  if (statusWithNumber) {
+    const [, baseStatus, number] = statusWithNumber;
+    const config = TRACKING_STATUS_CONFIG[baseStatus];
+
+    if (config) {
+      return {
+        ...config,
+        label: `${config.label} ${number}`,
+      };
+    }
+  }
+
+  // Fallback to direct lookup
   const config = TRACKING_STATUS_CONFIG[status];
   if (!config) {
     return {
@@ -140,20 +240,29 @@ export const mapDriverStatusToTracking = (driverStatus) => {
   const subStatus = driverStatus?.subStatus;
 
   // Map based on main status first
-  if (mainStatus === "LOADING") {
+  if (mainStatus === TRACKING_STATUS.LOADING) {
     return TRACKING_STATUS.LOADING;
   }
-  if (mainStatus === "UNLOADING") {
+  if (mainStatus === TRACKING_STATUS.UNLOADING) {
     return TRACKING_STATUS.UNLOADING;
   }
-  if (mainStatus === "COMPLETED") {
+  if (mainStatus === TRACKING_STATUS.COMPLETED) {
     return TRACKING_STATUS.COMPLETED;
   }
-  if (mainStatus === "CONFIRMED") {
+  if (mainStatus === TRACKING_STATUS.CONFIRMED) {
     return TRACKING_STATUS.CONFIRMED;
   }
-  if (mainStatus === "SCHEDULED") {
+  if (mainStatus === TRACKING_STATUS.SCHEDULED) {
     return TRACKING_STATUS.SCHEDULED;
+  }
+  if (mainStatus === TRACKING_STATUS.SCHEDULED_FLEET) {
+    return TRACKING_STATUS.SCHEDULED_FLEET;
+  }
+  if (mainStatus === TRACKING_STATUS.DOCUMENT_PREPARATION) {
+    return TRACKING_STATUS.DOCUMENT_PREPARATION;
+  }
+  if (mainStatus === TRACKING_STATUS.DOCUMENT_DELIVERY) {
+    return TRACKING_STATUS.DOCUMENT_DELIVERY;
   }
 
   // Map based on sub status for more specific states

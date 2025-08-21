@@ -1,111 +1,126 @@
-// Helper: cari nama kecamatan dari list by id
-const findNameById = (list, id) =>
-  list?.find((item) => String(item.value) === String(id))?.name || "";
-
-// Mapper utama
-const mapZustandToApiPayload = (zustandData) => {
+// Mapper terbaru: dari data Zustand (local storage) -> payload API baru
+const mapZustandToApiPayloadV2 = (zustandData) => {
   if (!zustandData) return null;
 
-  const docs = zustandData.documents || {};
+  // --- Helpers ---
+  const toFloat = (v) =>
+    v === null || v === undefined || v === "" ? null : parseFloat(v);
+  const toInt = (v) =>
+    v === null || v === undefined || v === "" ? null : parseInt(v, 10);
+  const safeStr = (v) => (typeof v === "string" ? v.trim() : v);
 
-  // Helper dokumen
-  const firstUrl = (arr) =>
-    Array.isArray(arr) && arr.length > 0 ? arr[0]?.url || "" : "";
+  const findNameById = (list, id) =>
+    list?.find((item) => String(item.value) === String(id))?.name || "";
 
-  const urls = (arr) =>
-    Array.isArray(arr) ? arr.map((d) => d?.url).filter(Boolean) : [];
+  // Pastikan semua key dokumen ada, walau kosong
+  const DOCUMENT_KEYS = [
+    "nib",
+    "npwp",
+    "ktp",
+    "aktaPendirian",
+    "skKemenkumham",
+    "aktaPerubahan", // opsional
+    "skKemenkumhamPerubahan", // opsional
+    "sertifikatStandar", // opsional
+  ];
 
-  const mapNamedArray = (arr) =>
-    Array.isArray(arr)
-      ? arr
-          .filter((d) => d?.url)
-          .map((d) => ({ name: d.name || "", Url: d.url })) // "Url" per kontrak API
-      : [];
+  // Label default dokumen bila tidak ada 'name' di local storage
+  const DEFAULT_DOC_LABEL = {
+    nib: "NIB",
+    npwp: "NPWP",
+    ktp: "KTP",
+    aktaPendirian: "Akta Pendirian",
+    skKemenkumham: "SK Kemenkumham",
+    aktaPerubahan: "Akta Perubahan",
+    skKemenkumhamPerubahan: "SK Kemenkumham Perubahan",
+    sertifikatStandar: "Sertifikat Standar",
+  };
 
-  // Filter kontak yang isi minimal (name, position, phone), tambahkan level 1..n
+  const normalizeDocuments = (docs) => {
+    const out = {};
+    DOCUMENT_KEYS.forEach((key) => {
+      const arr = Array.isArray(docs?.[key]) ? docs[key] : [];
+      out[key] = arr
+        .filter((d) => d?.url) // hanya yang ada URL
+        .map((d) => ({
+          name: safeStr(d.name) || DEFAULT_DOC_LABEL[key] || "Dokumen",
+          url: d.url,
+        }));
+    });
+    return out;
+  };
+
+  // Filter PIC kosong, lalu beri level berurutan mulai 1
   const filteredContacts = (
     Array.isArray(zustandData.contacts) ? zustandData.contacts : []
   )
-    .filter((c) => c?.name?.trim() && c?.position?.trim() && c?.phone?.trim())
-    .slice(0, 3) // maksimal 3 PIC sesuai contoh level 1..3
+    .filter(
+      (c) => safeStr(c?.name) && safeStr(c?.position) && safeStr(c?.phone)
+    )
     .map((c, idx) => ({
-      name: c.name.trim(),
-      position: c.position.trim(),
-      phone: c.phone.trim(),
-      level: idx + 1, // 1, 2, 3
+      name: safeStr(c.name),
+      position: safeStr(c.position),
+      phone: safeStr(c.phone),
+      level: idx + 1, // PIC 1 mandatory (kalau ada), sisanya opsional
     }));
 
-  const { locationData = {} } = zustandData;
+  // Ambil district name dari daftar kecamatan
+  const districtName = findNameById(
+    zustandData.locationData?.kecamatanList,
+    zustandData.locationData?.district
+  );
 
+  // --- Build payload sesuai API baru ---
   const payload = {
-    registrantName: zustandData.registrantName || "",
-    registrantPosition: zustandData.registrantPosition || "",
-    registrantWhatsapp: zustandData.registrantWhatsapp || "",
-    registrantEmail: zustandData.registrantEmail || "",
-    companyLogo: zustandData.companyLogo || "",
-    companyName: zustandData.companyName || "",
-    businessEntityType: zustandData.businessEntityType || "",
-    companyPhone: zustandData.companyPhone || "",
-    companyAddress: zustandData.companyAddress || "",
+    registrantName: safeStr(zustandData.registrantName),
+    registrantPosition: safeStr(zustandData.registrantPosition),
+    registrantWhatsapp: safeStr(zustandData.registrantWhatsapp),
+    registrantEmail: safeStr(zustandData.registrantEmail),
+
+    companyLogo: safeStr(zustandData.companyLogo),
+    companyName: safeStr(zustandData.companyName),
+    businessEntityType: safeStr(zustandData.businessEntityType),
+
+    companyPhone: safeStr(zustandData.companyPhone),
+    companyAddress: safeStr(zustandData.companyAddress),
+
     locationData: {
-      location: locationData.location || "",
-      latitude:
-        locationData.latitude !== undefined
-          ? parseFloat(locationData.latitude)
-          : null,
-      longitude:
-        locationData.longitude !== undefined
-          ? parseFloat(locationData.longitude)
-          : null,
-      district: findNameById(locationData.kecamatanList, locationData.district),
-      districtId:
-        locationData.district !== undefined
-          ? parseInt(locationData.district, 10)
-          : null,
-      city: locationData.city || "",
-      cityId:
-        locationData.cityId !== undefined
-          ? parseInt(locationData.cityId, 10)
-          : null,
-      province: locationData.province || "",
-      provinceId:
-        locationData.provinceId !== undefined
-          ? parseInt(locationData.provinceId, 10)
-          : null,
-      postalCode: locationData.postalCode || "",
-      placeId: locationData.placeId || undefined, // opsional → hilangkan kalau kosong
+      locationDetail: safeStr(zustandData.companyAddress),
+      location: safeStr(zustandData.locationData?.location),
+      latitude: toFloat(zustandData.locationData?.latitude),
+      longitude: toFloat(zustandData.locationData?.longitude),
+
+      // API minta name + id
+      district: districtName,
+      districtId: toInt(zustandData.locationData?.district),
+
+      city: safeStr(zustandData.locationData?.city),
+      cityId: toInt(zustandData.locationData?.cityId),
+
+      province: safeStr(zustandData.locationData?.province),
+      provinceId: toInt(zustandData.locationData?.provinceId),
+
+      postalCode: safeStr(zustandData.locationData?.postalCode),
+      // placeId opsional: hanya kirim jika ada
+      ...(zustandData.locationData?.placeId
+        ? { placeId: safeStr(zustandData.locationData.placeId) }
+        : {}),
     },
-    bankId: zustandData.bankId || "",
-    accountNumber: zustandData.accountNumber || "",
-    accountName: zustandData.accountName || "",
-    nibNumber: zustandData.nibNumber || "",
-    npwpNumber: zustandData.npwpNumber || "",
-    ktpNumber: zustandData.ktpNumber || "",
 
-    // Struktur documents sesuai API baru:
-    documents: {
-      // nib: array of string URL
-      nib: urls(docs.nib),
+    bankId: safeStr(zustandData.bankId),
+    accountNumber: safeStr(zustandData.accountNumber),
+    accountName: safeStr(zustandData.accountName),
 
-      // npwp & ktp: single string URL (ambil file pertama)
-      npwp: firstUrl(docs.npwp),
-      ktp: firstUrl(docs.ktp),
+    nibNumber: safeStr(zustandData.nibNumber),
+    npwpNumber: safeStr(zustandData.npwpNumber),
+    ktpNumber: safeStr(zustandData.ktpNumber),
 
-      // berikut: array of objects { name, Url }
-      aktaPendirian: mapNamedArray(docs.aktaPendirian),
-      skKemenkumham: mapNamedArray(docs.skKemenkumham),
-      aktaPerubahan: mapNamedArray(docs.aktaPerubahan),
-      skKemenkumhamPerubahan: mapNamedArray(docs.skKemenkumhamPerubahan),
-      sertifikatStandar: mapNamedArray(docs.sertifikatStandar),
-    },
+    documents: normalizeDocuments(zustandData.documents),
 
     contacts: filteredContacts,
   };
 
-  // Bersihkan key opsional kosong:
-  if (!payload.locationData.placeId) delete payload.locationData.placeId;
-
   return payload;
 };
 
-export default mapZustandToApiPayload;
+export default mapZustandToApiPayloadV2;

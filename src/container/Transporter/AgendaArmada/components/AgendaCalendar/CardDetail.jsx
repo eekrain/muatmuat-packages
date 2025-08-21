@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
@@ -53,6 +54,7 @@ export const CardDetail = ({
   hasSosIssue = false,
   cellWidth,
 }) => {
+  const { t } = useTranslation();
   const cellConfig = useMemo(() => {
     const total = scheduled + additional;
     let left = scheduled;
@@ -112,12 +114,16 @@ export const CardDetail = ({
                 hasSosIssue ? titleStyles.SOS : titleStyles[statusCode]
               )}
             >
-              {StatusArmadaTypeEnum[statusCode]}
+              {t(
+                `CardDetail.status.${statusCode}`,
+                {},
+                StatusArmadaTypeEnum[statusCode]
+              )}
             </span>
 
             {hasSosIssue && (
               <span className="rounded-md bg-error-400 px-2 py-1 text-xs font-semibold leading-none text-white">
-                SOS
+                {t("CardDetail.sos", {}, "SOS")}
               </span>
             )}
 
@@ -149,14 +155,18 @@ export const CardDetail = ({
               >
                 <LocationPoint
                   type="muat"
-                  title={"Lokasi Muat"}
+                  title={t("CardDetail.loadingLocation", {}, "Lokasi Muat")}
                   isEdit={true}
                   subtitle={firstDestinationName}
                   className="basis-1/2"
                 />
                 <div className="relative basis-1/2">
                   <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-nowrap rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold leading-none text-neutral-900">
-                    Est. {distanceRemaining} km
+                    {t(
+                      "CardDetail.estimatedDistance",
+                      { distance: distanceRemaining },
+                      `Est. ${distanceRemaining} km`
+                    )}
                   </span>
                   <hr className="w-full border-dashed border-neutral-400" />
                 </div>
@@ -165,7 +175,11 @@ export const CardDetail = ({
               {lastDestinationName && (
                 <LocationPoint
                   type="bongkar"
-                  title={"Lokasi Bongkar"}
+                  title={t(
+                    "CardDetail.unloadingLocation",
+                    {},
+                    "Lokasi Bongkar"
+                  )}
                   isEdit={true}
                   subtitle={lastDestinationName}
                   className="absolute top-1/2 -translate-y-1/2"
@@ -187,7 +201,7 @@ export const CardDetail = ({
               left: `${cellConfig.left * cellWidth + 8}px`,
             }}
           >
-            Estimasi Waktu Bongkar
+            {t("CardDetail.estimateUnloadTime", {}, "Estimasi Waktu Bongkar")}
           </div>
         )}
       </div>

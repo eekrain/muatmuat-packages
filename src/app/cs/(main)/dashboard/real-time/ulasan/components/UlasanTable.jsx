@@ -12,6 +12,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useTokenStore } from "@/store/AuthStore/tokenStore";
 
 const toYYYYMMDD = (date) => {
   const d = new Date(date);
@@ -21,6 +22,7 @@ const toYYYYMMDD = (date) => {
 
 const UlasanTable = () => {
   const { t } = useTranslation();
+  const accessToken = useTokenStore((state) => state.accessToken);
   const [tableData, setTableData] = useState({
     reviews: [],
     pagination: { currentPage: 1, totalPages: 1, totalItems: 0 },
@@ -41,19 +43,31 @@ const UlasanTable = () => {
   });
   const [selectedRows, setSelectedRows] = useState([]);
 
+  //Hover List Submenu Transporter with search field and checkbox
   useEffect(() => {
     const fetchTransporters = async () => {
       try {
-        const response = await fetch("/api/v1/cs/transporters/filter-options");
+        const response = await fetch("/api/v1/cs/transporters/filter-options", {
+          headers: accessToken
+            ? { Authorization: `Bearer ${accessToken}` }
+            : undefined,
+        });
         const result = await response.json();
         setTransporterOptions(result.data);
+        // Handle search results for transporter filter
+        if (result.metadata) {
+          console.log(
+            `Transporter search: ${result.metadata.hasResults ? "Found" : "Not found"} ${result.metadata.totalCount} results`
+          );
+        }
       } catch (error) {
         console.error("Failed to fetch transporter options", error);
       }
     };
-    fetchTransporters();
-  }, []);
+    if (accessToken) fetchTransporters();
+  }, [accessToken]);
 
+  //  All filter combinations
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -62,11 +76,17 @@ const UlasanTable = () => {
         page: currentPage,
         limit: perPage,
       });
+
+      //  Search functionality
       if (searchValue) params.append("search", searchValue);
+
+      //  Sort functionality
       if (sortConfig.sort) {
         params.append("sort", sortConfig.sort);
         params.append("order", sortConfig.order);
       }
+
+      //  Multiple filter combinations (with/without chevron)
       if (filters.ratingFilter?.length) {
         filters.ratingFilter.forEach((r) =>
           params.append("ratingFilter", r.id)
@@ -77,6 +97,8 @@ const UlasanTable = () => {
           params.append("transporterFilter", t.id)
         );
       }
+
+      //  Period filter with applied label
       if (period) {
         let dateFrom, dateTo;
         if (period.iso_start_date && period.iso_end_date) {
@@ -95,16 +117,38 @@ const UlasanTable = () => {
         }
       }
       try {
-        const response = await fetch(`/api/v1/cs/reviews?${params.toString()}`);
+        const response = await fetch(
+          `/api/v1/cs/reviews?${params.toString()}`,
+          {
+            headers: accessToken
+              ? { Authorization: `Bearer ${accessToken}` }
+              : undefined,
+          }
+        );
         if (!response.ok) throw new Error("Failed to fetch reviews");
         const result = await response.json();
         setTableData(result.Data);
+
+        // Empty state handling
+        if (result.Data?.emptyState) {
+          console.log(
+            `Empty state: ${result.Data.emptyState.title} - ${result.Data.emptyState.subtitle}`
+          );
+        }
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [currentPage, perPage, sortConfig, searchValue, filters, period]);
+    if (accessToken) fetchData();
+  }, [
+    currentPage,
+    perPage,
+    sortConfig,
+    searchValue,
+    filters,
+    period,
+    accessToken,
+  ]);
 
   const handleSelectPeriod = (selectedOption) => {
     if (selectedOption?.range) {
@@ -219,6 +263,7 @@ const UlasanTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRows, tableData.reviews, t]);
 
+  //  Filter configuration for hover submenu and multiple combinations
   const filterConfig = {
     categories: [
       {
@@ -230,7 +275,7 @@ const UlasanTable = () => {
         key: "transporterFilter",
         label: t("csUlasan.filter.transporter", {}, "Transporter"),
         type: "checkbox-multi",
-        searchable: true,
+        searchable: true, // Enables search field in hover submenu
       },
     ],
     data: {
@@ -285,6 +330,7 @@ const UlasanTable = () => {
     },
   };
 
+  // Period options for filter with applied label
   const periodOptions = [
     { name: t("csUlasan.period.all", {}, "Semua Periode"), value: "" },
     { name: t("csUlasan.period.today", {}, "Hari Ini"), value: 0 },
@@ -326,6 +372,7 @@ const UlasanTable = () => {
           </Button>
         </div>
       </div>
+      {/*All state variations */}
       <DashboardDataTable
         data={tableData.reviews}
         columns={columns}
@@ -349,7 +396,9 @@ const UlasanTable = () => {
           <div className="text-sm font-semibold">
             {t("csUlasan.summaryTitle", {}, "Total Rating")} :
             <span className="ml-1 text-base font-bold">
-              {tableData.summary.averageRating}
+              {tableData.summary?.averageRating === "0.0"
+                ? 0
+                : tableData.summary?.averageRating}
               <span className="text-sm font-medium text-neutral-600">/5</span>
             </span>
           </div>

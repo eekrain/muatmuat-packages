@@ -10,8 +10,7 @@ export const successResponse = {
     joinedSince: "2023-01-15T08:30:00Z",
     completedOrders: 150,
     isActive: true,
-    status: "ACTIVE",
-    cityLocation: "Jakarta",
+    status: "VERIFICATION_PENDING",
     registrant: {
       fullName: "John Doe",
       position: "Manager",

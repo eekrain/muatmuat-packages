@@ -66,7 +66,7 @@ export const ORDER_ACTIONS = {
 
 export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER]: {
-    label: "Menunggu Konfirmasi Shipper",
+    label: "Menunggu Konfirmasi",
     variant: "primary",
   },
   [ORDER_STATUS.CONFIRMED]: {
@@ -135,6 +135,10 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.CANCELLED_BY_SYSTEM]: {
     label: "Dibatalkan Sistem",
     variant: "error",
+  },
+  ["ARMADA_DIJADWALKAN"]: {
+    label: "Armada Dijadwalkan",
+    variant: "primary",
   },
   [ORDER_STATUS.WAITING_CHANGE_FLEET]: {
     label: "Menunggu Armada Pengganti",

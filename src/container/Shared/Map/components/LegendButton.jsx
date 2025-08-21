@@ -9,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { useTranslation } from "@/hooks/use-translation";
 
 // Truck Status Constants
 export const TRUCK_STATUS = {
@@ -21,32 +22,33 @@ export const TRUCK_STATUS = {
 
 export const LegendButton = () => {
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const { t } = useTranslation();
 
   const truckStatuses = [
     {
       status: TRUCK_STATUS.ON_DUTY,
       image: "/img/monitoring/truck/blue.png",
-      label: "Bertugas",
+      label: t("LegendButton.truckOnDuty", {}, "Bertugas"),
     },
     {
       status: TRUCK_STATUS.WAITING_LOADING_TIME,
       image: "/img/monitoring/truck/yellow.png",
-      label: "Akan Muat Hari Ini",
+      label: t("LegendButton.truckWaitingLoading", {}, "Akan Muat Hari Ini"),
     },
     {
       status: TRUCK_STATUS.READY_FOR_ORDER,
       image: "/img/monitoring/truck/green.png",
-      label: "Siap Menerima Order",
+      label: t("LegendButton.truckReadyForOrder", {}, "Siap Menerima Order"),
     },
     {
       status: TRUCK_STATUS.INACTIVE,
       image: "/img/monitoring/truck/red.png",
-      label: "Nonaktif",
+      label: t("LegendButton.truckInactive", {}, "Nonaktif"),
     },
     {
       status: TRUCK_STATUS.NOT_PAIRED,
       image: "/img/monitoring/truck/gray.png",
-      label: "Belum Dipasang",
+      label: t("LegendButton.truckNotPaired", {}, "Belum Dipasang"),
     },
   ];
 
@@ -100,12 +102,16 @@ export const LegendButton = () => {
 
           {/* Header */}
           <div className="w-full px-6">
-            <h3 className="text-base font-bold text-black">Legenda Armada</h3>
+            <h3 className="text-base font-bold text-black">
+              {t("LegendButton.title", {}, "Legenda Armada")}
+            </h3>
           </div>
 
           {/* Status Truk Section */}
           <div className="flex w-full flex-col items-start gap-4 px-6">
-            <h4 className="text-xs font-semibold text-black">Status Truk</h4>
+            <h4 className="text-xs font-semibold text-black">
+              {t("LegendButton.truckStatusSection", {}, "Status Truk")}
+            </h4>
             <div className="grid w-full grid-cols-2 gap-3">
               {truckStatuses.slice(0, 4).map((status, index) => (
                 <div key={index} className="flex items-center gap-2">
@@ -141,7 +147,9 @@ export const LegendButton = () => {
 
           {/* Status Pesanan Section */}
           <div className="flex w-full flex-col items-start gap-4 px-6">
-            <h4 className="text-xs font-semibold text-black">Status Pesanan</h4>
+            <h4 className="text-xs font-semibold text-black">
+              {t("LegendButton.orderStatusSection", {}, "Status Pesanan")}
+            </h4>
             <div className="flex w-full flex-row gap-4">
               <div className="flex flex-1 flex-row items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1] p-1">
@@ -151,17 +159,21 @@ export const LegendButton = () => {
                   />
                 </div>
                 <span className="text-xs font-medium text-black">
-                  Perlu Respon Perubahan
+                  {t(
+                    "LegendButton.orderNeedsResponse",
+                    {},
+                    "Perlu Respon Perubahan"
+                  )}
                 </span>
               </div>
               <div className="flex flex-1 flex-row items-center gap-2">
                 <div className="flex items-center justify-center rounded-md bg-[#EE4343] px-2 py-1">
                   <span className="text-xs font-semibold text-[#FFE9ED]">
-                    SOS
+                    {t("LegendButton.sosLabel", {}, "SOS")}
                   </span>
                 </div>
                 <span className="text-xs font-medium text-black">
-                  Laporan SOS
+                  {t("LegendButton.sosReport", {}, "Laporan SOS")}
                 </span>
               </div>
             </div>
@@ -187,7 +199,7 @@ export const LegendButton = () => {
       }
       side="left"
     >
-      Legenda
+      {t("LegendButton.tooltip", {}, "Legenda")}
     </InfoTooltip>
   );
 };

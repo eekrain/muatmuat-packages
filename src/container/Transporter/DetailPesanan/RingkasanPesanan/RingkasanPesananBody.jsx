@@ -99,7 +99,7 @@ const PICLocationCard = ({ locations = [], title }) => {
                   />
                   <PICDetailItem
                     icon="/icons/profile16.svg"
-                    text={location.pic.name}
+                    text={location.picName}
                   />
                 </div>
               </Fragment>
@@ -242,8 +242,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           <p className="text-xs font-medium text-neutral-900">
             {formatLoadTimeOnOneLine(
               dataOrderDetail?.loadTimeStart,
-              dataOrderDetail?.loadTimeEnd,
-              { showOneLine: true }
+              dataOrderDetail?.loadTimeEnd
             )}
           </p>
         </SectionRow>
@@ -287,9 +286,10 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
 
                 <SectionRow label="Foto Muatan">
                   <LightboxProvider
-                    images={dataOrderDetail?.photos?.map(
-                      (photo) => photo.photoUrl
-                    )}
+                    images={
+                      dataOrderDetail?.photos?.map((photo) => photo.photoUrl) ||
+                      []
+                    }
                     title="Foto Muatan"
                   >
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
