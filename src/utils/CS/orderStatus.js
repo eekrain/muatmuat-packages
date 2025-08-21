@@ -9,6 +9,7 @@ export const ORDER_STATUS = {
   UNLOADING: "UNLOADING",
   PREPARE_DOCUMENT: "PREPARE_DOCUMENT",
   DOCUMENT_DELIVERY: "DOCUMENT_DELIVERY",
+  COMPLETED: "COMPLETED",
 };
 
 // Order action definitions (single source of truth for actions and labels)
@@ -95,6 +96,10 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.DOCUMENT_DELIVERY]: {
     label: "Proses Pengiriman Dokumen",
     variant: "primary",
+  },
+  [ORDER_STATUS.COMPLETED]: {
+    label: "Selesai",
+    variant: "success",
   },
 };
 

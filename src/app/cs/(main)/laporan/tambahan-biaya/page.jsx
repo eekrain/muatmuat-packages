@@ -1,9 +1,11 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import LaporanTambahanBiaya from "@/container/CS/LaporanTambahanBiaya/LaporanTambahanBiaya";
 import useDevice from "@/hooks/use-device";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useGetAdditionalCostReports } from "@/services/CS/laporan/tambahan-biaya/getAdditionalCostReports";
 import { useGetFilterOptions } from "@/services/CS/laporan/tambahan-biaya/getFilterOptions";
@@ -11,6 +13,9 @@ import { useGetPeriodHistory } from "@/services/CS/laporan/tambahan-biaya/getPer
 
 const Page = () => {
   const { mounted } = useDevice();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
+  const router = useRouter();
 
   const defaultQueryParams = {
     page: 1,
@@ -24,6 +29,7 @@ const Page = () => {
   const [queryParams, setQueryParams] = useState(defaultQueryParams);
   const [lastFilterField, setLastFilterField] = useState("");
   const [activeTab, setActiveTab] = useState("active");
+  const [hasNoReports, setHasNoReports] = useState(false);
 
   const additionalCostReportsQueryString = useShallowMemo(() => {
     const params = new URLSearchParams();
@@ -70,6 +76,25 @@ const Page = () => {
     filterOptionsQueryString
   );
 
+  useShallowCompareEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.delete("tab");
+      router.replace(`?${newSearchParams.toString()}`, { shallow: true });
+    }
+  }, [tab, searchParams]);
+
+  useShallowCompareEffect(() => {
+    if (
+      !isLoading &&
+      reports.length === 0 &&
+      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams)
+    ) {
+      setHasNoReports(true);
+    }
+  }, [reports, defaultQueryParams, queryParams, isLoading]);
+
   const handleChangeQueryParams = (field, value) => {
     setQueryParams((prevState) => {
       // Reset to page 1 when changing filters
@@ -100,6 +125,7 @@ const Page = () => {
       pagination={pagination}
       periodHistory={periodHistory}
       filterOptions={filterOptions}
+      hasNoReports={hasNoReports}
       lastFilterField={lastFilterField}
       onChangeQueryParams={handleChangeQueryParams}
     />
