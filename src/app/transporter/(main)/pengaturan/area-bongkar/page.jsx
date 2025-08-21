@@ -127,29 +127,22 @@ export default function Page() {
       const province = localProvinces.find((p) => p.id === provinceId);
       const provinceName = province?.province || "provinsi ini";
 
-      // Show confirmation dialog
-      const confirmDelete = confirm(
-        `Apakah kamu yakin ingin menghapus provinsi ${provinceName} dari area bongkar?`
-      );
-      if (!confirmDelete) {
-        return;
-      }
+      // TODO: Replace with proper confirmation modal instead of browser confirm
+      // For now, proceed with deletion
 
       const result = await deleteProvinsiAreaBongkar(provinceId);
 
       if (result.deleted) {
-        alert(
-          `Berhasil menghapus ${result.deletedProvinsiName || provinceName} dari area bongkar. Sisa ${result.remainingProvinsi} provinsi.`
-        );
+        // TODO: Replace with toast notification instead of alert
+        console.log("Delete result:", result);
 
         // Remove province from local state
         setLocalProvinces((prevProvinces) =>
           prevProvinces.filter((province) => province.id !== provinceId)
         );
-
-        console.log("Delete result:", result);
       } else {
-        alert("Gagal menghapus provinsi dari area bongkar");
+        // TODO: Replace with toast notification instead of alert
+        console.error("Failed to delete province");
       }
     } catch (error) {
       console.error("Delete province error:", error);
@@ -157,11 +150,12 @@ export default function Page() {
       // Parse error message if it's a JSON string
       try {
         const errorData = JSON.parse(error.message);
-        alert(
+        console.error(
+          "Delete province error:",
           errorData.Message?.Text || "Terjadi kesalahan saat menghapus provinsi"
         );
       } catch {
-        alert("Terjadi kesalahan saat menghapus provinsi");
+        console.error("Delete province error:", error);
       }
     } finally {
       setIsDeleting(false);
@@ -297,11 +291,12 @@ export default function Page() {
       // Parse and show error message
       try {
         const errorData = JSON.parse(error.message);
-        alert(
+        console.error(
+          "Update city selection error:",
           errorData.Message?.Text || "Terjadi kesalahan saat mengupdate pilihan"
         );
       } catch {
-        alert("Terjadi kesalahan saat mengupdate pilihan");
+        console.error("Update city selection error:", error);
       }
     }
   };
@@ -325,7 +320,8 @@ export default function Page() {
       );
 
       if (selectedProvinces.length === 0) {
-        alert("Pilih minimal 1 provinsi");
+        // TODO: Replace with toast notification instead of alert
+        console.error("No provinces selected");
         return;
       }
 
@@ -335,9 +331,8 @@ export default function Page() {
           (city) => city.isSelected
         );
         if (selectedCities.length === 0) {
-          alert(
-            `Pilih minimal 1 kota/kabupaten untuk provinsi ${province.province}`
-          );
+          // TODO: Replace with toast notification instead of alert
+          console.error(`No cities selected for province ${province.province}`);
           return;
         }
       }
@@ -356,12 +351,11 @@ export default function Page() {
       const result = await saveAreaBongkar({ unloadingAreas });
 
       if (result.saved) {
-        alert(
-          `Berhasil menyimpan area bongkar: ${result.totalProvinces} provinsi, ${result.totalKota} kota/kabupaten`
-        );
+        // TODO: Replace with toast notification instead of alert
         console.log("Save result:", result);
       } else {
-        alert("Gagal menyimpan area bongkar");
+        // TODO: Replace with toast notification instead of alert
+        console.error("Failed to save area bongkar");
       }
     } catch (error) {
       console.error("Save error:", error);
@@ -369,9 +363,12 @@ export default function Page() {
       // Parse error message if it's a JSON string
       try {
         const errorData = JSON.parse(error.message);
-        alert(errorData.Message?.Text || "Terjadi kesalahan saat menyimpan");
+        console.error(
+          "Save error:",
+          errorData.Message?.Text || "Terjadi kesalahan saat menyimpan"
+        );
       } catch {
-        alert("Terjadi kesalahan saat menyimpan area bongkar");
+        console.error("Save error:", error);
       }
     } finally {
       setIsSaving(false);
@@ -448,9 +445,9 @@ export default function Page() {
                 onRemove={handleRemoveProvince}
                 onAdd={() => {
                   console.log("Open province selection modal");
-                  alert(
-                    "Fitur modal pemilihan provinsi akan segera diimplementasikan"
-                  );
+                  // alert(
+                  //   "Fitur modal pemilihan provinsi akan segera diimplementasikan"
+                  // );
                 }}
                 isDeleting={isDeleting}
               />
@@ -528,8 +525,8 @@ export default function Page() {
                             onClick={() => {
                               // Province added to selection
                               // TODO: Implement add province logic
-                              alert(
-                                `Fitur menambah ${result.provinceName} akan segera tersedia`
+                              console.log(
+                                `Add province ${result.provinceName} - feature coming soon`
                               );
                             }}
                           >
