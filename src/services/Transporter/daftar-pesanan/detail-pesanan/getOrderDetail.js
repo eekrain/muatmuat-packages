@@ -21,12 +21,13 @@ const mockApiResult = {
     // orderStatus: "SCHEDULED_FLEET",
     // orderStatus: "WAITING_PAYMENT_2",
     // orderStatus: ORDER_STATUS.DOCUMENT_PREPARATION,
-    orderStatus: ORDER_STATUS.COMPLETED,
+    // orderStatus: ORDER_STATUS.COMPLETED,
     // orderStatus: ORDER_STATUS.LOADING,
     // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
     // orderStatus: "WAITING_PAYMENT_2", // Status dengan angka untuk testing
     // orderStatus: "UNKNOWN_STATUS_3", // Status yang tidak ada di enum untuk testing
     // orderStatus: "CUSTOM_LOADING_1", // Status custom untuk testing
+    orderStatus: ORDER_STATUS.NEED_ASSIGN_FLEET, // Status untuk trigger Assign Armada button
     orderStatusUnit: 1, // Unit untuk testing
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
@@ -35,7 +36,7 @@ const mockApiResult = {
     truckCount: 1,
     hasSOSAlert: true,
     hasResponseDraft: true,
-    isCancellable: true,
+    isCancellable: true, // Pastikan bisa dibatalkan
     isHalalLogistics: true,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",

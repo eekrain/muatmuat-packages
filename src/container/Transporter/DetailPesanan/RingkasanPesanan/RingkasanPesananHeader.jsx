@@ -8,7 +8,9 @@ import Card, { CardContent } from "@/components/Card/Card";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { getStatusPesananMetadataTransporter } from "@/lib/normalizers/transporter/getStatusPesananMetadata";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
@@ -18,6 +20,51 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
 
   const handleResponPerubahan = () => {
     setIsRespondModalOpen(true);
+  };
+
+  const handleAssignArmada = () => {
+    const invoiceNumber =
+      dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+    toast.success(`Berhasil assign armada untuk pesanan ${invoiceNumber}`);
+  };
+
+  const handleKonfirmasiSiap = () => {
+    const invoiceNumber =
+      dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+    toast.success(`Berhasil konfirmasi siap untuk pesanan ${invoiceNumber}`);
+  };
+
+  const handleKirimResponPerubahan = () => {
+    const invoiceNumber =
+      dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+    toast.success(
+      `Berhasil kirim respon perubahan untuk pesanan ${invoiceNumber}`
+    );
+  };
+
+  const handleSimpanDraftResponPerubahan = () => {
+    const invoiceNumber =
+      dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+    toast.success(
+      `Respon perubahan berhasil disimpan sebagai draft untuk pesanan ${invoiceNumber}`
+    );
+  };
+
+  const handleBatalkanArmada = () => {
+    const invoiceNumber =
+      dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+    const fleetCount = dataOrderDetail?.fleets?.length || 0;
+    toast.success(
+      `Berhasil membatalkan ${fleetCount} armada dari pesanan ${invoiceNumber}`
+    );
+  };
+
+  const handleLihatPosisiArmada = () => {
+    const invoiceNumber =
+      dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+    toast.success(
+      `Berhasil melihat posisi armada untuk pesanan ${invoiceNumber}`
+    );
   };
 
   const statusMeta = getStatusPesananMetadataTransporter({
@@ -103,13 +150,16 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
             {/* Referensi: LDG-7 */}
             {(dataOrderDetail?.orderStatus?.startsWith("LOADING") ||
               dataOrderDetail?.orderStatus?.startsWith("UNLOADING")) && (
-              <Button onClick={() => {}} variant="muattrans-primary">
+              <Button
+                onClick={handleLihatPosisiArmada}
+                variant="muattrans-primary"
+              >
                 Lihat Posisi Armada
               </Button>
             )}
             {/* Referensi: LDN-334 */}
             {dataOrderDetail?.orderStatus?.startsWith("NEED_ASSIGN_FLEET") && (
-              <Button onClick={() => {}} variant="muattrans-primary">
+              <Button onClick={handleAssignArmada} variant="muattrans-primary">
                 Assign Armada
               </Button>
             )}
@@ -117,7 +167,10 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
             {dataOrderDetail?.orderStatus?.startsWith(
               "NEED_CONFIRMATION_READY"
             ) && (
-              <Button onClick={() => {}} variant="muattrans-primary">
+              <Button
+                onClick={handleKonfirmasiSiap}
+                variant="muattrans-primary"
+              >
                 Konfirmasi Siap
               </Button>
             )}
@@ -130,6 +183,35 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                 variant="muattrans-primary"
               >
                 Respon Perubahan
+              </Button>
+            )}
+            {/* Referensi: LDN-338 */}
+            {dataOrderDetail?.orderStatus?.startsWith(
+              "NEED_SAVE_RESPONSE_DRAFT"
+            ) && (
+              <Button
+                onClick={handleSimpanDraftResponPerubahan}
+                variant="muattrans-primary"
+              >
+                Simpan Draft
+              </Button>
+            )}
+            {/* Referensi: LDN-339 */}
+            {dataOrderDetail?.orderStatus?.startsWith("NEED_CANCEL_FLEET") && (
+              <Button
+                onClick={handleBatalkanArmada}
+                variant="muattrans-primary"
+              >
+                Batalkan Armada
+              </Button>
+            )}
+            {/* Referensi: LDN-340 */}
+            {dataOrderDetail?.orderStatus?.startsWith("NEED_SEND_RESPONSE") && (
+              <Button
+                onClick={handleKirimResponPerubahan}
+                variant="muattrans-primary"
+              >
+                Kirim Respon Perubahan
               </Button>
             )}
           </div>
