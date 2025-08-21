@@ -198,7 +198,6 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
           type: "manual",
           message: "No. NPWP Perusahaan sudah terdaftar",
         });
-        toast.error("Gagal menyimpan, NPWP sudah terdaftar.");
         scrollToFirstError(["npwpNumber"]);
         return; // Hentikan proses
       }

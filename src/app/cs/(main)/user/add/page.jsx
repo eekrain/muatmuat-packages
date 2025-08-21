@@ -12,6 +12,7 @@ import { TabRegister } from "@/container/CS/User/Tambah/Web/TabRegister";
 import mapZustandToApiPayload from "@/container/CS/User/Tambah/helpers/mapZustandToApiPayload";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";
+import { useCreateTransporter } from "@/services/CS/register/createTransporter";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const Page = () => {
@@ -94,40 +95,38 @@ const Page = () => {
   const router = useRouter();
 
   const { trigger: createTransporter, isMutating: isCreating } =
-    useSWRMutateHook(
-      "/v1/transporter/create", // Endpoint dari API Contract
-      "POST",
-      undefined, // fetcher (jika Anda punya default)
-      {
-        onSuccess: () => {
-          // Aksi setelah API berhasil
-          toast.success("Berhasil menambahkan Transporter");
-          clearRegistrationData(FORM_KEY); // Hapus data dari Zustand & localStorage
-          router.push("/user"); // Redirect ke halaman daftar user
-        },
-        onError: (error) => {
-          // Aksi jika API gagal
-          const message =
-            error?.response?.data?.Message?.Text ||
-            "Gagal menambahkan transporter.";
-          toast.error(message);
-        },
-      }
-    );
+    useCreateTransporter({
+      onSuccess: () => {
+        toast.success("Berhasil menambahkan Transporter");
+        clearRegistrationData(FORM_KEY);
+        router.push("/user");
+      },
+      onError: (error) => {
+        const message =
+          error?.response?.data?.Message?.Text ||
+          "Gagal menambahkan transporter.";
+        toast.error(message);
+      },
+    });
 
   const [isConfirmAddOpen, setIsConfirmAddOpen] = useState(false);
 
   const handleConfirmAddTransporter = () => {
-    const dataToSubmit = mapZustandToApiPayload(formData);
-    if (dataToSubmit) {
-      // createTransporter(dataToSubmit);
-      toast.success("Berhasil menambahkan Transporter");
-      clearRegistrationData(FORM_KEY); // Hapus data dari Zustand & localStorage
-      router.push("/user"); // Redirect ke halaman daftar user
-    } else {
-      toast.error("Tidak ada data untuk dikirim.");
+    if (!formData) {
+      toast.error("Data form tidak ditemukan.");
+      setIsConfirmAddOpen(false);
+      return;
     }
-    setIsConfirmAddOpen(false); // Tutup modal setelah diklik
+
+    const dataToSubmit = mapZustandToApiPayload(formData);
+
+    if (dataToSubmit) {
+      createTransporter(dataToSubmit);
+    } else {
+      toast.error("Gagal memproses data untuk dikirim.");
+    }
+
+    setIsConfirmAddOpen(false);
   };
 
   const handleSectionSave = (sectionIndex) => {
