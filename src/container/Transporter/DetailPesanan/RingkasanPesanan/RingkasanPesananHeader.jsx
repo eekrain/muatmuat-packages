@@ -92,8 +92,7 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
 
           <div className="flex items-center gap-x-3">
             {/* Referensi: LDG-7 */}
-            {dataOrderDetail?.orderStatus ===
-              ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+            {dataOrderDetail?.hasResponseDraft && (
               <BadgeStatusPesanan variant="muted" className="w-fit">
                 Respon Perubahan Disimpan Sebagai Draf
               </BadgeStatusPesanan>
@@ -129,10 +128,6 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
               >
                 Respon Perubahan
               </Button>
-            )}
-
-            {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" && (
-              <Button onClick={handleResponPerubahan}>Respon Perubahan</Button>
             )}
           </div>
         </div>

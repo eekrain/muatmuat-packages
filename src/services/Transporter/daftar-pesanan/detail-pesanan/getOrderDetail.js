@@ -2,10 +2,9 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
+import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 
 const useMockData = true;
-
-const otherStatus = [];
 
 const mockApiResult = {
   Message: {
@@ -27,18 +26,19 @@ const mockApiResult = {
     // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
     orderStatus: ORDER_STATUS.LOADING,
     orderStatusUnit: 1,
-    truckCount: 1,
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
     loadTimeEnd: "2024-10-04T08:00:00.000Z",
     estimatedDistance: 178,
-    isHalalLogistics: true,
+    truckCount: 1,
     hasSOSAlert: true,
     hasResponseDraft: true,
     isCancellable: true,
+    isHalalLogistics: true,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
       truckTypeName: "Colt Diesel Engkel",
+      carrierName: "Box",
       vehicleImage: "https://picsum.photos/200",
     },
     locations: [
@@ -49,54 +49,26 @@ const mockApiResult = {
         fullAddress:
           "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
         detailAddress: "Rumah dengan pagar hitam",
-        coordinates: {
-          latitude: -7.2741549,
-          longitude: 112.7820621,
-        },
-        administrativeArea: {
-          district: "Mulyorejo",
-          city: "Kota Surabaya",
-          province: "Jawa Timur",
-          postalCode: "60115",
-        },
-        qrScan: {
-          status: "NOT_SCANNED",
-          token: null,
-          expiryTime: null,
-        },
-        isActive: true,
-        pic: {
-          name: "Abe Maulana",
-          phoneNumber: "081974012740",
-        },
+        city: "Kota Surabaya",
+        province: "Jawa Timur",
+        latitude: -7.2741549,
+        longitude: 112.7820621,
+        picName: "Abe Maulana",
+        picPhoneNumber: "081974012740",
       },
       {
-        id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+        id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7392",
         type: "DROPOFF",
         sequence: 1,
         fullAddress:
-          "Jalan Perusahaan Raya No.46, Banjararum, Singosari, Malang, Jawa Timur, 65153, Indonesia",
-        detailAddress: "Gedung Smoore",
-        coordinates: {
-          latitude: -7.2925952,
-          longitude: 112.7200837,
-        },
-        administrativeArea: {
-          district: "Banjararum",
-          city: "Malang",
-          province: "Jawa Timur",
-          postalCode: "65153",
-        },
-        qrScan: {
-          status: "NOT_SCANNED",
-          token: null,
-          expiryTime: null,
-        },
-        isActive: true,
-        pic: {
-          name: "Julio",
-          phoneNumber: "08172094790124",
-        },
+          "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+        detailAddress: "Rumah dengan pagar hitam",
+        city: "Kota Surabaya",
+        province: "Jawa Timur",
+        latitude: -7.2741549,
+        longitude: 112.7820621,
+        picName: "Abe Maulana",
+        picPhoneNumber: "081974012740",
       },
     ],
     cargo: [
@@ -140,101 +112,15 @@ const mockApiResult = {
     cargoDescription:
       "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
     photos: [
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 1,
-      },
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491257",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 2,
-      },
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491258",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 3,
-      },
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491259",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 4,
-      },
+      "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
     ],
     deliveryOrders: ["DO-20241023-001", "DO-20241023-002"],
     additionalServices: [
-      // {
-      //   id: "0f678054-8459-4a36-8b1d-662e8de7580c",
-      //   serviceName: "Kirim Berkas",
-      // },
+      {
+        id: "0f678054-8459-4a36-8b1d-662e8de7580c",
+        serviceName: "Kirim Berkas",
+      },
       // {
       //   id: "a0f1778f-0ee2-4ec1-8be8-3e7737832fe2",
       //   serviceName: "Bantuan Tambahan",
@@ -247,20 +133,160 @@ const mockApiResult = {
       taxAmount: 100000,
       totalRouteChange: 100000,
     },
-    fleet: [
+    fleets: [
       {
         id: "fleet-001",
-        plateNumber: "AE 1111 LBA",
-        driverName: "Noel Galagher",
-        driverAvatar: "/img/avatar.png",
+        licensePlate: "AE 1111 LBA",
         vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+        driver: {
+          id: "uuid",
+          name: "John Doe",
+          phoneNumber: "081234567890",
+          profileImage: "https://example.com/driver1.jpg",
+        },
         hasSOSAlert: true,
-        status: "ACTIVE",
-        currentStep: 1, // Proses Muat step
-        orderStatus: "LOADING", // Status dari order
+        currentStatus: TRACKING_STATUS.LOADING,
+        milestones: [
+          {
+            status: TRACKING_STATUS.SCHEDULED,
+            statusName: "Armada Dijadwalkan",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.LOADING,
+            statusName: "Proses Muat",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.UNLOADING,
+            statusName: "Proses Bongkar",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+            statusName: "Dokumen Sedang Disiapkan",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+            statusName: "Proses Pengiriman Dokumen",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.COMPLETED,
+            statusName: "Selesai",
+            completed: false,
+          },
+        ],
+        // Data untuk armada pengganti (jika ada)
+        replacementFleet: null,
+        // Data untuk driver pengganti (jika ada)
+        replacementDriver: null,
+        // Status perubahan armada
+        fleetChangeStatus: null, // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+      },
+      {
+        id: "fleet-002",
+        licensePlate: "AE 2222 LBA",
+        vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+        driver: {
+          id: "uuid-2",
+          name: "Jane Smith",
+          phoneNumber: "081234567891",
+          profileImage: "https://example.com/driver2.jpg",
+        },
+        hasSOSAlert: false,
+        currentStatus: TRACKING_STATUS.SCHEDULED,
+        milestones: [
+          {
+            status: TRACKING_STATUS.SCHEDULED,
+            statusName: "Armada Dijadwalkan",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.LOADING,
+            statusName: "Proses Muat",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.UNLOADING,
+            statusName: "Proses Bongkar",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+            statusName: "Dokumen Sedang Disiapkan",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+            statusName: "Proses Pengiriman Dokumen",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.COMPLETED,
+            statusName: "Selesai",
+            completed: false,
+          },
+        ],
+        // Contoh data armada pengganti
+        replacementFleet: {
+          id: "fleet-002-replacement",
+          licensePlate: "AE 3333 LBA",
+          vehicleImage: "/img/truck.png",
+          truckType: "Colt Diesel Engkel - Box",
+        },
+        // Contoh data driver pengganti
+        replacementDriver: {
+          id: "uuid-3",
+          name: "Bob Johnson",
+          phoneNumber: "081234567892",
+          profileImage: "https://example.com/driver3.jpg",
+        },
+        // Status perubahan armada
+        fleetChangeStatus: "APPROVED", // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+      },
+      {
+        id: "fleet-003",
+        licensePlate: "AE 4444 LBA",
+        vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+        driver: {
+          id: "uuid-4",
+          name: "Alice Brown",
+          phoneNumber: "081234567893",
+          profileImage: "https://example.com/driver4.jpg",
+        },
+        hasSOSAlert: false,
+        currentStatus: TRACKING_STATUS.CANCELLED_BY_TRANSPORTER,
+        milestones: [
+          {
+            status: TRACKING_STATUS.SCHEDULED,
+            statusName: "Armada Dijadwalkan",
+            completed: true,
+          },
+          {
+            status: "CANCELLED",
+            statusName: "Dibatalkan",
+            completed: true,
+          },
+        ],
+        // Data untuk armada pengganti (jika ada)
+        replacementFleet: null,
+        // Data untuk driver pengganti (jika ada)
+        replacementDriver: null,
+        // Status perubahan armada
+        fleetChangeStatus: null,
       },
     ],
-    otherStatus,
+    otherStatus: [
+      {
+        orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+        orderStatusUnit: 1,
+      },
+    ],
   },
   Type: "/v1/transporter/orders/dcdaf886-56d6-4d84-89d6-a21ec18d0bc1/detail-summary",
 };

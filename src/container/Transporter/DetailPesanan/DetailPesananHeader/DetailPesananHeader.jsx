@@ -58,33 +58,11 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
               Unduh DO
             </Button>
           ) : null}
-          {[
-            // Referensi: LDN-333
-            // Harusnya Ada Case Button "unduh Batalkan" Pesanan tidak muncul untuk SCHEDULED_FLEET. referensi :
-            ORDER_STATUS.SCHEDULED_FLEET,
-            // Referensi: LDN-334
-            ORDER_STATUS.NEED_ASSIGN_FLEET,
-            // Referensi: LDN-336
-            ORDER_STATUS.NEED_CONFIRMATION_READY,
-            // Referensi: LDN-337
-            ORDER_STATUS.NEED_CHANGE_RESPONSE,
-            ORDER_STATUS.CONFIRMED,
-          ].includes(dataOrderDetail?.orderStatus) &&
-            dataOrderDetail?.orderStatus !== ORDER_STATUS.HEADING_TO_LOADING &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.DOCUMENT_PREPARATION &&
-            dataOrderDetail?.orderStatus !== ORDER_STATUS.DOCUMENT_DELIVERY &&
-            dataOrderDetail?.orderStatus !== ORDER_STATUS.COMPLETED &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.CANCELLED_BY_SHIPPER &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.CANCELLED_BY_SYSTEM && (
-              <Button variant="muatparts-error-secondary" onClick={() => {}}>
-                Batalkan Pesanan
-              </Button>
-            )}
+          {dataOrderDetail?.isCancellable && (
+            <Button variant="muatparts-error-secondary" onClick={() => {}}>
+              Batalkan Pesanan
+            </Button>
+          )}
         </div>
       </div>
 

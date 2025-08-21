@@ -31,12 +31,15 @@ function CardLacakArmada({
   driverName,
   vehicleImageUrl,
   status,
-  stepperData,
   onViewSosClick,
   vehicleId, // Prop untuk modal
   driverId, // Prop untuk modal
   order,
   hasSOSAlert = false,
+  milestones = [], // Add milestones prop
+  replacementFleet = null, // Add replacement fleet prop
+  replacementDriver = null, // Add replacement driver prop
+  fleetChangeStatus = null, // Add fleet change status prop
 }) {
   const { isMobile } = useDevice();
   const pathname = usePathname();
@@ -56,95 +59,86 @@ function CardLacakArmada({
   const [isAlasanPembatalanModalOpen, setIsAlasanPembatalanModalOpen] =
     useState(false);
 
-  // Data stepper - always show 6 steps for loading status
-  const steps = [
-    {
-      label: "Armada Dijadwalkan",
-      icon: "/icons/stepper/stepper-scheduled.svg",
-    },
-    { label: "Proses Muat", icon: "/icons/stepper/stepper-box.svg" },
-    { label: "Proses Bongkar", icon: "/icons/stepper/stepper-box-opened.svg" },
-    {
-      label: "Dokumen Sedang Disiapkan",
-      icon: "/icons/stepper/stepper-document-preparing.svg",
-    },
-    {
-      label: "Proses Pengiriman Dokumen",
-      icon: "/icons/stepper/stepper-document-delivery.svg",
-    },
-    { label: "Selesai", icon: "/icons/stepper/stepper-completed.svg" },
-  ];
-
-  const cancelledSteps = [
-    {
-      label: "Armada Dijadwalkan",
-      icon: "/icons/stepper/stepper-scheduled.svg",
-    },
-    {
-      label: "Dibatalkan",
-      status: "CANCELED",
-      icon: "/icons/silang-white.svg",
-    },
-  ];
-
-  const changeFleetSteps = [
-    { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
-    { label: "Proses Muat", icon: "/icons/muatan16.svg" },
-    { label: "Proses Bongkar", icon: "/icons/stepper/stepper-box-opened.svg" },
-    {
-      label: "Proses Pergantian Armada",
-      icon: "/icons/stepper/stepper-fleet-change.svg",
-    },
-    { label: "Selesai", icon: "/icons/check16.svg" },
-  ];
-
   // Fungsi untuk menentukan apakah status adalah pembatalan
   const isCancelledStatus = (s) => {
     return [
-      "CANCELLED_BY_TRANSPORTER",
-      "CANCELLED_BY_SHIPPER",
-      "CANCELLED_BY_SYSTEM",
+      TRACKING_STATUS.CANCELLED_BY_TRANSPORTER,
+      TRACKING_STATUS.CANCELLED_BY_SHIPPER,
+      TRACKING_STATUS.CANCELLED_BY_SYSTEM,
     ].includes(s);
   };
 
-  const getActiveIndex = (s) => {
-    // Jika status pembatalan, gunakan index 1 (step "Dibatalkan")
-    if (isCancelledStatus(s)) {
-      return 1;
+  // Process milestones data to add icons
+  const processedMilestones = milestones.map((milestone) => {
+    // Map status to appropriate icons
+    let icon = "/icons/stepper/stepper-scheduled.svg"; // default icon
+
+    switch (milestone.status) {
+      case "SCHEDULED":
+      case "SCHEDULED_FLEET":
+        icon = "/icons/stepper/stepper-scheduled.svg";
+        break;
+      case "LOADING":
+        icon = "/icons/stepper/stepper-box.svg";
+        break;
+      case "UNLOADING":
+        icon = "/icons/stepper/stepper-box-opened.svg";
+        break;
+      case "DOCUMENT_PREPARATION":
+        icon = "/icons/stepper/stepper-document-preparing.svg";
+        break;
+      case "DOCUMENT_DELIVERY":
+        icon = "/icons/stepper/stepper-document-delivery.svg";
+        break;
+      case "COMPLETED":
+        icon = "/icons/stepper/stepper-completed.svg";
+        break;
+      default:
+        icon = "/icons/stepper/stepper-scheduled.svg";
     }
 
-    switch (s) {
-      case TRACKING_STATUS.COMPLETED:
-        return 5; // Selesai (6 step: index 5)
-      case "DOCUMENT_DELIVERY":
-        return 4; // Proses Pengiriman Dokumen (6 step: index 4)
-      case "DOCUMENT_PREPARATION":
-        return 3; // Dokumen Sedang Disiapkan (6 step: index 3)
-      case TRACKING_STATUS.LOADING:
-        return 1; // Proses Muat (6 step: index 1)
-      case "HEADING_TO_LOADING":
-        return 1; // Proses Muat
-      case "HEADING_TO_UNLOADING":
-        return 2; // Proses Bongkar (6 step: index 2)
-      case TRACKING_STATUS.UNLOADING:
-        return 2; // Proses Bongkar (6 step: index 2)
-      case "WAITING_CONFIRMATION_SHIPPER":
-        return -1; // Tidak ada step yang aktif (semua abu-abu)
-      case "SCHEDULED_FLEET":
-        return 0; // Armada Dijadwalkan (step 1, index 0)
-      default:
-        return 0;
+    return {
+      ...milestone,
+      label: milestone.statusName,
+      icon,
+    };
+  });
+
+  // Calculate active index based on completed milestones
+  const getActiveIndex = () => {
+    if (isCancelledStatus(status)) {
+      return 1; // Show cancelled step
     }
+
+    // Find the last completed milestone
+    const lastCompletedIndex = processedMilestones
+      .map((milestone, index) => ({ ...milestone, index }))
+      .filter((milestone) => milestone.completed)
+      .pop();
+
+    if (lastCompletedIndex) {
+      return lastCompletedIndex.index;
+    }
+
+    return 0; // Default to first step
   };
 
-  const activeIndex = getActiveIndex(status);
+  const activeIndex = getActiveIndex();
 
-  // Pilih steps berdasarkan status (masih perlu disesuaikan)
+  // Pilih steps berdasarkan status
   const currentSteps = isCancelledStatus(status)
-    ? cancelledSteps
-    : false
-      ? changeFleetSteps
-      : steps;
+    ? [
+        {
+          label: "Armada Dijadwalkan",
+          icon: "/icons/stepper/stepper-scheduled.svg",
+        },
+        {
+          label: "Dibatalkan",
+          status: "CANCELED",
+          icon: "/icons/silang-white.svg",
+        },
+      ]
+    : processedMilestones;
 
   // --- Handlers Ubah Driver ---
   const handleOpenDriverModal = () => setIsDriverModalOpen(true);
@@ -198,8 +192,8 @@ function CardLacakArmada({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {status !== "DOCUMENT_PREPARATION" &&
-              status !== "DOCUMENT_DELIVERY" && (
+            {status !== TRACKING_STATUS.DOCUMENT_PREPARATION &&
+              status !== TRACKING_STATUS.DOCUMENT_DELIVERY && (
                 <BadgeStatusPesanan
                   variant={statusBadge.variant}
                   className="w-fit"
@@ -240,15 +234,15 @@ function CardLacakArmada({
           <div className="flex items-center gap-2">
             {/* Aksi Lainnya - muncul untuk LOADING status */}
             {isMonitoring &&
-              status !== "HEADING_TO_UNLOADING" &&
-              status !== "DOCUMENT_PREPARATION" &&
-              status !== "DOCUMENT_DELIVERY" &&
-              status !== "HEADING_TO_LOADING" &&
+              status !== TRACKING_STATUS.HEADING_TO_UNLOADING &&
+              status !== TRACKING_STATUS.DOCUMENT_PREPARATION &&
+              status !== TRACKING_STATUS.DOCUMENT_DELIVERY &&
+              status !== TRACKING_STATUS.HEADING_TO_LOADING &&
               status !== TRACKING_STATUS.COMPLETED &&
-              status !== "CANCELLED_BY_TRANSPORTER" &&
-              status !== "CANCELLED_BY_SHIPPER" &&
-              status !== "CANCELLED_BY_SYSTEM" &&
-              status !== "WAITING_CONFIRMATION_SHIPPER" && (
+              status !== TRACKING_STATUS.CANCELLED_BY_TRANSPORTER &&
+              status !== TRACKING_STATUS.CANCELLED_BY_SHIPPER &&
+              status !== TRACKING_STATUS.CANCELLED_BY_SYSTEM &&
+              status !== TRACKING_STATUS.WAITING_CONFIRMATION_SHIPPER && (
                 <SimpleDropdown>
                   <SimpleDropdownTrigger asChild>
                     <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
@@ -310,25 +304,28 @@ function CardLacakArmada({
                 </div>
               </div>
             </div>
-            <IconComponent
-              src="/icons/arrow-right.svg"
-              className="text-neutral-700"
-              width={24}
-              height={24}
-            />
+
+            {replacementFleet && replacementDriver && (
+              <IconComponent
+                src="/icons/arrow-right.svg"
+                className="text-neutral-700"
+                width={24}
+                height={24}
+              />
+            )}
             {/* Armada Pengganti */}
             <div className="flex items-center gap-3">
-              {false && (
+              {fleetChangeStatus === "PENDING" && (
                 <p className="text-xs text-neutral-600">
                   Armada pengganti <br /> sedang dalam proses <br /> pencarian
                 </p>
               )}
 
-              {true && (
+              {replacementFleet && replacementDriver && (
                 <div className="flex items-center gap-3">
                   <div className="flex w-32 flex-col gap-3">
                     <h3 className="text-xs font-bold text-neutral-900">
-                      {plateNumber || "Plat Nomor"}
+                      {replacementFleet.licensePlate || "Plat Nomor"}
                     </h3>
                     <div className="flex items-center gap-1">
                       <IconComponent
@@ -339,7 +336,7 @@ function CardLacakArmada({
                       />
                       <span
                         className="line-clamp-2 max-w-[280px] text-[12px] font-medium leading-4 text-neutral-900"
-                        title={driverName || "Nama Driver"}
+                        title={replacementDriver.name || "Nama Driver"}
                         style={{
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
@@ -348,7 +345,7 @@ function CardLacakArmada({
                           wordBreak: "break-word",
                         }}
                       >
-                        {driverName || "Nama Driver"}
+                        {replacementDriver.name || "Nama Driver"}
                       </span>
                     </div>
                   </div>
