@@ -18,6 +18,7 @@ const Pagination = ({
   perPage = 10,
   variants,
   className,
+  paginationCounter,
 }) => {
   const perPageOptions = [10, 20, 40];
   const buttonClassname = buttonVariants[variants] || buttonVariants.muatrans;
@@ -36,6 +37,38 @@ const Pagination = ({
   };
 
   const getPageNumbers = () => {
+    // If paginationCounter is true, show exactly 5 consecutive pages starting from current page
+    if (paginationCounter) {
+      const result = [];
+      const maxVisible = 5;
+
+      // Calculate start page to show 5 consecutive pages
+      let startPage = currentPage;
+
+      // Ensure we don't exceed total pages when showing 5 consecutive pages
+      if (startPage + maxVisible - 1 > totalPages) {
+        startPage = Math.max(1, totalPages - maxVisible + 1);
+      }
+
+      // Add the 5 consecutive pages
+      for (
+        let i = startPage;
+        i < startPage + maxVisible && i <= totalPages;
+        i++
+      ) {
+        result.push(i);
+      }
+
+      // Add dots and last page if there are more pages beyond our 5
+      if (startPage + maxVisible - 1 < totalPages) {
+        result.push("...");
+        result.push(totalPages);
+      }
+
+      return result;
+    }
+
+    // Original logic for when paginationCounter is false
     const delta = 2;
     const range = [];
     const rangeWithDots = [];
@@ -81,7 +114,9 @@ const Pagination = ({
           className={cn(
             "rounded p-1",
             currentPage === 1
-              ? "hidden cursor-not-allowed text-neutral-400"
+              ? paginationCounter
+                ? "cursor-not-allowed text-neutral-400"
+                : "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
           )}
           aria-label="Previous page"
@@ -118,7 +153,9 @@ const Pagination = ({
           disabled={currentPage === totalPages}
           className={`rounded p-1 ${
             currentPage === totalPages
-              ? "hidden cursor-not-allowed text-neutral-400"
+              ? paginationCounter
+                ? "cursor-not-allowed text-neutral-400"
+                : "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
           }`}
           aria-label="Next page"
