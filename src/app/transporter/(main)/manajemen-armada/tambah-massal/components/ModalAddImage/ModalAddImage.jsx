@@ -91,6 +91,7 @@ export default function ModalAddImage({
       onOpenChange={() => {
         handleClose();
       }}
+      closeOnOutsideClick={true}
     >
       <ModalContent className="w-[562px]">
         <ModalHeader />

@@ -266,10 +266,14 @@ const TambahExcel = () => {
             disabled={isDisabled}
             icon={{
               left: (
-                <IconComponent src="/icons/datatable-search.svg" width={12} />
+                <IconComponent
+                  src="/icons/datatable-search.svg"
+                  width={12}
+                  className="text-neutral-700"
+                />
               ),
               right:
-                searchValue.length > 2 ? (
+                searchValue.length > 0 ? (
                   <button
                     onClick={() => {
                       setSearchValue("");

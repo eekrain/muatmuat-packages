@@ -21,9 +21,64 @@ import { useGetActiveOrders } from "@/services/CS/monitoring/daftar-pesanan-acti
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
+import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
 import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmadaModal";
 import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
+
+// Mock data for OrderChangeInfoModal
+const mockChangeDetails = {
+  changeType: "LOCATION_AND_TIME", // Can be "LOCATION_AND_TIME", "TIME_ONLY", "LOCATION_ONLY"
+  originalData: {
+    loadTimeStart: "2025-01-15T08:00:00Z",
+    loadTimeEnd: "2025-01-15T10:00:00Z",
+    estimatedDistance: 45000, // 45 km in meters
+    locations: [
+      {
+        locationType: "PICKUP",
+        sequence: 1,
+        fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat, DKI Jakarta",
+      },
+      {
+        locationType: "PICKUP",
+        sequence: 2,
+        fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan, DKI Jakarta",
+      },
+      {
+        locationType: "DROPOFF",
+        sequence: 1,
+        fullAddress: "Jl. Ahmad Yani No. 789, Surabaya, Jawa Timur",
+      },
+    ],
+  },
+  requestedChanges: {
+    loadTimeStart: "2025-01-15T10:00:00Z",
+    loadTimeEnd: "2025-01-15T12:00:00Z",
+    estimatedDistance: 52000, // 52 km in meters
+    locations: [
+      {
+        locationType: "PICKUP",
+        sequence: 1,
+        fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat, DKI Jakarta",
+      },
+      {
+        locationType: "PICKUP",
+        sequence: 2,
+        fullAddress: "Jl. MH Thamrin No. 888, Jakarta Pusat, DKI Jakarta", // Changed address
+      },
+      {
+        locationType: "DROPOFF",
+        sequence: 1,
+        fullAddress: "Jl. Diponegoro No. 321, Malang, Jawa Timur", // Changed address
+      },
+    ],
+  },
+  incomeAdjustment: {
+    hasAdjustment: true,
+    originalAmount: 2500000,
+    adjustedAmount: 2750000,
+  },
+};
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -69,6 +124,10 @@ const DaftarPesananAktif = ({
     useState(null);
   const [selectedFleetsForCancellation, setSelectedFleetsForCancellation] =
     useState([]);
+  const [orderChangeInfoModalOpen, setOrderChangeInfoModalOpen] =
+    useState(false);
+  const [selectedOrderForChangeInfo, setSelectedOrderForChangeInfo] =
+    useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
@@ -251,12 +310,9 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
-        // Navigate to respon-perubahan page if truckCount > 1
-        if (row.truckCount > 1) {
-          router.push(`/monitoring/${row.id}/respon-perubahan`);
-        } else {
-          // Use modal for single truck
-        }
+        // Open OrderChangeInfoModal to show change details
+        setSelectedOrderForChangeInfo(row);
+        setOrderChangeInfoModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CANCEL_FLEET.type:
@@ -376,7 +432,7 @@ const DaftarPesananAktif = ({
                     // showNotificationDot={getStatusUrgentCount() > 0}
                     // notificationCount={getStatusUrgentCount()}
                     className="max-w-[150px]"
-                    disabled={isSearchNotFound}
+                    disabled={isSearchNotFound || getStatusUrgentCount() === 0}
                     showNotificationDotWithoutNumber={
                       getStatusUrgentCount() > 0
                     }
@@ -652,6 +708,20 @@ const DaftarPesananAktif = ({
         order={selectedOrderForAlasanArmada}
         selectedFleets={selectedFleetsForCancellation}
         onConfirm={handleCancelArmadaWithReason}
+      />
+
+      {/* Order Change Info Modal */}
+      <OrderChangeInfoModal
+        isOpen={orderChangeInfoModalOpen}
+        onClose={() => {
+          setOrderChangeInfoModalOpen(false);
+          setSelectedOrderForChangeInfo(null);
+        }}
+        changeDetails={mockChangeDetails}
+        isLoading={false}
+        onHubungi={() => {
+          // TODO: Implement contact functionality
+        }}
       />
     </div>
   );

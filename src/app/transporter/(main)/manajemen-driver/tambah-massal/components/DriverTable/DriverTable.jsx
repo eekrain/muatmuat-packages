@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import FileUploadInput from "@/app/transporter/(main)/manajemen-armada/tambah-massal/components/FileUploadInput";
 import Button from "@/components/Button/Button";
@@ -104,6 +104,22 @@ const DriverTable = ({
   const { t } = useTranslation();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
+  // Local search input state to avoid triggering parent on every keystroke.
+  const [localSearch, setLocalSearch] = useState(searchValue || "");
+
+  useEffect(() => {
+    setLocalSearch(searchValue || "");
+  }, [searchValue]);
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key !== "Enter") return;
+
+    const value = (e.target && e.target.value) || localSearch || "";
+    if (value.length === 0 || value.length > 3) {
+      onSearchChange?.(value);
+    }
+    e.preventDefault();
+  };
 
   const handleCheckboxChange = (index) => {
     if (selectedRows.includes(index)) {
@@ -171,13 +187,17 @@ const DriverTable = ({
                   {},
                   "Cari Driver"
                 )}
-                value={searchValue}
-                onChange={(e) => onSearchChange?.(e.target.value)}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
               />
-              {searchValue && (
+              {localSearch && (
                 <button
                   type="button"
-                  onClick={() => onSearchChange?.("")}
+                  onClick={() => {
+                    setLocalSearch("");
+                    onSearchChange?.("");
+                  }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700"
                 >
                   <IconComponent
