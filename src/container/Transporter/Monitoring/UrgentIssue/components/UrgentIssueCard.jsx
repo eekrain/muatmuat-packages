@@ -134,16 +134,18 @@ export const UrgentIssueCardTransporter = ({
   };
 
   return (
-    <div className="rounded-lg border border-neutral-400 bg-white p-4 md:p-5">
+    <div className="rounded-lg border border-neutral-400 bg-white px-3 py-4">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           {statusDisplay !== "selesai" && (
             <NotificationDot
-              size="md"
+              size="sm"
               color={status === "PROCESSING" ? "orange" : "red"}
             />
           )}
-          <span className="text-xs font-bold text-neutral-900">{typeName}</span>
+          <span className="text-xs font-semibold text-neutral-900">
+            {typeName}
+          </span>
         </div>
         <span className="ml-2 whitespace-nowrap text-xs font-medium text-neutral-500">
           {formatDate(detectedAt)}
@@ -172,7 +174,7 @@ export const UrgentIssueCardTransporter = ({
             <>
               Armada{" "}
               <span
-                className="cursor-pointer text-primary-800"
+                className="cursor-pointer text-primary-700 hover:font-bold"
                 onClick={handleClickVehiclePlateNumber}
               >
                 {plate}
@@ -230,7 +232,7 @@ export const UrgentIssueCardTransporter = ({
                 </span>
                 <span
                   onClick={() => handleClickOrder(orderId)}
-                  className="text-xs font-medium text-primary-700 hover:cursor-pointer"
+                  className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:font-bold"
                 >
                   {orderCode || "-"}
                 </span>
@@ -320,7 +322,7 @@ export const UrgentIssueCardTransporter = ({
               </span>
               <span
                 onClick={() => handleClickOrder(orderId)}
-                className="text-xs font-medium text-primary-700 hover:cursor-pointer"
+                className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:font-bold"
               >
                 {orderCode || "-"}
               </span>

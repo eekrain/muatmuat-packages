@@ -7,16 +7,14 @@ import { AlertTriangle, Loader2, X } from "lucide-react";
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
-import CardFleet from "@/components/Card/CardFleet";
+import CardFleetSOS from "@/components/Card/CardFleetSOS";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
 import { useGetHistoryDataSOS } from "@/services/CS/monitoring/sos/getHistoryDataSOS";
 import { useGetListSOSData } from "@/services/CS/monitoring/sos/getListSOSData";
-import { useGetTransporterContactSOS } from "@/services/CS/monitoring/sos/getTransporterContactSOS";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 
 const SOSCSContainer = ({ onClose, onExpand }) => {
@@ -26,7 +24,7 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
   const [selectedFleet, setSelectedFleet] = useState(null);
   const [activeTab, setActiveTab] = useState("sos"); // 'sos' | 'all'
   const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
-  const [selectedTransporter, setSelectedTransporter] = useState(null);
+  const [selectedFleetForContact, setSelectedFleetForContact] = useState(null);
 
   // Fetch active SOS data using getListSOSData API
   const {
@@ -35,8 +33,7 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
     error: sosError,
     mutate: refetchSosList,
   } = useGetListSOSData({
-    // status: "OPEN,IN_PROGRESS,ACKNOWLEDGED",
-    // limit: 50,
+    limit: 50,
   });
 
   // Fetch history SOS data using getHistoryDataSOS API
@@ -48,55 +45,42 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
     limit: 50,
   });
 
-  // Get transporter contacts when modal is opened
-  const { data: contactData, isLoading: contactLoading } =
-    useGetTransporterContactSOS(selectedTransporter?.transporterId, {
-      enabled: !!selectedTransporter?.transporterId,
-    });
-
-  // Process active SOS items from API data
+  // Process active SOS items from API data - using direct data access like getArmadaData.js
   const activeSosItems = useMemo(() => {
-    // Try different data access patterns
-    let sosArray = [];
-
-    if (sosData?.sos) {
-      sosArray = sosData.sos;
-    } else if (sosData?.Data?.sos) {
-      sosArray = sosData.Data.sos;
-    } else if (sosData?.data?.Data?.sos) {
-      sosArray = sosData.data.Data.sos;
-    } else if (sosData?.raw?.Data?.sos) {
-      sosArray = sosData.raw.Data.sos;
-    } else {
-      return [];
-    }
-
-    return sosArray.filter((item) =>
-      ["OPEN", "IN_PROGRESS", "ACKNOWLEDGED"].includes(item.sosStatus)
-    );
+    if (!sosData?.Data?.sos) return [];
+    return sosData.Data.sos;
   }, [sosData]);
 
-  // Process history SOS items from API data
+  // Process history SOS items from API data - using direct data access like getArmadaData.js
   const historySosItems = useMemo(() => {
-    // Try different data access patterns
-    let historyArray = [];
-
-    if (historyData?.history) {
-      historyArray = historyData.history;
-    } else if (historyData?.Data?.history) {
-      historyArray = historyData.Data.history;
-    } else if (historyData?.raw?.Data?.history) {
-      historyArray = historyData.raw.Data.history;
-    } else {
-      return [];
-    }
-
-    return historyArray.filter((item) => item.sosStatus === "RESOLVED");
+    if (!historyData?.Data?.history) return [];
+    return historyData.Data.history;
   }, [historyData]);
 
-  // Combine both data sources for display
+  // Combine both data sources for display - langsung pakai data mentah
   const allFleetsWithSos = useMemo(() => {
-    const activeItems = activeSosItems.map((item) => ({
+    return [...activeSosItems, ...historySosItems];
+  }, [activeSosItems, historySosItems]);
+
+  // Fungsi filter berdasarkan pencarian
+  const filterFn = (fleet) =>
+    (fleet.licensePlate || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+    (fleet?.driver?.name || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+  const filteredSosData = activeSosItems;
+  const filteredHistoryData = historySosItems;
+
+  const dataToDisplay =
+    activeTab === "sos" ? filteredSosData : filteredHistoryData;
+  const totalActiveSos = activeSosItems.length;
+
+  // Transform raw API data to expected UI format
+  const transformedData = useMemo(() => {
+    return dataToDisplay.map((item) => ({
       ...item,
       fleetId: item.id,
       licensePlate: item.fleet?.licensePlate,
@@ -113,66 +97,7 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
         sosId: item.id,
       },
     }));
-
-    const historyItems = historySosItems.map((item) => ({
-      ...item,
-      fleetId: item.id,
-      licensePlate: item.fleet?.licensePlate,
-      driver: {
-        ...item.driver,
-        name: item.driver?.fullName,
-        profileImage: item.driver?.profileImage,
-        phoneNumber: item.driver?.phoneNumber,
-      },
-      transporter: item.transporter,
-      hasSOSAlert: true,
-      detailSOS: {
-        sosStatus: "RESOLVED",
-        sosId: item.id,
-      },
-    }));
-
-    return [...activeItems, ...historyItems];
-  }, [activeSosItems, historySosItems]);
-
-  // Fungsi filter berdasarkan pencarian
-  const filterFn = (fleet) =>
-    (fleet.licensePlate || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()) ||
-    (fleet?.driver?.name || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-  const filteredSosData = activeSosItems.filter(filterFn);
-  const filteredHistoryData = historySosItems.filter(filterFn);
-
-  const dataToDisplay =
-    activeTab === "sos" ? filteredSosData : filteredHistoryData;
-  const totalActiveSos = activeSosItems.length;
-
-  // Group fleets by transporter
-  const groupedFleets = useMemo(() => {
-    const filtered = dataToDisplay.filter(filterFn);
-
-    if (filtered.length === 0) {
-      return [];
-    }
-
-    const groups = filtered.reduce((acc, fleet) => {
-      const key = fleet.transporter?.id || fleet.id;
-      if (!acc[key]) {
-        acc[key] = {
-          transporter: fleet.transporter,
-          fleets: [],
-        };
-      }
-      acc[key].fleets.push(fleet);
-      return acc;
-    }, {});
-
-    return Object.values(groups);
-  }, [dataToDisplay, searchTerm]);
+  }, [dataToDisplay]);
 
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
@@ -193,12 +118,8 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
     setSelectedFleet(null);
   };
 
-  const handleOpenHubungiModal = (transporter) => {
-    setSelectedTransporter({
-      transporterId: transporter.transporterId || transporter.id,
-      companyName: transporter.companyName,
-      phoneNumber: transporter.phoneNumber,
-    });
+  const handleOpenHubungiModal = (fleet) => {
+    setSelectedFleetForContact(fleet);
     setIsHubungiModalOpen(true);
   };
 
@@ -315,17 +236,26 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
           </div>
         ) : dataToDisplay.length > 0 ? (
           <div className="space-y-3">
-            {dataToDisplay.map((fleet) => (
+            {transformedData.map((fleet, index) => (
               <Card
-                key={fleet.fleetId}
+                key={`${activeTab}-${fleet.fleetId || index}`}
                 className="border-neutral-400 p-0 !shadow-none"
               >
+                <CardHeader className="border-t-none rounded-t-md bg-red-500 p-1">
+                  <div className="flex items-center justify-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-white" />
+                    <p className="text-center text-xs font-semibold text-white">
+                      Laporan belum diproses Transporter
+                    </p>
+                  </div>
+                </CardHeader>
+
                 <CardHeader className="border-neutral-400 bg-[#FFE9ED] !p-0">
                   <div className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
                       <AvatarDriver
                         image={
-                          fleet.driver?.profileImage ||
+                          fleet.transporter?.logoUrl ||
                           "https://picsum.photos/200/300"
                         }
                         withIcon={false}
@@ -335,62 +265,53 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                       />
                       <div>
                         <h3 className="text-base font-bold">
-                          {fleet.driver?.name || "Driver Tidak Ditemukan"}
+                          {fleet.transporter?.companyName ||
+                            "Driver Tidak Ditemukan"}
                         </h3>
                         <div className="flex items-center gap-1 pt-2 text-xs text-neutral-700">
-                          <ImageComponent
-                            src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                            width={16}
-                            height={16}
-                          />
-                          <span>{fleet.licensePlate || "N/A"}</span>
-                          <li className="flex items-center gap-1 pl-[26px]">
+                          <button
+                            onClick={() => handleOpenHubungiModal(fleet)}
+                            className="flex items-center gap-1 text-sm font-medium text-primary-700"
+                          >
                             <IconComponent
-                              src="/icons/ellipse-7.svg"
-                              height={3}
-                              width={2}
-                              alt="list-bullet"
+                              src="/icons/call-blue.svg"
+                              width={16}
+                              height={16}
                             />
-                            <button
-                              onClick={() =>
-                                handleOpenHubungiModal({
-                                  transporterId: fleet.transporter?.id,
-                                  companyName:
-                                    fleet.transporter?.companyName || "N/A",
-                                  phoneNumber:
-                                    fleet.driver?.phoneNumber || "N/A",
-                                })
-                              }
-                              className="flex items-center gap-1 text-sm font-medium text-primary-700"
-                            >
-                              <IconComponent
-                                src="/icons/call-blue.svg"
-                                width={16}
-                                height={16}
-                              />
-                              <span>Hubungi</span>
-                            </button>
-                          </li>
+                            <span>Hubungi</span>
+                          </button>
                         </div>
                       </div>
+                    </div>
+                    {/* Countdown Display */}
+                    <div className="rounded-lg border border-red-500 bg-white px-3 py-1">
+                      <span className="text-sm font-medium text-red-500">
+                        {fleet.countdownMinutes !== undefined &&
+                        fleet.countdownMinutes !== null
+                          ? fleet.countdownMinutes < 0
+                            ? `- ${Math.abs(fleet.countdownMinutes)}:${String(Math.floor((Math.abs(fleet.countdownMinutes) % 1) * 60)).padStart(2, "0")}`
+                            : `${Math.floor(fleet.countdownMinutes)}:${String(Math.floor((fleet.countdownMinutes % 1) * 60)).padStart(2, "0")}`
+                          : "N/A"}
+                      </span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="border-neutral-400 !p-0 !pt-3">
                   <div className="space-y-3 px-4 pb-4">
                     <div
-                      key={fleet.fleetId}
+                      key={`content-${fleet.fleetId || index}`}
                       onClick={() => handleFleetCardClick(fleet)}
                       className="cursor-pointer"
                     >
-                      <CardFleet
-                        key={fleet.fleetId}
+                      <CardFleetSOS
+                        key={`card-${fleet.fleetId || index}`}
                         fleet={fleet}
                         isExpanded={expandedId === fleet.fleetId}
                         onToggleExpand={toggleExpanded}
                         onOpenDriverModal={handleOpenDriverModal}
                         isSOS={fleet?.detailSOS?.sosStatus === "NEW"}
                         onAcknowledge={handleAcknowledge}
+                        onOpenHubungiModal={handleOpenHubungiModal}
                       />
                     </div>
                   </div>
@@ -433,11 +354,50 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
           title="Pasangkan Driver"
         />
       )}
-      {isHubungiModalOpen && selectedTransporter && (
+      {isHubungiModalOpen && selectedFleetForContact && (
         <HubungiModal
           isOpen={isHubungiModalOpen}
           onClose={() => setIsHubungiModalOpen(false)}
-          transporterData={selectedTransporter}
+          showInitialChoice={true}
+          transporterContacts={[
+            // PIC contacts
+            ...(selectedFleetForContact?.transporter?.id
+              ? [
+                  {
+                    label: "PIC 1",
+                    name: "Alexander",
+                    role: "Staf Admin Operasional",
+                    phone: "0821-2345-6869",
+                  },
+                  {
+                    label: "PIC 2",
+                    name: "Alexander krisna indra candra",
+                    role: "Staf Admin Operasional",
+                    phone: "0821-2345-8686",
+                  },
+                  {
+                    label: "No. Telepon Perusahaan",
+                    name: "",
+                    role: "",
+                    phone: "021-5550-1234",
+                  },
+                  {
+                    label: "No. Darurat",
+                    name: "Candra Ariansyah",
+                    role: "Koordinator Staf Admin Operasional",
+                    phone: "0812-9876-5432",
+                  },
+                ]
+              : []),
+          ]}
+          driverContacts={[
+            {
+              label: "Driver",
+              name: selectedFleetForContact?.driver?.fullName || "N/A",
+              role: "",
+              phone: selectedFleetForContact?.driver?.phoneNumber || "-",
+            },
+          ]}
         />
       )}
     </div>

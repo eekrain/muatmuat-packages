@@ -29,6 +29,8 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [showTermsAlert, setShowTermsAlert] = useState(false);
   const [showPartialAlert, setShowPartialAlert] = useState(false);
+  const [showAlertExceedFleetUnit, setShowAlertExceedFleetUnit] =
+    useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalType, setModalType] = useState(""); // "taken", "unit-change", "suspended"
   const [modalData, setModalData] = useState({});
@@ -244,7 +246,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               <span className="mb-3 text-xs font-medium text-gray-600">
                 Kebutuhan Armada :
                 <span className="ml-1 text-xs font-semibold text-gray-900">
-                  {detail.truckCount || 2} Unit
+                  {detail.truckCount} Unit
                 </span>
               </span>
 
@@ -295,19 +297,27 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                       onChange={(e) => {
                         if (selectedOption === "partial") {
                           const val = e.target.value;
+                          // Convert to number for comparison
+                          const numVal = val === "" ? null : Number(val);
                           setPartialCount(val === "" ? null : val);
                           setShowPartialAlert(false);
+                          if (numVal !== null && numVal > detail.truckCount) {
+                            setShowAlertExceedFleetUnit(true);
+                          } else {
+                            setShowAlertExceedFleetUnit(false);
+                          }
                         }
                       }}
                       disabled={selectedOption !== "partial"}
                       className={cn(
-                        "h-8 w-[65px] rounded p-3 text-center text-xs font-medium text-neutral-600",
-                        showPartialAlert && selectedOption === "partial"
+                        "h-8 w-[65px] rounded p-3 text-center text-xs font-medium text-neutral-900",
+                        (showPartialAlert && selectedOption === "partial") ||
+                          showAlertExceedFleetUnit
                           ? "border border-error-400"
                           : "border border-neutral-600"
                       )}
                     />
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-xs font-medium text-gray-900">
                       unit armada
                     </span>
                   </div>
@@ -323,6 +333,11 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               {showPartialAlert && (
                 <p className="mt-3 px-7 text-xs font-medium text-error-400">
                   Jumlah armada wajib diisi
+                </p>
+              )}
+              {showAlertExceedFleetUnit && (
+                <p className="mt-3 px-7 text-xs font-medium text-error-400">
+                  Jumlah armada melebihi kebutuhan
                 </p>
               )}
             </div>
@@ -341,7 +356,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               <div className="mb-4 flex justify-between">
                 <div className="flex gap-2">
                   {detail?.orderType && (
-                    <span className="flex h-6 items-center rounded-[6px] bg-blue-100 px-2 py-2 text-xs font-semibold text-blue-700">
+                    <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700">
                       {detail.orderType === "INSTANT"
                         ? "Instan"
                         : detail.orderType === "SCHEDULED"
@@ -350,7 +365,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                     </span>
                   )}
                   {detail?.timeLabel && (
-                    <span className="flex h-6 items-center rounded-[6px] bg-green-100 px-2 py-2 text-xs font-semibold text-green-700">
+                    <span className="flex h-6 items-center rounded-[6px] bg-success-50 px-2 py-2 text-xs font-semibold text-success-400">
                       {typeof detail.timeLabel === "object"
                         ? detail.timeLabel.text
                         : detail.timeLabel}
@@ -358,7 +373,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   )}
                   {(detail?.hasOverload ||
                     detail?.overloadInfo?.hasOverload) && (
-                    <span className="flex h-6 items-center rounded-[6px] bg-red-100 px-2 py-2 text-xs font-semibold text-red-700">
+                    <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 py-2 text-xs font-semibold text-error-400">
                       Potensi Overload
                     </span>
                   )}
@@ -467,7 +482,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                         <>
                           {detail.cargos[0]?.name || "Peralatan Tangga"},{" "}
                           <InfoTooltip
-                            side="bottom"
+                            side="top"
                             align="start"
                             sideOffset={8}
                             trigger={
@@ -624,8 +639,6 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
         withCancel={false}
         confirm={{
           text: modalType === "suspended" ? "Hubungi Customer Service" : "OK",
-          className:
-            "bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700",
           onClick: () => {
             setShowConfirmModal(false);
 

@@ -48,20 +48,20 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
 
   // Helper functions
   const getOrderTypeStyle = (orderType) => {
-    if (orderType === "INSTANT") return "bg-green-50 text-green-700";
-    if (orderType === "SCHEDULED") return "bg-blue-50 text-blue-700";
+    if (orderType === "INSTANT") return "bg-success-50 text-success-400";
+    if (orderType === "SCHEDULED") return "bg-primary-50 text-primary-700";
     return "bg-primary-50 text-primary-700";
   };
   const getTimeLabelStyle = (timeLabelText) => {
     if (!timeLabelText) return "bg-primary-50 text-primary-700";
     const lowerText = timeLabelText.toLowerCase();
     if (lowerText.includes("hari ini") || lowerText.includes("besok"))
-      return "bg-green-50 text-green-700";
+      return "bg-success-50 text-success-400";
     const dayMatch = lowerText.match(/muat (\d+) hari/);
     if (dayMatch) {
       const days = parseInt(dayMatch[1]);
-      if (days >= 2 && days <= 5) return "bg-yellow-50 text-yellow-700";
-      if (days > 5) return "bg-blue-50 text-blue-700";
+      if (days >= 2 && days <= 5) return "bg-warning-100 text-warning-900";
+      if (days > 5) return "bg-primary-50 text-primary-700";
     }
     return "bg-primary-50 text-primary-700";
   };

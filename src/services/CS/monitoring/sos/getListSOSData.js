@@ -278,7 +278,7 @@ export const getListSOSData = async (params = {}) => {
   }
 
   return {
-    data: result?.data || {},
+    data: result,
     raw: result,
   };
 };
@@ -288,14 +288,16 @@ export const useGetListSOSData = (params = {}) => {
     [`getListSOSData`, params],
     () => getListSOSData(params),
     {
-      refreshInterval: 60000, // Refresh every 1 minute for SOS list
+      refreshInterval: 60000, // Refresh every 1 minute for real-time SOS data
       revalidateOnFocus: true,
       revalidateOnReconnect: true,
+      errorRetryCount: 3,
+      errorRetryInterval: 10000,
     }
   );
 
   return {
-    data: data || {}, // Remove extra .data access
+    data: data?.data || {},
     raw: data?.raw,
     isLoading,
     isError: !!error,
