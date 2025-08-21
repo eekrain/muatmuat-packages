@@ -563,11 +563,12 @@ export const fetcherTransportRequestList = async (params = {}) => {
       return result.data.Data;
     }
 
-    // Simpan semua request original dan inject isSuspended from userStatus
+    // Simpan semua request original dan inject isSuspended & isHalalCertified from userStatus
     const userStatus = result.data.Data.userStatus || {};
     const originalRequests = result.data.Data.requests.map((req) => ({
       ...req,
       isSuspended: userStatus.isSuspended,
+      isHalalCertified: userStatus.isHalalCertified,
     }));
 
     // Hitung tabCounts sekali di awal
