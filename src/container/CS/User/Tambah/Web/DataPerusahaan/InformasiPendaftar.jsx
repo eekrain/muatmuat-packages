@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ import { normalizePostalCodeData } from "@/hooks/use-location/normalizer";
 import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";
+import { useGetMasterBanks } from "@/services/CS/master/getBankMasters";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
@@ -65,14 +66,7 @@ const informasiPendaftarSchema = v.object({
     v.string(),
     v.minLength(1, "Nama Perusahaan wajib diisi")
   ),
-  businessEntityType: v.pipe(
-    v.string(),
-    v.nonEmpty("Badan Usaha wajib diisi"),
-    v.enum(
-      ["PT", "CV", "UD", "Koperasi", "Lainnya"],
-      "Bentuk usaha tidak valid"
-    )
-  ),
+  businessEntityType: v.pipe(v.string(), v.nonEmpty("Badan Usaha wajib diisi")),
   companyPhone: v.pipe(
     v.string(),
     v.minLength(1, "Nomor telepon wajib diisi"),
@@ -131,6 +125,8 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     state.getForm(FORM_KEY)
   );
 
+  console.log(initialData?.registrantName);
+
   const {
     setValue,
     handleSubmit,
@@ -142,35 +138,37 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     watch,
   } = useForm({
     resolver: valibotResolver(informasiPendaftarSchema),
-    defaultValues: initialData || {
-      transporterId: "uuid-transporter",
-      registrantName: "",
-      registrantPosition: "",
-      registrantWhatsapp: "",
-      registrantEmail: "",
-      companyLogo: "",
-      companyName: "",
-      businessEntityType: "",
-      companyPhone: "",
-      companyAddress: "",
-      locationData: {
-        latitude: 7.2575,
-        longitude: 112.7521,
-        location: "",
-        district: "",
-        city: "",
-        cityId: "",
-        province: "",
-        provinceId: "",
-        postalCode: "",
-        placeId: "",
-        kecamatanList: [], // Tambahkan ini
-        postalCodeList: [], // Tambahkan ini
-      },
-      bankId: "",
-      accountNumber: "",
-      accountName: "",
-    },
+    defaultValues: initialData?.registrantName
+      ? initialData
+      : {
+          transporterId: "uuid-transporter",
+          registrantName: "",
+          registrantPosition: "",
+          registrantWhatsapp: "",
+          registrantEmail: "",
+          companyLogo: "",
+          companyName: "",
+          businessEntityType: "",
+          companyPhone: "",
+          companyAddress: "",
+          locationData: {
+            latitude: 7.2575,
+            longitude: 112.7521,
+            location: "",
+            district: "",
+            city: "",
+            cityId: "",
+            province: "",
+            provinceId: "",
+            postalCode: "",
+            placeId: "",
+            kecamatanList: [], // Tambahkan ini
+            postalCodeList: [], // Tambahkan ini
+          },
+          bankId: "",
+          accountNumber: "",
+          accountName: "",
+        },
   });
 
   console.log(errors);
@@ -351,19 +349,12 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   };
 
   const badanUsahaOptions = [
-    { label: "PT (Perseroan Terbatas)", value: "PT" },
-    { label: "CV (Commanditaire Vennootschap)", value: "CV" },
-    { label: "UD (Usaha Dagang)", value: "UD" },
+    { label: "PT / PT Tbk", value: "PT / PT Tbk" },
+    { label: "PT Perorangan", value: "PT Perorangan" },
+    { label: "Koperasi", value: "Koperasi" },
+    { label: "Firma", value: "Firma" },
     { label: "Koperasi", value: "Koperasi" },
     { label: "Lainnya", value: "Lainnya" },
-  ];
-
-  const bankOptions = [
-    { label: "Bank BCA", value: "bca" },
-    { label: "Bank BNI", value: "bni" },
-    { label: "Bank BRI", value: "bri" },
-    { label: "Bank Mandiri", value: "mandiri" },
-    { label: "Bank CIMB Niaga", value: "cimb" },
   ];
 
   const handleLocationInteraction = (isModal = false) => {
@@ -472,6 +463,27 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     await uploadLogoTrigger(formData);
   };
 
+  const {
+    data: banksData,
+    isLoading: isBankLoading,
+    error: bankError,
+  } = useGetMasterBanks({ limit: 100, page: 1, search: "" });
+
+  const bankOptions = useMemo(() => {
+    console.log("HALOO", banksData);
+    if (bankError) {
+      toast.error("Gagal memuat daftar bank.");
+      return [];
+    }
+    if (!banksData?.Data?.banks) {
+      return [];
+    }
+    return banksData.Data.banks.map((bank) => ({
+      label: bank.bankName,
+      value: bank.id,
+    }));
+  }, [banksData, bankError]);
+
   const handleMapPositionChange = (newCoordinates) => {
     setCoordinates(newCoordinates);
 
@@ -571,6 +583,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
                 value={watchedValues.businessEntityType}
                 onChange={(value) => setValue("businessEntityType", value)}
                 placeholder="Pilih Badan Usaha"
+                contentClassName="!max-h-[190px] !overflow-y-auto"
                 errorMessage={errors.businessEntityType?.message}
               />
 
@@ -666,7 +679,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
               <div>
                 <button
                   type="button"
-                  className="relative h-[154px] w-[80%] overflow-hidden rounded-lg"
+                  className="relative h-[154px] w-[262px] overflow-hidden rounded-lg"
                   onClick={() => setIsLocationModalOpen(true)}
                 >
                   <MapContainer

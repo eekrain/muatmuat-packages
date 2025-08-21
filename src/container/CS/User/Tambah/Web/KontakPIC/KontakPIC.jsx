@@ -143,7 +143,7 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
       });
     }
 
-    if (pic2.phone === pic3.phone) {
+    if (pic2.phone.length && pic3.phone.length && pic2.phone === pic3.phone) {
       hasError = true;
       setError("contacts.1.phone", {
         type: "manual",
