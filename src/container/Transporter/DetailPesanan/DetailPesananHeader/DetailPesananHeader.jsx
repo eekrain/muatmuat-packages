@@ -1,8 +1,12 @@
+// referensi : https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=827-101729&t=NgdDLUIPMZQKBhuh-4
 import { usePathname, useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
+
+import AlertProsesCariArmada from "./components/AlertProsesCariArmada";
+import AlertResponPerubahan from "./components/AlertResponPerubahan";
 
 const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   // Nanti disesuaikan Lagi
@@ -27,6 +31,7 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
         <div className="flex items-center gap-x-3">
           {[
             // Referensi: LDN-351
+            // Harusnya Ada Case Button "unduh DO" tidak muncul untuk SCHEDULED_FLEET. Reference : LDZ-11.7
             ORDER_STATUS.SCHEDULED_FLEET,
             // Referensi: LDN-334
             ORDER_STATUS.NEED_ASSIGN_FLEET,
@@ -54,13 +59,14 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
           ) : null}
           {[
             // Referensi: LDN-333
+            // Harusnya Ada Case Button "unduh Batalkan" Pesanan tidak muncul untuk SCHEDULED_FLEET. referensi :
             ORDER_STATUS.SCHEDULED_FLEET,
             // Referensi: LDN-334
             ORDER_STATUS.NEED_ASSIGN_FLEET,
             // Referensi: LDN-336
             ORDER_STATUS.NEED_CONFIRMATION_READY,
             // Referensi: LDN-337
-            ORDER_STATUS.NEED_CHANGE_RESPONSE,
+            // ORDER_STATUS.NEED_CHANGE_RESPONSE,
           ].includes(dataOrderDetail?.orderStatus) &&
             dataOrderDetail?.orderStatus !== ORDER_STATUS.HEADING_TO_LOADING &&
             dataOrderDetail?.orderStatus !==
@@ -79,22 +85,16 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
             )}
         </div>
       </div>
-      {/* {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
-        <div
-          className={
-            "mt-4 flex items-center gap-[2px] rounded-lg bg-secondary-100 px-6 py-4 text-xs font-medium text-neutral-900"
-          }
-        >
-          <IconComponent
-            src={"/icons/warning-kuning.svg"}
-            className={"mr-1 flex-shrink-0"}
-            width={24}
-            height={24}
-          />
-          Terdapat perubahan pesanan dari shipper, mohon pelajari perubahannya
-          dan segera beri respon
-        </div>
-      )} */}
+
+      {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+        <AlertResponPerubahan />
+      )}
+
+      {/* Referensi: LDN-12.2 */}
+      {/* kondisi muncul masih perlu disesuaikan */}
+      {dataOrderDetail?.orderStatus === ORDER_STATUS.WAITING_CHANGE_FLEET && (
+        <AlertProsesCariArmada />
+      )}
     </div>
   );
 };

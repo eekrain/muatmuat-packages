@@ -13,7 +13,6 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
-// --- (1) UNCOMMENT baris ini ---
 import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
@@ -51,7 +50,6 @@ function CardLacakArmada({
   const [isUbahArmadaModalOpen, setIsUbahArmadaModalOpen] = useState(false);
   const [isSubmittingUbahArmada, setIsSubmittingUbahArmada] = useState(false);
 
-  // --- (2) TAMBAHKAN state untuk AlasanPembatalanModal ---
   const [isAlasanPembatalanModalOpen, setIsAlasanPembatalanModalOpen] =
     useState(false);
 
@@ -78,6 +76,17 @@ function CardLacakArmada({
       status: "CANCELED",
       icon: "/icons/silang-white.svg",
     },
+  ];
+
+  const changeFleetSteps = [
+    { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
+    { label: "Proses Muat", icon: "/icons/muatan16.svg" },
+    { label: "Proses Bongkar", icon: "/icons/stepper/stepper-box-opened.svg" },
+    {
+      label: "Proses Pergantian Armada",
+      icon: "/icons/stepper/stepper-fleet-change.svg",
+    },
+    { label: "Selesai", icon: "/icons/check16.svg" },
   ];
 
   // Fungsi untuk menentukan apakah status adalah pembatalan
@@ -117,8 +126,12 @@ function CardLacakArmada({
 
   const activeIndex = getActiveIndex(status);
 
-  // Pilih steps berdasarkan status
-  const currentSteps = isCancelledStatus(status) ? cancelledSteps : steps;
+  // Pilih steps berdasarkan status (masih perlu disesuaikan)
+  const currentSteps = isCancelledStatus(status)
+    ? cancelledSteps
+    : false
+      ? changeFleetSteps
+      : steps;
 
   // --- Handlers Ubah Driver ---
   const handleOpenDriverModal = () => setIsDriverModalOpen(true);
@@ -128,7 +141,6 @@ function CardLacakArmada({
     handleCloseDriverModal();
   };
 
-  // --- (3) UBAH handler Batalkan Armada ---
   const handleCancelFleet = () => setIsBatalkanArmadaPopupOpen(true);
   const handleConfirmCancelFleet = () => {
     // Tutup popup pertama
@@ -137,7 +149,6 @@ function CardLacakArmada({
     setIsAlasanPembatalanModalOpen(true);
   };
 
-  // --- (4) TAMBAHKAN handler untuk AlasanPembatalanModal ---
   const handleCloseAlasanPembatalanModal = () => {
     setIsAlasanPembatalanModalOpen(false);
   };
@@ -164,7 +175,6 @@ function CardLacakArmada({
   const [isSOS] = useState(false);
 
   const getStatusLabel = (s) => {
-    // ... (kode tidak berubah)
     switch (s) {
       case ORDER_STATUS.COMPLETED:
         return "Selesai";
@@ -186,6 +196,10 @@ function CardLacakArmada({
         return "Dibatalkan Shipper";
       case ORDER_STATUS.CANCELLED_BY_SYSTEM:
         return "Dibatalkan Sistem";
+      case ORDER_STATUS.WAITING_CHANGE_FLEET:
+        return "Menunggu Armada Pengganti";
+      case ORDER_STATUS.FLEET_FOUND:
+        return "Muatan Pindah Armada";
       default:
         return "Armada Dijadwalkan";
     }
@@ -221,8 +235,7 @@ function CardLacakArmada({
   return (
     <>
       <div className="flex w-full flex-col gap-4 rounded-xl border border-neutral-400 bg-neutral-50 p-4">
-        {/* ... (kode JSX header dan info driver tidak berubah) ... */}
-        {/* Header + Aksi */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {status !== ORDER_STATUS.DOCUMENT_PREPARATION &&
@@ -296,40 +309,87 @@ function CardLacakArmada({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          {/* Driver Info */}
-          <div className="flex w-[360px] items-center gap-3">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border-neutral-400 bg-neutral-100">
-              <img
-                src={vehicleImageUrl || "/img/truck.png"}
-                alt="Truck"
-                className="h-14 w-14 rounded-md bg-gray-100 object-cover"
-              />
-            </div>
-            <div className="flex flex-col">
-              <h3 className="mb-1 text-sm font-bold text-neutral-900">
-                {plateNumber || "B 2222 XYZ"}
-              </h3>
-              <div className="flex items-center gap-2">
-                <IconComponent
-                  src="/icons/user16.svg"
-                  width={16}
-                  height={16}
-                  className="flex-shrink-0 text-neutral-500"
+          <div className="flex items-center gap-2">
+            {/* Driver Info */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center">
+                <img
+                  src={vehicleImageUrl || "/img/truck.png"}
+                  alt="Truck"
+                  className="rounded-lg border-neutral-400 object-cover"
                 />
-                <span
-                  className="line-clamp-2 max-w-[280px] text-[12px] font-medium leading-4 text-neutral-900"
-                  title={driverName || "Muklason"}
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {driverName || "Muklason"}
-                </span>
               </div>
+              <div className="flex w-32 flex-col gap-3">
+                <h3 className="text-xs font-bold text-neutral-900">
+                  {plateNumber || "B 2222 XYZ"}
+                </h3>
+                <div className="flex items-center gap-1">
+                  <IconComponent
+                    src="/icons/user16.svg"
+                    width={16}
+                    height={16}
+                    className="flex-shrink-0 text-neutral-500"
+                  />
+                  <span
+                    className="line-clamp-2 max-w-[280px] text-[12px] font-medium leading-4 text-neutral-900"
+                    title={driverName || "Muklason"}
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {driverName || "Muklason"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <IconComponent
+              src="/icons/arrow-right.svg"
+              className="text-neutral-700"
+              width={24}
+              height={24}
+            />
+            {/* Armada Pengganti */}
+            <div className="flex items-center gap-3">
+              {false && (
+                <p className="text-xs text-neutral-600">
+                  Armada pengganti <br /> sedang dalam proses <br /> pencarian
+                </p>
+              )}
+
+              {true && (
+                <div className="flex items-center gap-3">
+                  <div className="flex w-32 flex-col gap-3">
+                    <h3 className="text-xs font-bold text-neutral-900">
+                      {plateNumber || "Plat Nomor"}
+                    </h3>
+                    <div className="flex items-center gap-1">
+                      <IconComponent
+                        src="/icons/user16.svg"
+                        width={16}
+                        height={16}
+                        className="flex-shrink-0 text-neutral-500"
+                      />
+                      <span
+                        className="line-clamp-2 max-w-[280px] text-[12px] font-medium leading-4 text-neutral-900"
+                        title={driverName || "Nama Driver"}
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {driverName || "Nama Driver"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
