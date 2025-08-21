@@ -40,9 +40,13 @@ const PesananActionBar = ({
   };
 
   const noData = totalItems === 0;
-  const disableSearch = loading || (noData && lastAction !== "search");
-  const disableFilter = loading || (noData && lastAction !== "filter");
-  const disableUrgent = loading || (noData && lastAction !== "urgent");
+  const disableSearch =
+    loading || (noData && lastAction !== "search" && localSearch === "");
+  const disableFilter =
+    loading || (noData && lastAction !== "filter" && activeFilters);
+  const disableUrgent =
+    loading ||
+    (noData && lastAction !== "urgent" && urgentStatusFilter === "all");
   const disableSort = loading || noData;
   const disableViewBy = loading || noData;
 
