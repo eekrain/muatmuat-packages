@@ -1,25 +1,38 @@
+import PropTypes from "prop-types";
+
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
-// --- Mock Data ---
-const legalityItems = [
-  { type: "status", label: "NIB" },
-  { type: "number", label: "No. NIB", value: "9120000792674" },
-  { type: "status", label: "NPWP Perusahaan" },
-  { type: "number", label: "No. NPWP Perusahaan", value: "0925429434070004" },
-  { type: "status", label: "KTP Pendaftar/Pemegang Akun" },
-  {
-    type: "number",
-    label: "No. KTP Pendaftar/Pemegang Akun",
-    value: "01679765443368363",
-  },
-  { type: "status", label: "Cover Akta Pendirian" },
-  { type: "status", label: "SK Kemenkumham dari Akta Pendirian" },
-  { type: "status", label: "Cover Akta Perubahan" },
-  { type: "status", label: "SK Kemenkumham dari Akta Perubahan" },
-  { type: "status", label: "Sertifikat Standar" },
-];
+// --- Function to get legality items from transporter data ---
+const getLegalityItems = (transporter) => {
+  // Use data from transporter prop with fallback to hardcoded data
+  return [
+    { type: "status", label: "NIB" },
+    {
+      type: "number",
+      label: "No. NIB",
+      value: transporter?.businessLicenseNumber || "9120000792674",
+    },
+    { type: "status", label: "NPWP Perusahaan" },
+    {
+      type: "number",
+      label: "No. NPWP Perusahaan",
+      value: transporter?.taxId || "0925429434070004",
+    },
+    { type: "status", label: "KTP Pendaftar/Pemegang Akun" },
+    {
+      type: "number",
+      label: "No. KTP Pendaftar/Pemegang Akun",
+      value: transporter?.ktpNumber || "01679765443368363",
+    },
+    { type: "status", label: "Cover Akta Pendirian" },
+    { type: "status", label: "SK Kemenkumham dari Akta Pendirian" },
+    { type: "status", label: "Cover Akta Perubahan" },
+    { type: "status", label: "SK Kemenkumham dari Akta Perubahan" },
+    { type: "status", label: "Sertifikat Standar" },
+  ];
+};
 
 /**
  * A reusable row component for displaying a single legality item.
@@ -65,7 +78,9 @@ const LegalityRow = ({ label, value, type, isStriped }) => {
 /**
  * The main component that displays the company's legality information.
  */
-const CompanyLegality = () => {
+const CompanyLegality = ({ transporter }) => {
+  const legalityItems = getLegalityItems(transporter);
+
   return (
     <Card className="max-h-fit border-neutral-400 bg-white p-0">
       <div className="border-b border-neutral-200 px-6 py-4">
@@ -87,6 +102,10 @@ const CompanyLegality = () => {
       </div>
     </Card>
   );
+};
+
+CompanyLegality.propTypes = {
+  transporter: PropTypes.object,
 };
 
 export default CompanyLegality;

@@ -6,11 +6,18 @@ import { AlertTriangle, Loader2, X } from "lucide-react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
+import Button from "@/components/Button/Button";
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardFleetSOS from "@/components/Card/CardFleetSOS";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import Dropdown from "@/components/Dropdown/Dropdown";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/Popover/Popover";
 import Search from "@/components/Search/Search";
 import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
 import { useGetHistoryDataSOS } from "@/services/CS/monitoring/sos/getHistoryDataSOS";
@@ -24,7 +31,15 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
   const [selectedFleet, setSelectedFleet] = useState(null);
   const [activeTab, setActiveTab] = useState("sos"); // 'sos' | 'all'
   const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
+  const [isDriverHubungiModalOpen, setIsDriverHubungiModalOpen] =
+    useState(false);
   const [selectedFleetForContact, setSelectedFleetForContact] = useState(null);
+  const [filterValues, setFilterValues] = useState({
+    truck: [],
+    order: [],
+    transporter: [],
+  });
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
 
   // Fetch active SOS data using getListSOSData API
   const {
@@ -63,16 +78,21 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
   }, [activeSosItems, historySosItems]);
 
   // Fungsi filter berdasarkan pencarian
-  const filterFn = (fleet) =>
-    (fleet.licensePlate || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()) ||
-    (fleet?.driver?.name || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  const filterFn = (fleet) => {
+    if (!searchTerm) return true;
 
-  const filteredSosData = activeSosItems;
-  const filteredHistoryData = historySosItems;
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (fleet.licensePlate || "").toLowerCase().includes(searchLower) ||
+      (fleet?.driver?.fullName || "").toLowerCase().includes(searchLower) ||
+      (fleet?.transporter?.companyName || "")
+        .toLowerCase()
+        .includes(searchLower)
+    );
+  };
+
+  const filteredSosData = activeSosItems.filter(filterFn);
+  const filteredHistoryData = historySosItems.filter(filterFn);
 
   const dataToDisplay =
     activeTab === "sos" ? filteredSosData : filteredHistoryData;
@@ -121,6 +141,11 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
   const handleOpenHubungiModal = (fleet) => {
     setSelectedFleetForContact(fleet);
     setIsHubungiModalOpen(true);
+  };
+
+  const handleOpenDriverHubungiModal = (fleet) => {
+    setSelectedFleetForContact(fleet);
+    setIsDriverHubungiModalOpen(true);
   };
 
   const handleFleetCardClick = (fleet) => {
@@ -174,14 +199,137 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
 
       {/* Search */}
       <div className="mb-4 px-4">
-        <Search
-          placeholder="Cari No. Polisi / Nama Driver"
-          onSearch={setSearchTerm}
-          autoSearch={true}
-          debounceTime={300}
-          defaultValue={searchTerm}
-          inputClassName="min-w-full"
-        />
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <Search
+              placeholder="Cari No. Polisi / Driver / Transporter"
+              onSearch={setSearchTerm}
+              autoSearch={true}
+              debounceTime={300}
+              defaultValue={searchTerm}
+              inputClassName="min-w-full"
+            />
+          </div>
+          <Popover
+            open={isFilterPopoverOpen}
+            onOpenChange={setIsFilterPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="muattrans-outline-primary"
+                iconLeft={
+                  <IconComponent
+                    src="/icons/monitoring/filter.svg"
+                    className="size-4"
+                  />
+                }
+              >
+                Filter
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-[300px] rounded-xl border-0 bg-white p-0 shadow-lg"
+              align="center"
+              sideOffset={16}
+            >
+              {/* Arrow pointing upward */}
+              <div
+                className="absolute"
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderStyle: "solid",
+                  borderWidth: "0 12px 12px 12px",
+                  borderColor: "transparent transparent white transparent",
+                  top: "-12px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                }}
+              />
+
+              <div className="flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4">
+                  <h3 className="text-base font-bold text-black">Filter SOS</h3>
+                  <button
+                    onClick={() => {
+                      setIsFilterPopoverOpen(false);
+                    }}
+                    className="text-neutral-400 hover:text-neutral-600"
+                  >
+                    <IconComponent
+                      src="/icons/silang.svg"
+                      width={16}
+                      height={16}
+                      className="h-4 w-4"
+                    />
+                  </button>
+                </div>
+
+                {/* Transporter Filter Section */}
+                <div className="px-6 pb-4">
+                  <label className="mb-3 block text-sm font-medium">
+                    Transporter
+                  </label>
+                  <Dropdown
+                    className="!w-[250px]"
+                    options={[
+                      { name: "Truk Jaya Abadi", value: "truk-jaya" },
+                      { name: "Siba Surya", value: "siba-surya" },
+                      { name: "PT. Laju Logistik", value: "laju-logistik" },
+                      {
+                        name: "CV Surabaya Logistik",
+                        value: "surabaya-logistik",
+                      },
+                      { name: "Logisdong", value: "logisdong" },
+                    ]}
+                    placeholder="Semua Transporter"
+                    searchPlaceholder="Cari Transporter"
+                    isMultipleSelected={true}
+                    onSelected={(selected) => {
+                      const transporterIds = selected.map((item) => item.value);
+                      setFilterValues((prev) => ({
+                        ...prev,
+                        transporter: transporterIds,
+                      }));
+                    }}
+                    onSearchValue={() => {}}
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-end gap-3 border-t border-gray-300 px-6 py-4">
+                  <Button
+                    variant="muattrans-primary-secondary"
+                    size="small"
+                    onClick={() => {
+                      setFilterValues({
+                        truck: [],
+                        order: [],
+                        transporter: [],
+                      });
+                    }}
+                    className="min-w-[112px]"
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    variant="muattrans-primary"
+                    size="small"
+                    onClick={() => {
+                      console.log("Applied filters:", filterValues);
+                      // TODO: Implement actual filtering logic for SOS data
+                      setIsFilterPopoverOpen(false);
+                    }}
+                    className="min-w-[115px]"
+                  >
+                    Tampilkan
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -311,7 +459,7 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                         onOpenDriverModal={handleOpenDriverModal}
                         isSOS={fleet?.detailSOS?.sosStatus === "NEW"}
                         onAcknowledge={handleAcknowledge}
-                        onOpenHubungiModal={handleOpenHubungiModal}
+                        onOpenHubungiModal={handleOpenDriverHubungiModal}
                       />
                     </div>
                   </div>
@@ -319,28 +467,30 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
               </Card>
             ))}
           </div>
-        ) : searchTerm ? (
+        ) : searchTerm && dataToDisplay.length === 0 ? (
           <DataNotFound
-            title="Data tidak ditemukan"
+            title="Keyword Tidak Ditemukan"
             description={`Tidak ada data yang cocok dengan pencarian "${searchTerm}"`}
             type="search"
             className={"h-full"}
           />
-        ) : activeTab === "sos" ? (
-          <DataNotFound
-            title="Belum Ada Laporan SOS"
-            description="Saat ini tidak ada laporan SOS yang perlu ditangani."
-            type="data"
-            className={"h-full"}
-          />
-        ) : (
-          <DataNotFound
-            title="Belum Ada Riwayat Laporan"
-            description="Belum ada riwayat laporan yang tercatat."
-            type="data"
-            className={"h-full"}
-          />
-        )}
+        ) : dataToDisplay.length === 0 ? (
+          activeTab === "sos" ? (
+            <DataNotFound
+              title="Belum Ada Laporan SOS"
+              description="Saat ini tidak ada laporan SOS yang perlu ditangani."
+              type="data"
+              className={"h-full"}
+            />
+          ) : (
+            <DataNotFound
+              title="Belum Ada Riwayat Laporan"
+              description="Belum ada riwayat laporan yang tercatat."
+              type="data"
+              className={"h-full"}
+            />
+          )
+        ) : null}
       </div>
 
       {/* Modal */}
@@ -358,6 +508,52 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
         <HubungiModal
           isOpen={isHubungiModalOpen}
           onClose={() => setIsHubungiModalOpen(false)}
+          showInitialChoice={false}
+          transporterContacts={[
+            // PIC contacts
+            ...(selectedFleetForContact?.transporter?.id
+              ? [
+                  {
+                    label: "PIC 1",
+                    name: "Alexander",
+                    role: "Staf Admin Operasional",
+                    phone: "0821-2345-6869",
+                  },
+                  {
+                    label: "PIC 2",
+                    name: "Alexander krisna indra candra",
+                    role: "Staf Admin Operasional",
+                    phone: "0821-2345-8686",
+                  },
+                  {
+                    label: "No. Telepon Perusahaan",
+                    name: "",
+                    role: "",
+                    phone: "021-5550-1234",
+                  },
+                  {
+                    label: "No. Darurat",
+                    name: "Candra Ariansyah",
+                    role: "Koordinator Staf Admin Operasional",
+                    phone: "0812-9876-5432",
+                  },
+                ]
+              : []),
+          ]}
+          driverContacts={[
+            {
+              label: "Driver",
+              name: selectedFleetForContact?.driver?.fullName || "N/A",
+              role: "",
+              phone: selectedFleetForContact?.driver?.phoneNumber || "-",
+            },
+          ]}
+        />
+      )}
+      {isDriverHubungiModalOpen && selectedFleetForContact && (
+        <HubungiModal
+          isOpen={isDriverHubungiModalOpen}
+          onClose={() => setIsDriverHubungiModalOpen(false)}
           showInitialChoice={true}
           transporterContacts={[
             // PIC contacts

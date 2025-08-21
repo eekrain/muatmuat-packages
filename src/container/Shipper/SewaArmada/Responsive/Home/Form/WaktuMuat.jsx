@@ -270,7 +270,9 @@ const WaktuMuatBottomsheet = ({
           <IconComponent src="/icons/calendar16.svg" />
           <span className="text-sm font-semibold leading-[15.4px]">
             {loadTimeStart ? (
-              <span className="text-neutral-900">{`${formatDate(loadTimeStart)} WIB`}</span>
+              <span className="text-neutral-900">
+                {formatDate(loadTimeStart)}
+              </span>
             ) : (
               <span className="text-neutral-600">
                 {t(
@@ -303,7 +305,9 @@ const WaktuMuatBottomsheet = ({
               <IconComponent src="/icons/calendar16.svg" />
               <span className="text-sm font-semibold leading-[15.4px]">
                 {loadTimeEnd ? (
-                  <span className="text-neutral-900">{`${formatDate(loadTimeEnd)} WIB`}</span>
+                  <span className="text-neutral-900">
+                    {formatDate(loadTimeEnd)}
+                  </span>
                 ) : (
                   <span className="text-neutral-600">
                     {t(

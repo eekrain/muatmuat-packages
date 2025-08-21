@@ -11,6 +11,7 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
+import { useRequestOtpActions } from "@/store/Transporter/forms/requestOtpStore";
 
 const SetPasswordPage = () => {
   const router = useRouter();
@@ -31,6 +32,8 @@ const SetPasswordPage = () => {
     isMutating,
     error,
   } = useVerifyEmailVerification();
+
+  const { initializeFromEmailVerification } = useRequestOtpActions();
 
   const {
     register,
@@ -69,24 +72,23 @@ const SetPasswordPage = () => {
       // Call API
       const response = await verifyEmail(requestBody);
 
-      console.log("Email verification successful:", response);
-      alert(
-        t(
-          "SetPasswordPage.alertPasswordSuccessful",
-          null,
-          "Password berhasil dibuat!"
-        )
-      );
-      router.push("/otp");
+      if (response.data.Message.Code === 201) {
+        // Extract phoneNumber and token from response
+        const { phoneNumber, token: otpToken, expiresIn } = response.data.Data;
+
+        // Initialize OTP store with data from email verification
+        initializeFromEmailVerification({
+          phoneNumber,
+          token: otpToken,
+          expiresIn,
+          redirectUrl: "/dashboard",
+        });
+
+        // Redirect to OTP page without parameters
+        router.push("/otp");
+      }
     } catch (error) {
       console.error("Email verification failed:", error);
-      alert(
-        t(
-          "SetPasswordPage.alertPasswordFailed",
-          null,
-          "Gagal membuat password. Silakan coba lagi."
-        )
-      );
     }
   };
 
@@ -292,9 +294,7 @@ const SetPasswordPage = () => {
             className="mx-auto mt-4 !h-10 w-[200px] text-buyer-seller-900 disabled:text-[#868686]"
             variant={isValid && !isMutating ? "muattrans-primary" : "default"}
           >
-            {isMutating
-              ? t("SetPasswordPage.buttonLoading", null, "Memproses...")
-              : t("SetPasswordPage.buttonContinue", null, "Lanjutkan")}
+            {t("SetPasswordPage.buttonContinue", null, "Lanjutkan")}
           </Button>
         </form>
       </div>

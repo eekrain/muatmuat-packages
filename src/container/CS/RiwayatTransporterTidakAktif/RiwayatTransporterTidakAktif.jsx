@@ -311,6 +311,7 @@ const RiwayatTransporterTidakAktif = () => {
           filters={filters}
           sortConfig={sortConfig}
           isSearch={searchQuery}
+          paginationCounter={true}
         />
       )}
     </div>
