@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { ChevronDown } from "lucide-react";
-import { MoreVertical } from "lucide-react";
+import { ChevronDown, MoreVertical } from "lucide-react";
 
 import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -33,9 +32,11 @@ import CancelFleetModal from "./CancelFleetModal";
 import CancelReasonModal from "./CancelReasonModal";
 import CargoInfo from "./CargoInfo";
 import ContactModal from "./ContactModal";
+import DetailArchieveModal from "./DetailArchieveModal";
 import FleetListModal from "./FleetListModal";
 import MuatBongkarStepperWithModal from "./MuatBongkarStepperWithModal";
 import OrderChangeInfoModal from "./OrderChangeInfoModal";
+import UploadArchieveModal from "./UploadArchieveModal";
 
 const PesananCard = ({ order, userRole, viewMode = "default" }) => {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     permissionDeniedTitle: null,
     confirmCancelOrder: false,
     confirmCancelFleet: false,
+    uploadArchive: false,
   });
 
   const [modalData, setModalData] = useState({
@@ -136,6 +138,14 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     console.log("OPEN MODAL VIEW CANCELLATION ###BELUMMM");
   };
 
+  const handleUploadArchive = () => {
+    openModal("uploadArchive");
+  };
+
+  const handleViewArchive = () => {
+    openModal("detailArchive");
+  };
+
   const actionItems = useGetActionItems({
     order,
     userRole,
@@ -144,6 +154,8 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     onCancelFleet: handleCancelFleet,
     onCancelOrder: handleCancelOrder,
     onViewCancellationReason: handleViewCancellationReason,
+    onUploadArchive: handleUploadArchive,
+    onViewArchive: handleViewArchive,
   });
 
   const handleActionClick = (action) => {
@@ -535,6 +547,18 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
         </div>
       </div>
 
+      <UploadArchieveModal
+        isOpen={modalState.uploadArchive}
+        onClose={() => closeModal("uploadArchive")}
+        order={order}
+        isLoading={isLoading}
+      />
+      <DetailArchieveModal
+        isOpen={modalState.detailArchive}
+        onClose={() => closeModal("detailArchive")}
+        order={order}
+        isLoading={isLoading}
+      />
       <ContactModal
         isOpen={modalState.contact}
         onClose={() => closeModal("contact")}
