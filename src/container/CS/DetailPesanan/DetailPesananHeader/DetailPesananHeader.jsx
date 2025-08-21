@@ -2,15 +2,10 @@ import { useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
-const LIST_SHOW_BATALKAN_PESANAN = [
-  OrderStatusEnum.SCHEDULED_FLEET,
-  OrderStatusEnum.LOADING,
-];
-
-const DetailPesananHeader = ({ dataOrderDetail }) => {
+const DetailPesananHeader = ({ data }) => {
   const router = useRouter();
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-x-3">
@@ -25,7 +20,7 @@ const DetailPesananHeader = ({ dataOrderDetail }) => {
       <div className="flex items-center gap-x-3">
         {/* https://www.figma.com/design/3M23e9bqxbGkzyTzuhJ1AJ/-Transporter--Real-Time-Monitoring---Web?node-id=1994-691502&t=koiFV6Df3fMS25BC-0 */}
         {/* LDN-351 */}
-        {true && (
+        {data?.orderDetail?.isCancelable && (
           <Button variant="muatparts-error-secondary" onClick={() => {}}>
             Batalkan Pesanan
           </Button>

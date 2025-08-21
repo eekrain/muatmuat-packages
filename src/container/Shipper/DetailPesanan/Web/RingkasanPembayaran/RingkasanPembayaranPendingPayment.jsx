@@ -77,10 +77,7 @@ export const RingkasanPembayaranPendingPayment = ({
                 </BadgeStatusPesanan>
               </div>
               <span className="text-sm font-semibold text-neutral-900">
-                {formatDate(
-                  dataRingkasanPembayaran?.paymentDueDateTime,
-                  "dd LLL yyyy HH:mm 'WIB'"
-                )}
+                {formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
               </span>
             </div>
 

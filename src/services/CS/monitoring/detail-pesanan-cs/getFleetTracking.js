@@ -6,6 +6,7 @@ import {
   OrderStatusIcon,
   OrderStatusTitle,
 } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { DriverStatusEnum } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 
 const useMockData = true; // cs detailpesanan
 
@@ -15,7 +16,7 @@ const stepStatus = [
     statusName: "Pesanan Terkonfirmasi",
   },
   {
-    orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+    orderStatus: OrderStatusEnum.LOADING,
     statusName: "Proses Muat",
   },
   {
@@ -58,6 +59,7 @@ export const mockAPIResult = {
           companyName: "PT. Siba Surya",
           companyAddress: "Kec. Tegalsari, Kota Surabaya",
           companyPicture: "https://picsum.photos/100?random=11",
+          fleetsOrdered: 3,
           fleets: [
             {
               fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a001",
@@ -66,7 +68,7 @@ export const mockAPIResult = {
               driverInfo: {
                 driverId: "uuid-driver-456",
                 driverName: "Eka Candra",
-                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+                driverStatus: `${DriverStatusEnum.UNLOADING.MENUJU.code}_1`,
               },
               orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
               stepStatus,
@@ -91,6 +93,22 @@ export const mockAPIResult = {
                 ...sosDefault,
               },
             },
+            {
+              fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a003",
+              licensePlate: "B 1234 XYZ",
+              truckImage: "https://picsum.photos/100?random=222",
+              driverInfo: {
+                driverId: "uuid-driver-456",
+                driverName: "Doni Prasetyo",
+                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+              },
+              orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+              stepStatus,
+              sosStatus: {
+                hasSOS: false,
+                ...sosDefault,
+              },
+            },
           ],
         },
         {
@@ -98,39 +116,81 @@ export const mockAPIResult = {
           companyName: "PT. Graha AIRI",
           companyAddress: "Kec. Tegalsari, Kota Surabaya",
           companyPicture: "https://picsum.photos/100?random=22",
+          fleetsOrdered: 3,
           fleets: [
-            {
-              fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a111",
-              licensePlate: "B 1234 XYZ",
-              truckImage: "https://picsum.photos/100?random=333",
-              driverInfo: {
-                driverId: "uuid-driver-456",
-                driverName: "Ahmad Suryanto",
-                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-              },
-              orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
-              stepStatus,
-              sosStatus: {
-                hasSOS: false,
-                ...sosDefault,
-              },
-            },
-            {
-              fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a112",
-              licensePlate: "B 1234 XYZ",
-              truckImage: "https://picsum.photos/100?random=444",
-              driverInfo: {
-                driverId: "uuid-driver-456",
-                driverName: "Budi Wijaya",
-                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-              },
-              orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
-              stepStatus,
-              sosStatus: {
-                hasSOS: false,
-                ...sosDefault,
-              },
-            },
+            // {
+            //   fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a111",
+            //   licensePlate: "B 1234 XYZ",
+            //   truckImage: "https://picsum.photos/100?random=333",
+            //   driverInfo: {
+            //     driverId: "uuid-driver-456",
+            //     driverName: "Ahmad Suryanto",
+            //     driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+            //   },
+            //   orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+            //   stepStatus,
+            //   sosStatus: {
+            //     hasSOS: false,
+            //     ...sosDefault,
+            //   },
+            // },
+            // {
+            //   fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a112",
+            //   licensePlate: "B 1234 XYZ",
+            //   truckImage: "https://picsum.photos/100?random=444",
+            //   driverInfo: {
+            //     driverId: "uuid-driver-456",
+            //     driverName: "Budi Wijaya",
+            //     driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+            //   },
+            //   orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+            //   stepStatus,
+            //   sosStatus: {
+            //     hasSOS: false,
+            //     ...sosDefault,
+            //   },
+            // },
+          ],
+        },
+        {
+          transporterId: "95459a4f-5db7-4f30-bc00-6e22c3a1abbb",
+          companyName: "PT. Eka Candra",
+          companyAddress: "Kec. Tegalsari, Kota Surabaya",
+          companyPicture: "https://picsum.photos/100?random=33",
+          fleetsOrdered: 3,
+          fleets: [
+            // {
+            //   fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a111",
+            //   licensePlate: "B 1234 XYZ",
+            //   truckImage: "https://picsum.photos/100?random=333",
+            //   driverInfo: {
+            //     driverId: "uuid-driver-456",
+            //     driverName: "Ahmad Suryanto",
+            //     driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+            //   },
+            //   orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+            //   stepStatus,
+            //   sosStatus: {
+            //     hasSOS: false,
+            //     ...sosDefault,
+            //   },
+            // },
+            // {
+            //   fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a112",
+            //   licensePlate: "B 1234 XYZ",
+            //   truckImage: "https://picsum.photos/100?random=444",
+            //   driverInfo: {
+            //     driverId: "uuid-driver-456",
+            //     driverName: "Budi Wijaya",
+            //     driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+            //   },
+            //   orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+            //   stepStatus,
+            //   sosStatus: {
+            //     hasSOS: false,
+            //     ...sosDefault,
+            //   },
+            // },
           ],
         },
       ],

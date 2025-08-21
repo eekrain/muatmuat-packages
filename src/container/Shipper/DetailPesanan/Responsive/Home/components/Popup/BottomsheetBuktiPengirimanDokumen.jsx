@@ -31,7 +31,7 @@ export const BottomsheetBuktiPengirimanDokumen = ({ children }) => {
       title: t("labelDate", {}, "Tanggal"),
       content: (
         <span className="text-xs font-medium leading-[1.1] text-neutral-900">
-          {formatDate(new Date().toISOString(), true)}
+          {formatDate(new Date().toISOString(), { padDay: true })}
         </span>
       ),
     },

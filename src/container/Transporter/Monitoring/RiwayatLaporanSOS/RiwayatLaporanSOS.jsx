@@ -157,11 +157,10 @@ const RiwayatLaporanSOS = ({ onToggleExpand, isExpanded }) => {
         <div className="flex flex-col whitespace-nowrap text-xs text-neutral-900">
           {/* Asumsi: row.orderInfo memiliki pickupSchedule & dropoffSchedule */}
           <span>
-            {formatDate(row.orderInfo.pickupSchedule, "dd MMM yyyy HH:mm")} WIB
-            s/d
+            {formatDate(row.orderInfo.pickupSchedule, { padDay: true })} WIB s/d
           </span>
           <span>
-            {formatDate(row.orderInfo.dropoffSchedule, "dd MMM yyyy HH:mm")} WIB
+            {formatDate(row.orderInfo.dropoffSchedule, { padDay: true })} WIB
           </span>
         </div>
       ),

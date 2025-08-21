@@ -36,13 +36,15 @@ const _parseDate = (dateInput) => {
  * Formats an ISO string into "d MMM yyyy HH:mm WIB".
  * Allows for day padding (e.g., '03' vs '3').
  */
-export function formatDate(isoString, padDay = false) {
+const defaultFormatOptions = { padDay: false, withWIB: true };
+export function formatDate(isoString, options = defaultFormatOptions) {
+  const { padDay, withWIB } = { ...defaultFormatOptions, ...options };
   const date = _parseDate(isoString);
   if (!date) return "";
 
   const formatString = padDay ? "dd MMM yyyy HH:mm" : "d MMM yyyy HH:mm";
   const formattedDate = format(date, formatString, { locale: id });
-  return `${formattedDate} WIB`;
+  return withWIB ? `${formattedDate} WIB` : formattedDate;
 }
 
 /**
