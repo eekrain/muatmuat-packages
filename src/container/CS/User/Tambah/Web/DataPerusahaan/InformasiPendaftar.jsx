@@ -69,7 +69,7 @@ const informasiPendaftarSchema = v.object({
   businessEntityType: v.pipe(v.string(), v.nonEmpty("Badan Usaha wajib diisi")),
   companyPhone: v.pipe(
     v.string(),
-    v.minLength(1, "Nomor telepon wajib diisi"),
+    v.minLength(1, "No. Telepon Perusahaan wajib diisi"),
     v.regex(
       /^08[0-9]{8,11}$/,
       "Format nomor telepon tidak valid (contoh: 08xxxxxxxxxx)"
