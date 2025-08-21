@@ -22,6 +22,7 @@ import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";
 import { useGetMasterBanks } from "@/services/CS/master/getBankMasters";
+import { useCheckTransporterField } from "@/services/CS/register/checkTransporterField";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
@@ -111,6 +112,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     latitude: -7.254235,
     longitude: 112.736583,
   });
+
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isMainDropdownOpen, setIsMainDropdownOpen] = useState(false);
   const [isModalDropdownOpen, setIsModalDropdownOpen] = useState(false);
@@ -125,7 +127,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     state.getForm(FORM_KEY)
   );
 
-  console.log(initialData?.registrantName);
+  const { trigger: checkField } = useCheckTransporterField();
 
   const {
     setValue,
@@ -136,6 +138,8 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     trigger,
     getValues,
     watch,
+    setError,
+    clearErrors,
   } = useForm({
     resolver: valibotResolver(informasiPendaftarSchema),
     defaultValues: initialData?.registrantName
@@ -177,6 +181,39 @@ function InformasiPendaftar({ onSave, onFormChange }) {
       onFormChange();
     }
   }, [isDirty, onFormChange]);
+
+  const handleBlurValidation = async (fieldName, type) => {
+    // 1. Hapus error manual sebelumnya agar tidak stuck
+    if (errors[fieldName]?.type === "manual") {
+      clearErrors(fieldName);
+    }
+
+    // 2. Jalankan validasi skema (format, required, dll) terlebih dahulu
+    const isFieldValid = await trigger(fieldName);
+
+    // 3. Jika formatnya saja sudah salah, jangan panggil API
+    if (!isFieldValid) return;
+
+    // 4. Panggil API untuk cek keunikan data
+    try {
+      const value = getValues(fieldName);
+      const result = await checkField({ type, value });
+
+      if (result && !result.Data.isAvailable) {
+        setError(fieldName, {
+          type: "manual",
+          message:
+            type === "email"
+              ? "Email sudah terdaftar"
+              : "No. Whatsapp sudah terdaftar",
+        });
+      }
+    } catch (error) {
+      console.error(`Error validating ${fieldName}:`, error);
+      // Opsional: beritahu user jika validasi gagal karena masalah jaringan
+      // toast.error("Gagal memvalidasi data, silakan coba lagi.");
+    }
+  };
 
   const watchedValues = watch();
 
@@ -402,6 +439,28 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     });
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const scrollToFirstError = (fieldNames) => {
+    const elements = fieldNames
+      .map((name) => document.querySelector(`[name="${name}"]`))
+      .filter((el) => el);
+
+    if (elements.length === 0) return;
+
+    const firstErrorElement = elements.reduce((first, current) => {
+      return current.getBoundingClientRect().top <
+        first.getBoundingClientRect().top
+        ? current
+        : first;
+    });
+
+    firstErrorElement.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
   const onInvalidSubmit = async () => {
     const isValid = await trigger();
 
@@ -411,21 +470,59 @@ function InformasiPendaftar({ onSave, onFormChange }) {
       }
       return;
     }
+    scrollToFirstError(Object.keys(errors));
   };
 
-  const onSubmit = (data) => {
-    const existingData =
-      useTransporterFormStore.getState().getForm(FORM_KEY) || {};
-    const updatedData = {
-      ...existingData,
-      ...data,
-    };
-    setForm(FORM_KEY, updatedData);
-    if (onSave) {
-      onSave();
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    const failedApiFields = [];
+
+    try {
+      const [emailResult, whatsappResult] = await Promise.all([
+        checkField({ type: "email", value: data.registrantEmail }),
+        checkField({ type: "phoneNumber", value: data.registrantWhatsapp }),
+      ]);
+
+      if (emailResult?.Data?.duplicate === true) {
+        setError("registrantEmail", {
+          type: "manual",
+          message: "Email sudah terdaftar",
+        });
+        failedApiFields.push("registrantEmail");
+      }
+
+      if (whatsappResult?.Data?.duplicate === true) {
+        setError("registrantWhatsapp", {
+          type: "manual",
+          message: "No. Whatsapp sudah terdaftar",
+        });
+        failedApiFields.push("registrantWhatsapp");
+      }
+
+      if (failedApiFields.length > 0) {
+        scrollToFirstError(failedApiFields);
+        return;
+      }
+
+      const existingData =
+        useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+      const updatedData = {
+        ...existingData,
+        ...data,
+      };
+      setForm(FORM_KEY, updatedData);
+      if (onSave) {
+        onSave();
+      }
+      reset(data);
+      toast.success("Informasi pendaftar berhasil disimpan!");
+    } catch (error) {
+      console.error("API Validation Error:", error);
+      toast.error("Terjadi kesalahan saat validasi data. Silakan coba lagi.");
+    } finally {
+      // Pastikan loading state selalu kembali ke false
+      setIsSubmitting(false);
     }
-    reset(data);
-    toast.success("Informasi pendaftar berhasil disimpan!");
   };
 
   useEffect(() => {
@@ -904,6 +1001,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
           type="submit"
           variant="muattrans-primary"
           className="!w-[112px]"
+          disabled={isSubmitting}
         >
           Simpan
         </Button>

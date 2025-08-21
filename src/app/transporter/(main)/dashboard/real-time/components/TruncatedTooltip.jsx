@@ -30,7 +30,10 @@ const TruncatedTooltip = ({ text, lineClamp = 2, className = "" }) => {
   }, [text]);
 
   const textElement = (
-    <p ref={textRef} className={cn(`line-clamp-${lineClamp}`, className)}>
+    <p
+      ref={textRef}
+      className={cn(`line-clamp-${lineClamp} cursor-pointer`, className)}
+    >
       {text}
     </p>
   );
