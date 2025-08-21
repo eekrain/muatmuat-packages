@@ -166,6 +166,7 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
               <Slider.Root
                 items={onboardingSlides}
                 className="flex h-[420px] flex-col p-6"
+                loop={false}
               >
                 <div className="flex flex-col items-center">
                   <div className="relative flex w-full items-center justify-center">

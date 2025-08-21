@@ -215,6 +215,26 @@ const Draft = ({ isDraftAvailable }) => {
     }
   }, [data, reset]);
 
+  // Prevent Enter from submitting the parent form when pressed inside inputs
+  // (e.g. ArmadaTable search field). Allow Enter for TEXTAREA and actual
+  // submit/button elements.
+  const handleFormKeyDown = (e) => {
+    if (e.key !== "Enter") return;
+
+    const target = e.target;
+    if (!target) return;
+
+    // allow Enter in textareas
+    if (target.tagName === "TEXTAREA") return;
+
+    // allow Enter when focused element is a button or a real submit control
+    const type = target.type;
+    if (type === "submit" || type === "button") return;
+
+    // Prevent the default form submit triggered by Enter
+    e.preventDefault();
+  };
+
   if (!isDraftAvailable) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
@@ -273,7 +293,7 @@ const Draft = ({ isDraftAvailable }) => {
   return (
     <div className="">
       {/* Header Table */}
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} onKeyDown={handleFormKeyDown}>
         <ArmadaTable
           data={watch("informasiMuatan")}
           selectedRows={selectedRowIndex}
