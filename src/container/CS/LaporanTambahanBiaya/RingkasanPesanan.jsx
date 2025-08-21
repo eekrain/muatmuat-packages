@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
@@ -11,7 +11,6 @@ import {
 } from "@/components/Collapsible";
 import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import {
   LightboxPreview,
   LightboxProvider,
@@ -114,7 +113,7 @@ const RingkasanPesanan = () => {
           <SectionRow label="Rute">
             <div className="flex flex-col gap-3">
               <p className="text-xs font-medium text-neutral-900">
-                Estimasi {orderSummaryData.route.estimatedDistance} km
+                Estimasi {orderSummaryData.route.estimatedDistance}
               </p>
               <TimelineContainer>
                 {orderSummaryData.route.locations.map((loc, index) => (
@@ -125,11 +124,13 @@ const RingkasanPesanan = () => {
                     }
                     index={index}
                     totalLength={orderSummaryData.route.locations.length}
-                    activeIndex={-1} // Set to -1 to show all as default state
-                  >
-                    {/* <TimelineContentAddress title={loc.address} /> */}
-                    <p>{loc.address}</p>
-                  </NewTimelineItem>
+                    activeIndex={-1}
+                    title={
+                      loc.address?.length > 40
+                        ? `${loc.address.substring(0, 40)}...`
+                        : loc.address
+                    }
+                  ></NewTimelineItem>
                 ))}
               </TimelineContainer>
             </div>

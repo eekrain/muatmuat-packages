@@ -50,7 +50,7 @@ export const ModalDetailWaktuTunggu = ({
       ) : null}
 
       <ModalContent
-        className="flex w-[578px] flex-col gap-y-4 p-6"
+        className="flex max-h-[440px] w-[578px] flex-col gap-y-4 p-6"
         type="muatmuat"
       >
         {/* Header */}
@@ -64,7 +64,7 @@ export const ModalDetailWaktuTunggu = ({
         </Alert>
 
         {/* Driver Section */}
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-y-auto">
           {drivers.map((driver, idx) => (
             <div
               className={cn(
@@ -83,7 +83,8 @@ export const ModalDetailWaktuTunggu = ({
               >
                 <div className="flex flex-col items-start gap-2">
                   <h3 className="capsize text-sm font-semibold text-neutral-900">
-                    Driver : {driver.name}
+                    Driver : {driver.name} ({driver.plateNumber}), (
+                    {driver.transporter})
                   </h3>
                   {driver.durasiTotal && !expandedDrivers[idx] && (
                     <span className="capsize text-xs font-medium text-neutral-600">
@@ -127,11 +128,10 @@ export const ModalDetailWaktuTunggu = ({
               </div>
             </div>
           ))}
-
-          <div className="text-neutral-90 flex items-center justify-between pt-6 text-base font-bold">
-            <span className="">Total</span>
-            <span className="">{idrFormat(totalAmount)}</span>
-          </div>
+        </div>
+        <div className="text-neutral-90 flex items-center justify-between pb-2 pt-6 text-base font-bold">
+          <span className="">Total</span>
+          <span className="">{idrFormat(totalAmount)}</span>
         </div>
       </ModalContent>
     </Modal>
