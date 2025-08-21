@@ -242,7 +242,8 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           <p className="text-xs font-medium text-neutral-900">
             {formatLoadTimeOnOneLine(
               dataOrderDetail?.loadTimeStart,
-              dataOrderDetail?.loadTimeEnd
+              dataOrderDetail?.loadTimeEnd,
+              { showOneLine: true }
             )}
           </p>
         </SectionRow>

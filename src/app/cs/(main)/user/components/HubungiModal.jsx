@@ -5,18 +5,19 @@ import { useEffect, useState } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
+import { formatPhoneNumber } from "@/lib/utils/phoneFormatter";
 
 const generalContacts = {
   pic: [
     {
       name: "Alexander",
       role: "Staf Admin Operasional",
-      phone: "0821-2345-6869",
+      phone: "082123456869",
     },
     {
       name: "Alexander krisna indra candra",
       role: "Staf Admin Operasional",
-      phone: "0821-2345-8686",
+      phone: "082123458686",
     },
     {
       name: "",
@@ -25,12 +26,12 @@ const generalContacts = {
     },
   ],
   company: {
-    phone: "021-5550-1234",
+    phone: "02155501234",
   },
   emergency: {
     name: "Candra Ariansyah",
     role: "Koordinator Staf Admin Operasional",
-    phone: "0812-9876-5432",
+    phone: "081298765432",
   },
 };
 /**
@@ -182,7 +183,7 @@ const HubungiModal = ({
                             : "text-blue-600"
                         }`}
                       >
-                        {contact.phone || "-"}
+                        {formatPhoneNumber(contact.phone) || "-"}
                       </div>
 
                       {contact.phone && contact.phone !== "-" && (
@@ -246,8 +247,8 @@ const HubungiModal = ({
               >
                 <div className="h-6 w-6">
                   <IconComponent
-                    src="/icons/call16.svg"
-                    className="text-blue-500"
+                    src="/icons/call-blue.svg"
+                    className="text-blue-700"
                     width={20}
                     height={20}
                     alt="Phone Icon"
