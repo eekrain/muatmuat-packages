@@ -91,9 +91,10 @@ const DaftarPesananPage = () => {
   const disableDownloadButton = isLoading || !hasData;
   const disableUploadButton = isLoading || !hasData;
   const disablePeriodButton =
-    isLoading || (!hasData && lastAction !== "period");
-
-  // LOGIKA RENDER EMPTY STATE SESUAI PERMINTAAN ANDA
+    isLoading ||
+    (!hasData &&
+      lastAction !== "period" &&
+      period?.value === periodOptions?.[0]?.value);
   const renderEmpty = () => {
     if (isEmptyState) {
       return (
