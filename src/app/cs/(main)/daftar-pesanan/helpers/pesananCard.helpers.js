@@ -77,6 +77,8 @@ export const useGetActionItems = ({
   onCancelFleet,
   onCancelOrder,
   onViewCancellationReason,
+  onUploadArchive,
+  onViewArchive,
 }) => {
   const { t } = useTranslation();
   return useMemo(() => {
@@ -252,6 +254,7 @@ export const useGetActionItems = ({
               {},
               "Lihat Dokumen Arsip"
             ),
+            onClick: onViewArchive,
           });
         } else {
           actions.push({
@@ -260,6 +263,7 @@ export const useGetActionItems = ({
               {},
               "Unggah Dokumen Arsip"
             ),
+            onClick: onUploadArchive,
           });
         }
         if (order.hasReceiptUploaded) {
@@ -293,6 +297,7 @@ export const useGetActionItems = ({
               {},
               "Lihat Dokumen Arsip"
             ),
+            onClick: onViewArchive,
           });
         } else {
           actions.push({
@@ -301,6 +306,7 @@ export const useGetActionItems = ({
               {},
               "Unggah Dokumen Arsip"
             ),
+            onClick: onUploadArchive,
           });
         }
         actions.push({
@@ -327,6 +333,7 @@ export const useGetActionItems = ({
             {},
             "Unggah Dokumen Arsip"
           ),
+          onClick: onUploadArchive,
         });
         actions.push({
           label: t(

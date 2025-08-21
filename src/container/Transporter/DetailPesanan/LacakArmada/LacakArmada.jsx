@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -236,19 +237,37 @@ const LacakArmada = ({ dataOrderDetail }) => {
 
         {/* Fleet Cards */}
         <div className="flex flex-col gap-4">
-          {filteredArmada.map((armada, index) => (
-            <CardLacakArmada
-              key={armada.id || armada.plateNumber}
-              plateNumber={armada.plateNumber}
-              driverName={armada.driverName}
-              vehicleImageUrl={armada.vehicleImage}
-              status={armada.status}
-              stepperData={stepperData}
-              vehicleId={armada.id}
-              driverId={armada.id}
-              order={dataOrderDetail}
-            />
-          ))}
+          {filteredArmada.length > 0 ? (
+            filteredArmada.map((armada, index) => (
+              <CardLacakArmada
+                key={armada.id || armada.plateNumber}
+                plateNumber={armada.plateNumber}
+                driverName={armada.driverName}
+                vehicleImageUrl={armada.vehicleImage}
+                status={armada.status}
+                stepperData={stepperData}
+                vehicleId={armada.id}
+                driverId={armada.id}
+                order={dataOrderDetail}
+              />
+            ))
+          ) : (
+            <div className="flex w-full flex-col items-center justify-center bg-white px-4 py-[60px]">
+              <Image
+                src="/img/daftarprodukicon.png"
+                width={95}
+                height={95}
+                alt="Empty cart"
+              />
+              <div className="mt-2 font-semibold text-neutral-600">
+                Belum ada perubahan armada
+              </div>
+              <div className="mb-3 text-center text-xs font-medium text-neutral-600">
+                Perubahan armada maupun armada dibatalkan dan armada selesai
+                akan ditampilkan disini
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
