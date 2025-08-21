@@ -24,7 +24,7 @@ import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
 const generalContacts = [
   {
     label: "PIC 1",
-    name: "Alexander Agak Beda",
+    name: "Alexander Agak Beda hwgdagwiudgaiwudguiawwgduiagwdiugawidguiawgduiagwduiauohuahdiohwodho",
     role: "Staf Admin Operasional",
     phone: "0821-2345-6869",
   },
