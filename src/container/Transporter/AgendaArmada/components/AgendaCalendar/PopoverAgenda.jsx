@@ -32,7 +32,7 @@ const getStatusColor = (status, sos) => {
   }
 };
 
-const PopoverAgenda = ({ agendaData }) => {
+const PopoverAgenda = ({ agendaData, status, hasSosIssue }) => {
   const { t } = useTranslation();
   const [showAllItems, setShowAllItems] = useState(false);
   const router = useRouter();
@@ -44,29 +44,24 @@ const PopoverAgenda = ({ agendaData }) => {
   const hiddenItems = showAllItems ? [] : (agendaData.cargo || []).slice(3);
 
   // Get the actual status value - check if it's already mapped or needs mapping
-  const actualStatus =
-    StatusArmadaTypeEnum[agendaData.agendaStatus] || agendaData.agendaStatus;
-  const statusColor = getStatusColor(
-    actualStatus,
-    agendaData.issues?.hasSosIssue
-  );
+  const actualStatus = StatusArmadaTypeEnum[status] || status;
+  const statusColor = getStatusColor(actualStatus, hasSosIssue);
   return (
     <div className="w-[395px] max-w-[395px] rounded-lg border border-neutral-200 bg-white font-sans text-xs shadow-md">
       <div className="p-3">
         <div className="space-y-3">
           <p className={`text-xs font-semibold ${statusColor}`}>
-            {actualStatus}{" "}
-            {agendaData.issues?.hasSosIssue &&
-              actualStatus === StatusArmadaTypeEnum.BERTUGAS && (
-                <span className="inline-fle ml-1 h-5 w-10 items-center justify-center rounded-md bg-error-400 px-2 py-0.5 text-xs font-semibold text-white">
-                  SOS
-                </span>
-              )}
+            {t(`PopoverAgenda.status.${actualStatus}`, {}, actualStatus)}{" "}
+            {hasSosIssue && actualStatus === StatusArmadaTypeEnum.BERTUGAS && (
+              <span className="inline-fle ml-1 h-5 w-10 items-center justify-center rounded-md bg-error-400 px-2 py-0.5 text-xs font-semibold text-white">
+                {t("PopoverAgenda.sos", {}, "SOS")}
+              </span>
+            )}
           </p>
           {actualStatus !== StatusArmadaTypeEnum.NON_AKTIF && (
             <>
               <div className="space-y-2">
-                {agendaData.issues?.hasSosIssue &&
+                {hasSosIssue &&
                   actualStatus === StatusArmadaTypeEnum.BERTUGAS && (
                     <div className="flex items-center gap-2 rounded-md bg-error-50 px-2 py-1 text-xxs font-semibold text-error-400">
                       <IconComponent
@@ -150,7 +145,7 @@ const PopoverAgenda = ({ agendaData }) => {
             <div className="flex items-center text-xxs font-medium text-neutral-900">
               <IconComponent
                 src="/icons/verify-whatsapp.svg"
-                alt="Box Icon"
+                alt="WhatsApp Icon"
                 width={12}
                 height={12}
                 className="mr-2"
@@ -176,7 +171,7 @@ const PopoverAgenda = ({ agendaData }) => {
               <span className="text-neutral-600">•</span>
               <IconComponent
                 src="/icons/location.svg"
-                alt="Truck Icon"
+                alt="Location Icon"
                 width={16}
                 height={16}
               />
@@ -184,17 +179,17 @@ const PopoverAgenda = ({ agendaData }) => {
                 {agendaData.fleet?.currentLocation?.name}
               </span>
               <span className="text-nowrap text-neutral-600">
-                est.{" "}
+                {t("PopoverAgenda.estimated", {}, "est.")}{" "}
                 {
                   agendaData.fleet?.currentLocation
                     ?.estimatedNextDestinationDistance
                 }
-                km (
+                {t("PopoverAgenda.km", {}, "km")} (
                 {
                   agendaData.fleet?.currentLocation
                     ?.estimatedNextDestinationTime
                 }
-                menit)
+                {t("PopoverAgenda.minutes", {}, "menit")})
               </span>
             </div>
           </div>
@@ -272,7 +267,8 @@ const PopoverAgenda = ({ agendaData }) => {
 // Transformation logic is now MOVED inside this file
 
 // FIX 1: Component now accepts all the raw props it needs for the transformation
-const InfoPopover = React.memo(({ data }) => {
+const InfoPopover = React.memo(({ data, status, hasSosIssue }) => {
+  const { t } = useTranslation();
   const [agendaScheduleDetail, setAgendaScheduleDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -314,14 +310,22 @@ const InfoPopover = React.memo(({ data }) => {
       <PopoverContent className="p-0">
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
-            <div className="text-sm text-neutral-600">Loading...</div>
+            <div className="text-sm text-neutral-600">
+              {t("PopoverAgenda.loading", {}, "Loading...")}
+            </div>
           </div>
         ) : error ? (
           <div className="flex items-center justify-center p-8">
-            <div className="text-sm text-error-400">Failed to load data</div>
+            <div className="text-sm text-error-400">
+              {t("PopoverAgenda.failedToLoad", {}, "Failed to load data")}
+            </div>
           </div>
         ) : (
-          <PopoverAgenda agendaData={displayData} />
+          <PopoverAgenda
+            agendaData={displayData}
+            status={status}
+            hasSosIssue={hasSosIssue}
+          />
         )}
       </PopoverContent>
     </Popover>

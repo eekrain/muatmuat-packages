@@ -349,7 +349,9 @@ const UlasanTable = () => {
           <div className="text-sm font-semibold">
             {t("csUlasan.summaryTitle", {}, "Total Rating")} :
             <span className="ml-1 text-base font-bold">
-              {tableData.summary.averageRating}
+              {tableData.summary?.averageRating === "0.0"
+                ? 0
+                : tableData.summary?.averageRating}
               <span className="text-sm font-medium text-neutral-600">/5</span>
             </span>
           </div>

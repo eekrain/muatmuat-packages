@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import DonutChart from "@/components/Chart/DonutChart";
-import IconComponent from "@/components/IconComponent/IconComponent";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import { useGetDashboardAnalyticsTotalShipper } from "@/services/CS/dashboard/getTotalShipper";
 
@@ -24,7 +24,6 @@ const TotalShipper = () => {
       name: segment.label,
       value: segment.count,
       percentage: segment.percentage,
-      // Assign colors based on the status
       color: segment.status === "ACTIVE" ? "#FFC217" : "#D9D9D9",
       unit: "Shipper",
     }));
@@ -73,24 +72,21 @@ const TotalShipper = () => {
           <DonutChart
             data={chartData}
             className="flex flex-col !p-0"
-            legendClassname="flex flex-row gap-x-3 pt-4"
+            legendClassname="flex flex-row gap-x-3 pt-3"
             itemLegendClassname="gap-y-2 gap-x-[5px] items-start"
+            tooltipClassname="w-full h-[23px]"
+            textTooltipClassname="flex-row gap-[1px]"
+            centerTooltipClassname="w-full h-[23px]"
+            textCenterTooltipClassname="flex-row flex gap-[2px]"
           />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3 pt-5">
-            <IconComponent
-              src="/icons/dashboard/blue-box.svg"
-              alt="Total Shipping"
-              width={95}
-              height={95}
-            />
-            <p className="text-base font-semibold text-neutral-600">
-              Belum Ada Shipper Terdaftar
-            </p>
-            <p className="pt-[2px] text-center text-xs font-medium text-neutral-600">
-              Data total shipper yang telah terdaftar akan ditampilkan disini
-            </p>
-          </div>
+          <DataEmpty
+            isResponsive={false}
+            className="bg-transparent !py-8"
+            src="/icons/dashboard/blue-box.svg"
+            title="Belum Ada Shipper Terdaftar"
+            subtitle="Data total shipper yang telah terdaftar akan ditampilkan disini"
+          />
         )}
       </CardContent>
     </Card>

@@ -182,39 +182,6 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     }
   }, [isDirty, onFormChange]);
 
-  const handleBlurValidation = async (fieldName, type) => {
-    // 1. Hapus error manual sebelumnya agar tidak stuck
-    if (errors[fieldName]?.type === "manual") {
-      clearErrors(fieldName);
-    }
-
-    // 2. Jalankan validasi skema (format, required, dll) terlebih dahulu
-    const isFieldValid = await trigger(fieldName);
-
-    // 3. Jika formatnya saja sudah salah, jangan panggil API
-    if (!isFieldValid) return;
-
-    // 4. Panggil API untuk cek keunikan data
-    try {
-      const value = getValues(fieldName);
-      const result = await checkField({ type, value });
-
-      if (result && !result.Data.isAvailable) {
-        setError(fieldName, {
-          type: "manual",
-          message:
-            type === "email"
-              ? "Email sudah terdaftar"
-              : "No. Whatsapp sudah terdaftar",
-        });
-      }
-    } catch (error) {
-      console.error(`Error validating ${fieldName}:`, error);
-      // Opsional: beritahu user jika validasi gagal karena masalah jaringan
-      // toast.error("Gagal memvalidasi data, silakan coba lagi.");
-    }
-  };
-
   const watchedValues = watch();
 
   const locationSearch = useLocationSearch();
@@ -386,12 +353,14 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   };
 
   const badanUsahaOptions = [
-    { label: "PT / PT Tbk", value: "PT / PT Tbk" },
-    { label: "PT Perorangan", value: "PT Perorangan" },
-    { label: "Koperasi", value: "Koperasi" },
-    { label: "Firma", value: "Firma" },
-    { label: "Koperasi", value: "Koperasi" },
-    { label: "Lainnya", value: "Lainnya" },
+    { label: "Perusahaan Negara", value: "PN" },
+    { label: "Perseroan Terbatas", value: "PT" },
+    { label: "Perseroan Terbuka", value: "PTBK" },
+    { label: "Perseroan Terpercaya", value: "PTP" },
+    { label: "Commanditaire Vennootschap", value: "CV" },
+    { label: "Firma", value: "PF" },
+    { label: "Koperasi", value: "KP" },
+    { label: "Perseorangan", value: "FD" },
   ];
 
   const handleLocationInteraction = (isModal = false) => {
