@@ -380,6 +380,11 @@ const DaftarPesananAktif = ({
                     showNotificationDotWithoutNumber={
                       getStatusUrgentCount() > 0
                     }
+                    onFocus={() => {
+                      if (!isExpanded) {
+                        onToggleExpand();
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -393,6 +398,11 @@ const DaftarPesananAktif = ({
                 icon="/icons/tabel.svg"
                 className="max-w-[148px]"
                 disabled={isSearchNotFound}
+                onFocus={() => {
+                  if (!isExpanded) {
+                    onToggleExpand();
+                  }
+                }}
               />
 
               {/* Sort Dropdown */}
@@ -403,6 +413,11 @@ const DaftarPesananAktif = ({
                 options={sortOptions}
                 icon="/icons/sorting16.svg"
                 disabled={isSearchNotFound}
+                onFocus={() => {
+                  if (!isExpanded) {
+                    onToggleExpand();
+                  }
+                }}
               />
             </div>
 

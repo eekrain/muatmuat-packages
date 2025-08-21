@@ -25,6 +25,7 @@ export const FilterSelect = forwardRef(
       icon = null,
       displayValueOverride = null,
       renderItem = null,
+      onFocus,
       ...props
     },
     ref
@@ -41,6 +42,7 @@ export const FilterSelect = forwardRef(
             <Select.Trigger
               placeholder={placeholder}
               errorMessage={errorMessage}
+              onFocus={onFocus}
               className={cn(
                 "h-8 border-neutral-400 text-xs font-medium hover:border-neutral-500 focus:border-primary-700 data-[state=open]:border-primary-700",
                 icon && "pl-9",
