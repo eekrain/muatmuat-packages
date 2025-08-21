@@ -11,7 +11,7 @@ export const getStatusPesananMetadataTransporter = ({
 }) => {
   if (!orderStatus) return { variant: "primary", label: "" };
 
-  // Check if status contains a number (e.g., "MENUJU_LOKASI_BONGKAR_1")
+  // Check if status contains a number (e.g., "WAITING_PAYMENT_2")
   const statusWithNumber = orderStatus?.match(/^(.+)_(\d+)$/);
 
   let baseOrderStatus = orderStatus;
@@ -23,7 +23,44 @@ export const getStatusPesananMetadataTransporter = ({
     statusNumber = number;
   }
 
-  const orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[baseOrderStatus];
+  // Try to find metadata for exact status first
+  let orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[orderStatus];
+
+  // If not found, try to find metadata for base status
+  if (!orderStatusBadgeMetadata) {
+    orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[baseOrderStatus];
+  }
+
+  // If still not found, try to find similar status (e.g., "WAITING_PAYMENT" for "WAITING_PAYMENT_2")
+  if (!orderStatusBadgeMetadata) {
+    // Look for status that starts with the base status
+    const similarStatus = Object.keys(ORDER_STATUS_CONFIG).find(
+      (key) => key.startsWith(baseOrderStatus) && key !== baseOrderStatus
+    );
+
+    if (similarStatus) {
+      orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[similarStatus];
+    }
+  }
+
+  // If still not found, try to find any status that contains the base status
+  if (!orderStatusBadgeMetadata) {
+    const containingStatus = Object.keys(ORDER_STATUS_CONFIG).find(
+      (key) => key.includes(baseOrderStatus) || baseOrderStatus.includes(key)
+    );
+
+    if (containingStatus) {
+      orderStatusBadgeMetadata = ORDER_STATUS_CONFIG[containingStatus];
+    }
+  }
+
+  // Fallback if metadata not found
+  if (!orderStatusBadgeMetadata) {
+    return {
+      label: orderStatus,
+      variant: "muted",
+    };
+  }
 
   if (
     baseOrderStatus !== ORDER_STATUS.COMPLETED &&

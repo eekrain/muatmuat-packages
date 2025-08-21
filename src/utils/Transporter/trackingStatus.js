@@ -198,12 +198,41 @@ export const TRACKING_STATUS_FLOW = {
 
 // Helper function to get tracking status badge configuration
 export const getTrackingStatusBadge = (status) => {
-  // Check if status contains a number (e.g., "MENUJU_LOKASI_BONGKAR_1")
+  // Check if status contains a number (e.g., "MENUJU_KE_LOKASI_BONGKAR_1")
   const statusWithNumber = status?.match(/^(.+)_(\d+)$/);
 
   if (statusWithNumber) {
     const [, baseStatus, number] = statusWithNumber;
-    const config = TRACKING_STATUS_CONFIG[baseStatus];
+
+    // Try to find config for exact status first
+    let config = TRACKING_STATUS_CONFIG[status];
+
+    // If not found, try to find config for base status
+    if (!config) {
+      config = TRACKING_STATUS_CONFIG[baseStatus];
+    }
+
+    // If not found, try to find similar status
+    if (!config) {
+      const similarStatus = Object.keys(TRACKING_STATUS_CONFIG).find(
+        (key) => key.startsWith(baseStatus) && key !== baseStatus
+      );
+
+      if (similarStatus) {
+        config = TRACKING_STATUS_CONFIG[similarStatus];
+      }
+    }
+
+    // If still not found, try to find any status that contains the base status
+    if (!config) {
+      const containingStatus = Object.keys(TRACKING_STATUS_CONFIG).find(
+        (key) => key.includes(baseStatus) || baseStatus.includes(key)
+      );
+
+      if (containingStatus) {
+        config = TRACKING_STATUS_CONFIG[containingStatus];
+      }
+    }
 
     if (config) {
       return {

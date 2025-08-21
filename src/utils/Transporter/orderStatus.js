@@ -18,6 +18,7 @@ export const ORDER_STATUS = {
   CANCELLED_BY_SYSTEM: "CANCELLED_BY_SYSTEM",
   WAITING_CHANGE_FLEET: "WAITING_CHANGE_FLEET",
   FLEET_FOUND: "FLEET_FOUND",
+  WAITING_PAYMENT: "WAITING_PAYMENT",
 };
 
 // Order action definitions (single source of truth for actions and labels)
@@ -147,6 +148,10 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.FLEET_FOUND]: {
     label: "Muatan Pindah Armada",
     variant: "primary",
+  },
+  [ORDER_STATUS.WAITING_PAYMENT]: {
+    label: "Menunggu Pembayaran",
+    variant: "warning",
   },
 };
 

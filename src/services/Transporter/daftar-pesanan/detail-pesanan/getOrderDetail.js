@@ -17,15 +17,17 @@ const mockApiResult = {
     invoiceNumber: "INV/MT25A002A",
     // orderStatus: ORDER_STATUS.NEED_CHANGE_RESPONSE,
     // orderStatus: "CONFIRMED_ORDER",
-    // orderStatus: "CANCELLED_TRANSPORTER",
+    // orderStatus: "CANCELLED_BY_TRANSPORTER_2",
     // orderStatus: "SCHEDULED_FLEET",
     // orderStatus: "WAITING_PAYMENT_2",
     // orderStatus: ORDER_STATUS.DOCUMENT_PREPARATION,
-    // orderStatus: ORDER_STATUS.COMPLETED,
+    orderStatus: ORDER_STATUS.COMPLETED,
     // orderStatus: ORDER_STATUS.LOADING,
     // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
-    orderStatus: "LOADING_2", // Status dengan angka untuk testing
-    orderStatusUnit: 2, // Unit untuk testing
+    // orderStatus: "WAITING_PAYMENT_2", // Status dengan angka untuk testing
+    // orderStatus: "UNKNOWN_STATUS_3", // Status yang tidak ada di enum untuk testing
+    // orderStatus: "CUSTOM_LOADING_1", // Status custom untuk testing
+    orderStatusUnit: 1, // Unit untuk testing
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
     loadTimeEnd: "2024-10-04T08:00:00.000Z",
@@ -198,7 +200,7 @@ const mockApiResult = {
           profileImage: "https://example.com/driver2.jpg",
         },
         hasSOSAlert: false,
-        currentStatus: "MENUJU_KE_LOKASI_BONGKAR_1", // Status dengan angka
+        currentStatus: "CUSTOM_MENUJU_KE_LOKASI_BONGKAR_2", // Status custom untuk testing
         milestones: [
           {
             status: TRACKING_STATUS.SCHEDULED,
@@ -211,8 +213,8 @@ const mockApiResult = {
             completed: true,
           },
           {
-            status: "MENUJU_KE_LOKASI_BONGKAR_1", // Status dengan angka
-            statusName: "Menuju ke Lokasi Bongkar 1",
+            status: TRACKING_STATUS.IN_TRANSIT, // Status dengan angka
+            statusName: "Menuju ke Lokasi Bongkar",
             completed: true,
           },
           {
