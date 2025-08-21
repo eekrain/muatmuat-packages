@@ -204,7 +204,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
             {formatLoadTime(
               dataOrderDetail?.loadTimeStart,
               dataOrderDetail?.loadTimeEnd,
-              true
+              { showOneLine: true }
             )}
           </p>
         </SectionRow>
