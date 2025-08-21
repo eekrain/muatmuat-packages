@@ -17,10 +17,22 @@ import {
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { periodOptions } from "@/lib/constants/Shared/periodOptions";
+import { cn } from "@/lib/utils";
+import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
 
 import OrderWithAdditionalCost from "./OrderWithAdditionalCost";
 
-const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
+const LaporanTambahanBiaya = ({
+  activeTab,
+  setActiveTab,
+  isLoading,
+  reports,
+  pagination,
+  periodHistory,
+  filterOptions,
+  lastFilterField,
+  onChangeQueryParams,
+}) => {
   const { t } = useTranslation();
 
   const [tempSearch, setTempSearch] = useState("");
@@ -29,7 +41,7 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
     return [
       {
         value: "active",
-        label: <>Aktif{true ? <span className="ml-1">{`(20)`}</span> : null}</>,
+        label: <>Aktif{true ? <span className="ml-1">{`(4)`}</span> : null}</>,
       },
       {
         value: "done",
@@ -40,48 +52,41 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
     ];
   }, []);
 
+  const recentSelections = useShallowMemo(() => {
+    return periodHistory.map((item) => ({
+      name: `${formatDateToDDMonYYYY(item.start_date)} - ${formatDateToDDMonYYYY(item.end_date)}`,
+      value: `${formatDateToDDMonYYYY(item.start_date)} - ${formatDateToDDMonYYYY(item.end_date)}`,
+      start_date: formatDateToDDMonYYYY(item.start_date),
+      end_date: formatDateToDDMonYYYY(item.end_date),
+    }));
+  }, [periodHistory]);
+
   // Filter configuration
-  const filterConfig = {
-    categories: [
-      {
-        key: "shipper",
-        label: "Shipper",
-        searchable: true,
-      },
-    ],
-    data: {
-      shipper: [
-        { id: "550e8400-e29b-41d4-a716-446655440000", label: "Prima Arifandi" },
+  const filterConfig = useShallowMemo(
+    () => ({
+      categories: [
         {
-          id: "550e8400-e29b-41d4-a716-446655440001",
-          label: "Arjuna Logistik",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440002",
-          label: "Bintang Ekspres",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440003",
-          label: "Cahaya Transportasi",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440004",
-          label: "Dharma Pengiriman",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440005",
-          label: "Agam Tunggal Jaya",
+          key: "shipper",
+          label: "Shipper",
+          searchable: true,
         },
       ],
-    },
-  };
-
-  const dummyData = [0, 1, 2, 3];
+      data: {
+        shipper: filterOptions
+          ? filterOptions.shippers.map((shipper) => ({
+              id: shipper.id,
+              label: shipper.name,
+            }))
+          : [],
+      },
+    }),
+    [filterOptions]
+  );
 
   // Handle search
   const handleSearch = (e) => {
     if (e.key === "Enter" && tempSearch.length >= 3) {
-      //   onChangeQueryParams("search", tempSearch);
+      onChangeQueryParams("search", tempSearch);
     }
   };
 
@@ -119,14 +124,14 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
             // disable={orders.length === 0}
             options={periodOptions(t)}
             onSelect={() => {}}
-            recentSelections={[]}
+            recentSelections={recentSelections}
             value={null}
             //   onSelect={handleSelectPeriod}
             //   recentSelections={recentPeriodOptions}
             //   value={currentPeriodValue}
           />
           <Button
-            // disabled
+            disabled={reports.length === 0}
             variant="muattrans-primary"
             iconLeft="/icons/download16.svg"
             onClick={() => {}}
@@ -136,7 +141,7 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
       <Card className="border-none">
-        {dummyData.length === 0 ? (
+        {reports.length === 0 ? (
           <div className="flex h-[280px] items-center justify-center">
             <DataNotFound
               type="data"
@@ -154,6 +159,7 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
                 <div className="flex items-center gap-x-3">
                   <Input
                     className="gap-0"
+                    // disabled
                     // disabled={
                     //   hasNoOrders || (!hasFilteredOrders && !queryParams.search)
                     // }
@@ -173,6 +179,7 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
                     onKeyUp={handleSearch}
                   />
                   <FilterDropdown
+                    // disabled
                     categories={filterConfig.categories}
                     data={filterConfig.data}
                     selectedValues={{}}
@@ -183,7 +190,7 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${dummyData.length} Laporan`}
+                  {`Total : ${reports?.length} Laporan`}
                 </span>
               </div>
               {false ? (
@@ -201,27 +208,43 @@ const LaporanTambahanBiaya = ({ activeTab, setActiveTab }) => {
                 </div>
               ) : null}
             </div>
-            {dummyData.length !== 0 ? (
-              dummyData.map((order, key) => (
+            {reports.length > 0 ? (
+              reports.map((order, key) => (
                 <div className="border-t border-t-neutral-400" key={key}>
                   <OrderWithAdditionalCost {...order} />
                 </div>
               ))
             ) : (
-              <div className="flex h-[193px] items-center justify-center">
-                <DataNotFound
-                  title="Keyword Tidak Ditemukan"
-                  className="gap-5"
-                  textClass="w-full"
-                  width={142}
-                  height={122}
-                />
+              <div
+                className={cn(
+                  "flex items-center justify-center",
+                  lastFilterField === "search" ? "h-[193px]" : "h-[145px]"
+                )}
+              >
+                {lastFilterField === "search" ? (
+                  <DataNotFound
+                    title="Keyword Tidak Ditemukan"
+                    className="gap-5"
+                    textClass="w-full"
+                    width={142}
+                    height={122}
+                  />
+                ) : (
+                  <DataNotFound
+                    type="data"
+                    title="Tidak ada data"
+                    className="gap-3"
+                    textClass="w-full"
+                    width={96}
+                    height={77}
+                  />
+                )}
               </div>
             )}
           </>
         )}
       </Card>
-      {dummyData.length !== 0 ? (
+      {reports.length > 0 ? (
         <Pagination
           currentPage={1}
           totalPages={1}
