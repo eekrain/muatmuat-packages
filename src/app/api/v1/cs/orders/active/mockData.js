@@ -295,6 +295,163 @@ export const activeOrdersData = {
       cargoItems: [{ name: "Furnitur Kantor" }],
       sosStatus: { hasSos: false, sosCount: 0 },
     },
+    {
+      id: "order-dijadwalkan-terjadwal",
+      orderCode: "MT25SCHED01",
+      orderType: "Terjadwal", // Tipe Terjadwal
+      orderStatus: "ARMADA_DIJADWALKAN",
+      shipper: { id: "shipper-005", name: "PT Logistik Cepat" },
+      transporter: { id: "transporter-005", name: "CV Armada Perkasa" },
+      loadingSchedule: {
+        startDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      pickupLocations: [{ fullAddress: "Semarang, Jawa Tengah", sequence: 1 }],
+      dropoffLocations: [{ fullAddress: "Yogyakarta, DIY", sequence: 1 }],
+      truckType: { name: "Tronton" },
+      carrierTruck: { name: "Box" },
+      truckCount: 1,
+      totalWeight: 10000,
+      weightUnit: "kg",
+      cargoItems: [{ name: "Produk Retail" }],
+      sosStatus: { hasSos: false, sosCount: 0 },
+    },
+    {
+      id: "order-assign-1-unit",
+      orderCode: "MT25ASSIGN01",
+      orderType: "Terjadwal",
+      orderStatus: "PERLU_ASSIGN_ARMADA",
+      shipper: { id: "shipper-001", name: "Agam Tunggal Jaya" },
+      transporter: { id: "transporter-002", name: "PT Abadi Transport" },
+      loadingSchedule: {
+        startDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      pickupLocations: [
+        { fullAddress: "Jakarta Pusat, DKI Jakarta", sequence: 1 },
+      ],
+      dropoffLocations: [{ fullAddress: "Bandung, Jawa Barat", sequence: 1 }],
+      truckType: { name: "Fuso" },
+      carrierTruck: { name: "Bak Terbuka" },
+      truckCount: 1, // Hanya 1 unit
+      totalWeight: 8000,
+      weightUnit: "kg",
+      cargoItems: [{ name: "Bahan Konstruksi" }],
+      sosStatus: { hasSos: false, sosCount: 0 },
+    },
+    {
+      id: "order-assign-2-unit",
+      orderCode: "MT25ASSIGN02",
+      orderType: "Terjadwal",
+      orderStatus: "PERLU_ASSIGN_ARMADA",
+      shipper: { id: "shipper-002", name: "PT Kirim Barang Bagus" },
+      transporter: { id: "transporter-003", name: "PT Bintang Jaya Transport" },
+      loadingSchedule: {
+        startDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      pickupLocations: [{ fullAddress: "Depok, Jawa Barat", sequence: 1 }],
+      dropoffLocations: [{ fullAddress: "Bogor, Jawa Barat", sequence: 1 }],
+      truckType: { name: "Tractor Head" },
+      carrierTruck: { name: "Flatbed" },
+      truckCount: 2, // 2 unit
+      totalWeight: 20000,
+      weightUnit: "kg",
+      cargoItems: [{ name: "Mesin Industri" }],
+      sosStatus: { hasSos: false, sosCount: 0 },
+    },
+    {
+      id: "order-dokumen-kosong",
+      orderCode: "MT25DOC01",
+      orderType: "Terjadwal",
+      orderStatus: "DOKUMEN_SEDANG_DISIAPKAN",
+      shipper: { id: "shipper-003", name: "PT Shippindo Teknologi Logistik" },
+      transporter: {
+        id: "transporter-004",
+        name: "PT Citra Lestari Transport",
+      },
+      loadingSchedule: {
+        startDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      pickupLocations: [{ fullAddress: "Solo, Jawa Tengah", sequence: 1 }],
+      dropoffLocations: [{ fullAddress: "Klaten, Jawa Tengah", sequence: 1 }],
+      truckType: { name: "Colt Diesel" },
+      carrierTruck: { name: "Box" },
+      truckCount: 1,
+      totalWeight: 3000,
+      weightUnit: "kg",
+      cargoItems: [{ name: "Barang Elektronik" }],
+      sosStatus: { hasSos: false, sosCount: 0 },
+      // Tidak ada properti hasDocumentsUploaded atau hasReceiptUploaded
+    },
+    {
+      id: "order-dokumen-ada",
+      orderCode: "MT25DOC02",
+      orderType: "Instan",
+      orderStatus: "DOKUMEN_SEDANG_DISIAPKAN",
+      shipper: { id: "shipper-004", name: "PT Logistik Prima" },
+      transporter: { id: "transporter-005", name: "CV Armada Perkasa" },
+      loadingSchedule: {
+        startDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      pickupLocations: [{ fullAddress: "Cirebon, Jawa Barat", sequence: 1 }],
+      dropoffLocations: [{ fullAddress: "Indramayu, Jawa Barat", sequence: 1 }],
+      truckType: { name: "Van" },
+      carrierTruck: { name: "Standard" },
+      truckCount: 1,
+      totalWeight: 800,
+      weightUnit: "kg",
+      cargoItems: [{ name: "Produk Farmasi" }],
+      sosStatus: { hasSos: false, sosCount: 0 },
+      hasDocumentsUploaded: true, // Dokumen arsip sudah ada
+      hasReceiptUploaded: true, // Resi sudah ada
+    },
+    {
+      id: "order-011",
+      orderCode: "MT25A002A",
+      orderType: "Terjadwal",
+      orderStatus: "PROSES_PENGIRIMAN_DOKUMEN",
+      shipper: {
+        id: "shipper-001",
+        name: "Agam Tunggal Jaya Agam Tunggal Jaya",
+        contactNumber: "081234567890",
+      },
+      transporter: {
+        id: "transporter-001",
+        name: "PT Siba Surya PT Siba Surya PT Siba Surya",
+        contactNumber: "087654321098",
+      },
+      loadingSchedule: {
+        startDate: "2025-01-02T18:00:00Z",
+        endDate: "2025-01-02T20:00:00Z",
+      },
+      pickupLocations: [
+        {
+          fullAddress: "Kota Surabaya, Kec. Tegalsari, Jawa Timur, 60261",
+          sequence: 1,
+        },
+        {
+          fullAddress: "Kota Sidoarjo, Kec. Waru, Jawa Timur, 61256",
+          sequence: 2,
+        },
+      ],
+      dropoffLocations: [
+        {
+          fullAddress: "Kota Pasuruan, Kec. Klojen, Jawa Timur, 67111",
+          sequence: 1,
+        },
+        {
+          fullAddress: "Kota Malang, Kec. Blimbing, Jawa Timur, 65125",
+          sequence: 2,
+        },
+      ],
+      truckType: { name: "Colt Diesel Double" },
+      carrierTruck: { name: "Bak Terbuka" },
+      truckCount: 1,
+      totalWeight: 1000,
+      weightUnit: "kg",
+      cargoItems: [{ name: "Besi Baja" }, { name: "Batu Bata" }],
+      sosStatus: { hasSos: false, sosCount: 0 },
+      hasDocumentsUploaded: true, // Dokumen arsip sudah ada
+      hasReceiptUploaded: true, // Resi sudah ada
+    },
   ],
   pagination: {
     currentPage: 1,

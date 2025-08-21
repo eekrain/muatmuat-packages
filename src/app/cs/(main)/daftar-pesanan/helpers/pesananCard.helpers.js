@@ -245,16 +245,36 @@ export const useGetActionItems = ({
         });
         break;
       case ORDER_STATUS.DOKUMEN_SEDANG_DISIAPKAN:
-        actions.push({
-          label: t(
-            "pesananCard.actionUploadArchive",
-            {},
-            "Unggah Dokumen Arsip"
-          ),
-        });
-        actions.push({
-          label: t("pesananCard.actionUploadReceipt", {}, "Unggah Resi"),
-        });
+        if (order.hasDocumentsUploaded) {
+          actions.push({
+            label: t(
+              "pesananCard.actionViewArchive",
+              {},
+              "Lihat Dokumen Arsip"
+            ),
+          });
+        } else {
+          actions.push({
+            label: t(
+              "pesananCard.actionUploadArchive",
+              {},
+              "Unggah Dokumen Arsip"
+            ),
+          });
+        }
+        if (order.hasReceiptUploaded) {
+          actions.push({
+            label: t(
+              "pesananCard.actionViewReceipt",
+              {},
+              "Lihat Resi Pengiriman"
+            ),
+          });
+        } else {
+          actions.push({
+            label: t("pesananCard.actionUploadReceipt", {}, "Unggah Resi"),
+          });
+        }
         actions.push({
           label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
           onClick: onViewFleet,
@@ -266,9 +286,23 @@ export const useGetActionItems = ({
         });
         break;
       case ORDER_STATUS.PROSES_PENGIRIMAN_DOKUMEN:
-        actions.push({
-          label: t("pesananCard.actionViewArchive", {}, "Lihat Dokumen Arsip"),
-        });
+        if (order.hasDocumentsUploaded) {
+          actions.push({
+            label: t(
+              "pesananCard.actionViewArchive",
+              {},
+              "Lihat Dokumen Arsip"
+            ),
+          });
+        } else {
+          actions.push({
+            label: t(
+              "pesananCard.actionUploadArchive",
+              {},
+              "Unggah Dokumen Arsip"
+            ),
+          });
+        }
         actions.push({
           label: t(
             "pesananCard.actionViewReceipt",
@@ -307,7 +341,6 @@ export const useGetActionItems = ({
           href: `/cs/daftar-pesanan/${order.id}`,
         });
         break;
-
       case ORDER_STATUS.DIBATALKAN_SHIPPER:
       case ORDER_STATUS.DIBATALKAN_TRANSPORTER:
       case ORDER_STATUS.DIBATALKAN_SISTEM:
@@ -341,6 +374,7 @@ export const useGetActionItems = ({
     onViewFleet,
     onCancelFleet,
     onCancelOrder,
+    onViewCancellationReason,
   ]);
 };
 

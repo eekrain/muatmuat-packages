@@ -4,6 +4,10 @@ import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import DetailTransporterHeader from "@/container/CS/DetailTransporter/DetailTransporterHeader/DetailTransporterHeader";
 import ModalCatatanPenyelesaian from "@/container/CS/DetailTransporter/DetailTransporterHeader/ModalCatatanPenyelesaian";
 import { formatDate } from "@/lib/utils/dateFormat";
@@ -65,6 +69,22 @@ const armadaNonaktifColumns = [
   },
 ];
 
+const fleetNoteData = {
+  history: {
+    reportedAt: "2025-01-15T10:00:00Z",
+    notes:
+      "Kondisi armada memang sedang maintenance, sehingga aplikasi driver juga tidak diaktifkan karena belum bisa bertugas juga",
+    photos: [
+      {
+        url: "https://cdn.example.com/photos/maintenance_photo_1.jpg",
+      },
+      {
+        url: "https://cdn.example.com/photos/maintenance_photo_2.jpg",
+      },
+    ],
+  },
+};
+
 const DetailTransporter = ({ breadcrumbData }) => {
   // State for pagination (should be declared first)
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,15 +102,21 @@ const DetailTransporter = ({ breadcrumbData }) => {
   // Fetch fleet details data using the correct hook
   const transporterId = "transporter-uuid-2"; // Example, should be dynamic
   const { data: fleetDetailsData, isLoading: isFleetDetailsLoading } =
-    useGetTransporterInactiveFleetDetails(transporterId, {
+    useGetTransporterInactiveFleetDetails({
+      transporterId,
       page: currentPage,
       limit: perPage,
     });
 
   // Extract transporter info and fleet data
-  const transporterInfo = fleetDetailsData?.data?.Data?.transporterInfo || {};
-  const inactiveFleets = fleetDetailsData?.data?.Data?.inactiveFleets || [];
-  const pagination = fleetDetailsData?.data?.Data?.pagination || {};
+  const transporterInfo = fleetDetailsData?.Data?.transporterInfo || {};
+  const inactiveFleets = fleetDetailsData?.Data?.inactiveFleets || [];
+  const pagination = fleetDetailsData?.Data?.pagination || {};
+
+  // Debug logging
+  console.log("🔍 Debug - fleetDetailsData:", fleetDetailsData);
+  console.log("📊 Debug - inactiveFleets:", inactiveFleets);
+  console.log("🏢 Debug - transporterInfo:", transporterInfo);
 
   // Ambil nama transporter dari data
   const transporterName = transporterInfo.name || "-";
@@ -179,7 +205,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
               </div>
             </div>
             {/* <p className="text-xs font-medium text-neutral-600">
-              {fleetNoteData?.Data?.latestNote?.content || "-"}
+              {fleetNoteData?.Data?..content || "-"}
             </p> */}
             <div className="flex justify-between gap-3">
               <Button
@@ -189,6 +215,65 @@ const DetailTransporter = ({ breadcrumbData }) => {
               >
                 Hubungi
               </Button>
+            </div>
+          </div>
+          <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
+            <div className="mb-6 flex items-center">
+              <p className="text-xs font-semibold text-neutral-900">
+                Detail Penyelesaian
+              </p>
+            </div>
+            <div className="mb-3 flex flex-col gap-2">
+              <p className="text-xs font-medium text-neutral-600">
+                Tanggal Diselesaikan
+              </p>
+              <p className="text-xs font-medium text-neutral-900">
+                {fleetNoteData?.history?.reportedAt
+                  ? new Date(
+                      fleetNoteData.history.reportedAt
+                    ).toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : "-"}
+              </p>
+            </div>
+            <div className="mb-3 flex flex-col gap-2">
+              <p className="text-xs font-medium text-neutral-600">Catatan</p>
+              <p className="text-xs font-medium text-neutral-900">
+                {fleetNoteData?.history?.notes || "-"}
+              </p>
+            </div>
+            <div className="mb-3 flex flex-col gap-2">
+              <p className="text-xs font-medium text-neutral-600">
+                Foto Pendukung
+              </p>
+              <LightboxProvider
+                images={
+                  fleetNoteData?.history?.photos?.map((photo) => photo.url) ||
+                  []
+                }
+                title="Foto Pendukung"
+              >
+                <div className="flex flex-row gap-2">
+                  {fleetNoteData?.history?.photos?.length > 0 ? (
+                    fleetNoteData.history.photos.map((photo, idx) => (
+                      <LightboxPreview
+                        key={idx}
+                        image={photo.url}
+                        index={idx}
+                        className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
+                        alt={`Foto Pendukung ${idx + 1}`}
+                      />
+                    ))
+                  ) : (
+                    <span className="text-xs text-neutral-500">
+                      Tidak ada foto
+                    </span>
+                  )}
+                </div>
+              </LightboxProvider>
             </div>
           </div>
         </div>
@@ -207,7 +292,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
 
         {/* Right Column: DataTable */}
         <div className="w-full flex-grow">
-          {/* {fleetNoteData?.Data?.latestNote?.status === "active" && (
+          {/* {fleetNoteData?..status === "active" && (
             <div className="flex w-full rounded-xl bg-neutral-50 px-6 pt-5">
               <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
                 <p className="text-xs font-semibold text-error-400">

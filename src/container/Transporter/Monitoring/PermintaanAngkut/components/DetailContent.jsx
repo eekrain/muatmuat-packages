@@ -150,7 +150,7 @@ const DetailContent = ({
                 "flex h-6 items-center rounded-[6px] px-2 py-2 text-xs font-semibold",
                 displayData?.isTaken
                   ? "text-neutral-600"
-                  : "bg-error-50 text-error-700"
+                  : "bg-error-50 text-error-400"
               )}
             >
               Potensi Overload
