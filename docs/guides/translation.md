@@ -348,6 +348,7 @@ npm run t validate    # Find issues
 
 # Clean up
 npm run t cleanup     # Remove temp files
+npm run t remove-duplicates  # Remove duplicate keys
 ```
 
 Remember: **AI detects, Script manages!**
