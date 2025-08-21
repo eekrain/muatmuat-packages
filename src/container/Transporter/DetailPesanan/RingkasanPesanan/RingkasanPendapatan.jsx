@@ -19,29 +19,34 @@ const RingkasanPendapatan = ({ dataOrderDetail }) => {
               />
             </CardPayment.Section>
             {/* 25. 30 - Web - LB - 0253 */}
-            <CardPayment.Section title="Layanan Tambahan">
-              <CardPayment.LineItem
-                label={t("labelNominalBantuanTambahan")}
-                value={idrFormat(
-                  dataOrderDetail?.incomeSummary.additionalServiceFee
-                )}
-              />
-            </CardPayment.Section>
-            <CardPayment.Section title="Potongan PPh">
-              <CardPayment.LineItem
-                label="Nominal Potongan PPh"
-                value={`-${idrFormat(dataOrderDetail?.incomeSummary.taxAmount)}`}
-                valueClassName="text-error-400"
-              />
-            </CardPayment.Section>
-            <CardPayment.LineItem
-              className="mt-3"
-              labelClassName="text-sm font-semibold text-neutral-900"
-              valueClassName="text-sm font-semibold text-neutral-900"
-              label="Sub Total"
-              value={idrFormat(dataOrderDetail?.incomeSummary.totalPrice)}
-            />
+            {dataOrderDetail?.incomeSummary.additionalServiceFee ===
+            0 ? null : (
+              <CardPayment.Section title="Layanan Tambahan">
+                <CardPayment.LineItem
+                  label={t("labelNominalBantuanTambahan")}
+                  value={idrFormat(
+                    dataOrderDetail?.incomeSummary.additionalServiceFee
+                  )}
+                />
+              </CardPayment.Section>
+            )}
+            {dataOrderDetail?.incomeSummary.taxAmount === 0 ? null : (
+              <CardPayment.Section title="Potongan PPh">
+                <CardPayment.LineItem
+                  label="Nominal Potongan PPh"
+                  value={`-${idrFormat(dataOrderDetail?.incomeSummary.taxAmount)}`}
+                  valueClassName="text-error-400"
+                />
+              </CardPayment.Section>
+            )}
           </CardPayment.CollapsibleSection>
+          <CardPayment.LineItem
+            className="mt-3"
+            labelClassName="text-sm font-semibold text-neutral-900"
+            valueClassName="text-sm font-semibold text-neutral-900"
+            label="Sub Total"
+            value={idrFormat(dataOrderDetail?.incomeSummary.totalPrice)}
+          />
         </CardPayment.Body>
         <CardPayment.Footer>
           <CardPayment.Total

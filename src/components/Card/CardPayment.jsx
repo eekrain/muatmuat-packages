@@ -18,7 +18,7 @@ const Header = ({ children, className }) => (
   <div className={cn("py-5 md:px-5 md:py-6", className)}>
     <h1
       className={cn(
-        "text-sm font-semibold leading-tight text-neutral-900 md:text-base md:font-bold",
+        "text-sm font-semibold text-neutral-900 md:text-base md:font-bold",
         className
       )}
     >
@@ -56,9 +56,7 @@ const CollapsibleSection = ({
         role="button"
         tabIndex={0}
       >
-        <h2 className="text-sm font-semibold leading-tight text-neutral-900">
-          {title}
-        </h2>
+        <h2 className="text-sm font-semibold text-neutral-900">{title}</h2>
         <IconComponent
           src="/icons/chevron-up16.svg"
           className={cn(
@@ -84,9 +82,7 @@ const CollapsibleSection = ({
 
 const Section = ({ title, children, className }) => (
   <div className={cn("flex flex-col gap-4 md:gap-3", className)}>
-    <h2 className="text-sm font-semibold leading-tight text-neutral-900">
-      {title}
-    </h2>
+    <h2 className="text-sm font-semibold text-neutral-900">{title}</h2>
     <div className="flex flex-col gap-3">{children}</div>
   </div>
 );
