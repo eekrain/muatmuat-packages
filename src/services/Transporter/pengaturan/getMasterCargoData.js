@@ -130,7 +130,11 @@ const apiResultMasterCargo = {
 };
 
 export const fetcherMasterCargo = async (cacheKey) => {
-  const url = "/v1/transporter/settings/master-cargo-data";
+  // Extract query parameters from cacheKey
+  const urlParts = cacheKey.split("?");
+  const baseUrl = "/v1/transporter/settings/master-cargo-data";
+  const queryParams = urlParts.length > 1 ? urlParts[1] : "";
+  const url = queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
 
   if (useMockData) {
     const result = apiResultMasterCargo;

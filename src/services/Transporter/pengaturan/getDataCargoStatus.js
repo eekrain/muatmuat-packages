@@ -36,7 +36,9 @@ export const fetcherTransporterCargoStatus = async (cacheKey) => {
 };
 
 export const useGetTransporterCargoStatus = (id, options = {}) => {
-  const cacheKey = id ? `/v1/transporter-cargo-config-status/${id}` : null;
+  const cacheKey = id
+    ? `/v1/transporter/settings/transporter-cargo-config-status/${id}`
+    : null;
 
   return useSWR(cacheKey, fetcherTransporterCargoStatus, options);
 };
