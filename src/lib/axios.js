@@ -38,6 +38,10 @@ const LIST_PUBLIC_ROUTES = [
     method: "exact",
   },
   {
+    path: "/set-password",
+    method: "exact",
+  },
+  {
     // /orders/orderId/drivers/driverId/qr-code
     path: /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
     method: "regex",

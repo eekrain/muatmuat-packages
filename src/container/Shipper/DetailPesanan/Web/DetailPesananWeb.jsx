@@ -3,10 +3,7 @@ import { useEffect, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 // import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  OrderStatusEnum,
-  getOrderStatusRank,
-} from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
@@ -85,11 +82,13 @@ const DetailPesananWeb = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
-  // Only call useGetOldDriver if status is above WAITING_PAYMENT_2
+  // Only call useGetOldDriver if order status is loading or unloading
   const shouldFetchOldDriver =
     dataDetailPesanan?.dataStatusPesanan?.orderStatus &&
-    getOrderStatusRank(dataDetailPesanan.dataStatusPesanan.orderStatus) >=
-      getOrderStatusRank(OrderStatusEnum.LOADING);
+    (dataDetailPesanan.dataStatusPesanan.orderStatus ===
+      OrderStatusEnum.LOADING ||
+      dataDetailPesanan.dataStatusPesanan.orderStatus ===
+        OrderStatusEnum.UNLOADING);
 
   const { data: oldDriverData } = useGetOldDriver(
     shouldFetchOldDriver ? params.orderId : null,
