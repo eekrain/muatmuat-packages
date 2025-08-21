@@ -350,7 +350,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                         "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                         detail.isTaken
                           ? "text-neutral-700"
-                          : "bg-error-50 text-error-700"
+                          : "bg-error-50 text-error-400"
                       )}
                     >
                       Potensi Overload
@@ -549,13 +549,16 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
 
               {/* Additional Services Section */}
               {(detail.additionalServices?.length > 0 ||
-                request?.hasAdditionalService) && (
+                request?.additionalServices?.length > 0) && (
                 <div className="rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
                   <div className="text-[12px] font-semibold text-neutral-900">
                     +{" "}
-                    {detail.additionalServices?.[0]?.serviceName ||
-                      request?.additionalServices?.[0]?.serviceName ||
-                      "Bantuan Tambahan, Kirim Berkas"}
+                    {(detail.additionalServices?.length > 0
+                      ? detail.additionalServices
+                      : request?.additionalServices || []
+                    )
+                      .map((service) => service.serviceName)
+                      .join(", ")}
                   </div>
                 </div>
               )}

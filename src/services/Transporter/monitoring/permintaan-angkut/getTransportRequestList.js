@@ -165,6 +165,14 @@ const apiResultTransportRequestList = {
               id: "550e8400-e29b-41d4-a716-446655440014",
               serviceName: "Kirim Berkas",
             },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              serviceName: "Tanda Tangan Digital",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440016",
+              serviceName: "Arsip Online",
+            },
           ],
           photos: [
             {
@@ -329,6 +337,14 @@ const apiResultTransportRequestList = {
               id: "550e8400-e29b-41d4-a716-446655440014",
               serviceName: "Kirim Berkas",
             },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              serviceName: "Tanda Tangan Digital",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440016",
+              serviceName: "Arsip Online",
+            },
           ],
           photos: [
             {
@@ -492,6 +508,14 @@ const apiResultTransportRequestList = {
             {
               id: "550e8400-e29b-41d4-a716-446655440014",
               serviceName: "Kirim Berkas",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              serviceName: "Tanda Tangan Digital",
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440016",
+              serviceName: "Arsip Online",
             },
           ],
           photos: [

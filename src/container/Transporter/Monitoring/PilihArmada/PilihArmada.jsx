@@ -220,7 +220,13 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
               }
               return { variant: "primary", text: "Bertugas" };
             case "WAITING_LOADING_TIME":
-              return { variant: "info", text: "Akan Muat Hari Ini" };
+              if (row.isRecommended) {
+                return {
+                  className: "bg-warning-100 text-warning-700",
+                  text: "Akan Muat Hari Ini",
+                };
+              }
+              return { variant: "warning", text: "Akan Muat Hari Ini" };
             default:
               return { variant: "default", text: status };
           }

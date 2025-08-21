@@ -365,7 +365,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                       detail.isTaken
                         ? "text-neutral-700"
                         : detail.orderType === "INSTANT"
-                          ? "bg-success-50 text-success-700"
+                          ? "bg-success-50 text-success-400"
                           : detail.orderType === "SCHEDULED"
                             ? "bg-primary-50 text-primary-700"
                             : "bg-primary-50 text-primary-700"
@@ -417,10 +417,10 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                     let colorClass = "";
                     if (diffDays === 0) {
                       label = "Muat Hari Ini";
-                      colorClass = "bg-success-50 text-success-700";
+                      colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays === 1) {
                       label = "Muat Besok";
-                      colorClass = "bg-success-50 text-success-700";
+                      colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays >= 2 && diffDays <= 5) {
                       label = `Muat ${diffDays} Hari`;
                       colorClass = "bg-warning-100 text-warning-900";
@@ -450,7 +450,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                         "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                         detail.isTaken
                           ? "text-neutral-700"
-                          : "bg-error-50 text-error-700"
+                          : "bg-error-50 text-error-400"
                       )}
                     >
                       Potensi Overload
@@ -649,13 +649,16 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
 
               {/* Additional Services Section */}
               {(detail.additionalServices?.length > 0 ||
-                request?.hasAdditionalService) && (
-                <div className="rounded-[4px] bg-warning-50 px-3 py-2">
-                  <div className="text-[12px] font-medium text-warning-800">
+                request?.additionalServices?.length > 0) && (
+                <div className="rounded-[6px] bg-muat-trans-primary-100 px-3 py-2">
+                  <div className="text-[12px] font-semibold text-neutral-900">
                     +{" "}
-                    {detail.additionalServices?.[0]?.serviceName ||
-                      request?.additionalServices?.[0]?.serviceName ||
-                      "Bantuan Tambahan, Kirim Berkas"}
+                    {(detail.additionalServices?.length > 0
+                      ? detail.additionalServices
+                      : request?.additionalServices || []
+                    )
+                      .map((service) => service.serviceName)
+                      .join(", ")}
                   </div>
                 </div>
               )}
