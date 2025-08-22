@@ -6,6 +6,7 @@ import {
   BottomSheetTitle,
 } from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { InformasiArmadaFragment } from "../fragments/InformasiArmadaFragment";
 import { InformasiMuatanFragment } from "../fragments/InformasiMuatanFragment";
@@ -18,12 +19,20 @@ export const BottomSheetPeriksaPesananKamu = ({
   dataRingkasanPesanan,
   dataStatusPesanan,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Periksa Pesanan Kamu</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t(
+              "BottomSheetPeriksaPesananKamu.title",
+              {},
+              "Periksa Pesanan Kamu"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
 
         <div className="px-4 pb-6">
@@ -49,18 +58,30 @@ export const BottomSheetPeriksaPesananKamu = ({
           />
 
           <span className="my-4 block text-xs font-medium text-neutral-900">
-            *Dengan memesan jasa angkut ini, kamu telah menyetujui
+            {t(
+              "BottomSheetPeriksaPesananKamu.termsAgreement",
+              {},
+              "*Dengan memesan jasa angkut ini, kamu telah menyetujui"
+            )}
             <br />
             <a
               href="#"
               className="font-semibold text-primary-700 hover:underline"
             >
-              Syarat dan Ketentuan Muatrans
+              {t(
+                "BottomSheetPeriksaPesananKamu.termsAndConditions",
+                {},
+                "Syarat dan Ketentuan Muatrans"
+              )}
             </a>
           </span>
 
           <Button variant="muatparts-primary" className="w-full">
-            Pesan Sekarang
+            {t(
+              "BottomSheetPeriksaPesananKamu.orderNowButton",
+              {},
+              "Pesan Sekarang"
+            )}
           </Button>
         </div>
       </BottomSheetContent>

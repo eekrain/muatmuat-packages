@@ -2,11 +2,9 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+import { URL_AREA_BONGKAR } from "./getDataAreaBongkar";
 
-// Endpoint constants
-export const URL_SEARCH_AREA_BONGKAR =
-  "/v1/transporter/settings/area-bongkar/search";
+const useMockData = false; // toggle mock data
 
 // Mock API results for search area bongkar
 export const mockSearchAreaBongkarSuccess = {
@@ -114,14 +112,14 @@ export const mockSearchAreaBongkarNoData = {
 export const mockSearchAreaBongkarError = {
   Message: {
     Code: 400,
-    Text: "Parameter keyword wajib diisi",
+    Text: "Parameter q wajib diisi",
   },
   Data: {
     errors: [
       {
-        field: "keyword",
-        message: "Parameter keyword tidak boleh kosong",
-        code: "KEYWORD_REQUIRED",
+        field: "q",
+        message: "Parameter q tidak boleh kosong",
+        code: "Q_REQUIRED",
       },
     ],
   },
@@ -218,29 +216,29 @@ export const searchAreaBongkar = async (cacheKey) => {
     ? new URLSearchParams(params)
     : new URLSearchParams();
 
-  const keyword = searchParams.get("keyword") || "";
+  const q = searchParams.get("q") || "";
   const page = parseInt(searchParams.get("page")) || 1;
   const limit = parseInt(searchParams.get("limit")) || 10;
 
   let result;
   if (useMockData) {
-    // Validate required keyword parameter
-    if (!keyword.trim()) {
+    // Validate required q parameter
+    if (!q.trim()) {
       throw new Error(JSON.stringify(mockSearchAreaBongkarError));
     }
 
-    // Filter provinces based on keyword
+    // Filter provinces based on q parameter
     let searchResults = mockAllProvinces.filter(
       (province) =>
-        province.provinceName.toLowerCase().includes(keyword.toLowerCase()) ||
-        province.areaName.toLowerCase().includes(keyword.toLowerCase())
+        province.provinceName.toLowerCase().includes(q.toLowerCase()) ||
+        province.areaName.toLowerCase().includes(q.toLowerCase())
     );
 
     // Add highlighting to matching provinces
     searchResults = searchResults.map((province) => ({
       ...province,
       highlightedName: province.provinceName.replace(
-        new RegExp(keyword, "gi"),
+        new RegExp(q, "gi"),
         `<mark>$&</mark>`
       ),
     }));
@@ -258,7 +256,7 @@ export const searchAreaBongkar = async (cacheKey) => {
           ...mockSearchAreaBongkarNoData,
           Data: {
             ...mockSearchAreaBongkarNoData.Data,
-            keyword: keyword,
+            keyword: q,
             pagination: {
               currentPage: page,
               totalPages: 0,
@@ -274,7 +272,7 @@ export const searchAreaBongkar = async (cacheKey) => {
           ...mockSearchAreaBongkarSuccess,
           Data: {
             ...mockSearchAreaBongkarSuccess.Data,
-            keyword: keyword,
+            keyword: q,
             found: true,
             unloadingAreas: paginatedResults,
             pagination: {
@@ -292,11 +290,11 @@ export const searchAreaBongkar = async (cacheKey) => {
     await new Promise((resolve) => setTimeout(resolve, 800));
   } else {
     const query = params ? `?${new URLSearchParams(params).toString()}` : "";
-    result = await fetcherMuatrans.get(`${URL_SEARCH_AREA_BONGKAR}${query}`);
+    result = await fetcherMuatrans.get(`${URL_AREA_BONGKAR}${query}`);
   }
 
   return {
-    keyword: result?.data?.Data?.keyword || "",
+    keyword: result?.data?.Data?.keyword || result?.data?.Data?.q || "",
     found: result?.data?.Data?.found || false,
     unloadingAreas: result?.data?.Data?.unloadingAreas || [],
     pagination: result?.data?.Data?.pagination || {},
@@ -307,8 +305,12 @@ export const searchAreaBongkar = async (cacheKey) => {
 
 export const useSearchAreaBongkar = (params) => {
   const paramsString = params ? new URLSearchParams(params).toString() : "";
+
+  // Only fetch if q parameter is provided and not empty
+  const shouldFetch = params?.q && params.q.trim().length > 0;
+
   const { data, error, isLoading, mutate } = useSWR(
-    `searchAreaBongkar/${paramsString}`,
+    shouldFetch ? `searchAreaBongkar/${paramsString}` : null,
     searchAreaBongkar
   );
 
@@ -319,7 +321,7 @@ export const useSearchAreaBongkar = (params) => {
     pagination: data?.pagination || {},
     message: data?.message || {},
     raw: data?.raw,
-    isLoading,
+    isLoading: shouldFetch ? isLoading : false,
     isError: !!error,
     mutate,
   };

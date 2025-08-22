@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ChevronDown, Info } from "lucide-react";
 
@@ -14,6 +14,7 @@ import Input from "@/components/Form/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+import { useDebounce } from "@/hooks/use-debounce";
 import {
   deleteProvinsiAreaBongkar,
   saveAreaBongkar,
@@ -37,52 +38,89 @@ export default function Page() {
   // Local state to manage checkbox selections
   const [localProvinces, setLocalProvinces] = useState([]);
 
-  // Search area bongkar functionality
+  // Debounce search city to prevent excessive API calls
+  const debouncedSearchCity = useDebounce(searchCity, 500);
+
+  // Stabilize search parameters to prevent unnecessary API calls
+  const searchParams = useMemo(() => {
+    if (!searchKeyword || searchKeyword.trim().length === 0) return null;
+    return {
+      q: searchKeyword,
+      page: 1,
+      limit: 10,
+    };
+  }, [searchKeyword]);
+
+  // Search area bongkar functionality - only fetch when keyword is not empty
   const {
     unloadingAreas: searchResults,
     found: searchFound,
     isLoading: isSearchLoading,
     keyword: searchResponseKeyword,
     pagination: searchPagination,
-  } = useSearchAreaBongkar({
-    keyword: searchKeyword,
-    page: 1,
-    limit: 10,
-  });
+  } = useSearchAreaBongkar(searchParams);
 
   // Fetch area bongkar management data
-  const { provinces, isLoading } = useGetAreaBongkarManage({
-    search: searchCity,
-    showSelected: showSelectedOnly,
-  });
+  const { provinces, isLoading } = useGetAreaBongkarManage(
+    {
+      search: debouncedSearchCity,
+      showSelected: showSelectedOnly,
+    },
+    { enabled: true } // Always enabled for main data
+  );
 
-  // Fetch master provinsi data for reference (can be used for province selection popup)
+  // Fetch master provinsi data for reference (only when needed for province selection popup)
   const { provinsi: masterProvinsi, isLoading: isLoadingMasterProvinsi } =
-    useGetMasterProvinsi({
-      search: "", // Can be used for province search in popup
-      page: 1,
-      limit: 50,
-      excludeSelected: false,
-    });
+    useGetMasterProvinsi(
+      {
+        search: "", // Can be used for province search in popup
+        page: 1,
+        limit: 50,
+        excludeSelected: false,
+      },
+      { enabled: false } // Disabled by default, enable when province selection modal is needed
+    );
 
   // Get selected province IDs for fetching kota/kabupaten
-  const selectedProvinceIds =
-    provinces
-      ?.filter((province) => province.cities?.some((city) => city.isSelected))
-      ?.map((province) => province.id)
-      ?.join(",") || "";
+  // Use stable reference to prevent unnecessary recalculations
+  const selectedProvinceIds = useMemo(() => {
+    if (!provinces || provinces.length === 0) return "";
+
+    const ids =
+      provinces
+        .filter((province) => province.cities?.some((city) => city.isSelected))
+        .map((province) => province.id)
+        .join(",") || "";
+
+    return ids;
+  }, [provinces]);
+
+  // Determine if master kota/kabupaten should be fetched
+  // Only when provinces exist and we need to filter or search cities
+  const shouldFetchMasterKotaKabupaten = useMemo(() => {
+    return (
+      selectedProvinceIds.length > 0 &&
+      (debouncedSearchCity.length > 0 || showSelectedOnly)
+    );
+  }, [selectedProvinceIds, debouncedSearchCity, showSelectedOnly]);
 
   // Fetch master kota/kabupaten data based on selected provinces
+  // Only enabled when there are selected provinces and search/filter is needed
   const {
     cities: masterKotaKabupaten,
     isLoading: isLoadingMasterKotaKabupaten,
-  } = useGetMasterKotaKabupaten({
-    provinceIds: selectedProvinceIds,
-    search: searchCity,
-    selectedOnly: showSelectedOnly,
-    page: 1,
-    limit: 50,
-  });
+  } = useGetMasterKotaKabupaten(
+    {
+      provinceIds: selectedProvinceIds,
+      search: debouncedSearchCity,
+      selectedOnly: showSelectedOnly,
+      page: 1,
+      limit: 50,
+    },
+    {
+      enabled: shouldFetchMasterKotaKabupaten,
+    }
+  );
 
   // Initialize local state when provinces data changes
   useEffect(() => {
@@ -198,7 +236,6 @@ export default function Page() {
       }
     } catch (error) {
       // Error updating province selection
-
       // Revert local state on error
       setLocalProvinces((prevProvinces) =>
         prevProvinces.map((province) => {
@@ -267,7 +304,6 @@ export default function Page() {
       }
     } catch (error) {
       // Error updating city selection
-
       // Revert local state on error
       setLocalProvinces((prevProvinces) =>
         prevProvinces.map((province) => {

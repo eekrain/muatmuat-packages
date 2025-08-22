@@ -106,7 +106,9 @@ const Header = ({
           <BottomSheetContent>
             <BottomSheetHeader>
               <BottomSheetClose />
-              <BottomSheetTitle>Menu</BottomSheetTitle>
+              <BottomSheetTitle>
+                {t("DriverInfoSlider.menuTitle", {}, "Menu")}
+              </BottomSheetTitle>
             </BottomSheetHeader>
             <div className="flex flex-col gap-4 px-4 pb-6">
               <button
@@ -121,7 +123,7 @@ const Header = ({
                   })
                 }
               >
-                Lihat Semua Driver
+                {t("DriverInfoSlider.viewAllDrivers", {}, "Lihat Semua Driver")}
               </button>
               {oldDriverData ? (
                 <BottomSheetPreviousDriver oldDriverData={oldDriverData} />
@@ -165,6 +167,7 @@ const Actions = ({
   onDriverContactClicked,
   onLacakArmadaClicked,
 }) => {
+  const { t } = useTranslation();
   console.log("🚀 ~ orderId 2:", orderId);
   const navigation = useResponsiveNavigation();
 
@@ -185,7 +188,7 @@ const Actions = ({
           }
           className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
         >
-          Detail Status Driver
+          {t("DriverInfoSlider.detailStatusDriver", {}, "Detail Status Driver")}
         </Button>
       ) : (
         <>
@@ -194,14 +197,14 @@ const Actions = ({
             onClick={onDriverContactClicked}
             className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
           >
-            Hubungi Driver
+            {t("DriverInfoSlider.contactDriver", {}, "Hubungi Driver")}
           </Button>
           <Button
             variant="muatparts-primary"
             onClick={onLacakArmadaClicked}
             className="h-7 w-full !rounded-[20px] bg-primary-700 !text-xs !font-semibold text-white"
           >
-            Lacak Armada
+            {t("DriverInfoSlider.trackFleet", {}, "Lacak Armada")}
           </Button>
         </>
       )}
@@ -241,6 +244,7 @@ export default function DriverInfoSlider({
   oldDriverData,
 }) {
   console.log("🚀 ~ orderId 1:", orderId);
+  const { t } = useTranslation();
   const items = driverStatus;
   const TRANSITION_DURATION_MS = 300;
 
@@ -319,7 +323,13 @@ export default function DriverInfoSlider({
                 driver={driver}
                 orderId={orderId}
                 onDriverContactClicked={() =>
-                  alert(`Contacting ${driver.name}`)
+                  alert(
+                    t(
+                      "DriverInfoSlider.contacting",
+                      { name: driver.name },
+                      "Contacting {name}"
+                    )
+                  )
                 }
                 onLacakArmadaClicked={() =>
                   navigation.push("/LacakArmada", {
@@ -371,7 +381,13 @@ export default function DriverInfoSlider({
                     driver={driver}
                     orderId={orderId}
                     onDriverContactClicked={() =>
-                      alert(`Contacting ${driver.name}`)
+                      alert(
+                        t(
+                          "DriverInfoSlider.contacting",
+                          { name: driver.name },
+                          "Contacting {name}"
+                        )
+                      )
                     }
                     onLacakArmadaClicked={() =>
                       navigation.push("/LacakArmada", {

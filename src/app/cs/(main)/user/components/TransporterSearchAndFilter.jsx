@@ -43,7 +43,7 @@ const TransporterSearchAndFilter = ({
           },
           {
             id: "Dalam Verifikasi",
-            key: "IN_VERIFICATION",
+            key: "VERIFICATION_PENDING",
             label: t(
               "TransporterSearchAndFilter.statusInVerification",
               {},

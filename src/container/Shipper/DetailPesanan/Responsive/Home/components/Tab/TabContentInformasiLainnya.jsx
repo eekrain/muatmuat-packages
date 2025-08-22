@@ -3,13 +3,19 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const TabContentInformasiLainnya = ({ dataRingkasanPesanan }) => {
+  const { t } = useTranslation();
   const images = (dataRingkasanPesanan?.cargoPhotos || []).map(
     (src, index) => ({
       id: index + 1,
       src,
-      alt: `Foto Muatan ${index + 1}`,
+      alt: `${t(
+        "TabContentInformasiLainnya.cargoPhoto",
+        {},
+        "Foto Muatan"
+      )} ${index + 1}`,
     })
   );
 
@@ -23,11 +29,19 @@ export const TabContentInformasiLainnya = ({ dataRingkasanPesanan }) => {
       {images.length > 0 && (
         <div className="flex flex-col gap-4">
           <h2 className="text-sm font-semibold leading-tight text-neutral-900">
-            Lampiran/Foto Muatan
+            {t(
+              "TabContentInformasiLainnya.attachmentTitle",
+              {},
+              "Lampiran/Foto Muatan"
+            )}
           </h2>
           <LightboxProvider
             images={images.map((img) => img.src)}
-            title="Lampiran/Foto Muatan"
+            title={t(
+              "TabContentInformasiLainnya.attachmentTitle",
+              {},
+              "Lampiran/Foto Muatan"
+            )}
           >
             <div className="flex flex-row flex-wrap gap-3">
               {images.map((image, index) => (
@@ -47,7 +61,11 @@ export const TabContentInformasiLainnya = ({ dataRingkasanPesanan }) => {
       {cargoDescription && (
         <div className="flex flex-col gap-4">
           <h2 className="text-sm font-semibold leading-tight text-neutral-900">
-            Deskripsi Muatan
+            {t(
+              "TabContentInformasiLainnya.cargoDescriptionTitle",
+              {},
+              "Deskripsi Muatan"
+            )}
           </h2>
           <p className="text-xs font-medium leading-tight text-neutral-900">
             {cargoDescription}
@@ -58,7 +76,11 @@ export const TabContentInformasiLainnya = ({ dataRingkasanPesanan }) => {
       {doNumbers.length > 0 && (
         <div className="flex flex-col gap-4">
           <h2 className="text-sm font-semibold leading-tight text-neutral-900">
-            No. Delivery Order (DO)
+            {t(
+              "TabContentInformasiLainnya.doTitle",
+              {},
+              "No. Delivery Order (DO)"
+            )}
           </h2>
           <div className="flex flex-row flex-wrap gap-2">
             {doNumbers.map((doNumber, index) => (

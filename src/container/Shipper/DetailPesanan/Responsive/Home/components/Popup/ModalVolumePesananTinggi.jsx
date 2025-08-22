@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useSWRMutateHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 
 /**
  * A confirmation modal displayed when order volumes are high.
@@ -20,6 +21,7 @@ export const ModalVolumePesananTinggi = ({
   onConfirm,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const params = useParams();
   const { trigger: confirmWaiting } = useSWRMutateHook(
     `v1/orders/${params.orderId}/waiting-confirmation`
@@ -44,11 +46,18 @@ export const ModalVolumePesananTinggi = ({
         <div className="flex flex-col items-center gap-5 px-4 pb-6 pt-6">
           <div className="flex flex-col items-center gap-4">
             <h2 className="font-avenir-next w-[216px] text-center text-base font-bold leading-[1.1] text-black">
-              Oops, Volume Pesanan Sedang Tinggi
+              {t(
+                "ModalVolumePesananTinggi.title",
+                {},
+                "Oops, Volume Pesanan Sedang Tinggi"
+              )}
             </h2>
             <p className="font-avenir-next w-[264px] text-center text-sm font-medium leading-[1.1] text-black">
-              Kami membutuhkan waktu lebih lama untuk mempersiapkan armada.
-              Apakah kamu tetap ingin menunggu?
+              {t(
+                "ModalVolumePesananTinggi.message",
+                {},
+                "Kami membutuhkan waktu lebih lama untuk mempersiapkan armada. Apakah kamu tetap ingin menunggu?"
+              )}
             </p>
           </div>
           <div className="flex flex-row justify-center gap-2">
@@ -57,14 +66,14 @@ export const ModalVolumePesananTinggi = ({
               onClick={onCancel}
               className="h-7 min-w-[112px] rounded-[20px] px-6 py-3 text-xs font-semibold"
             >
-              Batalkan
+              {t("ModalVolumePesananTinggi.buttonCancel", {}, "Batalkan")}
             </Button>
             <Button
               variant="muatparts-primary"
               onClick={handleConfirmWaiting}
               className="h-7 min-w-[112px] rounded-[20px] px-6 py-3 text-xs font-semibold"
             >
-              Ya, Menunggu
+              {t("ModalVolumePesananTinggi.buttonYesWait", {}, "Ya, Menunggu")}
             </Button>
           </div>
         </div>

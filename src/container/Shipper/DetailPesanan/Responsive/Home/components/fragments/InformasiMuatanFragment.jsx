@@ -1,11 +1,16 @@
 import { ButtonMini } from "@/components/Button/ButtonMini";
 import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const InformasiMuatanFragment = ({ dataRingkasanPesanan }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-sm font-semibold">Informasi Muatan</h3>
+      <h3 className="text-sm font-semibold">
+        {t("InformasiMuatanFragment.title", {}, "Informasi Muatan")}
+      </h3>
       {dataRingkasanPesanan?.isHalalLogistics && <HalalLogistik />}
 
       <div className="flex flex-col gap-3">
@@ -26,8 +31,22 @@ export const InformasiMuatanFragment = ({ dataRingkasanPesanan }) => {
         {dataRingkasanPesanan?.cargos?.length > 2 && (
           <div className="flex items-center gap-2">
             <div className="w-4" />
-            <ButtonMini onClick={() => alert("Lihat Muatan Lainnya")}>
-              Lihat Muatan Lainnya
+            <ButtonMini
+              onClick={() =>
+                alert(
+                  t(
+                    "InformasiMuatanFragment.viewMoreAlert",
+                    {},
+                    "Lihat Muatan Lainnya"
+                  )
+                )
+              }
+            >
+              {t(
+                "InformasiMuatanFragment.viewMore",
+                {},
+                "Lihat Muatan Lainnya"
+              )}
             </ButtonMini>
           </div>
         )}

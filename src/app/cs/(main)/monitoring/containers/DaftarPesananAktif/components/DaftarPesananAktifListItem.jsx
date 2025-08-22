@@ -119,7 +119,31 @@ const DaftarPesananAktifListItem = ({
   const { dateLabel, timeRange, dateColor } = formatMuatTime(row);
   const statusBadge = getOrderStatusBadge(row.orderStatus);
   const config = getOrderStatusActions(row.orderStatus, row);
-  const muatanInfo = formatInformasiMuatan(row.informasiMuatan);
+
+  // Normalize fields coming from mockData shape
+  const id = row.orderId || row.id;
+  const orderCode = row.orderNumber || row.orderCode || "";
+  const transporterName =
+    row.transporterInfo?.transporterName || row.transporterName || "";
+  const shipperName = row.shipperInfo?.shipperName || row.shipperName || "";
+  const pickupLocations =
+    row.route?.pickupLocations || row.pickupLocations || [];
+  const dropoffLocations =
+    row.route?.dropoffLocations || row.dropoffLocations || [];
+
+  const vehicleType = row.fleetInfo?.vehicleType || row.truckType?.name || "";
+  const carrierType =
+    row.fleetInfo?.carrierType || row.carrierTruck?.name || "";
+  const totalUnits = row.fleetInfo?.totalUnits || row.truckCount || 0;
+  const informasiMuatan = row.fleetInfo?.cargoName || row.informasiMuatan || [];
+  const totalWeight = row.fleetInfo?.totalWeight || row.totalWeight || 0;
+  const weightUnit = row.fleetInfo?.weightUnit || row.weightUnit || "kg";
+  const sosStatus = row.sosStatus ?? {
+    hasSos: (row.sosUnit || 0) > 0,
+    sosCount: row.sosUnit || 0,
+  };
+
+  const muatanInfo = formatInformasiMuatan(informasiMuatan);
 
   const handleActionClick = (actionType) => {
     switch (actionType) {
@@ -128,7 +152,7 @@ const DaftarPesananAktifListItem = ({
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
         break;
       case ORDER_ACTIONS.CONFIRM_READY.type:
-        onToggleDropdown(row.id, false);
+        onToggleDropdown(id, false);
         break;
     }
     onActionClick(actionType, row);
@@ -149,7 +173,7 @@ const DaftarPesananAktifListItem = ({
             </div>
 
             <span className="line-clamp-1 flex-grow break-all text-xs font-semibold text-black">
-              PT Siba Surya PT Siba Surya PT Panjang Sekali Ini Omygod
+              {transporterName}
             </span>
             <div className="border-l border-neutral-400 py-1 pl-2">
               <Button
@@ -176,7 +200,7 @@ const DaftarPesananAktifListItem = ({
               <span className="text-xs font-bold text-white">A</span>
             </div>
             <span className="line-clamp-1 flex-grow break-all text-xs font-semibold text-black">
-              Agam Tunggal Jaya Agam Tung Tung Tung Tung Tung TUng SASHUUUURRRRR
+              {shipperName}
             </span>
             <div className="border-l border-neutral-400 py-1 pl-2">
               <Button
@@ -266,7 +290,7 @@ const DaftarPesananAktifListItem = ({
               </InfoTooltip>
             )}
             <span className="text-primary-700 hover:cursor-pointer hover:text-primary-800">
-              {row.orderCode}
+              {orderCode}
             </span>
           </div>
           <BadgeOrderType type={row.orderType} className="w-[70px]" />
@@ -283,8 +307,8 @@ const DaftarPesananAktifListItem = ({
         {/* Rute Muat & Bongkar */}
         <div className="flex w-[160px] shrink-0">
           <MuatBongkarStepperWithModal
-            pickupLocations={row.pickupLocations}
-            dropoffLocations={row.dropoffLocations}
+            pickupLocations={pickupLocations}
+            dropoffLocations={dropoffLocations}
             appearance={{
               titleClassName: "text-xxs font-semibold",
             }}
@@ -294,14 +318,14 @@ const DaftarPesananAktifListItem = ({
         {/* Armada */}
         <div className="flex w-full flex-col gap-1">
           <TruncatedTextWithTooltip
-            text={row.truckType.name}
+            text={vehicleType}
             className="line-clamp-1 break-all text-xs font-semibold"
           />
           <span className="line-clamp-1 break-all text-xs font-medium">
             {/* <span className="text-neutral-600">Carrier :</span>{" "}
             {row.carrierTruck.name} */}
             <TruncatedTextWithTooltip
-              text={`${row.carrierTruck.name}`}
+              text={`${carrierType}`}
               className="line-clamp-1 break-all text-[10px] font-semibold"
             />
           </span>
@@ -311,9 +335,7 @@ const DaftarPesananAktifListItem = ({
                 src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
                 className="h-4 w-4 text-gray-600"
               />
-              <span className="text-xxs font-medium">
-                {row.truckCount} Unit
-              </span>
+              <span className="text-xxs font-medium">{totalUnits} Unit</span>
             </div>
             <span className="text-gray-300">•</span>
             <div className="flex max-w-[118px] items-center gap-1">
@@ -324,7 +346,7 @@ const DaftarPesananAktifListItem = ({
               <span className="text-xxs font-medium">
                 {muatanInfo.hasMore ? (
                   <>
-                    {row.informasiMuatan[0]},{" "}
+                    {informasiMuatan[0]},{" "}
                     <InfoTooltip
                       trigger={
                         <span className="cursor-pointer text-primary-700 hover:text-primary-800">
@@ -345,22 +367,22 @@ const DaftarPesananAktifListItem = ({
                         </ol>
                       </div>
                     </InfoTooltip>{" "}
-                    ({row.totalWeight} {row.weightUnit})
+                    ({totalWeight} {weightUnit})
                   </>
                 ) : (
-                  `${muatanInfo.displayText} (${row.totalWeight} ${row.weightUnit})`
+                  `${muatanInfo.displayText} (${totalWeight} ${weightUnit})`
                 )}
               </span>
             </div>
           </div>
           {/* SOS Indicator for UNLOADING status with SOS */}
           {row.orderStatus === ORDER_STATUS.UNLOADING &&
-            row.sosStatus?.hasSos &&
-            row.sosStatus?.sosCount > 0 && (
+            sosStatus?.hasSos &&
+            sosStatus?.sosCount > 0 && (
               <div className="mt-1 flex items-center gap-2">
                 <div className="flex h-[14px] items-center gap-1 rounded bg-error-400 px-1">
                   <span className="text-[8px] font-bold leading-[130%] text-white">
-                    SOS : {row.sosStatus.sosCount} Unit
+                    SOS : {sosStatus.sosCount} Unit
                   </span>
                 </div>
                 <Button
@@ -461,7 +483,7 @@ const DaftarPesananAktifListItem = ({
           {config ? (
             <SimpleDropdown
               open={isOpen || false}
-              onOpenChange={(open) => onToggleDropdown(row.id, open)}
+              onOpenChange={(open) => onToggleDropdown(id, open)}
             >
               <SimpleDropdownTrigger asChild>
                 <button

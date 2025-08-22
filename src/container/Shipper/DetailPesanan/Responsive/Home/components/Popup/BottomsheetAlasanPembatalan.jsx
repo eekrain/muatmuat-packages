@@ -11,6 +11,7 @@ import {
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useTranslation } from "@/hooks/use-translation";
 import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
@@ -38,6 +39,7 @@ export const BottomsheetAlasanPembatalan = ({
   onConfirm = () => alert("onConfirm not implemented"),
   orderId,
 }) => {
+  const { t } = useTranslation();
   const { data: cancellationReasons } = useGetCancellationReasons();
   const { data: bankAccounts } = useGetBankAccounts();
   const navigation = useResponsiveNavigation();
@@ -53,7 +55,13 @@ export const BottomsheetAlasanPembatalan = ({
     setGlobalError(null);
 
     if (!selectedReason) {
-      setGlobalError("Alasan pembatalan wajib diisi");
+      setGlobalError(
+        t(
+          "BottomsheetAlasanPembatalan.errorCancellationReasonRequired",
+          {},
+          "Alasan pembatalan wajib diisi"
+        )
+      );
       return;
     }
 
@@ -62,7 +70,13 @@ export const BottomsheetAlasanPembatalan = ({
         cancellationReasons?.[cancellationReasons.length - 1]?.value &&
       !customReason
     ) {
-      setCustomReasonError("Alasan pembatalan wajib diisi");
+      setCustomReasonError(
+        t(
+          "BottomsheetAlasanPembatalan.errorCancellationReasonRequired",
+          {},
+          "Alasan pembatalan wajib diisi"
+        )
+      );
       return;
     }
 
@@ -97,12 +111,23 @@ export const BottomsheetAlasanPembatalan = ({
       try {
         await fetcherMuatrans.post(`v1/orders/${orderId}/cancel`, cancelData);
 
-        toast.success("Berhasil membatalkan pesanan");
+        toast.success(
+          t(
+            "BottomsheetAlasanPembatalan.successCancelOrder",
+            {},
+            "Berhasil membatalkan pesanan"
+          )
+        );
         onConfirm?.();
         onOpenChange(false);
       } catch (error) {
         toast.error(
-          error.response?.data?.Data?.Message || "Gagal membatalkan pesanan"
+          error.response?.data?.Data?.Message ||
+            t(
+              "BottomsheetAlasanPembatalan.errorCancelOrder",
+              {},
+              "Gagal membatalkan pesanan"
+            )
         );
       }
     }
@@ -116,7 +141,13 @@ export const BottomsheetAlasanPembatalan = ({
         additionalInfo: cancelData.additionalInfo,
       });
 
-      toast.success("Berhasil membatalkan pesanan");
+      toast.success(
+        t(
+          "BottomsheetAlasanPembatalan.successCancelOrder",
+          {},
+          "Berhasil membatalkan pesanan"
+        )
+      );
       onConfirm?.();
       onOpenChange(false);
       resetOtp();
@@ -178,7 +209,9 @@ export const BottomsheetAlasanPembatalan = ({
         {/* Header */}
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Alasan Pembatalan</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t("BottomsheetAlasanPembatalan.title", {}, "Alasan Pembatalan")}
+          </BottomSheetTitle>
         </BottomSheetHeader>
 
         {/* Reasons List */}
@@ -208,7 +241,11 @@ export const BottomsheetAlasanPembatalan = ({
             <ExpandableTextArea
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
-              placeholder="Masukkan Alasan Pembatalan"
+              placeholder={t(
+                "BottomsheetAlasanPembatalan.placeholderCancellationReason",
+                {},
+                "Masukkan Alasan Pembatalan"
+              )}
               disabled={
                 selectedReason?.value !==
                 cancellationReasons?.[cancellationReasons.length - 1]?.value
@@ -236,7 +273,11 @@ export const BottomsheetAlasanPembatalan = ({
             variant="muatparts-primary"
             onClick={handleConfirm}
           >
-            Batalkan Pesanan
+            {t(
+              "BottomsheetAlasanPembatalan.buttonCancelOrder",
+              {},
+              "Batalkan Pesanan"
+            )}
           </Button>
         </BottomSheetFooter>
       </BottomSheetContent>

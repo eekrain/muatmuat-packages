@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { FilterSelect } from "@/components/Form/FilterSelect";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -17,7 +18,8 @@ import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetActiveOrders } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrders";
+import { useGetActiveOrdersByOrdersWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByOrders";
+import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByTransporter";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
@@ -25,6 +27,7 @@ import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChange
 import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmadaModal";
 import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
+import DaftarPesananAktifListItemByTransporter from "./components/DaftarPesananAktifListItemByTransporter";
 
 // Mock data for OrderChangeInfoModal
 const mockChangeDetails = {
@@ -129,6 +132,8 @@ const DaftarPesananAktif = ({
   const [selectedOrderForChangeInfo, setSelectedOrderForChangeInfo] =
     useState(null);
 
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
     if (!selectedStatusFilter || selectedStatusFilter === "ALL_STATUS")
@@ -142,10 +147,15 @@ const DaftarPesananAktif = ({
     return statusMap[selectedStatusFilter] || null;
   };
 
-  const { data, isLoading } = useGetActiveOrders({
+  const { data, isLoading } = useGetActiveOrdersByOrdersWithParams({
     search: searchValue,
     status: getFilterStatus(),
   });
+  const { data: dataByTransporter, isLoading: isLoadingByTransporter } =
+    useGetActiveOrdersByTransporterWithParams({
+      search: searchValue,
+      status: getFilterStatus(),
+    });
 
   const handleOpenFleetModal = (order) => {
     setSelectedOrderForFleetCancel(order);
@@ -331,7 +341,8 @@ const DaftarPesananAktif = ({
     }
   };
 
-  const orders = data?.orders || [];
+  const orders = data?.Data?.orders || [];
+  const ordersByTransporters = dataByTransporter?.Data?.orders || [];
   const totalActiveOrders = activeOrdersCount?.totalActiveOrders || 0;
   const availableStatuses = activeOrdersCount?.availableStatuses || {};
 
@@ -405,6 +416,12 @@ const DaftarPesananAktif = ({
 
   // Show header controls only if not first timer
   const shouldShowControls = !isFirstTimer;
+
+  useEffect(() => {
+    if (true) {
+      setIsAlertOpen(true);
+    }
+  }, []);
 
   return (
     <div className="flex h-full flex-col">
@@ -507,6 +524,36 @@ const DaftarPesananAktif = ({
         )}
       </div>
 
+      {isAlertOpen && (
+        <div className="flex w-full items-center justify-between bg-[#FFECB4] px-4 py-1 text-xs">
+          <div className="flex w-full flex-grow items-center">
+            <IconComponent
+              src="/icons/warning20.svg"
+              className="mr-1 size-4 shrink-0 text-warning-900"
+            />
+            <div className="text-black">
+              Transporter{" "}
+              <span className="font-bold">
+                PT Prima Transport dan 2 lainnya
+              </span>{" "}
+              telah melakukan pembatalan pesanan.
+            </div>
+            <Button variant="link" className="ml-1 text-xs">
+              Lihat Pesanan
+            </Button>
+          </div>
+          <Button
+            onClick={() => {
+              setIsAlertOpen(false);
+            }}
+            variant="link"
+            className="ml-1 text-xs"
+          >
+            <IconComponent src="/icons/close20.svg" className="size-4" />
+          </Button>
+        </div>
+      )}
+
       {/* Content */}
       {isExpanded && (
         <div className="flex-1 overflow-hidden">
@@ -575,18 +622,37 @@ const DaftarPesananAktif = ({
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  {orders.map((order) => (
-                    <DaftarPesananAktifListItem
-                      key={order.id}
-                      row={order}
-                      isOpen={openDropdowns[order.id]}
-                      onToggleDropdown={(id, isOpen) =>
-                        setOpenDropdowns((prev) => ({ ...prev, [id]: isOpen }))
-                      }
-                      onActionClick={handleActionClick}
-                      onViewFleetStatus={onViewFleetStatus}
-                    />
-                  ))}
+                  {selectedGroupBy === "BY_PESANAN"
+                    ? orders.map((order) => (
+                        <DaftarPesananAktifListItem
+                          key={order.id}
+                          row={order}
+                          isOpen={openDropdowns[order.id]}
+                          onToggleDropdown={(id, isOpen) =>
+                            setOpenDropdowns((prev) => ({
+                              ...prev,
+                              [id]: isOpen,
+                            }))
+                          }
+                          onActionClick={handleActionClick}
+                          onViewFleetStatus={onViewFleetStatus}
+                        />
+                      ))
+                    : ordersByTransporters.map((order) => (
+                        <DaftarPesananAktifListItemByTransporter
+                          key={order.id}
+                          transporterData={order}
+                          isOpen={openDropdowns[order.id]}
+                          onToggleDropdown={(id, isOpen) =>
+                            setOpenDropdowns((prev) => ({
+                              ...prev,
+                              [id]: isOpen,
+                            }))
+                          }
+                          onActionClick={handleActionClick}
+                          onViewFleetStatus={onViewFleetStatus}
+                        />
+                      ))}
                 </div>
               )}
             </div>

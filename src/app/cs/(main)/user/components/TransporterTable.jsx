@@ -1,6 +1,7 @@
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Table from "@/components/Table/Table";
 import { useTranslation } from "@/hooks/use-translation";
+import { TransporterStatus } from "@/lib/constants/CS/user/transporters-cs.enum";
 import { formatPhoneNumberWithPrefix } from "@/lib/utils/phoneFormatter";
 
 import TransporterTableActions from "./TransporterTableActions";
@@ -17,22 +18,36 @@ const TransporterTable = ({
   const { t } = useTranslation();
   const getStatusBadge = (status) => {
     let variant = "success";
-    if (
-      status ===
-      t("TransporterTable.statusVerificationRejected", {}, "Verifikasi Ditolak")
-    ) {
+    if (status === TransporterStatus.NON_ACTIVE) {
       variant = "error";
-    } else if (
-      status ===
-      t("TransporterTable.statusInVerification", {}, "Dalam Verifikasi")
-    ) {
+    } else if (status === TransporterStatus.VERIFICATION_PENDING) {
       variant = "warning";
-    } else if (
-      status === t("TransporterTable.statusInactive", {}, "Non Aktif")
-    ) {
+    } else if (status === TransporterStatus.VERIFICATION_REJECTED) {
       variant = "neutral";
     }
-    return <BadgeStatus variant={variant}>{status}</BadgeStatus>;
+    return (
+      <BadgeStatus variant={variant}>{getStatusLabel(status)}</BadgeStatus>
+    );
+  };
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case TransporterStatus.ACTIVE:
+        return t("TransporterTable.statusActive", {}, "Aktif");
+      case TransporterStatus.NON_ACTIVE:
+        return t("TransporterTable.statusNonActive", {}, "Non Aktif");
+      case TransporterStatus.VERIFICATION_PENDING:
+        return t(
+          "TransporterTable.statusVerificationPending",
+          {},
+          "Menunggu Verifikasi"
+        );
+      case TransporterStatus.VERIFICATION_REJECTED:
+        return t(
+          "TransporterTable.statusVerificationRejected",
+          {},
+          "Verifikasi Ditolak"
+        );
+    }
   };
 
   const columns = [
@@ -56,7 +71,7 @@ const TransporterTable = ({
             <div className="line-clamp-1 text-xs font-bold">
               {row.companyName}
             </div>
-            <div className="text-xxs font-medium">{row.email}</div>
+            <div className="text-xxs font-medium">{row.companyEmail}</div>
           </div>
         </div>
       ),

@@ -360,7 +360,7 @@ const UserProfileInfo = ({ userProfile }) => {
               onClick={async () => {
                 try {
                   // Reset any previous OTP state
-                  reset();
+                  // reset();
 
                   // Generate OTP for current number verification
                   await sendRequestOtp(

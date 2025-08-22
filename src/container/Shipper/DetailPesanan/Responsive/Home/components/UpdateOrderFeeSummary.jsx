@@ -1,10 +1,12 @@
 import { Fragment } from "react";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
 const UpdateOrderFeeSummary = ({ dataRingkasanPembayaran }) => {
+  const { t } = useTranslation();
   const priceSummary = useShallowMemo(() => {
     const { priceChange } = dataRingkasanPembayaran || {};
 
@@ -58,7 +60,7 @@ const UpdateOrderFeeSummary = ({ dataRingkasanPembayaran }) => {
   return (
     <div className="flex flex-col gap-y-6 bg-neutral-50 px-4 py-5 text-neutral-900">
       <h1 className="text-sm font-semibold leading-[1.1]">
-        Detail Tambahan Biaya
+        {t("UpdateOrderFeeSummary.title", {}, "Detail Tambahan Biaya")}
       </h1>
       {priceSummary.map((item, key) => (
         <div
@@ -75,14 +77,16 @@ const UpdateOrderFeeSummary = ({ dataRingkasanPembayaran }) => {
           >
             {item.children.map((child, key) => (
               <Fragment key={key}>
-                <span className="text-sm font-semibold">{child.title}</span>
+                <span className="text-sm font-semibold">
+                  {t(child.title, {}, child.title)}
+                </span>
                 {child.items.map((detail, index) => (
                   <div
                     className="flex justify-between gap-x-7 text-xs font-medium"
                     key={index}
                   >
                     <span className="w-[200px] text-neutral-600">
-                      {detail.label}
+                      {t(detail.label, {}, detail.label)}
                     </span>
                     <span>{idrFormat(detail.price)}</span>
                   </div>

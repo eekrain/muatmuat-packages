@@ -49,7 +49,7 @@ const TransporterTableActions = ({ row, onOpenModal, onOpenHubungiModal }) => {
             </SimpleDropdownItem>
           </>
         );
-      case "Dalam Verifikasi":
+      case "VERIFICATION_PENDING":
         return (
           <>
             <SimpleDropdownItem
@@ -62,7 +62,7 @@ const TransporterTableActions = ({ row, onOpenModal, onOpenHubungiModal }) => {
             </SimpleDropdownItem>
           </>
         );
-      case "Verifikasi Ditolak":
+      case "VERIFICATION_REJECTED":
         return (
           <>
             <SimpleDropdownItem onClick={() => onOpenModal("resend", row)}>

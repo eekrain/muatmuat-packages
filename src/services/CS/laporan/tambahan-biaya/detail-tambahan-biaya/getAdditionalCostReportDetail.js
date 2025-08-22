@@ -45,10 +45,10 @@ export const mockAPIResult = {
         },
         cost_breakdown: {
           waiting_time_cost: 200000,
-          overload_cost: 150000,
-          admin_fee: 50000,
+          overload_cost: 100000,
+          admin_fee: 10000,
           tax_amount: 100000,
-          total_amount: 500000,
+          total_amount: 310000,
         },
         payment_deadline: "2025-02-15T23:59:59Z",
       },
