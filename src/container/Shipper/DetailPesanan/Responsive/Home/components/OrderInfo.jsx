@@ -48,7 +48,7 @@ export const OrderStatus = ({
         {t("labelOrderStatus", {}, "Status Pesanan")}
       </span>
 
-      {dataStatusPesanan?.orderStatus && (
+      {statusMeta?.label && (
         <BadgeStatusPesanan
           variant={statusMeta?.variant}
           className="w-full text-sm font-semibold"
