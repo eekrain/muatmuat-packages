@@ -1,5 +1,7 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+
+// ++ ADDED: useMemo
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -27,25 +29,22 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
   const { data, isLoading } = useGetInactiveTransporter();
   const allTransporters = data?.transporters || [];
   const [searchValue, setSearchValue] = useState("");
-  const [filteredTransporters, setFilteredTransporters] =
-    useState(allTransporters);
 
-  useEffect(() => {
-    setFilteredTransporters(allTransporters);
-  }, [allTransporters]);
+  // FIXED: Removed useState and useEffect for filteredTransporters.
+  // Instead, derive the filtered list directly using useMemo to prevent infinite loops.
+  const filteredTransporters = useMemo(() => {
+    if (!searchValue) {
+      return allTransporters;
+    }
+    const lowercasedValue = searchValue.toLowerCase();
+    return allTransporters.filter((t) =>
+      t.transporterName.toLowerCase().includes(lowercasedValue)
+    );
+  }, [allTransporters, searchValue]);
 
+  // FIXED: Simplified the search handler. It only needs to update the search value state.
   const handleSearch = (value) => {
     setSearchValue(value);
-    if (!value) {
-      setFilteredTransporters(allTransporters);
-      return;
-    }
-    const lower = value.toLowerCase();
-    setFilteredTransporters(
-      allTransporters.filter((t) =>
-        t.transporterName.toLowerCase().includes(lower)
-      )
-    );
   };
 
   const [showDetailModal, setShowDetailModal] = useState(false);
