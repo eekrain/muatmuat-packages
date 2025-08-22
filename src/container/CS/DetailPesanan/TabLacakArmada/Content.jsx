@@ -1,21 +1,24 @@
-import { useState } from "react";
-
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import IconComponent from "@/components/IconComponent/IconComponent";
 
-import { TransporterItem } from "./TransporterItem";
+import { ArmadaStatusItem } from "./ArmadaStatusItem";
+import ChangeAssignmentCard from "./ChangeAssignmentCard";
 import { useLacakArmadaContext } from "./use-lacak-armada";
 
 export const Content = () => {
-  const { data, hasActiveFilters, hasActiveSearch, filteredDataByFilters } =
-    useLacakArmadaContext();
+  const {
+    data,
+    isEdit,
+    assignments,
+    handleAssignmentChange,
+    availableTransporters,
+    hasActiveFilters,
+    hasActiveSearch,
+    filteredDataByFilters,
+  } = useLacakArmadaContext();
 
-  const [assignment, setAssignment] = useState({
-    type: "SAME_TRANSPORTER",
-    transporterId: null,
-  });
-
-  // Check if we have filtered data but no results (filter-based)
+  // --- Data Not Found & Empty State Logic ---
   const hasNoFilteredData =
     hasActiveFilters &&
     !hasActiveSearch &&
@@ -24,8 +27,6 @@ export const Content = () => {
       filteredDataByFilters.every(
         (transporter) => !transporter.fleets || transporter.fleets.length === 0
       ));
-
-  // Check if we have search results but no data found (search-based)
   const hasNoSearchResults =
     hasActiveSearch &&
     (!data ||
@@ -33,14 +34,13 @@ export const Content = () => {
       data.every(
         (transporter) => !transporter.fleets || transporter.fleets.length === 0
       )) &&
-    // But we do have data when only filters are applied (or no filters at all)
     filteredDataByFilters &&
     filteredDataByFilters.length > 0 &&
     filteredDataByFilters.some(
       (transporter) => transporter.fleets && transporter.fleets.length > 0
     );
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="flex w-full justify-center text-center font-medium text-neutral-600">
         <DataNotFound type="data" width={95.5} height={76.76}>
@@ -49,7 +49,6 @@ export const Content = () => {
             Tugaskan transporter secara langsung, atau gunakan fitur blast ulang
             agar sistem mengirimkan penawaran ke transporter lain
           </div>
-
           <div className="mt-3 flex justify-center gap-3">
             <Button
               variant="muattrans-primary-secondary"
@@ -107,7 +106,91 @@ export const Content = () => {
     );
   }
 
-  return data?.map((item, index) => (
-    <TransporterItem key={item?.transporterId} data={item} />
-  ));
+  return data.map((transporter, transporterIndex) => {
+    const unassignedCount =
+      transporter.fleetsOrdered - (transporter.fleets?.length || 0);
+    const transporterKey = `${transporter.transporterId}-${transporterIndex}`;
+
+    return (
+      <div
+        key={transporterKey}
+        className="overflow-hidden rounded-xl border border-neutral-400"
+      >
+        <div className="flex items-center gap-4 bg-neutral-100 p-4">
+          <div className="flex flex-1 items-center gap-4">
+            <img
+              src={transporter.companyPicture || "/img/default-logo.png"}
+              alt={`Logo ${transporter.companyName}`}
+              className="size-10 rounded-full border border-neutral-500 object-cover"
+            />
+            <div className="flex flex-col gap-3">
+              <p className="text-xs font-bold text-neutral-900">
+                {transporter.companyName}
+              </p>
+              <div className="flex items-center gap-2 text-xs font-medium text-neutral-900">
+                <div className="flex items-center gap-1">
+                  <IconComponent
+                    src="/icons/transporter16.svg"
+                    className="size-4 text-muat-trans-secondary-900"
+                  />
+                  <span>{transporter.fleetsOrdered} Unit</span>
+                </div>
+                <div className="size-0.5 rounded-full bg-neutral-600" />
+                <div className="flex items-center gap-1">
+                  <IconComponent
+                    src="/icons/marker-outline.svg"
+                    className="size-4 text-muat-trans-secondary-900"
+                  />
+                  <span>{transporter.companyAddress}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="muattrans-primary"
+            className="h-8 min-w-[105px] !rounded-full !text-sm"
+          >
+            Hubungi
+          </Button>
+        </div>
+        <div className="divide-y divide-neutral-200">
+          {isEdit && unassignedCount > 0 ? (
+            Array.from({ length: unassignedCount }).map((_, index) => {
+              const unassignedId = `${transporter.transporterId}-${transporterIndex}-unassigned-${index}`;
+              return (
+                <ChangeAssignmentCard
+                  key={unassignedId}
+                  uniqueGroupName={unassignedId}
+                  armadaImage="/img/truck.png"
+                  armadaName={`Armada ${(transporter.fleets?.length || 0) + index + 1}`}
+                  value={
+                    assignments[unassignedId] || {
+                      type: "SAME_TRANSPORTER",
+                      transporterId: null,
+                    }
+                  }
+                  onChange={(newValue) =>
+                    handleAssignmentChange(unassignedId, newValue)
+                  }
+                  transporterOptions={availableTransporters}
+                />
+              );
+            })
+          ) : transporter.fleets.length === 0 ? (
+            <div className="flex h-[72px] items-center justify-center">
+              <p className="text-center text-base font-semibold text-neutral-600">
+                Belum Ada Armada
+                <br />
+                Transporter Perlu Assign Armada
+              </p>
+            </div>
+          ) : (
+            transporter.fleets?.map((fleet) => (
+              <ArmadaStatusItem key={fleet.fleetId} item={fleet} />
+            ))
+          )}
+        </div>
+      </div>
+    );
+  });
 };

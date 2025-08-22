@@ -56,9 +56,10 @@ export const mockAPIResult = {
       fleetTracking: [
         {
           transporterId: "95459a4f-5db7-4f30-bc00-6e22c3a1aaaa",
-          companyName: "PT. Siba Surya",
+          companyName: "PT. Bahagia Sejahtera",
           companyAddress: "Kec. Tegalsari, Kota Surabaya",
           companyPicture: "https://picsum.photos/100?random=11",
+          companyPhone: "021-123-4567", // Added phone number
           fleetsOrdered: 3,
           fleets: [
             {
@@ -113,50 +114,68 @@ export const mockAPIResult = {
         },
         {
           transporterId: "95459a4f-5db7-4f30-bc00-6e22c3a1abbb",
-          companyName: "PT. Graha AIRI",
+          companyName: "PT. Siba Surya",
           companyAddress: "Kec. Tegalsari, Kota Surabaya",
           companyPicture: "https://picsum.photos/100?random=22",
+          companyPhone: "021-234-5678", // Added phone number
           fleetsOrdered: 3,
           fleets: [
-            // {
-            //   fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a111",
-            //   licensePlate: "B 1234 XYZ",
-            //   truckImage: "https://picsum.photos/100?random=333",
-            //   driverInfo: {
-            //     driverId: "uuid-driver-456",
-            //     driverName: "Ahmad Suryanto",
-            //     driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-            //   },
-            //   orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
-            //   stepStatus,
-            //   sosStatus: {
-            //     hasSOS: false,
-            //     ...sosDefault,
-            //   },
-            // },
-            // {
-            //   fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a112",
-            //   licensePlate: "B 1234 XYZ",
-            //   truckImage: "https://picsum.photos/100?random=444",
-            //   driverInfo: {
-            //     driverId: "uuid-driver-456",
-            //     driverName: "Budi Wijaya",
-            //     driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-            //   },
-            //   orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
-            //   stepStatus,
-            //   sosStatus: {
-            //     hasSOS: false,
-            //     ...sosDefault,
-            //   },
-            // },
+            {
+              fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a111",
+              licensePlate: "B 1234 XYZ",
+              truckImage: "https://picsum.photos/100?random=333",
+              driverInfo: {
+                driverId: "uuid-driver-456",
+                driverName: "Ahmad Suryanto",
+                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+              },
+              orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+              stepStatus,
+              sosStatus: {
+                hasSOS: false,
+                ...sosDefault,
+              },
+            },
+            {
+              fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a112",
+              licensePlate: "B 1234 XYZ",
+              truckImage: "https://picsum.photos/100?random=444",
+              driverInfo: {
+                driverId: "uuid-driver-456",
+                driverName: "Budi Wijaya",
+                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+              },
+              orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+              stepStatus,
+              sosStatus: {
+                hasSOS: false,
+                ...sosDefault,
+              },
+            },
+            {
+              fleetId: "95459a4f-5db7-4f30-bc00-6e22c3a1a112",
+              licensePlate: "B 1234 XYZ",
+              truckImage: "https://picsum.photos/100?random=asjdnas12",
+              driverInfo: {
+                driverId: "uuid-driver-456",
+                driverName: "Nugroho",
+                driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+              },
+              orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+              stepStatus,
+              sosStatus: {
+                hasSOS: false,
+                ...sosDefault,
+              },
+            },
           ],
         },
         {
           transporterId: "95459a4f-5db7-4f30-bc00-6e22c3a1abbb",
-          companyName: "PT. Eka Candra",
+          companyName: "PT Kaltim Jaya Makmur",
           companyAddress: "Kec. Tegalsari, Kota Surabaya",
           companyPicture: "https://picsum.photos/100?random=33",
+          companyPhone: "021-345-6789", // Added phone number
           fleetsOrdered: 3,
           fleets: [
             // {
