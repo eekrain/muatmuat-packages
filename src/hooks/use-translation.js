@@ -57,11 +57,16 @@ const createTranslationStore = () =>
             ]);
 
             // Always set translation data, even if one or both requests failed
+            const mergedTranslation = {
+              ...(commonResult?.value?.data || {}),
+              ...(mockResult?.value?.data || {}),
+            };
+            console.log(
+              "🚀 ~ createTranslationStore ~ mergedTranslation:",
+              mergedTranslation
+            );
             set({
-              translation: {
-                ...(commonResult?.value?.data || {}),
-                ...(mockResult?.value?.data || {}),
-              },
+              translation: mergedTranslation,
             });
           } else {
             const response = await xior.get(url, cacheConfig);

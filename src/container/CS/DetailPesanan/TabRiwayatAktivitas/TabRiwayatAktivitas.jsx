@@ -3,8 +3,8 @@
 import { TabsContent } from "@/components/Tabs/Tabs";
 import { formatDate } from "@/lib/utils/dateFormat";
 
-import CardPerubahan from "./CardPerubahan";
-import CardRiwayat from "./CardRiwayat";
+import CardPerubahan from "../../../../components/Card/CardPerubahan";
+import CardRiwayat from "../../../../components/Card/CardRiwayat";
 
 export const activityData = [
   {
