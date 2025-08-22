@@ -12,7 +12,7 @@
   "CreateNewPasswordPage.ariaLabelTogglePasswordVisibility": "Toggle password visibility",
   "CreateNewPasswordPage.altToggleVisibility": "Toggle visibility",
   "CreateNewPasswordPage.ariaLabelToggleConfirmPasswordVisibility": "Toggle confirm password visibility",
-  "LoginPage.errorEmailRequired": "WhatsApp Number / Email is required.",
+  "LoginPage.errorEmailRequired": "WhatsApp Number / Email is required",
   "LoginPage.errorEmailInvalid": "Invalid email format.",
   "LoginPage.errorPasswordRequired": "Password is required.",
   "LoginPage.errorEmailIncorrect": "The WhatsApp Number / Email you entered is incorrect",

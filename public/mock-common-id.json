@@ -12,7 +12,7 @@
   "CreateNewPasswordPage.ariaLabelTogglePasswordVisibility": "Toggle password visibility",
   "CreateNewPasswordPage.altToggleVisibility": "Toggle visibility",
   "CreateNewPasswordPage.ariaLabelToggleConfirmPasswordVisibility": "Toggle confirm password visibility",
-  "LoginPage.errorEmailRequired": "No. Whatsapp / Email wajib diisi.",
+  "LoginPage.errorEmailRequired": "No. Whatsapp / Email wajib diisi",
   "LoginPage.errorEmailInvalid": "Format email tidak valid.",
   "LoginPage.errorPasswordRequired": "Password wajib diisi.",
   "LoginPage.errorEmailIncorrect": "No. Whatsapp / Email yang kamu masukkan salah",

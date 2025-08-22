@@ -12,7 +12,7 @@
   "CreateNewPasswordPage.ariaLabelTogglePasswordVisibility": "切换密码可见性",
   "CreateNewPasswordPage.altToggleVisibility": "切换可见性",
   "CreateNewPasswordPage.ariaLabelToggleConfirmPasswordVisibility": "切换确认密码可见性",
-  "LoginPage.errorEmailRequired": "WhatsApp 号码/电子邮件为必填项。",
+  "LoginPage.errorEmailRequired": "WhatsApp 号码/电子邮件为必填项",
   "LoginPage.errorEmailInvalid": "电子邮件格式无效。",
   "LoginPage.errorPasswordRequired": "密码为必填项。",
   "LoginPage.errorEmailIncorrect": "您输入的 WhatsApp 号码/电子邮件不正确",
