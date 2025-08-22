@@ -67,10 +67,10 @@ const BottomSheetPreviousDriver = ({
                     "Driver tidak ditemukan"
                   )}
               </span>
-              <div className="flex items-center gap-x-1">
+              <div className="flex items-center gap-x-2">
                 <IconComponent
-                  width={12}
-                  height={12}
+                  width={17}
+                  height={17}
                   src="/icons/transporter12.svg"
                   className="text-neutral-900"
                 />

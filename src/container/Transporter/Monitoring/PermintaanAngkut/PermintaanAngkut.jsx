@@ -10,7 +10,11 @@ import { useGetTransportRequestList } from "@/services/Transporter/monitoring/pe
 import PermintaanAngkutDetail from "./PermintaanAngkutDetail";
 import TransportRequestCard from "./components/TransportRequestCard";
 
-const PermintaanAngkut = ({ onAcceptRequest }) => {
+const PermintaanAngkut = ({
+  onAcceptRequest,
+  onDetailRequest,
+  onCloseDetailRequest,
+}) => {
   const [activeTab, setActiveTab] = useState("tersedia");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
@@ -55,11 +59,19 @@ const PermintaanAngkut = ({ onAcceptRequest }) => {
   const handleShowDetail = (request) => {
     setSelectedRequest(request);
     setShowDetail(true);
+    // Call the parent handler to collapse bottom panel
+    if (onDetailRequest) {
+      onDetailRequest(request);
+    }
   };
 
   const handleBackToList = () => {
     setSelectedRequest(null);
     setShowDetail(false);
+    // Call the parent handler to expand bottom panel back
+    if (onCloseDetailRequest) {
+      onCloseDetailRequest();
+    }
   };
 
   // Calculate dynamic tab counts based on data and local state

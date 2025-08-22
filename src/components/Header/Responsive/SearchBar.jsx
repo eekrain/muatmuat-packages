@@ -25,6 +25,7 @@ export const HeaderResponsiveSearchBar = ({
   withMenu = null,
   onEnterPress,
   shouldResetSearchValue = true,
+  isDisabled = false,
 }) => {
   const navigation = useResponsiveNavigation();
   const handleBackButton = () => {
@@ -78,6 +79,7 @@ export const HeaderResponsiveSearchBar = ({
             searchValue.length >= 3 &&
             onEnterPress(searchValue)
           }
+          disabled={isDisabled}
         />
       </div>
       {withMenu ? (
@@ -86,6 +88,7 @@ export const HeaderResponsiveSearchBar = ({
             <button
               className="flex flex-col items-center gap-y-0.5"
               onClick={() => withMenu?.onClickPeriod()}
+              disabled={isDisabled}
             >
               {withMenu?.periodSelected ? (
                 <div className="flex size-[24px] items-center justify-center rounded-full bg-muat-trans-secondary-900">

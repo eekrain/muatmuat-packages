@@ -22,6 +22,7 @@ import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArm
 import RiwayatLaporanSOS from "@/container/Transporter/Monitoring/RiwayatLaporanSOS/RiwayatLaporanSOS";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
@@ -48,6 +49,7 @@ import {
 import { calculateMapBounds } from "./utils/mapUtils";
 
 const Page = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
@@ -98,6 +100,8 @@ const Page = () => {
     handleResetZoom,
     handleTruckClick,
     handleAcceptRequest,
+    handleDetailRequest,
+    handleCloseDetailRequest,
     handleTogglePilihArmada,
     handleOpenRiwayatSOS,
     handleCloseRiwayatSOS,
@@ -564,7 +568,9 @@ const Page = () => {
                   position="left"
                 >
                   <div className="flex items-center gap-2">
-                    <span>Permintaan Angkut</span>
+                    <span>
+                      {t("MonitoringPage.requestTab", {}, "Permintaan Angkut")}
+                    </span>
                     <NotificationCount
                       count={requestCount}
                       backgroundColor="error"
@@ -583,7 +589,9 @@ const Page = () => {
                   position="right"
                 >
                   <div className="flex items-center gap-2">
-                    <span>Urgent Issue</span>
+                    <span>
+                      {t("MonitoringPage.urgentTab", {}, "Urgent Issue")}
+                    </span>
                     <NotificationCount
                       count={urgentCount?.new + urgentCount?.processing || 0}
                       backgroundColor="error"
@@ -599,7 +607,11 @@ const Page = () => {
               {!panels.isFullscreen && !panels.showLacakArmada && (
                 <>
                   <MonitoringTabsContent value="permintaan">
-                    <PermintaanAngkut onAcceptRequest={handleAcceptRequest} />
+                    <PermintaanAngkut
+                      onAcceptRequest={handleAcceptRequest}
+                      onDetailRequest={handleDetailRequest}
+                      onCloseDetailRequest={handleCloseDetailRequest}
+                    />
                   </MonitoringTabsContent>
 
                   <MonitoringTabsContent value="urgent">

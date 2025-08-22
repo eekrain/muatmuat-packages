@@ -80,8 +80,8 @@ const LaporanAktivitasArmadaTable = ({
             onImageClick={setSelectedImage}
           />
           <div className="ms-3">
-            <div className="text-sm font-semibold">{row.licensePlate}</div>
-            <div className="mt-1 text-xxs font-medium">
+            <div className="text-[12px] font-semibold">{row.licensePlate}</div>
+            <div className="mt-2 text-[10px] font-[600]">
               {row.truckType} - {row.carrierType}
             </div>
           </div>
@@ -164,8 +164,8 @@ const LaporanAktivitasArmadaTable = ({
           bgColor = "bg-gray-100";
           textColor = "text-gray-600";
         } else if (row.status === "ON_DUTY") {
-          bgColor = "bg-blue-100";
-          textColor = "text-blue-900";
+          bgColor = "bg-[#E2F2FF]";
+          textColor = "text-[#176CF7]";
         } else if (row.status === "WAITING_LOADING_TIME") {
           bgColor = "bg-yellow-100";
           textColor = "text-yellow-900";
@@ -203,7 +203,7 @@ const LaporanAktivitasArmadaTable = ({
       },
     },
     {
-      header: "Action",
+      header: "",
       key: "action",
       sortable: false,
       width: "100px",
@@ -385,18 +385,18 @@ const LaporanAktivitasArmadaTable = ({
                 left: (
                   <IconComponent src="/icons/datatable-search.svg" width={12} />
                 ),
-                right:
-                  localSearchValue.length > 0 ? (
-                    <button
-                      onClick={() => {
-                        setLocalSearchValue("");
-                        onSearch?.("");
-                      }}
-                      className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
-                    >
-                      <X className="h-3 w-3 text-neutral-600" />
-                    </button>
-                  ) : null,
+                // right:
+                //   localSearchValue.length > 0 ? (
+                //     <button
+                //       onClick={() => {
+                //         setLocalSearchValue("");
+                //         onSearch?.("");
+                //       }}
+                //       className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
+                //     >
+                //       <X className="h-3 w-3 text-neutral-600" />
+                //     </button>
+                //   ) : null,
               }}
               appearance={{
                 containerClassName: "h-8 w-[262px]",
@@ -491,6 +491,7 @@ const LaporanAktivitasArmadaTable = ({
           perPage={perPage}
           onPageChange={onPageChange}
           onPerPageChange={onPerPageChange}
+          showPerPageLabel="Tampilkan Jumlah detail"
           variants="muatrans"
           className="pb-0"
         />

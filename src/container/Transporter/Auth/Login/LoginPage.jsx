@@ -34,10 +34,21 @@ const LoginPage = () => {
         t(
           "LoginPage.errorEmailRequired",
           {},
-          "No. Whatsapp / Email wajib diisi."
+          "No. Whatsapp / Email wajib diisi"
         )
       ),
-      v.email(t("LoginPage.errorEmailInvalid", {}, "Format email tidak valid."))
+      v.custom(
+        (input) => {
+          const isEmail = v.is(v.email(), input);
+          const isPhone = /^(08|\+62)/.test(input);
+          return isEmail || isPhone;
+        },
+        t(
+          "LoginPage.errorEmailOrPhoneInvalid",
+          {},
+          "Format No. Whatsapp / Email tidak valid."
+        )
+      )
     ),
     password: v.pipe(
       v.string(),

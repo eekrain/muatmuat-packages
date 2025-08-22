@@ -198,8 +198,8 @@ const LaporanAktivitasDriverTable = ({
           bgColor = "bg-gray-100";
           textColor = "text-gray-600";
         } else if (row.currentStatus === "ON_DUTY") {
-          bgColor = "bg-blue-100";
-          textColor = "text-blue-900";
+          bgColor = "bg-[#E2F2FF]";
+          textColor = "text-[#176CF7]";
         } else if (row.currentStatus === "WAITING_LOADING_TIME") {
           bgColor = "bg-yellow-100";
           textColor = "text-yellow-900";
@@ -242,7 +242,7 @@ const LaporanAktivitasDriverTable = ({
       },
     },
     {
-      header: "Action",
+      header: "",
       key: "action",
       sortable: false,
       width: "100px",
@@ -420,18 +420,18 @@ const LaporanAktivitasDriverTable = ({
                 left: (
                   <IconComponent src="/icons/datatable-search.svg" width={12} />
                 ),
-                right:
-                  localSearchValue.length > 0 ? (
-                    <button
-                      onClick={() => {
-                        setLocalSearchValue("");
-                        onSearch?.("");
-                      }}
-                      className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
-                    >
-                      <X className="h-3 w-3 text-neutral-600" />
-                    </button>
-                  ) : null,
+                // right:
+                //   localSearchValue.length > 0 ? (
+                //     <button
+                //       onClick={() => {
+                //         setLocalSearchValue("");
+                //         onSearch?.("");
+                //       }}
+                //       className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
+                //     >
+                //       <X className="h-3 w-3 text-neutral-600" />
+                //     </button>
+                //   ) : null,
               }}
               appearance={{
                 containerClassName: "h-8 w-[262px]",

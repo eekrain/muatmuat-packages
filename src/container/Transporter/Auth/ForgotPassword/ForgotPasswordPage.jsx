@@ -12,6 +12,7 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Input from "@/components/Form/Input";
 import { useTranslation } from "@/hooks/use-translation";
+import { fetcherMuatrans } from "@/lib/axios";
 
 // Regex untuk validasi dasar nomor HP Indonesia
 const phoneRegex = /^08[0-9]{8,12}$/;
@@ -78,28 +79,49 @@ const ForgotPasswordPage = () => {
     setAccountNotFound(false);
     setIsLoading(true);
 
-    // Simulasi request API dengan delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      const response = await fetcherMuatrans.post(
+        "/v1/transporter/auth/forgot-password",
+        {
+          phoneNumber: data.whatsapp,
+        }
+      );
 
-    // Simulasi kondisi khusus untuk nomor 081234512345
-    if (data.whatsapp === "081234512345") {
-      setError("whatsapp", {
-        type: "manual",
-        message: t(
-          "ForgotPasswordPage.errorAccountNotFound",
-          {},
-          "Akun tidak ditemukan. Coba lagi dengan No. Whatsapp lain"
-        ),
-      });
-      setAccountNotFound(true);
+      if (response.data.Message.Code === 201) {
+        const { token, expiresIn } = response.data.Data;
+        // Lanjutkan ke halaman OTP, bawa token & waktu kedaluwarsa
+        router.push(
+          `/otp?type=forgot-password&token=${token}&whatsapp=${data.whatsapp}&expiresIn=${encodeURIComponent(
+            expiresIn
+          )}`
+        );
+      }
+    } catch (error) {
+      if (error.response?.status === 404 || error.response?.status === 401) {
+        setError("whatsapp", {
+          type: "manual",
+          message:
+            error.response?.data?.Data?.errors?.[0]?.message ||
+            t(
+              "ForgotPasswordPage.errorAccountNotFound",
+              {},
+              "Akun tidak ditemukan. Coba lagi dengan No. Whatsapp lain"
+            ),
+        });
+        setAccountNotFound(true);
+      } else {
+        // Handle other errors (e.g., server error, network issue)
+        alert(
+          t(
+            "ForgotPasswordPage.errorGeneric",
+            {},
+            "Terjadi kesalahan. Silakan coba lagi nanti."
+          )
+        );
+      }
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    setIsLoading(false);
-
-    // Lanjutkan ke halaman OTP jika nomor valid
-    router.push(`/otp?whatsapp=${data.whatsapp}&type=forgot-password`);
   };
 
   return (

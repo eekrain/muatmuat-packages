@@ -165,6 +165,7 @@ const ListScreen = ({
       onEnterPress={(value) => onChangeQueryParams("search", value)}
       placeholder="Cari Pesanan"
       shouldResetSearchValue={false}
+      isDisabled={!hasFilteredOrders}
     >
       <div
         className={cn(

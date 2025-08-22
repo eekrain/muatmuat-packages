@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const NoFleetOverlay = () => {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleAddFleet = () => {
@@ -28,7 +30,7 @@ export const NoFleetOverlay = () => {
           <div style={{ width: "100px", height: "76px" }}>
             <Image
               src="/img/monitoring-first-timer.png"
-              alt="Add Fleet"
+              alt={t("NoFleetOverlay.imageAlt", {}, "Add Fleet")}
               width={100}
               height={76}
               className="object-contain"
@@ -46,7 +48,7 @@ export const NoFleetOverlay = () => {
               textAlign: "center",
             }}
           >
-            Kamu Belum Menambahkan Armada
+            {t("NoFleetOverlay.title", {}, "Kamu Belum Menambahkan Armada")}
           </h2>
 
           <p
@@ -59,7 +61,11 @@ export const NoFleetOverlay = () => {
               textAlign: "center",
             }}
           >
-            Mulai tambahkan armada untuk menggunakan fitur maps
+            {t(
+              "NoFleetOverlay.description",
+              {},
+              "Mulai tambahkan armada untuk menggunakan fitur maps"
+            )}
           </p>
         </div>
 
@@ -68,7 +74,7 @@ export const NoFleetOverlay = () => {
           onClick={handleAddFleet}
           iconRight={<ChevronRight size={16} />}
         >
-          Tambah Armada
+          {t("NoFleetOverlay.addFleetButton", {}, "Tambah Armada")}
         </Button>
       </div>
     </div>

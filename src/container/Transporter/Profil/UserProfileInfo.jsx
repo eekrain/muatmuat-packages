@@ -12,8 +12,8 @@ import ModalEmailBaru from "@/components/Modal/ModalEmailBaru";
 import ModalGantiPassword from "@/components/Modal/ModalGantiPassword";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useUpdatePassword } from "@/services/Transporter/updatePassword";
-import { useUploadProfilePhoto } from "@/services/Transporter/uploadProfilePhoto";
+import { useUpdatePassword } from "@/services/Transporter/profil/updatePassword";
+import { useUploadProfilePhoto } from "@/services/Transporter/profil/uploadProfilePhoto";
 import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtpProfilStore";
 
 // --- Internal Dropzone Component (logic from your modal file) ---
@@ -126,8 +126,7 @@ const UserProfileInfo = ({ userProfile }) => {
     useUploadProfilePhoto();
   const { trigger: updatePassword, isMutating: isUpdatingPassword } =
     useUpdatePassword();
-  const { generateOtp, updateWhatsAppNumber, reset } =
-    useRequestOtpProfilActions();
+  const { sendRequestOtp, setField, reset } = useRequestOtpProfilActions();
 
   const [avatarUrl, setAvatarUrl] = useState(userProfile?.profileImage || null);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
@@ -157,6 +156,8 @@ const UserProfileInfo = ({ userProfile }) => {
   useEffect(() => {
     if (hasVerified) {
       setChangeWhatsappModalOpen(true);
+      const newPath = window.location.pathname;
+      router.replace(newPath, { scroll: false });
     }
   }, [hasVerified]);
 
@@ -251,48 +252,41 @@ const UserProfileInfo = ({ userProfile }) => {
     setSourceFile(null);
     setUploadModalOpen(true); // Re-open the upload modal if crop is cancelled
   };
-  // const handleWhatsappSubmit = async (newNumber) => {
-  //   try {
-  //     console.log("New WhatsApp number submitted:", newNumber);
-  //     setChangeWhatsappModalOpen(false);
+  const handleWhatsappSubmit = async (newNumber) => {
+    try {
+      console.log("New WhatsApp number submitted:", newNumber);
+      setChangeWhatsappModalOpen(false);
 
-  //     // Store the new phone number for later use
-  //     updateWhatsAppNumber(newNumber);
+      // Store the new phone number for later use
 
-  //     // Generate OTP for new number
-  //     const result = await generateOtp(
-  //       newNumber,
-  //       "WHATSAPP",
-  //       "CHANGE_PHONE",
-  //       "VERIFY_NEW"
-  //     );
+      // Generate OTP for new number
+      await sendRequestOtp(newNumber, "WHATSAPP", "VERIFY_PHONE", "VERIFY_OLD");
 
-  //     if (!result.success) {
-  //       toast.error(
-  //         result.error?.Message?.Text || "Gagal mengirim OTP ke nomor baru"
-  //       );
-  //       return;
-  //     }
-
-  //     // Navigate to OTP page for new number verification
-  //     router.push(`/profil/otp?type=change-number&whatsapp=${newNumber}`);
-  //   } catch (error) {
-  //     console.error("Error generating OTP for new number:", error);
-  //     toast.error(error.message || "Gagal mengirim OTP ke nomor baru");
-  //   }
-  // };
-  const handleWhatsappSubmit = (newNumber) => {
-    console.log("New WhatsApp number submitted:", newNumber);
-    setChangeWhatsappModalOpen(false);
-    toast.success("Nomor WhatsApp baru akan segera diverifikasi.");
+      // Navigate to OTP page for new number verification
+      router.push(`/otp?type=change-number&whatsapp=${newNumber}`);
+    } catch (error) {
+      console.error("Error generating OTP for new number:", error);
+      toast.error(error.message || "Gagal mengirim OTP ke nomor baru");
+    }
   };
 
-  const handleEmailSubmit = (newEmail) => {
-    console.log("New email submitted:", newEmail);
-    setEmailModalOpen(false);
-    router.push("/otp?type=change-email2");
-    // router.push("/profil/otp?type=change-email2");
-    // Add logic here to handle email verification process
+  const handleEmailSubmit = async (newEmail) => {
+    try {
+      console.log("New email submitted:", newEmail);
+      setEmailModalOpen(false);
+
+      // Store the new email for later use
+      setField("newTarget", newEmail);
+
+      // Generate OTP for new email
+      await sendRequestOtp(newEmail, "EMAIL", "CHANGE_EMAIL", "VERIFY_NEW");
+
+      // Navigate to OTP page for new email verification
+      router.push(`/otp?type=change-email2&email=${newEmail}`);
+    } catch (error) {
+      console.error("Error generating OTP for new email:", error);
+      toast.error(error.message || "Gagal mengirim OTP ke email baru");
+    }
   };
 
   const handlePasswordSubmit = async (passwordData) => {
@@ -369,19 +363,12 @@ const UserProfileInfo = ({ userProfile }) => {
                   reset();
 
                   // Generate OTP for current number verification
-                  // const result = await generateOtp(
-                  //   userData.whatsapp,
-                  //   "WHATSAPP",
-                  //   "CHANGE_PHONE",
-                  //   "VERIFY_OLD"
-                  // );
-
-                  // if (!result.success) {
-                  //   toast.error(
-                  //     result.error?.Message?.Text || "Gagal mengirim OTP"
-                  //   );
-                  //   return;
-                  // }
+                  await sendRequestOtp(
+                    userData.whatsapp,
+                    "WHATSAPP",
+                    "CHANGE_PHONE",
+                    "VERIFY_OLD"
+                  );
 
                   // Navigate to OTP page for current number verification
                   router.push(
@@ -396,7 +383,26 @@ const UserProfileInfo = ({ userProfile }) => {
             <EditableField
               label="Email"
               value={userData.email}
-              href={"/profil/otp?type=change-email"}
+              onClick={async () => {
+                try {
+                  // Reset any previous OTP state
+                  reset();
+
+                  // Generate OTP for current email verification
+                  await sendRequestOtp(
+                    userData.email,
+                    "EMAIL",
+                    "CHANGE_EMAIL",
+                    "VERIFY_OLD"
+                  );
+
+                  // Navigate to OTP page for current email verification
+                  router.push(`/otp?type=change-email&email=${userData.email}`);
+                } catch (error) {
+                  console.error("Error generating OTP for email:", error);
+                  toast.error(error.message || "Gagal mengirim OTP ke email");
+                }
+              }}
             />
             <EditableField
               label="Password"

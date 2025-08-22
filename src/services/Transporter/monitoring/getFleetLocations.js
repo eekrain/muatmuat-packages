@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockFleetLocations = true;
+const isMockFleetLocations = false;
 
 const apiResultFleetLocations = {
   data: {
@@ -95,7 +95,9 @@ export const fetcherFleetLocations = async () => {
     return result.data.Data;
   }
 
-  const result = await fetcherMuatrans.get("v1/monitoring/fleet-locations");
+  const result = await fetcherMuatrans.get(
+    "v1/transporter/monitoring/maps/fleet-locations"
+  );
   return result?.data?.Data || {};
 };
 

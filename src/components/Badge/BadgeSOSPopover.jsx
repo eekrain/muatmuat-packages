@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { useTranslation } from "@/hooks/use-translation";
 
 const BadgeSOSPopover = ({
   sosData = {
@@ -28,12 +29,13 @@ const BadgeSOSPopover = ({
   onViewHistory = () => {},
   onConfirm = () => {},
 }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
     <div className="flex w-full items-center gap-2">
       <div className="h-6 w-10 content-center gap-1 rounded-md bg-error-400 text-center text-xs font-semibold text-error-50">
-        SOS
+        {t("BadgeSOSPopover.sosLabel", {}, "SOS")}
       </div>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -41,7 +43,7 @@ const BadgeSOSPopover = ({
             variant="link"
             className="h-auto flex-1 justify-start p-0 text-xs font-medium"
           >
-            Lihat SOS
+            {t("BadgeSOSPopover.viewSosButton", {}, "Lihat SOS")}
           </Button>
         </PopoverTrigger>
 

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { addMinutes } from "date-fns";
+import { isAfter } from "date-fns";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import Button from "@/components/Button/Button";
@@ -17,12 +17,13 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useRequestOtpActions,
   useRequestOtpStore,
-} from "@/store/Shipper/forms/requestOtpStore";
+} from "@/store/Transporter/forms/requestOtpProfilStore";
 
 import ChangeEmailModal from "./ChangeEmailModal";
 import ChangeWhatsappModal from "./ChangeWhatsappModal";
@@ -133,8 +134,9 @@ const OtpContainer = ({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  const { formValues } = useRequestOtpStore();
-  const { verifyOtp } = useRequestOtpActions();
+  const formValues = useRequestOtpStore();
+  const { verifyOtp, resendOtp, sendRequestOtp, updateWhatsAppNumber } =
+    useRequestOtpActions();
 
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -142,24 +144,9 @@ const OtpContainer = ({
 
   // Get configuration based on type, fallback to default
   const config = OTP_TYPE_CONFIG[type] || OTP_TYPE_CONFIG.default;
-  const isCountdownFinished = (countdown) =>
-    countdown === "00:00" || countdown === "";
-
-  const [expiryDate, setExpiryDate] = useState(() => {
-    return formValues?.expiresIn
-      ? formValues.expiresIn
-      : addMinutes(new Date(), 2);
-  });
-
-  useEffect(() => {
-    if (formValues?.expiresIn) {
-      setExpiryDate(formValues.expiresIn);
-    }
-  }, [formValues?.expiresIn]);
-
-  const { countdown } = useCountdown({
-    endingDate: expiryDate,
-    isNeedCountdown: true,
+  const { countdown, isCountdownFinished } = useCountdown({
+    endingDate: formValues?.expiresIn,
+    isNeedCountdown: Boolean(formValues?.expiresIn),
     withHours: false,
   });
 
@@ -169,35 +156,61 @@ const OtpContainer = ({
     if (isTranslationsReady) setIsGlobalLoading(false);
   }, [isTranslationsReady, setIsGlobalLoading]);
 
-  const [isReady] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  const handleRequestOtp = (_formValues, isPhoneChange = false) => {
-    if (!isPhoneChange && !isCountdownFinished(countdown)) {
+  // Initialize isReady state similar to RequestOtpWeb pattern
+  useShallowCompareEffect(() => {
+    const timer = setTimeout(() => {
+      if (
+        (!formValues?.token || !formValues?.target || !formValues?.otpType) &&
+        !_dontRedirect
+      ) {
+        // Could redirect or handle missing data here if needed
+        return;
+      }
+      setIsReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [formValues, _dontRedirect]);
+
+  const handleRequestOtp = (formValues) => {
+    if (!formValues?.token || !formValues?.target || !formValues?.otpType) {
       return;
     }
 
-    const newExpiry = addMinutes(new Date(), 2);
-    setExpiryDate(newExpiry);
-
-    if (!isPhoneChange) {
-      setNotification({
-        status: "success",
-        message: t(
-          "OtpContainer.messageResendSuccess",
-          {},
-          "Berhasil mengirim ulang OTP"
-        ),
-      });
+    if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
+      resendOtp(formValues.token, formValues.target, formValues.otpType).catch(
+        (error) => {
+          toast.error("Gagal meminta request OTP");
+        }
+      );
     }
   };
 
   const hasFetchedOtp = useRef(false);
+  const lastFormValuesRef = useRef(null);
+
   useShallowCompareEffect(() => {
     if (!isReady) return;
+    if (!formValues?.token || !formValues?.target || !formValues?.otpType)
+      return;
+
+    // Reset hasFetchedOtp if key form values changed
+    const currentKey = `${formValues.token}-${formValues.target}-${formValues.otpType}`;
+    if (lastFormValuesRef.current !== currentKey) {
+      hasFetchedOtp.current = false;
+      lastFormValuesRef.current = currentKey;
+    }
+
     if (hasFetchedOtp.current) return;
-    handleRequestOtp(formValues);
-    hasFetchedOtp.current = true;
-  }, [isReady, formValues]);
+
+    // Only request OTP if it's expired or doesn't exist
+    if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
+      handleRequestOtp(formValues);
+      hasFetchedOtp.current = true;
+    }
+  }, [isReady, formValues?.token, formValues?.target, formValues?.otpType]);
 
   const renderNotification = () => {
     if (!notification) return null;
@@ -300,10 +313,9 @@ const OtpContainer = ({
                 className={cn(
                   "ml-3 flex w-[50px] items-center py-0 text-xxs md:h-5",
                   "!bg-[#EBEBEB] !text-[#868686]",
-                  isCountdownFinished(countdown) &&
-                    "!bg-[#EBEBEB] !text-primary-700"
+                  isCountdownFinished && "!bg-[#EBEBEB] !text-primary-700"
                 )}
-                disabled={!isCountdownFinished(countdown)}
+                disabled={!isCountdownFinished}
               >
                 {t("OtpContainer.buttonChange", {}, "Ganti")}
               </Button>
@@ -323,7 +335,7 @@ const OtpContainer = ({
           router.push("/profil?hasVerified=true");
           return;
         }
-
+        console.log(type);
         // If the type is 'change-email' or 'change-email2', redirect to profile to open the email modal.
         if (type === "change-email") {
           router.push("/profil?hasVerifiedEmail=true");
@@ -334,6 +346,7 @@ const OtpContainer = ({
           return;
         }
         if (type === "change-number") {
+          updateWhatsAppNumber();
           setIsSuccessModalOpen(true);
         } else {
           setIsVerified(true);
@@ -342,14 +355,11 @@ const OtpContainer = ({
       };
 
       // Mock OTP "654321" untuk testing atau gunakan logic verifikasi asli
-      if (otp === "654321") {
-        handleSuccess();
-        return;
-      }
 
       verifyOtp(otp)
         .then(handleSuccess)
         .catch((error) => {
+          console.log(error);
           if (
             error?.code === "EXPIRED_OTP" ||
             error?.message?.includes("expired")
@@ -375,7 +385,7 @@ const OtpContainer = ({
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otp, type, router, onVerifySuccess, verifyOtp]);
+  }, [otp]);
 
   return (
     <div
@@ -526,15 +536,15 @@ const OtpContainer = ({
               <Button
                 name="resend"
                 onClick={() => {
-                  if (isCountdownFinished(countdown)) {
+                  if (isCountdownFinished) {
                     handleRequestOtp(formValues);
                   }
                 }}
-                disabled={!isCountdownFinished(countdown)}
+                disabled={!isCountdownFinished}
                 className={cn(
                   `mt-[10px] flex h-10 max-w-[319px] items-center justify-center text-nowrap text-[14px] font-bold transition-colors duration-300`,
                   config.buttonSize,
-                  isCountdownFinished(countdown)
+                  isCountdownFinished
                     ? config.activeResendButtonClass ||
                         "!bg-muat-trans-primary-400 !text-primary-700"
                     : config.resendButtonClass ||
@@ -629,23 +639,33 @@ const OtpContainer = ({
             className: "text-center",
           }}
           isChangeNumber={type === "change-number"}
-          isChangeEmail2={type === "change-email2"}
           confirm={{
             text: "Ubah",
             onClick: (_newWhatsappNumber) => {
-              setIsChangeNumberModalOpen(false);
-              setNotification({
-                status: "success",
-                message:
-                  type === "change-number"
-                    ? "Berhasil mengubah No. Whatsapp"
-                    : t(
-                        "OtpContainer.messageChangeWhatsappSuccess",
-                        {},
-                        "Berhasil mengubah No. Whatsapp Kamu"
-                      ),
-              });
-              handleRequestOtp(formValues, true);
+              const response = sendRequestOtp(
+                _newWhatsappNumber,
+                "WHATSAPP",
+                "VERIFY_PHONE",
+                "VERIFY_OLD"
+              );
+              if (
+                response?.data?.Message?.Code === 200 ||
+                response?.data?.Message?.Code === 201 ||
+                response?.data?.Message?.Code === "200"
+              ) {
+                setIsChangeNumberModalOpen(false);
+                setNotification({
+                  status: "success",
+                  message:
+                    type === "change-number"
+                      ? "Berhasil mengubah No. Whatsapp"
+                      : t(
+                          "OtpContainer.messageChangeWhatsappSuccess",
+                          {},
+                          "Berhasil mengubah No. Whatsapp Kamu"
+                        ),
+                });
+              }
             },
           }}
         />

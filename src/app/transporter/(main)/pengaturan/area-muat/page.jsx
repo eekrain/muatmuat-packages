@@ -410,9 +410,9 @@ export default function Page() {
                         ? province.kota.slice(0, 16)
                         : province.kota;
 
-                    const actualSelectedCount = showSelectedOnly
-                      ? visibleCities.length
-                      : visibleCities.filter((city) => city.isSelected).length;
+                    const actualSelectedCount = province.kota.filter(
+                      (city) => city.isSelected
+                    ).length;
 
                     return (
                       <div
@@ -431,8 +431,8 @@ export default function Page() {
                         <div className="mb-4 flex items-center gap-3">
                           <Checkbox
                             checked={
-                              visibleCities.length > 0 &&
-                              visibleCities.every((city) => city.isSelected)
+                              province.kota.length > 0 &&
+                              province.kota.every((city) => city.isSelected)
                             }
                             onChange={(e) =>
                               handleSelectAllProvince(
@@ -503,7 +503,7 @@ export default function Page() {
                               className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
                             >
                               {isExpanded
-                                ? "Lihat Lebih Sedikit"
+                                ? "Sembunyikan"
                                 : "Lihat Selengkapnya"}
                               <ChevronDown
                                 size={16}

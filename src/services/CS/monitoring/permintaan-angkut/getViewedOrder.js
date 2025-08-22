@@ -45,10 +45,13 @@ const apiResultViewedOrder = {
           },
         },
         status: {
-          isActive: true,
+          isActive: false,
           activityStatus: "ACTIVE",
           lastActivity: "2025-01-15T14:30:00Z",
           inactiveReason: null,
+          current: 5,
+          total: 7,
+          inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
         },
         rating: {
           average: 4.5,
@@ -81,7 +84,7 @@ const apiResultViewedOrder = {
               licensePlate: "B 1234 XYZ",
               truckType: "Truk Fuso",
               carrierType: "Box",
-              operationalStatus: "READY_FOR_ORDER",
+              operationalStatus: "NOT_PAIRED", // READY_FOR_ORDER, ON_DUTY, WAITING_LOADING_TIME, NOT_PAIRED, INACTIVE
               lastLocation: {
                 distance: 10,
                 latitude: -6.2088,
@@ -93,6 +96,30 @@ const apiResultViewedOrder = {
               driver: {
                 name: "Rizky Aditya Pratama",
                 phone: "+628987654321",
+              },
+            },
+            {
+              id: "fleet-uuid-2",
+              licensePlate: "B 1234 XYZ",
+              truckType: "Truk Fuso",
+              carrierType: "Box",
+              operationalStatus: "READY_FOR_ORDER",
+              lastLocation: {
+                distance: 10,
+                latitude: -6.2088,
+                longitude: 106.8456,
+                lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
+              },
+              driver: {
+                name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+                phone: "+628987654321",
+              },
+              inactivityInfo: {
+                lastActiveAt: "2025-01-15T12:00:00Z",
+                inactiveDuration: 180,
+                inactivityReason: "Maintenance",
               },
             },
           ],
@@ -167,7 +194,7 @@ const apiResultViewedOrder = {
               licensePlate: "B 1234 XYZ",
               truckType: "Truk Fuso",
               carrierType: "Box",
-              operationalStatus: "READY_FOR_ORDER",
+              operationalStatus: "NOT_PAIRED", // READY_FOR_ORDER, ON_DUTY, WAITING_LOADING_TIME, NOT_PAIRED, INACTIVE
               lastLocation: {
                 distance: 10,
                 latitude: -6.2088,
@@ -179,6 +206,30 @@ const apiResultViewedOrder = {
               driver: {
                 name: "Rizky Aditya Pratama",
                 phone: "+628987654321",
+              },
+            },
+            {
+              id: "fleet-uuid-2",
+              licensePlate: "B 1234 XYZ",
+              truckType: "Truk Fuso",
+              carrierType: "Box",
+              operationalStatus: "READY_FOR_ORDER",
+              lastLocation: {
+                distance: 10,
+                latitude: -6.2088,
+                longitude: 106.8456,
+                lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
+              },
+              driver: {
+                name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+                phone: "+628987654321",
+              },
+              inactivityInfo: {
+                lastActiveAt: "2025-01-15T12:00:00Z",
+                inactiveDuration: 180,
+                inactivityReason: "Maintenance",
               },
             },
           ],

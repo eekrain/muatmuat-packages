@@ -17,7 +17,7 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
   const filteredDriver = useMemo(() => {
     const drivers = dataStatusPesanan?.driverStatus;
     if (!drivers) return [];
-    if (!searchValue) return drivers;
+    if (!searchValue || searchValue.length < 3) return drivers;
     return drivers?.filter((driver) =>
       driver?.name?.toLowerCase().includes(searchValue.toLowerCase())
     );

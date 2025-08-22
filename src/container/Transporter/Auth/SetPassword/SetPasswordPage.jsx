@@ -10,8 +10,6 @@ import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
-import { useRequestOtpActions } from "@/store/Transporter/forms/requestOtpStore";
 
 const SetPasswordPage = () => {
   const router = useRouter();
@@ -27,13 +25,11 @@ const SetPasswordPage = () => {
   const token = searchParams.get("token");
 
   // SWR mutation hook for API call
-  const {
-    trigger: verifyEmail,
-    isMutating,
-    error,
-  } = useVerifyEmailVerification();
-
-  const { initializeFromEmailVerification } = useRequestOtpActions();
+  // const {
+  //   trigger: verifyEmail,
+  //   isMutating,
+  //   error,
+  // } = useVerifyEmailVerification();
 
   const {
     register,
@@ -60,36 +56,37 @@ const SetPasswordPage = () => {
     setIsConfirmPasswordVisible((prev) => !prev);
 
   const onSubmit = async (data) => {
-    try {
-      // Prepare request body according to API contract
-      const requestBody = {
-        email: email,
-        token: token,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-      };
+    // try {
+    //   // Prepare request body according to API contract
+    //   const requestBody = {
+    //     email: email,
+    //     token: token,
+    //     password: data.password,
+    //     confirmPassword: data.confirmPassword,
+    //   };
 
-      // Call API
-      const response = await verifyEmail(requestBody);
+    //   // Call API
+    //   const response = await verifyEmail(requestBody);
 
-      if (response.data.Message.Code === 201) {
-        // Extract phoneNumber and token from response
-        const { phoneNumber, token: otpToken, expiresIn } = response.data.Data;
+    //   if (response.data.Message.Code === 201) {
+    //     // Extract phoneNumber and token from response
+    //     const { phoneNumber, token: otpToken, expiresIn } = response.data.Data;
 
-        // Initialize OTP store with data from email verification
-        initializeFromEmailVerification({
-          phoneNumber,
-          token: otpToken,
-          expiresIn,
-          redirectUrl: "/dashboard",
-        });
+    //     // Initialize OTP store with data from email verification
+    //     initializeFromEmailVerification({
+    //       phoneNumber,
+    //       token: otpToken,
+    //       expiresIn,
+    //       redirectUrl: "/dashboard",
+    //     });
 
-        // Redirect to OTP page without parameters
-        router.push("/otp");
-      }
-    } catch (error) {
-      console.error("Email verification failed:", error);
-    }
+    //     // Redirect to OTP page without parameters
+    //     router.push("/otp");
+    //   }
+    // } catch (error) {
+    //   console.error("Email verification failed:", error);
+    // }
+    console.log("tes");
   };
 
   const getErrorMessage = () => {
@@ -290,9 +287,9 @@ const SetPasswordPage = () => {
 
           <Button
             type="submit"
-            disabled={!isValid || isMutating}
+            disabled={!isValid}
             className="mx-auto mt-4 !h-10 w-[200px] text-buyer-seller-900 disabled:text-[#868686]"
-            variant={isValid && !isMutating ? "muattrans-primary" : "default"}
+            variant={isValid ? "muattrans-primary" : "default"}
           >
             {t("SetPasswordPage.buttonContinue", null, "Lanjutkan")}
           </Button>

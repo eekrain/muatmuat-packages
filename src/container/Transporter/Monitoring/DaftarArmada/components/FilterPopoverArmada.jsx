@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SlidersHorizontal } from "lucide-react";
 
@@ -56,11 +56,21 @@ export default function FilterPopoverArmada({
   isPopoverOpen,
   onOpenChange,
   isFilterActive,
+  currentTruckFilters = [],
+  currentOrderFilters = [],
 }) {
-  const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
-  const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
+  const [selectedTruckStatuses, setSelectedTruckStatuses] =
+    useState(currentTruckFilters);
+  const [selectedOrderStatuses, setSelectedOrderStatuses] =
+    useState(currentOrderFilters);
 
-  // --- (Mapping dan options with count tetap sama) ---
+  // Sync with parent state when props change
+  useEffect(() => {
+    setSelectedTruckStatuses(currentTruckFilters);
+    setSelectedOrderStatuses(currentOrderFilters);
+  }, [currentTruckFilters, currentOrderFilters]);
+
+  // Mapping dari frontend filter ID ke API filter key yang sesuai dengan getFleetList.js
   const countKeyMapping = {
     ON_DUTY: "OnDuty",
     WAITING_LOADING_TIME: "WaitingLoadingTime",
@@ -70,15 +80,23 @@ export default function FilterPopoverArmada({
     NEEDS_RESPONSE: "needResponse",
   };
 
-  const truckStatusOptionsWithCount = TRUCK_STATUS_OPTIONS.map((opt) => ({
-    ...opt,
-    count: filterCounts[countKeyMapping[opt.id]] ?? 0,
-  }));
+  console.log("FilterPopoverArmada received filterCounts:", filterCounts); // Debug log
+  console.log("FilterPopoverArmada countKeyMapping:", countKeyMapping); // Debug log
 
-  const orderStatusOptionsWithCount = ORDER_STATUS_OPTIONS.map((opt) => ({
-    ...opt,
-    count: filterCounts[countKeyMapping[opt.id]] ?? 0,
-  }));
+  const truckStatusOptionsWithCount = TRUCK_STATUS_OPTIONS.map((opt) => {
+    const count = filterCounts[countKeyMapping[opt.id]] ?? 0;
+    console.log(
+      `Truck status ${opt.id} mapped to ${countKeyMapping[opt.id]} with count: ${count}`
+    ); // Debug log
+    return {
+      ...opt,
+      count: count,
+    };
+  });
+
+  // Get count directly from filter data for order status
+  const orderStatusCount = filterCounts.needResponse ?? 0;
+  console.log("Order status count (needResponse):", orderStatusCount); // Debug log
 
   const toggleTruckStatus = (id) => {
     setSelectedTruckStatuses((prev) =>
@@ -183,37 +201,31 @@ export default function FilterPopoverArmada({
           </div>
 
           {/* Order Status Filter */}
-          {orderStatusOptionsWithCount.length > 0 && (
-            <div>
-              <p className="mb-3 text-xs font-semibold text-black">
-                Status Pesanan
-              </p>
-              <div className="flex flex-col gap-3">
-                {orderStatusOptionsWithCount.map((opt) => (
-                  <div key={opt.id} className="flex items-center gap-2">
-                    <Checkbox
-                      checked={selectedOrderStatuses.includes(opt.id)}
-                      onChange={() => toggleOrderStatus(opt.id)}
-                      value={opt.id}
-                      label=""
-                    />
-                    {opt.icon === "warning" && (
-                      <IconComponent
-                        src="/icons/warning16.svg"
-                        className="h-4 w-4 text-orange-500"
-                      />
-                    )}
-                    <span
-                      className="cursor-pointer text-xs font-medium text-black"
-                      onClick={() => toggleOrderStatus(opt.id)}
-                    >
-                      {opt.label} ({opt.count})
-                    </span>
-                  </div>
-                ))}
+          <div>
+            <p className="mb-3 text-xs font-semibold text-black">
+              Status Pesanan
+            </p>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  checked={selectedOrderStatuses.includes("NEEDS_RESPONSE")}
+                  onChange={() => toggleOrderStatus("NEEDS_RESPONSE")}
+                  value="NEEDS_RESPONSE"
+                  label=""
+                />
+                <IconComponent
+                  src="/icons/warning16.svg"
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span
+                  className="cursor-pointer text-xs font-medium text-black"
+                  onClick={() => toggleOrderStatus("NEEDS_RESPONSE")}
+                >
+                  Perlu Respon Perubahan ({orderStatusCount})
+                </span>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">

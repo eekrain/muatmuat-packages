@@ -15,11 +15,22 @@ const CustomDropdown = ({
   onSelected = () => {},
   className = "",
   disabled = false,
+  defaultValue = [],
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(defaultValue);
   const [search, setSearch] = useState("");
   const dropdownRef = useRef(null);
+
+  // Sync selected state with defaultValue when it changes
+  useEffect(() => {
+    console.log(
+      "CustomDropdown useEffect - defaultValue changed:",
+      defaultValue
+    );
+    console.log("CustomDropdown useEffect - current selected:", selected);
+    setSelected(defaultValue);
+  }, [defaultValue]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -71,13 +82,12 @@ const CustomDropdown = ({
   };
 
   const getDisplayText = () => {
+    console.log("CustomDropdown getDisplayText - selected:", selected);
     if (selected.length === 0) return placeholder;
 
     if (isMultipleSelected) {
-      if (selected.length === 1) {
-        return selected[0].name;
-      }
-      return `${selected[0].name} +${selected.length - 1}`;
+      // Untuk multiple selection, selalu tampilkan jumlah item yang dipilih
+      return `${selected.length} Transporter Terpilih`;
     }
 
     return selected[0].name;
@@ -180,6 +190,7 @@ CustomDropdown.propTypes = {
   onSelected: PropTypes.func,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  defaultValue: PropTypes.array,
 };
 
 export default CustomDropdown;
