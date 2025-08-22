@@ -39,6 +39,12 @@ const PesananActionBar = ({
     onSearchChange("");
   };
 
+  const totalUrgentCount = useMemo(
+    () =>
+      Object.values(urgentCounts || {}).reduce((sum, count) => sum + count, 0),
+    [urgentCounts]
+  );
+
   const noData = totalItems === 0;
   const disableSearch =
     loading || (noData && lastAction !== "search" && localSearch === "");
@@ -46,7 +52,8 @@ const PesananActionBar = ({
     loading || (noData && lastAction !== "filter" && activeFilters);
   const disableUrgent =
     loading ||
-    (noData && lastAction !== "urgent" && urgentStatusFilter === "all");
+    (noData && lastAction !== "urgent" && urgentStatusFilter === "all") ||
+    totalUrgentCount === 0;
   const disableSort = loading || noData;
   const disableViewBy = loading || noData;
 
@@ -111,13 +118,6 @@ const PesananActionBar = ({
     ],
     [urgentCounts, t]
   );
-
-  const totalUrgentCount = useMemo(
-    () =>
-      Object.values(urgentCounts || {}).reduce((sum, count) => sum + count, 0),
-    [urgentCounts]
-  );
-
   const urgentPlaceholder = `${t("pesananActionBar.urgentStatus", {}, "Status Urgent")} (${totalUrgentCount > 99 ? "99+" : totalUrgentCount})`;
 
   const renderUrgentItem = (option) => (
@@ -159,7 +159,7 @@ const PesananActionBar = ({
             placeholder={urgentPlaceholder}
             options={urgentStatusOptions}
             value={urgentStatusFilter}
-            showNotificationDotWithoutNumber
+            showNotificationDotWithoutNumber={totalUrgentCount !== 0}
             onChange={onUrgentStatusChange}
             disabled={disableUrgent}
             className="w-[158px] !border-neutral-600 hover:!border-primary-700"
