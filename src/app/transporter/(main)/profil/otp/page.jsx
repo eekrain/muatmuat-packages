@@ -1,6 +1,7 @@
-import OtpContainer from "@/container/Transporter/Profil/Otp/OtpContainer";
+// import OtpContainer from "@/container/Transporter/Profil/Otp/OtpContainer";
 
 const Page = () => {
-  return <OtpContainer />;
+  return <div></div>;
+  // return <OtpContainer />;
 };
 export default Page;

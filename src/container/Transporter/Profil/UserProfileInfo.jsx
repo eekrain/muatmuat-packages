@@ -14,7 +14,8 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useUpdatePassword } from "@/services/Transporter/updatePassword";
 import { useUploadProfilePhoto } from "@/services/Transporter/uploadProfilePhoto";
-import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtpProfilStore";
+
+// import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtpProfilStore";
 
 // --- Internal Dropzone Component (logic from your modal file) ---
 const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
@@ -126,8 +127,8 @@ const UserProfileInfo = ({ userProfile }) => {
     useUploadProfilePhoto();
   const { trigger: updatePassword, isMutating: isUpdatingPassword } =
     useUpdatePassword();
-  const { generateOtp, updateWhatsAppNumber, reset } =
-    useRequestOtpProfilActions();
+  // const { generateOtp, updateWhatsAppNumber, reset } =
+  //   useRequestOtpProfilActions();
 
   const [avatarUrl, setAvatarUrl] = useState(userProfile?.profileImage || null);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
@@ -366,7 +367,7 @@ const UserProfileInfo = ({ userProfile }) => {
               onClick={async () => {
                 try {
                   // Reset any previous OTP state
-                  reset();
+                  // reset();
 
                   // Generate OTP for current number verification
                   // const result = await generateOtp(

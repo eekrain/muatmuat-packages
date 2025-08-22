@@ -11,7 +11,8 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
-import { useRequestOtpActions } from "@/store/Transporter/forms/requestOtpStore";
+
+// import { useRequestOtpActions } from "@/store/Transporter/forms/requestOtpStore";
 
 const SetPasswordPage = () => {
   const router = useRouter();
@@ -33,7 +34,7 @@ const SetPasswordPage = () => {
     error,
   } = useVerifyEmailVerification();
 
-  const { initializeFromEmailVerification } = useRequestOtpActions();
+  // const { initializeFromEmailVerification } = useRequestOtpActions();
 
   const {
     register,
@@ -77,12 +78,12 @@ const SetPasswordPage = () => {
         const { phoneNumber, token: otpToken, expiresIn } = response.data.Data;
 
         // Initialize OTP store with data from email verification
-        initializeFromEmailVerification({
-          phoneNumber,
-          token: otpToken,
-          expiresIn,
-          redirectUrl: "/dashboard",
-        });
+        // initializeFromEmailVerification({
+        //   phoneNumber,
+        //   token: otpToken,
+        //   expiresIn,
+        //   redirectUrl: "/dashboard",
+        // });
 
         // Redirect to OTP page without parameters
         router.push("/otp");
