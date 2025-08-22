@@ -106,32 +106,39 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
       <div
         className={cn(
           "absolute left-[194px] z-[2] -ml-[1px] max-h-[160px] rounded-md border border-neutral-400 bg-neutral-50 shadow-muat",
-          hasMoreThan5Items
-            ? "-mr-[7px] w-[202px] overflow-auto pr-[3px]"
-            : "w-[180px]"
+          hasMoreThan5Items ? "w-[225px]" : "w-[180px]"
         )}
         style={{
           top: `${getSecondLevelTopPosition()}px`,
         }}
       >
-        {secondLevelOptions.map((option, key) => {
-          const isSelected = option.value === value;
+        <div
+          className={cn(
+            "max-h-[160px] overflow-auto",
+            hasMoreThan5Items ? "mr-[3px]" : ""
+          )}
+          style={{
+            top: `${getSecondLevelTopPosition()}px`,
+          }}
+        >
+          {secondLevelOptions.map((option, key) => {
+            const isSelected = option.value === value;
 
-          return (
-            <div
-              key={key}
-              className="flex h-8 cursor-pointer items-center pl-2.5 hover:bg-neutral-200"
-              onClick={() => handleSelect(activeFirstLevelItem, option)}
-            >
-              <RadioButton
-                name="statusFilter"
-                label={option.label}
-                checked={isSelected}
-                // value={option.value}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={key}
+                className="flex h-8 cursor-pointer items-center pl-2.5 hover:bg-neutral-200"
+                onClick={() => handleSelect(activeFirstLevelItem, option)}
+              >
+                <RadioButton
+                  name="statusFilter"
+                  label={option.label}
+                  checked={isSelected}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -184,7 +191,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute z-50 mt-1">
+        <div className="absolute z-[19] mt-1">
           {/* First Level */}
           {renderFirstLevel()}
 

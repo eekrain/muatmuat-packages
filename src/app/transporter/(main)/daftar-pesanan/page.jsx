@@ -21,6 +21,7 @@ const DaftarPesananPage = () => {
     order: "",
   };
   const [queryParams, setQueryParams] = useState(defaultQueryParams);
+  const [lastFilterField, setLastFilterField] = useState("");
 
   const queryString = useShallowMemo(() => {
     const params = new URLSearchParams();
@@ -56,7 +57,7 @@ const DaftarPesananPage = () => {
 
   const {
     data: { isFirstTimer = true, orders = [], pagination = {} } = {},
-    isLoading: isOrdersLoading,
+    isLoading,
   } = useGetOrderList(queryString);
 
   const handleChangeQueryParams = (field, value) => {
@@ -67,6 +68,7 @@ const DaftarPesananPage = () => {
       }
       return { ...prevState, [field]: value };
     });
+    setLastFilterField(field);
     // if (defaultPage) {
     //   setCurrentPeriodValue((prevState) =>
     //     field === "search"
@@ -81,10 +83,12 @@ const DaftarPesananPage = () => {
 
   return (
     <DaftarPesanan
+      isLoading={isLoading}
       isFirstTimer={isFirstTimer}
       orders={orders}
       pagination={pagination}
       queryParams={queryParams}
+      lastFilterField={lastFilterField}
       onChangeQueryParams={handleChangeQueryParams}
     />
   );
