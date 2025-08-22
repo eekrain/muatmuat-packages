@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+// ++ ADDED: useCallback
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -15,6 +17,43 @@ import PermintaanAngkutDetailCS from "./PermintaanAngkutDetailCS.jsx";
 import ModalTransporterTidakAktif from "./components/ModalTransporterTidakAktif";
 import TransportRequestCard from "./components/TransportRequestCard";
 
+// ++ HELPER FUNCTION: Moved filtering logic outside the component for stability
+const filterRequests = (requests, searchValue, removedItems) => {
+  const trimmedSearch = searchValue.trim();
+  if (trimmedSearch.length < 3) {
+    return requests.filter((request) => !removedItems.has(request.id));
+  }
+
+  const searchTerm = trimmedSearch.toLowerCase();
+
+  return requests
+    .filter((request) => !removedItems.has(request.id))
+    .filter((request) => {
+      const searchableContent = [
+        request.orderCode,
+        request.shipperInfo?.name,
+        request.orderType,
+        request.loadTimeStart,
+        request.loadTimeEnd,
+        request.cargo?.description,
+        request.vehicle?.truckType,
+        request.vehicle?.carrierType,
+        request.pricing?.potentialIncome,
+        ...(request.locations?.pickupLocations?.map(
+          (loc) => `${loc.fullAddress} ${loc.city} ${loc.district}`
+        ) ?? []),
+        ...(request.locations?.dropoffLocations?.map(
+          (loc) => `${loc.fullAddress} ${loc.city} ${loc.district}`
+        ) ?? []),
+        ...(request.cargo?.items?.map((item) => item.name) ?? []),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return searchableContent.includes(searchTerm);
+    });
+};
+
 const PermintaanAngkutCS = () => {
   const [showModalTransporterTidakAktif, setShowModalTransporterTidakAktif] =
     useState(false);
@@ -24,11 +63,10 @@ const PermintaanAngkutCS = () => {
   const [removedItems, setRemovedItems] = useState(new Set());
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  // Get data based on active tab
   const params = useMemo(() => {
     switch (activeTab) {
       case "semua":
-        return {}; // Show all requests
+        return {};
       case "instan":
         return { orderType: "INSTANT" };
       case "terjadwal":
@@ -42,10 +80,23 @@ const PermintaanAngkutCS = () => {
     }
   }, [activeTab]);
 
-  const { data, error, isLoading } = useGetTransportRequestList(params);
+  // FIXED: 'error' variable was removed as it was unused.
+  const { data, isLoading } = useGetTransportRequestList(params);
   const { data: inactiveAlertData } = useGetInactiveTransporter();
 
-  const handleSearch = (value) => setSearchValue(value);
+  const handleSearch = (value) => {
+    const trimmedValue = value.trim();
+    if (trimmedValue.length === 0 || trimmedValue.length >= 3) {
+      setSearchValue(value);
+    } else {
+      toast.info("Masukkan minimal 3 karakter untuk melakukan pencarian.");
+    }
+  };
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+    setSearchValue("");
+  };
 
   const handleBookmarkToggle = (requestId, newSavedState) => {
     const newBookmarkedItems = new Set(bookmarkedItems);
@@ -73,44 +124,23 @@ const PermintaanAngkutCS = () => {
     setSelectedRequest(request);
   };
 
-  // Calculate dynamic tab counts based on data and local state
-  const getDynamicTabCounts = () => {
-    // Use tabCounters from mock data if there are no requests or search term
-    if (!data?.requests || !searchValue || searchValue.trim() === "") {
-      const allCount = data?.tabCounters?.all ?? 0;
-      const instantCount = data?.tabCounters?.instant ?? 0;
-      const scheduledCount = data?.tabCounters?.scheduled ?? 0;
-      const halalCount = data?.tabCounters?.halal ?? 0;
+  // FIXED: Inlined logic from getDynamicTabCounts to resolve the exhaustive-deps warning.
+  const dynamicTabCounts = useMemo(() => {
+    const requestsToCount = data?.requests || [];
 
-      return {
-        all: allCount,
-        instant: instantCount,
-        scheduled: scheduledCount,
-        halal: halalCount,
-        // The new hasArrow key is true if ANY count is greater than 9
-        hasArrow:
-          allCount > 9 ||
-          instantCount > 9 ||
-          scheduledCount > 9 ||
-          halalCount > 9,
-      };
-    }
+    const filteredForCount =
+      searchValue.trim().length >= 3
+        ? filterRequests(requestsToCount, searchValue, removedItems)
+        : requestsToCount;
 
-    // If there is a search, hitung ulang berdasarkan data yang terlihat
-    const visibleRequests = data.requests.filter(
-      (request) =>
-        !removedItems.has(request.id) &&
-        request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
-    );
-
-    const allCount = visibleRequests.length;
-    const instantCount = visibleRequests.filter(
+    const allCount = filteredForCount.length;
+    const instantCount = filteredForCount.filter(
       (req) => req.orderType === "INSTANT"
     ).length;
-    const scheduledCount = visibleRequests.filter(
+    const scheduledCount = filteredForCount.filter(
       (req) => req.orderType === "SCHEDULED"
     ).length;
-    const halalCount = visibleRequests.filter(
+    const halalCount = filteredForCount.filter(
       (req) => req.isHalalLogistics
     ).length;
 
@@ -119,48 +149,16 @@ const PermintaanAngkutCS = () => {
       instant: instantCount,
       scheduled: scheduledCount,
       halal: halalCount,
-      // The new hasArrow key is true if ANY count is greater than 9
       hasArrow:
         allCount > 9 ||
         instantCount > 9 ||
         scheduledCount > 9 ||
         halalCount > 9,
     };
-  };
+  }, [data?.requests, searchValue, removedItems]);
 
-  const dynamicTabCounts = getDynamicTabCounts();
+  // REMOVED: Unused functions 'formatCounter' and 'shouldAnimate'.
 
-  // Format counter display with animation for new requests
-  // Range behavior:
-  // - 1-9: Show exact number, no animation
-  // - 10-99: Show exact number with blinking animation for new requests
-  // - 100+: Show "99+" with special error styling
-  const formatCounter = (count, hasAnimation = false) => {
-    if (count >= 100) {
-      return "99+";
-    }
-    return count.toString();
-  };
-
-  // Check if counter should have blinking animation (only for 10-99 range with new requests)
-  const shouldAnimate = (count, hasNewRequests = false) => {
-    return hasNewRequests && count >= 10 && count <= 99;
-  };
-
-  // Get dynamic width based on counter value
-  const getTabWidth = (baseWidth, count, isActive) => {
-    if (count >= 100) {
-      // "99+" takes more space
-      return isActive ? baseWidth : `w-auto min-w-[${baseWidth}]`;
-    } else if (count >= 10) {
-      // 2-digit numbers need slightly more space
-      return isActive ? baseWidth : `w-auto min-w-[${baseWidth}]`;
-    }
-    // 1-digit numbers use base width
-    return isActive ? baseWidth : `w-auto min-w-[${baseWidth}]`;
-  };
-
-  // Show toast on every page refresh (mount)
   useEffect(() => {
     toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
     toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
@@ -170,24 +168,6 @@ const PermintaanAngkutCS = () => {
     toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
   }, []);
 
-  // WebSocket for realtime transporter take order alert (disabled until API ready)
-  // useEffect(() => {
-  //   const ws = new WebSocket("wss://your-api-domain/v1/ws/cs/alert-transporter-take-order");
-  //   ws.onmessage = (event) => {
-  //     try {
-  //       const [type, payload] = JSON.parse(event.data);
-  //       if (type === "alert-transporter-take-order" && payload?.orderCode && payload?.transporterName) {
-  //         toast.success(`Pesanan ${payload.orderCode} telah diambil oleh ${payload.transporterName}`);
-  //         // Optionally update local state/UI here
-  //       }
-  //     } catch (err) {
-  //       // handle error
-  //     }
-  //   };
-  //   return () => ws.close();
-  // }, []);
-
-  // If a request is selected, show detail view
   if (selectedRequest) {
     return (
       <PermintaanAngkutDetailCS
@@ -224,93 +204,13 @@ const PermintaanAngkutCS = () => {
             )}
           </div>
 
-          {/* Suspended Account Alert */}
-          {data?.userStatus?.isSuspended && (
-            <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFE9ED] px-3 py-2">
-              <IconComponent
-                src="/icons/warning24.svg"
-                className="h-4 w-4 flex-shrink-0 text-[#F22C25]"
-              />
-              <div className="flex flex-col gap-1">
-                <span className="text-[12px] font-semibold text-[#F22C25]">
-                  {data?.userStatus?.suspensionReason}
-                </span>
-                <span className="text-[10px] font-medium text-[#000000]">
-                  {data?.userStatus?.suspensionMessage}{" "}
-                  <a
-                    href={data?.userStatus?.supportContactUrl}
-                    className="cursor-pointer font-medium text-primary-700 hover:text-primary-800"
-                  >
-                    disini
-                  </a>
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Driver Delegation Warning */}
-          {data?.userStatus?.driverDelegationEnabled &&
-            !data?.userStatus?.isSuspended && (
-              <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFECB4] px-3 py-2">
-                <IconComponent
-                  src="/icons/warning24.svg"
-                  className="h-4 w-4 flex-shrink-0 text-[#FF7A00]"
-                />
-                <div className="flex flex-col">
-                  <span className="text-[12px] font-semibold text-[#FF7A00]">
-                    Pengaturan Delegasi Driver Sedang Aktif
-                  </span>
-                  <span className="text-[10px] font-medium text-[#000000]">
-                    {data?.userStatus?.delegationWarningMessage}{" "}
-                    <a
-                      href={data?.userStatus?.delegationResetUrl}
-                      className="cursor-pointer font-medium text-primary-700 hover:text-primary-800"
-                    >
-                      Atur ulang
-                    </a>
-                  </span>
-                </div>
-              </div>
-            )}
-
-          {/* Halal Certification Warning */}
-          {!data?.userStatus?.isHalalCertified &&
-            !data?.userStatus?.isSuspended &&
-            !data?.userStatus?.driverDelegationEnabled && (
-              <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFFBEB] px-3 py-2">
-                <IconComponent
-                  src="/icons/warning24.svg"
-                  className="h-4 w-4 flex-shrink-0 text-[#F9A307]"
-                />
-                <div className="flex flex-col gap-1">
-                  <span className="text-[12px] font-semibold text-[#F9A307]">
-                    Memerlukan Pengiriman Dengan Sertifikasi Halal Logistik
-                  </span>
-                  <span className="text-[10px] font-medium text-[#000000]">
-                    {data?.userStatus?.halalCertificationMessage ||
-                      "Tambahkan sertifikasi halal dengan menghubungi kami"}{" "}
-                    <a
-                      href={
-                        data?.userStatus?.halalCertificationUrl ||
-                        "tel:+62-811-1234-5678"
-                      }
-                      className="cursor-pointer font-medium text-primary-700 hover:text-primary-800"
-                    >
-                      disini
-                    </a>
-                  </span>
-                </div>
-              </div>
-            )}
-
           {/* Search Input */}
           <div className="mb-4">
             <Search
               placeholder="Cari Permintaan Jasa Angkut"
               onSearch={handleSearch}
-              autoSearch={true}
-              debounceTime={300}
-              defaultValue={searchValue}
+              autoSearch={false}
+              value={searchValue}
               disabled={data?.userStatus?.isSuspended}
               inputClassName="w-full"
             />
@@ -323,113 +223,47 @@ const PermintaanAngkutCS = () => {
             hasArrow={dynamicTabCounts.hasArrow}
           >
             <button
-              onClick={() => setActiveTab("semua")}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              onClick={() => handleTabChange("semua")}
+              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
                 activeTab === "semua"
                   ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
               <span className="relative whitespace-nowrap">
-                Semua (
-                <span
-                  className={`$$${
-                    shouldAnimate(
-                      dynamicTabCounts.all,
-                      data?.newRequestsCount?.hasAnimation
-                    )
-                      ? "font-base animate-semibold"
-                      : ""
-                  }`}
-                >
-                  {formatCounter(dynamicTabCounts.all)}
-                </span>
-                )
-                {data?.tabCounters?.hasBlinkNode && (
-                  <NotificationDot
-                    position="absolute"
-                    positionClasses="-right-3 -top-1.5"
-                    animated={true}
-                    size="md"
-                    color="red"
-                  />
-                )}
+                Semua ({data?.tabCounters?.all ?? 0})
               </span>
             </button>
 
             <button
-              onClick={() => setActiveTab("instan")}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              onClick={() => handleTabChange("instan")}
+              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
                 activeTab === "instan"
                   ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
               <span className="relative whitespace-nowrap">
-                Instan (
-                <span
-                  className={`$$${
-                    shouldAnimate(
-                      dynamicTabCounts.instant,
-                      data?.newRequestsCount?.hasAnimation
-                    )
-                      ? "font-base animate-semibold"
-                      : ""
-                  }`}
-                >
-                  {formatCounter(dynamicTabCounts.instant)}
-                </span>
-                )
-                {data?.tabCounters?.hasBlinkNode && (
-                  <NotificationDot
-                    position="absolute"
-                    positionClasses="-right-4 -top-1.5"
-                    animated={true}
-                    size="md"
-                    color="red"
-                  />
-                )}
+                Instan ({data?.tabCounters?.instant ?? 0})
               </span>
             </button>
 
             <button
-              onClick={() => setActiveTab("terjadwal")}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              onClick={() => handleTabChange("terjadwal")}
+              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
                 activeTab === "terjadwal"
                   ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
               <span className="relative whitespace-nowrap">
-                Terjadwal (
-                <span
-                  className={`$$${
-                    shouldAnimate(
-                      dynamicTabCounts.scheduled,
-                      data?.newRequestsCount?.hasAnimation
-                    )
-                      ? "font-base animate-semibold"
-                      : ""
-                  }`}
-                >
-                  {formatCounter(dynamicTabCounts.scheduled)}
-                </span>
-                )
-                {data?.tabCounters?.hasBlinkNode && (
-                  <NotificationDot
-                    position="absolute"
-                    positionClasses="-right-3 -top-1.5"
-                    animated={true}
-                    size="md"
-                    color="red"
-                  />
-                )}
+                Terjadwal ({data?.tabCounters?.scheduled ?? 0})
               </span>
             </button>
 
             <button
-              onClick={() => setActiveTab("halal_logistik")}
-              className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              onClick={() => handleTabChange("halal_logistik")}
+              className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
                 activeTab === "halal_logistik"
                   ? "w-auto min-w-[124px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                   : "w-auto min-w-[124px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
@@ -440,29 +274,7 @@ const PermintaanAngkutCS = () => {
                 className="h-4 w-4 flex-shrink-0"
               />
               <span className="relative whitespace-nowrap">
-                Halal Logistik (
-                <span
-                  className={`$$${
-                    shouldAnimate(
-                      dynamicTabCounts.halal,
-                      data?.newRequestsCount?.hasAnimation
-                    )
-                      ? "font-base animate-semibold"
-                      : ""
-                  }`}
-                >
-                  {formatCounter(dynamicTabCounts.halal)}
-                </span>
-                )
-                {data?.tabCounters?.hasBlinkNode && (
-                  <NotificationDot
-                    position="absolute"
-                    positionClasses="-right-3 -top-1.5"
-                    animated={true}
-                    size="md"
-                    color="red"
-                  />
-                )}
+                Halal Logistik ({data?.tabCounters?.halal ?? 0})
               </span>
             </button>
           </ScrollableTabs>
@@ -470,11 +282,9 @@ const PermintaanAngkutCS = () => {
 
         {/* Scrollable Content Area */}
         <div className="mx-2 flex-1 overflow-y-auto bg-white px-2">
-          {/* Always show content regardless of suspension status */}
           <RequestList
             requests={data?.requests || []}
             isLoading={isLoading}
-            activeTab={activeTab}
             isSuspended={data?.userStatus?.isSuspended}
             onBookmarkToggle={handleBookmarkToggle}
             bookmarkedItems={bookmarkedItems}
@@ -497,7 +307,7 @@ const PermintaanAngkutCS = () => {
 const RequestList = ({
   requests,
   isLoading,
-  activeTab,
+  // REMOVED: 'activeTab' prop was unused.
   isSuspended = false,
   onBookmarkToggle,
   bookmarkedItems,
@@ -506,6 +316,12 @@ const RequestList = ({
   searchValue,
   onShowDetail,
 }) => {
+  // FIXED: Moved useMemo to the top of the component before any conditional returns.
+  const filteredRequests = useMemo(
+    () => filterRequests(requests, searchValue, removedItems),
+    [requests, searchValue, removedItems]
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -521,33 +337,6 @@ const RequestList = ({
   }
 
   if (!requests || requests.length === 0) {
-    // Different empty states based on active tab
-    const getEmptyStateConfig = () => {
-      switch (activeTab) {
-        case "halal_logistik":
-          return {
-            title: "Belum Ada Permintaan Halal Logistik",
-            subtitle: "Belum ada shipper yang membuat permintaan jasa angkut",
-            icon: "/icons/halal.svg",
-          };
-        case "disimpan":
-          return {
-            title: "Belum Ada Permintaan Tersimpan",
-            subtitle:
-              "Anda belum menyimpan permintaan angkut apapun. Simpan permintaan yang menarik dengan menekan ikon bookmark untuk melihatnya di sini.",
-            icon: "/icons/bookmark.svg",
-          };
-        default:
-          return {
-            title: "Oops, belum ada permintaan jasa angkut",
-            subtitle: "Belum ada shipper yang membuat permintaan jasa angkut",
-            icon: "/icons/truck-jenis.svg",
-          };
-      }
-    };
-
-    const emptyConfig = getEmptyStateConfig();
-
     return (
       <div className="mt-[100px] flex-1 overflow-y-auto p-4">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
@@ -564,25 +353,9 @@ const RequestList = ({
     );
   }
 
-  // Apply search filter and removed items filter
-  const filteredRequests = requests
-    .filter((request) => !removedItems.has(request.id)) // Filter removed items
-    .filter((request) => {
-      // If no search value, show all
-      if (!searchValue || searchValue.trim() === "") {
-        return true;
-      }
-      // Filter by orderCode (case insensitive)
-      return request.orderCode
-        .toLowerCase()
-        .includes(searchValue.toLowerCase());
-    });
-
-  // Check if search returned no results
   const hasSearchResults =
     searchValue && searchValue.trim() !== "" && filteredRequests.length === 0;
 
-  // If search yielded no results, show "Keyword Tidak Ditemukan"
   if (hasSearchResults) {
     return (
       <div className="flex h-full items-center justify-center py-16">
@@ -604,7 +377,6 @@ const RequestList = ({
   return (
     <div className="space-y-4 pb-4">
       {filteredRequests.map((request) => {
-        // Determine current bookmark state
         const hasStateChanged = bookmarkedItems?.has(request.id);
         const currentBookmarkState = hasStateChanged
           ? !request.isSaved

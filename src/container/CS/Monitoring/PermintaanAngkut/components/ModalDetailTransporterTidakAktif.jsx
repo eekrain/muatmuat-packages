@@ -36,7 +36,9 @@ const ModalDetailTransporterTidakAktif = ({
         <div className="relative w-[600px] rounded-xl bg-white p-6 shadow-lg">
           {/* Header */}
           <div className="relative mb-2 flex items-center justify-center">
-            <h2 className="text-[16px] font-bold text-neutral-900">k Aktif</h2>
+            <h2 className="text-[16px] font-bold text-neutral-900">
+              Detail Transporter Tidak Aktif
+            </h2>
             <button
               onClick={onClose}
               className="absolute right-0 top-0 text-gray-400 hover:text-gray-600"
