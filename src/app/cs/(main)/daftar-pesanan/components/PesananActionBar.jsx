@@ -65,12 +65,22 @@ const PesananActionBar = ({
           label: t("pesananActionBar.filterByTransporter", {}, "Transporter"),
           searchable: true,
           type: "checkbox-multi",
+          searchPlaceholder: t(
+            "pesananActionBar.filterByTransporter",
+            {},
+            "Cari Transporter"
+          ),
         },
         {
           key: "shipper",
           label: t("pesananActionBar.filterByShipper", {}, "Shipper"),
           searchable: true,
           type: "checkbox-multi",
+          searchPlaceholder: t(
+            "pesananActionBar.filterByShipper",
+            {},
+            "Cari Shipper"
+          ),
         },
         {
           key: "status",
