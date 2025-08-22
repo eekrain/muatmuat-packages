@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
+import { Fragment, memo, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { TagBubble } from "@/components/Badge/TagBubble";
@@ -23,12 +23,18 @@ import RespondChangeFormModal from "@/container/Shared/OrderModal/RespondChangeF
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { formatLoadTime } from "@/lib/utils/dateFormat";
+import {
+  ORDER_STATUS,
+  ORDER_STATUS_CONFIG,
+} from "@/utils/Transporter/orderStatus";
 
 const DaftarPesanan = ({
+  isLoading,
   isFirstTimer,
   orders,
   pagination,
   queryParams,
+  lastFilterField,
   onChangeQueryParams,
 }) => {
   const { t } = useTranslation();
@@ -127,6 +133,36 @@ const DaftarPesanan = ({
     setIsConfirmReadyModalOpen(false);
     setSelectedOrderForConfirm(null);
   };
+
+  const DataEmptyComponentBase = () => {
+    if (lastFilterField === "search") {
+      return (
+        <DataNotFound
+          className="gap-5"
+          title="Keyword Tidak Ditemukan"
+          width={144}
+          height={122}
+        />
+      );
+    } else if (lastFilterField === "status") {
+      return (
+        <DataNotFound
+          className="gap-5"
+          title={
+            <span>
+              Data Tidak Ditemukan.
+              <br />
+              Mohon coba hapus beberapa filter
+            </span>
+          }
+          width={144}
+          height={122}
+        />
+      );
+    }
+  };
+
+  const DataEmptyComponent = memo(DataEmptyComponentBase);
 
   // Tab options sesuai design
   const tabOptions = [
@@ -388,12 +424,18 @@ const DaftarPesanan = ({
       key: "status",
       label: "Status",
       children: [
-        { value: "menunggu-konfirmasi", label: "Menunggu Konfirmasi" },
-        { value: "perlu-assign-armada", label: "Perlu Assign Armada" },
-        { value: "perlu-konfirmasi-siap", label: "Perlu Konfirmasi Siap" },
-        { value: "pesanan-dijadwalkan", label: "Pesanan Dijadwalkan" },
-        { value: "pesanan-selesai", label: "Pesanan Selesai" },
-      ],
+        ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER,
+        ORDER_STATUS.NEED_CHANGE_RESPONSE,
+        ORDER_STATUS.NEED_CONFIRMATION_READY,
+        ORDER_STATUS.LOADING,
+        ORDER_STATUS.UNLOADING,
+        ORDER_STATUS.PREPARE_DOCUMENT,
+        ORDER_STATUS.DOCUMENT_DELIVERY,
+        ORDER_STATUS.COMPLETED,
+      ].map((item) => ({
+        value: item,
+        label: ORDER_STATUS_CONFIG[item].label,
+      })),
     },
   ];
 
@@ -548,7 +590,7 @@ const DaftarPesanan = ({
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-neutral-900">Daftar Pesanan</h1>
         <DropdownPeriode
-          //   disable
+          disable={isFirstTimer}
           // disable={orders.length === 0}
           options={periodOptions}
           onSelect={handleSelectPeriod}
@@ -590,6 +632,7 @@ const DaftarPesanan = ({
                   <div className="flex items-center gap-x-3">
                     <Input
                       className="gap-0"
+                      // disabled
                       // disabled={
                       //   hasNoOrders || (!hasFilteredOrders && !queryParams.search)
                       // }
@@ -609,6 +652,7 @@ const DaftarPesanan = ({
                       onKeyUp={handleSearch}
                     />
                     <Filter
+                      // disabled
                       // disabled={
                       //   hasNoOrders ||
                       //   (!hasFilteredOrders &&
@@ -616,12 +660,12 @@ const DaftarPesanan = ({
                       //       .flatMap((item) => item.children)
                       //       .some((item) => item.value === queryParams.status))
                       // }
-                      options={[]}
+                      options={statusRadioOptions}
                       // value={queryParams.status}
-                      value=""
-                      onChange={
-                        ({ name, value }) => {}
-                        //   onChangeQueryParams(name, value)
+                      // value={queryParams.status}
+                      value={""}
+                      onChange={({ name, value }) =>
+                        onChangeQueryParams(name, value)
                       }
                     />
                   </div>
@@ -632,25 +676,27 @@ const DaftarPesanan = ({
                     {[
                       { value: "", label: "Semua" },
                       {
-                        value: "WAITING_PAYMENT",
+                        value: ORDER_STATUS.NEED_CHANGE_RESPONSE,
                         label: `Perlu Respon Perubahan (2)`,
                       },
                       {
-                        value: "WAITING_REPAYMENT",
+                        value: ORDER_STATUS.NEED_CONFIRMATION_READY,
                         label: `Perlu Konfirmasi Siap (2)`,
                       },
                       {
-                        value: "DOCUMENT_SHIPPING",
+                        value: ORDER_STATUS.NEED_ASSIGN_FLEET,
                         label: `Perlu Assign Armada (3)`,
                       },
                     ].map((tab, key) => {
                       // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
                       // isn't one of the specific tab values
-                      const isActiveAllTab = tab.value === "";
-                      //   &&
-                      //   queryParams.status !== "WAITING_PAYMENT" &&
-                      //   queryParams.status !== "WAITING_REPAYMENT" &&
-                      //   queryParams.status !== "DOCUMENT_SHIPPING";
+                      const isActiveAllTab =
+                        tab.value === "" &&
+                        queryParams.status !==
+                          ORDER_STATUS.NEED_CHANGE_RESPONSE &&
+                        queryParams.status !==
+                          ORDER_STATUS.NEED_CONFIRMATION_READY &&
+                        queryParams.status !== ORDER_STATUS.NEED_ASSIGN_FLEET;
 
                       return (
                         <div
@@ -668,7 +714,8 @@ const DaftarPesanan = ({
                           <span className="text-xxs leading-[1.3]">
                             {tab.label}
                           </span>
-                          {!isActiveAllTab ? (
+                          {tab.value !== "" &&
+                          queryParams.status !== tab.value ? (
                             <div className="absolute right-[11px] top-[6.5px] size-1 rounded-full bg-error-700" />
                           ) : null}
                         </div>
@@ -676,18 +723,33 @@ const DaftarPesanan = ({
                     })}
                   </div>
                 </div>
+                {false ? (
+                  <div className="flex items-center gap-x-3">
+                    <Button className="font-bold" variant="link">
+                      Hapus Semua Filter
+                    </Button>
+                    <TagBubble
+                      withRemove={{
+                        onRemove: () => {},
+                      }}
+                    >
+                      Proses Muat
+                    </TagBubble>
+                  </div>
+                ) : null}
               </div>
               <Table
                 columns={columns}
                 data={orders}
-                loading={false}
+                // data={[]}
+                loading={isLoading}
                 onRowClick={undefined}
                 onSort={handleSort}
                 sortConfig={{
                   sort: queryParams.sort,
                   order: queryParams.order,
                 }}
-                //   emptyComponent={renderEmptyState()}
+                emptyComponent={<DataEmptyComponent />}
               />
             </div>
           )}
@@ -806,8 +868,11 @@ const DaftarPesanan = ({
           currentPage={1}
           totalPages={1}
           perPage={10}
-          onPageChange={() => {}}
-          onPerPageChange={() => {}}
+          // currentPage={pagination.currentPage}
+          //     totalPages={pagination.totalPages}
+          //     perPage={pagination.itemsPerPage}
+          onPageChange={(value) => onChangeQueryParams("page", value)}
+          onPerPageChange={(value) => onChangeQueryParams("limit", value)}
           className="py-0"
         />
       )}

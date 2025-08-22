@@ -169,7 +169,11 @@ const DetailPesananScreen = ({
   return (
     <FormResponsiveLayout
       title={{
-        label: "Detail Pesanan",
+        label: t(
+          "DetailPesananScreen.titleDetailPesanan",
+          {},
+          "Detail Pesanan"
+        ),
       }}
       withMenu={{
         onClickInfo: () => setIsOpenInfo(true),
@@ -217,7 +221,10 @@ const DetailPesananScreen = ({
           />
         ) : null}
 
-        <OrderInfo dataStatusPesanan={dataStatusPesanan} />
+        <OrderInfo
+          dataStatusPesanan={dataStatusPesanan}
+          documentShippingDetail={documentShippingDetail}
+        />
 
         {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
           <DriverInfoSlider
@@ -232,13 +239,17 @@ const DetailPesananScreen = ({
         <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
           <TabsList className="w-full">
             <TabsTriggerWithSeparator value="ringkasan">
-              Ringkasan
+              {t("DetailPesananScreen.tabRingkasan", {}, "Ringkasan")}
             </TabsTriggerWithSeparator>
             <TabsTriggerWithSeparator value="informasi-lainnya">
-              Informasi Lainnya
+              {t(
+                "DetailPesananScreen.tabInformasiLainnya",
+                {},
+                "Informasi Lainnya"
+              )}
             </TabsTriggerWithSeparator>
             <TabsTriggerWithSeparator value="detail-pic" showSeparator={false}>
-              Detail PIC
+              {t("DetailPesananScreen.tabDetailPIC", {}, "Detail PIC")}
             </TabsTriggerWithSeparator>
           </TabsList>
           <TabContentRingkasan
@@ -256,8 +267,18 @@ const DetailPesananScreen = ({
           <TabContentDetailPIC dataDetailPIC={dataDetailPIC} />
         </Tabs>
 
-        <button onClick={() => toast.success("Berhasil membatalkan pesanan")}>
-          tes
+        <button
+          onClick={() =>
+            toast.success(
+              t(
+                "DetailPesananScreen.cancelSuccess",
+                {},
+                "Berhasil membatalkan pesanan"
+              )
+            )
+          }
+        >
+          {t("DetailPesananScreen.testButton", {}, "tes")}
         </button>
       </div>
 

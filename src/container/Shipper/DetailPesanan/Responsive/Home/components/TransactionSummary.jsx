@@ -38,24 +38,52 @@ export const TransactionSummary = ({
         <CardPayment.Root className="mx-auto w-full">
           <CardPayment.Header className="py-0">
             {isRingkasanTransaksi
-              ? "Ringkasan Transaksi"
-              : "Ringkasan Pembayaran"}
+              ? t(
+                  "TransactionSummary.headerTransaction",
+                  {},
+                  "Ringkasan Transaksi"
+                )
+              : t(
+                  "TransactionSummary.headerPayment",
+                  {},
+                  "Ringkasan Pembayaran"
+                )}
           </CardPayment.Header>
 
           <CardPayment.Body className="mt-6">
             {/* Main content area with bottom border */}
             <div className="flex flex-col gap-6 border-neutral-400">
-              <CardPayment.Section title="Biaya Pesan Jasa Angkut">
+              <CardPayment.Section
+                title={t(
+                  "TransactionSummary.transportFeeTitle",
+                  {},
+                  "Biaya Pesan Jasa Angkut"
+                )}
+              >
                 <CardPayment.LineItem
-                  label={`Nominal Pesan Jasa Angkut<br/>(${totalTruckUnit} Unit)`}
+                  label={t(
+                    "TransactionSummary.transportFeeLabel",
+                    { totalTruckUnit },
+                    `Nominal Pesan Jasa Angkut<br/>(${totalTruckUnit} Unit)`
+                  )}
                   value={idrFormat(transportFee)}
                 />
               </CardPayment.Section>
 
               {insuranceFee > 0 && (
-                <CardPayment.Section title="Biaya Asuransi Barang">
+                <CardPayment.Section
+                  title={t(
+                    "TransactionSummary.insuranceFeeTitle",
+                    {},
+                    "Biaya Asuransi Barang"
+                  )}
+                >
                   <CardPayment.LineItem
-                    label={`Nominal Premi Asuransi (${totalTruckUnit} Unit)`}
+                    label={t(
+                      "TransactionSummary.insuranceFeeLabel",
+                      { totalTruckUnit },
+                      `Nominal Premi Asuransi (${totalTruckUnit} Unit)`
+                    )}
                     value={idrFormat(insuranceFee)}
                   />
                 </CardPayment.Section>
@@ -63,10 +91,20 @@ export const TransactionSummary = ({
 
               {(documentShippingFee > 0 ||
                 otherAdditionalService?.totalPrice > 0) && (
-                <CardPayment.Section title="Biaya Layanan Tambahan">
+                <CardPayment.Section
+                  title={t(
+                    "TransactionSummary.additionalServiceTitle",
+                    {},
+                    "Biaya Layanan Tambahan"
+                  )}
+                >
                   {documentShippingFee > 0 && (
                     <CardPayment.LineItem
-                      label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+                      label={t(
+                        "TransactionSummary.documentShippingLabel",
+                        {},
+                        "Nominal Kirim Bukti Fisik Penerimaan Barang"
+                      )}
                       labelClassName="w-[200px]"
                       value={idrFormat(documentShippingFee)}
                     >
@@ -74,13 +112,21 @@ export const TransactionSummary = ({
                         onClick={() => setDocumentShippingDetailOpen(true)}
                         className="text-xs font-semibold leading-tight text-primary-700"
                       >
-                        Lihat Detail Pengiriman Dokumen
+                        {t(
+                          "TransactionSummary.viewDocumentShippingDetail",
+                          {},
+                          "Lihat Detail Pengiriman Dokumen"
+                        )}
                       </button>
                     </CardPayment.LineItem>
                   )}
                   {otherAdditionalService?.totalPrice > 0 && (
                     <CardPayment.LineItem
-                      label="Nominal Bantuan Tambahan"
+                      label={t(
+                        "TransactionSummary.otherAdditionalServiceLabel",
+                        {},
+                        "Nominal Bantuan Tambahan"
+                      )}
                       value={idrFormat(otherAdditionalService.totalPrice)}
                     />
                   )}
@@ -88,7 +134,13 @@ export const TransactionSummary = ({
               )}
 
               {(voucher?.discount ?? 0) > 0 && (
-                <CardPayment.Section title="Diskon Voucher">
+                <CardPayment.Section
+                  title={t(
+                    "TransactionSummary.voucherDiscountTitle",
+                    {},
+                    "Diskon Voucher"
+                  )}
+                >
                   <CardPayment.LineItem
                     label={`Voucher (${voucher?.code ?? ""})`}
                     variant="danger"
@@ -100,10 +152,20 @@ export const TransactionSummary = ({
             <hr className="my-6" />
             {/* 'Biaya Lainnya' Section */}
             <div className="flex flex-col gap-6">
-              <CardPayment.Section title="Biaya Lainnya">
+              <CardPayment.Section
+                title={t(
+                  "TransactionSummary.otherFeesTitle",
+                  {},
+                  "Biaya Lainnya"
+                )}
+              >
                 {adminFee > 0 && (
                   <CardPayment.LineItem
-                    label="Admin Layanan"
+                    label={t(
+                      "TransactionSummary.adminServiceLabel",
+                      {},
+                      "Admin Layanan"
+                    )}
                     value={idrFormat(adminFee)}
                   />
                 )}
@@ -124,7 +186,11 @@ export const TransactionSummary = ({
             {/* Total section with top border */}
             <div className="mt-6 border-t border-neutral-200 pt-6">
               <CardPayment.LineItem
-                label="Total Pembayaran"
+                label={t(
+                  "TransactionSummary.totalPaymentLabel",
+                  {},
+                  "Total Pembayaran"
+                )}
                 variant="total"
                 value={idrFormat(totalPrice)}
               />

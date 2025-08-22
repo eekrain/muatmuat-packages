@@ -140,7 +140,9 @@ export const FooterDetailPesanan = ({
             onClick={() => navigation.push("/ulasan")}
             type="button"
           >
-            {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
+            {areAllDriversReviewed
+              ? t("FooterDetailPesanan.lihatUlasan", {}, "Lihat Ulasan")
+              : t("FooterDetailPesanan.beriUlasan", {}, "Beri Ulasan")}
           </Button>
         ),
       });
@@ -157,7 +159,7 @@ export const FooterDetailPesanan = ({
             onClick={() => setReceiveDocumentEvidenceOpen(true)}
             type="button"
           >
-            Dokumen Diterima
+            {t("FooterDetailPesanan.dokumenDiterima", {}, "Dokumen Diterima")}
           </Button>
         ),
       });
@@ -175,7 +177,7 @@ export const FooterDetailPesanan = ({
               onClick={() => setIsOpenModalBatalkanPesanan(true)}
               type="button"
             >
-              Batalkan Pesanan
+              {t("FooterDetailPesanan.batalkanPesanan", {}, "Batalkan Pesanan")}
             </Button>
           ),
         },
@@ -190,7 +192,11 @@ export const FooterDetailPesanan = ({
               disabled={isPaymentLoading || isRepaymentLoading}
               type="button"
             >
-              Lanjut Pembayaran
+              {t(
+                "FooterDetailPesanan.lanjutPembayaran",
+                {},
+                "Lanjut Pembayaran"
+              )}
             </Button>
           ),
         },
@@ -213,7 +219,11 @@ export const FooterDetailPesanan = ({
               onClick={() => setCancelUpdateOrderModal(true)}
               type="button"
             >
-              Batalkan Perubahan
+              {t(
+                "FooterDetailPesanan.batalkanPerubahan",
+                {},
+                "Batalkan Perubahan"
+              )}
             </Button>
           ),
         },
@@ -227,7 +237,11 @@ export const FooterDetailPesanan = ({
               onClick={() => alert("Simpan")}
               type="button"
             >
-              Lanjut Pembayaran
+              {t(
+                "FooterDetailPesanan.lanjutPembayaran",
+                {},
+                "Lanjut Pembayaran"
+              )}
             </Button>
           ),
         },
@@ -245,7 +259,11 @@ export const FooterDetailPesanan = ({
             onClick={() => setCancelUpdateOrderModal(true)}
             type="button"
           >
-            Batalkan Perubahan
+            {t(
+              "FooterDetailPesanan.batalkanPerubahan",
+              {},
+              "Batalkan Perubahan"
+            )}
           </Button>
         ),
       });
@@ -263,7 +281,11 @@ export const FooterDetailPesanan = ({
               onClick={() => alert("Simpan")}
               type="button"
             >
-              Lanjut Pembayaran
+              {t(
+                "FooterDetailPesanan.lanjutPembayaran",
+                {},
+                "Lanjut Pembayaran"
+              )}
             </Button>
           ),
         },
@@ -283,7 +305,7 @@ export const FooterDetailPesanan = ({
                 onClick={() => setIsOpenModalBatalkanPesanan(true)}
                 type="button"
               >
-                Batalkan
+                {t("FooterDetailPesanan.batalkan", {}, "Batalkan")}
               </Button>
             ),
           },
@@ -307,7 +329,7 @@ export const FooterDetailPesanan = ({
                 }}
                 type="button"
               >
-                Ya, Menunggu
+                {t("FooterDetailPesanan.yaMenunggu", {}, "Ya, Menunggu")}
               </Button>
             ),
           },
@@ -352,7 +374,9 @@ export const FooterDetailPesanan = ({
           {LIST_SHOW_TOTAL_PRICE.includes(dataStatusPesanan?.orderStatus) &&
             dataRingkasanPembayaran?.totalPrice && (
               <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold">Total Biaya</div>
+                <div className="text-sm font-semibold">
+                  {t("FooterDetailPesanan.totalBiaya", {}, "Total Biaya")}
+                </div>
                 <div className="text-sm font-bold">
                   {idrFormat(dataRingkasanPembayaran?.totalPrice)}
                 </div>
@@ -364,7 +388,11 @@ export const FooterDetailPesanan = ({
               OrderStatusEnum.WAITING_PAYMENT_3 && (
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">
-                  Total Tambahan Biaya
+                  {t(
+                    "FooterDetailPesanan.totalTambahanBiaya",
+                    {},
+                    "Total Tambahan Biaya"
+                  )}
                 </div>
                 <div className="text-sm font-bold">
                   {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
@@ -376,7 +404,13 @@ export const FooterDetailPesanan = ({
           dataStatusPesanan?.orderStatus ===
             OrderStatusEnum.WAITING_PAYMENT_3 ? (
             <div className="flex items-center justify-between text-sm leading-[1.1] text-neutral-900">
-              <div className="font-semibold">Total Tambahan Biaya</div>
+              <div className="font-semibold">
+                {t(
+                  "FooterDetailPesanan.totalTambahanBiaya",
+                  {},
+                  "Total Tambahan Biaya"
+                )}
+              </div>
               <div className="font-bold">
                 {idrFormat(
                   dataRingkasanPembayaran?.priceChange?.totalAdjustment
@@ -388,9 +422,11 @@ export const FooterDetailPesanan = ({
           {/* Saya tidak tahu logic nya apa buat ngeshow, sementara toggle aja */}
           {false ? (
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold leading-[1.1]">Rute</div>
+              <div className="text-sm font-semibold leading-[1.1]">
+                {t("FooterDetailPesanan.rute", {}, "Rute")}
+              </div>
               <div className="text-xs font-medium leading-[1.1]">
-                Estimasi 178 km
+                {t("FooterDetailPesanan.estimasiJarak", {}, "Estimasi 178 km")}
               </div>
             </div>
           ) : null}
@@ -438,11 +474,10 @@ export const FooterDetailPesanan = ({
         isOpen={isReorderFleetModalOpen}
         setIsOpen={setIsReorderFleetModalOpen}
         description={{
-          text: (
-            <>
-              Apakah kamu ingin menyalin <br /> pesanan ini untuk digunakan
-              kembali atau membuat pesanan baru dengan detail yang berbeda?
-            </>
+          text: t(
+            "FooterDetailPesanan.modalReorderDescription",
+            {},
+            "Apakah kamu ingin menyalin pesanan ini untuk digunakan kembali atau membuat pesanan baru dengan detail yang berbeda?"
           ),
         }}
         cancel={{

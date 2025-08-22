@@ -4,11 +4,13 @@ import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
+  const { t } = useTranslation();
   const { countdown } = useCountdown({
     endingDate: dataRingkasanPembayaran?.paymentDueDateTime,
     isNeedCountdown: true,
@@ -18,7 +20,11 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
   // console.log("dataRingkasanPembayaran", dataRingkasanPembayaran);
   const paymentMethodInformations = [
     {
-      title: "Opsi Pembayaran",
+      title: t(
+        "PendingPaymentDetail.titlePaymentOption",
+        {},
+        "Opsi Pembayaran"
+      ),
       content: (
         <div className="flex h-6 items-center gap-x-3">
           {dataRingkasanPembayaran?.paymentLogo ? (
@@ -36,7 +42,11 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
       ),
     },
     {
-      title: "Nomor Virtual Account",
+      title: t(
+        "PendingPaymentDetail.titleVirtualAccount",
+        {},
+        "Nomor Virtual Account"
+      ),
       content: (
         <div className="flex items-center gap-x-2">
           <div className="text-sm font-medium leading-[1.1] text-primary-700">
@@ -53,7 +63,7 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
       ),
     },
     {
-      title: "Total Tagihan",
+      title: t("PendingPaymentDetail.titleTotalBill", {}, "Total Tagihan"),
       content: (
         <span className="text-sm font-medium leading-[1.1] text-neutral-900">
           {idrFormat(dataRingkasanPembayaran?.totalPrice)}
@@ -71,7 +81,7 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
       <div className="flex justify-between rounded-md bg-secondary-100 p-3">
         <div className="flex flex-col gap-y-2.5">
           <h3 className="text-sm font-bold leading-[1.1] text-warning-900">
-            Bayar Sebelum
+            {t("PendingPaymentDetail.payBefore", {}, "Bayar Sebelum")}
           </h3>
           <span className="text-xs font-medium leading-[1.1] text-neutral-900">
             {formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
@@ -99,7 +109,7 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
         onClick={() => navigation.push("/cara-pembayaran")}
         type="button"
       >
-        Lihat Cara Bayar
+        {t("PendingPaymentDetail.buttonViewHowToPay", {}, "Lihat Cara Bayar")}
       </Button>
     </div>
   );

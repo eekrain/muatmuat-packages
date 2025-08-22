@@ -1,5 +1,6 @@
 import useSWR from "swr";
 
+import { kotaKabupatenSuccessResponse } from "@/app/api/v1/transporter/settings/master/kota-kabupaten/mockData";
 import {
   createMasterProvinsiSuccessResponse,
   masterProvinsiData,
@@ -318,398 +319,21 @@ export const mockMasterProvinsi = createMasterProvinsiSuccessResponse(
   "search=&page=1&limit=10&excludeSelected=false"
 );
 
-// Mock API results for master kota/kabupaten
-export const mockMasterKotaKabupaten = {
-  Message: {
-    Code: 200,
-    Text: "Master data kota/kabupaten berhasil diambil",
-  },
-  Data: {
-    cities: [
-      {
-        provinceId: 31,
-        provinceName: "DKI JAKARTA",
-        selectedCount: 3,
-        totalCount: 5,
-        isAllSelected: false,
-        kota: [
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440011",
-            cityName: "Jakarta Pusat",
-            isSelected: true,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440012",
-            cityName: "Jakarta Selatan",
-            isSelected: false,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440013",
-            cityName: "Jakarta Utara",
-            isSelected: true,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440014",
-            cityName: "Jakarta Timur",
-            isSelected: false,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440015",
-            cityName: "Jakarta Barat",
-            isSelected: true,
-          },
-        ],
-      },
-      {
-        provinceId: 32,
-        provinceName: "JAWA BARAT",
-        selectedCount: 2,
-        totalCount: 6,
-        isAllSelected: false,
-        kota: [
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440021",
-            cityName: "Bandung",
-            isSelected: true,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440022",
-            cityName: "Bekasi",
-            isSelected: false,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440023",
-            cityName: "Bogor",
-            isSelected: true,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440024",
-            cityName: "Depok",
-            isSelected: false,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440025",
-            cityName: "Cimahi",
-            isSelected: false,
-          },
-          {
-            cityId: "550e8400-e29b-41d4-a716-446655440026",
-            cityName: "Sukabumi",
-            isSelected: false,
-          },
-        ],
-      },
-    ],
-    pagination: {
-      currentPage: 1,
-      totalPages: 2,
-      totalItems: 15,
-      itemsPerPage: 12,
-    },
-  },
-  Type: "GET_MASTER_KOTA_KABUPATEN",
-};
+// Use master kota/kabupaten data from shared mock file
+export const mockMasterKotaKabupaten = kotaKabupatenSuccessResponse;
 
 // Mock API results for development/testing
-export const mockMasterProvinces = {
-  data: {
-    Message: {
-      Code: 200,
-      Text: "Master provinsi berhasil diambil",
-    },
-    Data: {
-      totalProvinces: 34,
-      availableProvinces: 34,
-      excludedCount: 0,
-      provinces: [
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440001",
-          provinceName: "Aceh",
-          provinceCode: "11",
-          isSelected: false,
-          cityCount: 23,
-          sortOrder: "A",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440002",
-          provinceName: "Bali",
-          provinceCode: "51",
-          isSelected: false,
-          cityCount: 9,
-          sortOrder: "B",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440003",
-          provinceName: "Banten",
-          provinceCode: "36",
-          isSelected: false,
-          cityCount: 8,
-          sortOrder: "B",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440004",
-          provinceName: "Bengkulu",
-          provinceCode: "17",
-          isSelected: false,
-          cityCount: 10,
-          sortOrder: "B",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440005",
-          provinceName: "DI Yogyakarta",
-          provinceCode: "34",
-          isSelected: false,
-          cityCount: 5,
-          sortOrder: "D",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440006",
-          provinceName: "DKI Jakarta",
-          provinceCode: "31",
-          isSelected: false,
-          cityCount: 6,
-          sortOrder: "D",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440007",
-          provinceName: "Gorontalo",
-          provinceCode: "75",
-          isSelected: false,
-          cityCount: 6,
-          sortOrder: "G",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440008",
-          provinceName: "Jambi",
-          provinceCode: "15",
-          isSelected: false,
-          cityCount: 11,
-          sortOrder: "J",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440009",
-          provinceName: "Jawa Barat",
-          provinceCode: "32",
-          isSelected: false,
-          cityCount: 27,
-          sortOrder: "J",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440010",
-          provinceName: "Jawa Tengah",
-          provinceCode: "33",
-          isSelected: false,
-          cityCount: 35,
-          sortOrder: "J",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440011",
-          provinceName: "Jawa Timur",
-          provinceCode: "35",
-          isSelected: false,
-          cityCount: 38,
-          sortOrder: "J",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440012",
-          provinceName: "Kalimantan Barat",
-          provinceCode: "61",
-          isSelected: false,
-          cityCount: 14,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440013",
-          provinceName: "Kalimantan Selatan",
-          provinceCode: "63",
-          isSelected: false,
-          cityCount: 13,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440014",
-          provinceName: "Kalimantan Tengah",
-          provinceCode: "62",
-          isSelected: false,
-          cityCount: 14,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440015",
-          provinceName: "Kalimantan Timur",
-          provinceCode: "64",
-          isSelected: false,
-          cityCount: 10,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440016",
-          provinceName: "Kalimantan Utara",
-          provinceCode: "65",
-          isSelected: false,
-          cityCount: 5,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440017",
-          provinceName: "Kepulauan Bangka Belitung",
-          provinceCode: "19",
-          isSelected: false,
-          cityCount: 7,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440018",
-          provinceName: "Kepulauan Riau",
-          provinceCode: "21",
-          isSelected: false,
-          cityCount: 7,
-          sortOrder: "K",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440019",
-          provinceName: "Lampung",
-          provinceCode: "18",
-          isSelected: false,
-          cityCount: 15,
-          sortOrder: "L",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440020",
-          provinceName: "Maluku",
-          provinceCode: "81",
-          isSelected: false,
-          cityCount: 11,
-          sortOrder: "M",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440021",
-          provinceName: "Maluku Utara",
-          provinceCode: "82",
-          isSelected: false,
-          cityCount: 10,
-          sortOrder: "M",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440022",
-          provinceName: "Nusa Tenggara Barat",
-          provinceCode: "52",
-          isSelected: false,
-          cityCount: 10,
-          sortOrder: "N",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440023",
-          provinceName: "Nusa Tenggara Timur",
-          provinceCode: "53",
-          isSelected: false,
-          cityCount: 22,
-          sortOrder: "N",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440024",
-          provinceName: "Papua",
-          provinceCode: "94",
-          isSelected: false,
-          cityCount: 29,
-          sortOrder: "P",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440025",
-          provinceName: "Papua Barat",
-          provinceCode: "91",
-          isSelected: false,
-          cityCount: 13,
-          sortOrder: "P",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440026",
-          provinceName: "Riau",
-          provinceCode: "14",
-          isSelected: false,
-          cityCount: 12,
-          sortOrder: "R",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440027",
-          provinceName: "Sulawesi Barat",
-          provinceCode: "76",
-          isSelected: false,
-          cityCount: 6,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440028",
-          provinceName: "Sulawesi Selatan",
-          provinceCode: "73",
-          isSelected: false,
-          cityCount: 24,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440029",
-          provinceName: "Sulawesi Tengah",
-          provinceCode: "72",
-          isSelected: false,
-          cityCount: 13,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440030",
-          provinceName: "Sulawesi Tenggara",
-          provinceCode: "74",
-          isSelected: false,
-          cityCount: 17,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440031",
-          provinceName: "Sulawesi Utara",
-          provinceCode: "71",
-          isSelected: false,
-          cityCount: 15,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440032",
-          provinceName: "Sumatera Barat",
-          provinceCode: "13",
-          isSelected: false,
-          cityCount: 19,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440033",
-          provinceName: "Sumatera Selatan",
-          provinceCode: "16",
-          isSelected: false,
-          cityCount: 17,
-          sortOrder: "S",
-        },
-        {
-          provinceId: "550e8400-e29b-41d4-a716-446655440034",
-          provinceName: "Sumatera Utara",
-          provinceCode: "12",
-          isSelected: false,
-          cityCount: 33,
-          sortOrder: "S",
-        },
-      ],
-      pagination: {
-        currentPage: 1,
-        totalPages: 1,
-        hasNext: false,
-        hasPrevious: false,
-      },
-      query: {
-        searchTerm: "",
-        totalResults: 34,
-        hasResults: true,
-      },
-    },
-    Type: "GET_MASTER_PROVINCES",
+// Use master provinsi data from shared mock file
+export const mockMasterProvinces = createMasterProvinsiSuccessResponse(
+  masterProvinsiData,
+  {
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 34,
+    itemsPerPage: 50,
   },
-};
+  "search=&page=1&limit=50&excludeSelected=false"
+);
 
 // Mock API results for Area Muat Management
 export const mockAreaMuatManage = {
@@ -1038,10 +662,14 @@ export const getMasterProvinsi = async (cacheKey) => {
   };
 };
 
-export const useGetMasterProvinsi = (params) => {
+export const useGetMasterProvinsi = (params, options = { enabled: true }) => {
   const paramsString = params ? new URLSearchParams(params).toString() : "";
+
+  // Only fetch if explicitly enabled
+  const shouldFetch = options.enabled && params;
+
   const { data, error, isLoading } = useSWR(
-    `getMasterProvinsi/${paramsString}`,
+    shouldFetch ? `getMasterProvinsi/${paramsString}` : null,
     getMasterProvinsi
   );
 
@@ -1051,7 +679,7 @@ export const useGetMasterProvinsi = (params) => {
     grouping: data?.grouping || {},
     message: data?.message || {},
     raw: data?.raw,
-    isLoading,
+    isLoading: shouldFetch ? isLoading : false,
     isError: !!error,
   };
 };
@@ -1066,7 +694,7 @@ export const getMasterProvinces = async (cacheKey) => {
   if (useMockData) {
     // Filter mock data based on search term
     const searchTerm = searchParams.get("q") || "";
-    let filteredProvinces = mockMasterProvinces.data.Data.provinces;
+    let filteredProvinces = mockMasterProvinces.Data.provinsi;
 
     if (searchTerm) {
       filteredProvinces = filteredProvinces.filter((province) =>
@@ -1075,12 +703,11 @@ export const getMasterProvinces = async (cacheKey) => {
     }
 
     result = {
-      ...mockMasterProvinces,
       data: {
-        ...mockMasterProvinces.data,
+        ...mockMasterProvinces,
         Data: {
-          ...mockMasterProvinces.data.Data,
-          provinces: filteredProvinces,
+          ...mockMasterProvinces.Data,
+          provinsi: filteredProvinces,
           query: {
             searchTerm,
             totalResults: filteredProvinces.length,
@@ -1315,10 +942,15 @@ export const getAreaBongkarManage = async (cacheKey) => {
   };
 };
 
-export const useGetAreaBongkarManage = (params) => {
+export const useGetAreaBongkarManage = (
+  params,
+  options = { enabled: true }
+) => {
   const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const shouldFetch = options.enabled !== false;
+
   const { data, error, isLoading } = useSWR(
-    `getAreaBongkarManage/${paramsString}`,
+    shouldFetch ? `getAreaBongkarManage/${paramsString}` : null,
     getAreaBongkarManage
   );
   return {
@@ -1326,7 +958,7 @@ export const useGetAreaBongkarManage = (params) => {
     totalProvinces: data?.totalProvinces || 0,
     totalSelectedCities: data?.totalSelectedCities || 0,
     raw: data?.raw,
-    isLoading,
+    isLoading: shouldFetch ? isLoading : false,
     isError: !!error,
   };
 };
@@ -1441,10 +1073,18 @@ export const getMasterKotaKabupaten = async (cacheKey) => {
   };
 };
 
-export const useGetMasterKotaKabupaten = (params) => {
+export const useGetMasterKotaKabupaten = (
+  params,
+  options = { enabled: true }
+) => {
   const paramsString = params ? new URLSearchParams(params).toString() : "";
+
+  // Only fetch if provinceIds is provided and not empty, and explicitly enabled
+  const shouldFetch =
+    options.enabled && params?.provinceIds && params.provinceIds !== "";
+
   const { data, error, isLoading } = useSWR(
-    `getMasterKotaKabupaten/${paramsString}`,
+    shouldFetch ? `getMasterKotaKabupaten/${paramsString}` : null,
     getMasterKotaKabupaten
   );
 
@@ -1453,7 +1093,7 @@ export const useGetMasterKotaKabupaten = (params) => {
     pagination: data?.pagination || {},
     message: data?.message || {},
     raw: data?.raw,
-    isLoading,
+    isLoading: shouldFetch ? isLoading : false,
     isError: !!error,
   };
 };

@@ -44,7 +44,7 @@ export default function Page() {
   const [isViewAreaBongkarModalOpen, setIsViewAreaBongkarModalOpen] =
     useState(false);
   const [isViewMuatanModalOpen, setIsViewMuatanModalOpen] = useState(false);
-  const [searchProvince, setSearchProvince] = useState(null);
+  const [searchProvince, setSearchProvince] = useState("");
   const [viewModalSearch, setViewModalSearch] = useState("");
   const [viewBongkarModalSearch, setViewBongkarModalSearch] = useState("");
   const [viewMuatanModalSearch, setViewMuatanModalSearch] = useState("");
