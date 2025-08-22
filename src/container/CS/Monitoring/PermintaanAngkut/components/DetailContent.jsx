@@ -9,6 +9,10 @@ import {
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
 
+import ModalTransportDilihat from "./ModalTransportDilihat";
+import ModalTransportDisimpan from "./ModalTransportDisimpan";
+import ModalTransportTersedia from "./ModalTransportTersedia";
+
 const DetailContent = ({
   displayData,
   request,
@@ -19,6 +23,9 @@ const DetailContent = ({
   isSaved,
 }) => {
   const [showHubungiModal, setShowHubungiModal] = useState(false);
+  const [showTersediaModal, setShowTersediaModal] = useState(false);
+  const [showDilihatModal, setShowDilihatModal] = useState(false);
+  const [showDisimpanModal, setShowDisimpanModal] = useState(false);
 
   // Helper function to format load date time
   const formatLoadDateTime = () => {
@@ -84,10 +91,7 @@ const DetailContent = ({
                   {request.shipperInfo?.name || "-"}
                 </p>
                 <div className="flex items-center gap-1">
-                  <div
-                    className="flex items-center gap-1"
-                    onClick={() => setShowHubungiModal(true)}
-                  >
+                  <div className="flex items-center gap-1">
                     <IconComponent
                       src="/icons/contact.svg"
                       className={cn(
@@ -95,9 +99,17 @@ const DetailContent = ({
                         request.isTaken ? "text-neutral-700" : ""
                       )}
                     />
-                    <p className="cursor-pointer text-xs font-medium text-primary-700">
+                    <p
+                      className="cursor-pointer text-xs font-medium text-primary-700"
+                      onClick={() => setShowHubungiModal(true)}
+                    >
                       Hubungi
                     </p>
+                    <HubungiModal
+                      isOpen={showHubungiModal}
+                      onClose={() => setShowHubungiModal(false)}
+                      transporterContacts={request.shipperInfo || null}
+                    />
                   </div>
                   <div className="mx-1 h-0.5 w-0.5 rounded-full bg-neutral-600"></div>
                   <div className="flex items-center gap-1">
@@ -107,7 +119,11 @@ const DetailContent = ({
                     />
                     <p className="text-[10px] font-medium text-neutral-900">
                       {(() => {
-                        const location = "Kec. Tegalsari kulon, Kota Surabaya";
+                        const address = request.shipperInfo?.address;
+                        let location = "-";
+                        if (address) {
+                          location = `Kec. ${address.district}, ${address.city}${address.province ? `, ${address.province}` : ""}`;
+                        }
                         return location.length > 31
                           ? `${location.substring(0, 31)}...`
                           : location;
@@ -288,7 +304,10 @@ const DetailContent = ({
       {/* Transporter Info */}
       <div className="mb-3 flex items-center gap-2">
         {/* Transporter Tersedia */}
-        <div className="flex cursor-pointer items-center gap-1">
+        <div
+          className="flex cursor-pointer items-center gap-1"
+          onClick={() => setShowTersediaModal(true)}
+        >
           <IconComponent
             src="/icons/truk16.svg"
             className="h-4 w-4 text-[#7B3F00]"
@@ -309,9 +328,15 @@ const DetailContent = ({
             Transporter Tersedia
           </span>
         </div>
+        {showTersediaModal && (
+          <ModalTransportTersedia onClose={() => setShowTersediaModal(false)} />
+        )}
 
         {/* Dilihat */}
-        <div className="flex cursor-pointer items-center gap-1">
+        <div
+          className="flex cursor-pointer items-center gap-1"
+          onClick={() => setShowDilihatModal(true)}
+        >
           <IconComponent
             src="/icons/eyes.svg"
             className="h-4 w-4 text-[#7B3F00]"
@@ -329,9 +354,15 @@ const DetailContent = ({
             Dilihat
           </span>
         </div>
+        {showDilihatModal && (
+          <ModalTransportDilihat onClose={() => setShowDilihatModal(false)} />
+        )}
 
         {/* Disimpan */}
-        <div className="flex cursor-pointer items-center gap-1">
+        <div
+          className="flex cursor-pointer items-center gap-1"
+          onClick={() => setShowDisimpanModal(true)}
+        >
           <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
             <IconComponent
               src="/icons/bookmark-fill.svg"
@@ -351,6 +382,9 @@ const DetailContent = ({
             Disimpan
           </span>
         </div>
+        {showDisimpanModal && (
+          <ModalTransportDisimpan onClose={() => setShowDisimpanModal(false)} />
+        )}
       </div>
 
       {/* Divider after status tags */}
@@ -711,8 +745,9 @@ const DetailContent = ({
       {/* Hubungi Modal */}
       {showHubungiModal && (
         <HubungiModal
+          isOpen={showHubungiModal}
           onClose={() => setShowHubungiModal(false)}
-          shipperData={displayData?.shipperInfo || request?.shipperInfo}
+          transporterContacts={request.shipperInfo || null}
         />
       )}
     </div>
