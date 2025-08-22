@@ -106,7 +106,7 @@ const DriverDetailRatingTable = () => {
         ),
       },
       {
-        key: "averageRating",
+        key: "average_rating",
         header: t("csDriverRating.table.header.rating", {}, "Rating"),
         sortable: true,
         render: (row) => (
@@ -120,7 +120,7 @@ const DriverDetailRatingTable = () => {
         ),
       },
       {
-        key: "totalOrders",
+        key: "total_orders",
         header: t(
           "csDriverRating.table.header.orderCount",
           {},
