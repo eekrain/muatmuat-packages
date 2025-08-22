@@ -1,4 +1,4 @@
-import DevLoginContainer from "@/container/Shared/DevLoginContainer";
+import DevLoginContainer from "@/container/Shared/DevLoginContainerLocal";
 
 const Page = () => {
   return <DevLoginContainer onSuccessRedirect="/user" />;

@@ -6,12 +6,12 @@ import { Suspense, useEffect, useRef } from "react";
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
-import { AuthenticationProvider } from "@/hooks/use-auth";
+import { AuthenticationProvider } from "@/hooks/CS/use-auth";
 import useDevice from "@/hooks/use-device";
 import { TranslationProvider } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { StackManagerInitializer } from "@/lib/stack-manager";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
-import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {
   return (
@@ -23,6 +23,7 @@ const MainLayout = ({ children }) => {
       </TranslationProvider>
       <Toaster />
       <Script />
+      <StackManagerInitializer />
     </Suspense>
   );
 };
@@ -32,14 +33,6 @@ export default MainLayout;
 const Script = () => {
   useDefaultTimeoutLoading();
   useResetNavigationOnDesktop();
-
-  const { fetchSidebarData } = useNotificationCounterActions();
-  useEffect(() => {
-    fetchSidebarData().catch((error) => {
-      // Error fetching sidebar data
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return null;
 };

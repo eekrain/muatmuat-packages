@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
 
-const isMockCSTransporters = false;
+const isMockCSTransporters = true;
 
 export const fetcherCSTransporters = async (url, { arg }) => {
   if (isMockCSTransporters) {
