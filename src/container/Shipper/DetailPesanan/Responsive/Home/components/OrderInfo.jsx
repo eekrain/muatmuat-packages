@@ -64,7 +64,7 @@ export const OrderStatus = ({
   );
 };
 
-export const OrderInfo = ({ dataStatusPesanan }) => {
+export const OrderInfo = ({ dataStatusPesanan, documentShippingDetail }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
@@ -138,7 +138,9 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
           </div>
         ) : dataStatusPesanan?.orderStatus ===
           OrderStatusEnum.DOCUMENT_DELIVERY ? (
-          <BottomsheetBuktiPengirimanDokumen>
+          <BottomsheetBuktiPengirimanDokumen
+            documentShippingDetail={documentShippingDetail}
+          >
             <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
               <button className="flex w-full flex-row items-center justify-between">
                 <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">

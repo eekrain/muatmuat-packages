@@ -8,6 +8,7 @@ import {
   BottomSheetTitle,
 } from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 /**
  * Fungsi pembantu untuk memformat angka menjadi format mata uang Rupiah (IDR).
@@ -27,6 +28,7 @@ const formatCurrency = (amount) => {
  * Komponen BottomSheet untuk menampilkan detail waktu tunggu driver dengan expandable sections.
  */
 const BottomsheetWaitingTimeDetails = () => {
+  const { t } = useTranslation();
   // State untuk mengontrol expanded state setiap driver
   const [expandedDrivers, setExpandedDrivers] = useState({});
 
@@ -79,7 +81,11 @@ const BottomsheetWaitingTimeDetails = () => {
           <BottomSheetClose asChild>
             <button
               className="absolute left-0 rounded-full p-1 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-500"
-              aria-label="Tutup detail waktu tunggu"
+              aria-label={t(
+                "BottomsheetWaitingTimeDetails.ariaLabelCloseDetail",
+                {},
+                "Tutup detail waktu tunggu"
+              )}
             >
               <IconComponent
                 src="/icons/close-x.svg"
@@ -90,7 +96,11 @@ const BottomsheetWaitingTimeDetails = () => {
             </button>
           </BottomSheetClose>
           <BottomSheetTitle className="mx-auto text-base font-bold text-neutral-900">
-            Detail Waktu Tunggu
+            {t(
+              "BottomsheetWaitingTimeDetails.title",
+              {},
+              "Detail Waktu Tunggu"
+            )}
           </BottomSheetTitle>
         </div>
       </BottomSheetHeader>
@@ -106,14 +116,17 @@ const BottomsheetWaitingTimeDetails = () => {
             className="flex-shrink-0 text-warning-500"
           />
           <p className="text-xs font-medium text-neutral-900">
-            FREE untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari
-            12 jam
+            {t(
+              "BottomsheetWaitingTimeDetails.warningFreeHours",
+              {},
+              "FREE untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari 12 jam"
+            )}
           </p>
         </Alert>
 
         {/* Detail Driver dengan Expandable Sections */}
         <div className="space-y-4">
-          {driverData.map((driver, index) => (
+          {driverData.map((driver) => (
             <div key={driver.id} className="border-b border-neutral-300 pb-2">
               {/* Driver Header - Clickable untuk expand/collapse */}
               <div
@@ -122,12 +135,20 @@ const BottomsheetWaitingTimeDetails = () => {
               >
                 <div className="flex-1">
                   <h3 className="mb-1 text-base font-semibold text-neutral-900">
-                    Driver: {driver.name}
+                    {t(
+                      "BottomsheetWaitingTimeDetails.driverLabel",
+                      { driverName: driver.name },
+                      "Driver: {driverName}"
+                    )}
                   </h3>
                   <p className="text-sm text-neutral-600">
                     {expandedDrivers[driver.id]
                       ? ""
-                      : `Durasi Total: ${driver.duration}`}
+                      : t(
+                          "BottomsheetWaitingTimeDetails.totalDuration",
+                          { duration: driver.duration },
+                          "Durasi Total: {duration}"
+                        )}
                   </p>
                 </div>
 
@@ -135,7 +156,17 @@ const BottomsheetWaitingTimeDetails = () => {
                 <button
                   className="rounded-full hover:bg-neutral-100"
                   aria-label={
-                    expandedDrivers[driver.id] ? "Tutup detail" : "Buka detail"
+                    expandedDrivers[driver.id]
+                      ? t(
+                          "BottomsheetWaitingTimeDetails.ariaLabelCloseDetail",
+                          {},
+                          "Tutup detail"
+                        )
+                      : t(
+                          "BottomsheetWaitingTimeDetails.ariaLabelOpenDetail",
+                          {},
+                          "Buka detail"
+                        )
                   }
                 >
                   <IconComponent
@@ -177,7 +208,9 @@ const BottomsheetWaitingTimeDetails = () => {
 
         {/* Total Keseluruhan */}
         <div className="mt-6 flex items-center justify-between border-neutral-200 py-2">
-          <span className="text-base font-bold text-neutral-900">Total</span>
+          <span className="text-base font-bold text-neutral-900">
+            {t("BottomsheetWaitingTimeDetails.totalLabel", {}, "Total")}
+          </span>
           <span className="text-base font-bold text-neutral-900">
             {formatCurrency(calculateTotal())}
           </span>

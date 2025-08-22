@@ -6,8 +6,11 @@ import {
   BottomSheetTitle,
   BottomSheetTrigger,
 } from "@/components/BottomSheet/BottomSheetUp";
+import { useTranslation } from "@/hooks/use-translation";
 
 const BottomsheetCargoOverload = () => {
+  const { t } = useTranslation();
+
   return (
     <BottomSheet>
       <BottomSheetTrigger asChild>
@@ -15,13 +18,23 @@ const BottomsheetCargoOverload = () => {
           type="button"
           className="rounded text-left text-xs font-semibold leading-[1.1] text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
         >
-          Lihat Detail Overload Muatan
+          {t(
+            "BottomsheetCargoOverload.buttonViewOverloadDetail",
+            {},
+            "Lihat Detail Overload Muatan"
+          )}
         </button>
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Biaya Overload Muatan</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t(
+              "BottomsheetCargoOverload.titleOverloadCost",
+              {},
+              "Biaya Overload Muatan"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
       </BottomSheetContent>
     </BottomSheet>

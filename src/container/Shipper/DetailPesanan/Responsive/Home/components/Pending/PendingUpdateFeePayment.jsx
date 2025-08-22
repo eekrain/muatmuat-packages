@@ -48,17 +48,25 @@ const PendingUpdateFeePayment = ({ paymentDueDateTime }) => {
             )}
           </p>
           <p className="self-stretch text-center text-xs font-medium leading-tight text-neutral-600">
-            {t(
-              "PendingUpdateFeePayment.messagePaymentReminder",
-              {},
-              "Mohon lakukan pembayaran dalam waktu"
-            )}
-            <span className="font-bold text-neutral-900">{` ${countdown} `}</span>
-            {t(
-              "PendingUpdateFeePayment.messageAutoCancelWarning",
-              {},
-              "Perubahan secara otomatis dibatalkan, apabila melewati batas waktu yang ditentukan."
-            )}
+            {(() => {
+              const full = t(
+                "PendingUpdateFeePayment.messagePaymentReminderFull",
+                { countdown },
+                "Mohon lakukan pembayaran dalam waktu {countdown} Perubahan secara otomatis dibatalkan, apabila melewati batas waktu yang ditentukan."
+              );
+              // render countdown bold by splitting on countdown value
+              const parts = full.split(String(countdown));
+              if (parts.length === 1) return full;
+              return (
+                <>
+                  {parts[0]}
+                  <span className="font-bold text-neutral-900">
+                    {String(countdown)}
+                  </span>
+                  {parts[1]}
+                </>
+              );
+            })()}
           </p>
         </div>
       </div>

@@ -90,7 +90,11 @@ const BottomSheetPreviousDriver = ({
                 }
                 className="h-10 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
               >
-                Hubungi Driver
+                {t(
+                  "BottomSheetPreviousDriver.buttonContactDriver",
+                  {},
+                  "Hubungi Driver"
+                )}
               </Button>
               <Button
                 variant="muatparts-primary"
@@ -102,7 +106,11 @@ const BottomSheetPreviousDriver = ({
                 }
                 className="h-10 w-full !rounded-[20px] bg-primary-700 !text-xs !font-semibold text-white"
               >
-                Lacak Armada
+                {t(
+                  "BottomSheetPreviousDriver.buttonTrackFleet",
+                  {},
+                  "Lacak Armada"
+                )}
               </Button>
             </div>
           ) : (

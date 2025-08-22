@@ -43,50 +43,70 @@ export const BottomsheetMenuList = ({
         <BottomSheetContent>
           <BottomSheetHeader>
             <BottomSheetClose />
-            <BottomSheetTitle>{t("titleMenu")}</BottomSheetTitle>
+            <BottomSheetTitle>
+              {t("BottomsheetMenuList.titleMenu", {}, "Menu")}
+            </BottomSheetTitle>
           </BottomSheetHeader>
           <ul className="flex flex-col gap-4 px-4 pb-6 text-sm font-semibold text-neutral-900">
             <Item
-              label={t("labelOrderStatusSummary")}
+              label={t(
+                "BottomsheetMenuList.labelOrderStatusSummary",
+                {},
+                "Ringkasan Status Pesanan"
+              )}
               onClick={() => navigation.push("/order-summary")}
-              t={t}
             />
             {dataStatusPesanan?.withDocumentShipping && (
               <Item
-                label={t("labelDocumentShippingDetail")}
-                t={t}
+                label={t(
+                  "BottomsheetMenuList.labelDocumentShippingDetail",
+                  {},
+                  "Detail Pengiriman Dokumen"
+                )}
                 onClick={() => setIsOpenDetailPengirimanDokumen(true)}
               />
             )}
             <Item
-              label={t("labelPaymentDetail")}
+              label={t(
+                "BottomsheetMenuList.labelPaymentDetail",
+                {},
+                "Detail Pembayaran"
+              )}
               onClick={() => alert("Detail Pembayaran clicked")}
-              t={t}
             />
             {dataStatusPesanan?.isChangeable && (
               <Item
-                label={t("labelEditOrder")}
+                label={t(
+                  "BottomsheetMenuList.labelEditOrder",
+                  {},
+                  "Ubah Pesanan"
+                )}
                 onClick={() =>
                   router.push(`/sewaarmada/ubahpesanan/${params.orderId}`)
                 }
-                t={t}
               />
             )}
             {dataStatusPesanan?.isCancellable && (
               <Item
-                label={t("labelCancelOrder")}
+                label={t(
+                  "BottomsheetMenuList.labelCancelOrder",
+                  {},
+                  "Batalkan Pesanan"
+                )}
                 onClick={() => {
                   setIsOpenModalBatalkanPesanan(true);
                   onOpenChange(false);
                 }}
-                t={t}
               />
             )}
             <Item
               isLast
-              label={t("labelDownloadDeliveryOrder")}
+              label={t(
+                "BottomsheetMenuList.labelDownloadDeliveryOrder",
+                {},
+                "Unduh Dokumen Delivery Order (DO)"
+              )}
               onClick={() => alert("Unduh Dokumen Delivery Order (DO) clicked")}
-              t={t}
             />
           </ul>
         </BottomSheetContent>
@@ -117,7 +137,7 @@ export const BottomsheetMenuList = ({
   );
 };
 
-const Item = ({ className, label, onClick, t, isLast = false }) => {
+const Item = ({ className, label, onClick, isLast = false }) => {
   return (
     <li
       onClick={onClick}

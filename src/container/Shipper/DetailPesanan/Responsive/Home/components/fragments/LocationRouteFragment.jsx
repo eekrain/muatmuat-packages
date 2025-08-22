@@ -9,6 +9,7 @@ import {
 } from "@/components/BottomSheet/BottomSheetUp";
 import { ButtonMini } from "@/components/Button/ButtonMini";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const LocationRouteFragment = ({ dataRingkasanPesanan }) => {
   const [mode, setMode] = useState("");
@@ -22,14 +23,22 @@ export const LocationRouteFragment = ({ dataRingkasanPesanan }) => {
     setBottomSheetData(data);
   };
 
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Rute</h3>
+          <h3 className="text-sm font-semibold">
+            {t("LocationRouteFragment.title", {}, "Rute")}
+          </h3>
           {dataRingkasanPesanan?.estimatedDistance && (
             <p className="text-xs font-medium">
-              Estimasi {dataRingkasanPesanan.estimatedDistance} km
+              {t(
+                "LocationRouteFragment.estimatedDistance",
+                { distance: dataRingkasanPesanan.estimatedDistance },
+                `Estimasi ${dataRingkasanPesanan.estimatedDistance} km`
+              )}
             </p>
           )}
         </div>
@@ -48,7 +57,11 @@ export const LocationRouteFragment = ({ dataRingkasanPesanan }) => {
                     className="mt-1"
                     onClick={() => handleShowMore("muat", muat)}
                   >
-                    Lihat Lokasi Muat Lainnya
+                    {t(
+                      "LocationRouteFragment.viewMoreLoadLocations",
+                      {},
+                      "Lihat Lokasi Muat Lainnya"
+                    )}
                   </ButtonMini>
                 ) : null
               }
@@ -68,7 +81,11 @@ export const LocationRouteFragment = ({ dataRingkasanPesanan }) => {
                     className="mt-1"
                     onClick={() => handleShowMore("bongkar", bongkar)}
                   >
-                    Lihat Lokasi Bongkar Lainnya
+                    {t(
+                      "LocationRouteFragment.viewMoreUnloadLocations",
+                      {},
+                      "Lihat Lokasi Bongkar Lainnya"
+                    )}
                   </ButtonMini>
                 ) : null
               }

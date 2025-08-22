@@ -2,6 +2,7 @@ import { Fragment } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 
 // Reusable component for displaying location information
 const InfoItem = ({ icon, children }) => (
@@ -78,17 +79,34 @@ const LocationSection = ({ title, locations, locationType }) => (
 );
 
 export const TabContentDetailPIC = ({ dataDetailPIC }) => {
+  const { t } = useTranslation();
   return (
     <TabsContent value="detail-pic" className="space-y-2 bg-neutral-200">
       <LocationSection
-        title="Detail PIC Lokasi Muat"
+        title={t(
+          "TabContentDetailPIC.loadingPICPickup",
+          {},
+          "Detail PIC Lokasi Muat"
+        )}
         locations={dataDetailPIC?.muat || []}
-        locationType="Lokasi Muat"
+        locationType={t(
+          "TabContentDetailPIC.pickupLocation",
+          {},
+          "Lokasi Muat"
+        )}
       />
       <LocationSection
-        title="Detail PIC Lokasi Bongkar"
+        title={t(
+          "TabContentDetailPIC.loadingPICDropoff",
+          {},
+          "Detail PIC Lokasi Bongkar"
+        )}
         locations={dataDetailPIC?.bongkar || []}
-        locationType="Lokasi Bongkar"
+        locationType={t(
+          "TabContentDetailPIC.dropoffLocation",
+          {},
+          "Lokasi Bongkar"
+        )}
       />
     </TabsContent>
   );

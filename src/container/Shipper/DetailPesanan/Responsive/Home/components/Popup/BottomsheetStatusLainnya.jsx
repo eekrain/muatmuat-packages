@@ -27,14 +27,26 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
           className="flex w-full flex-row items-center justify-between text-xs font-semibold text-primary-700"
           onClick={() => setIsOpenOtherStatus(true)}
         >
-          <span>Lihat Status Lainnya</span>
+          <span>
+            {t(
+              "BottomsheetStatusLainnya.buttonViewOtherStatus",
+              {},
+              "Lihat Status Lainnya"
+            )}
+          </span>
           <ChevronRight className="h-4 w-4" />
         </button>
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Status Lainnya</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t(
+              "BottomsheetStatusLainnya.titleOtherStatus",
+              {},
+              "Status Lainnya"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
 
         <div className="flex flex-col gap-4 px-4 pb-6">
