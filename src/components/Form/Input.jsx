@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
 
+import { X } from "lucide-react";
+
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +64,7 @@ const Input = forwardRef(
       supportiveText,
       onChange,
       positiveOnly = false,
+      withReset = false,
       ...props
     },
     ref
@@ -90,6 +93,7 @@ const Input = forwardRef(
                   height={16}
                   width={16}
                   className={cn(
+                    "text-neutral-700",
                     appearance.iconClassName,
                     errorMessage && "text-error-400"
                   )}
@@ -119,7 +123,33 @@ const Input = forwardRef(
               appearance.inputClassName
             )}
           />
-          {icon.right && (
+          {withReset ? (
+            <div className="ml-2 flex items-center">
+              <X
+                onClick={() => {
+                  if (onChange) {
+                    // Create a synthetic event object that mimics the input change event
+                    const syntheticEvent = {
+                      target: {
+                        value: "",
+                        name: name,
+                      },
+                      currentTarget: {
+                        value: "",
+                        name: name,
+                      },
+                    };
+                    onChange(syntheticEvent);
+                  }
+                  // Also clear the input directly if ref is available
+                  if (ref && ref.current) {
+                    ref.current.value = "";
+                  }
+                }}
+                className="h-4 w-4 cursor-pointer text-neutral-700 hover:text-neutral-900"
+              />
+            </div>
+          ) : icon.right ? (
             <div className="ml-2 flex items-center">
               {typeof icon.right === "string" ? (
                 <IconComponent
@@ -128,6 +158,7 @@ const Input = forwardRef(
                   height={16}
                   width={16}
                   className={cn(
+                    "text-neutral-700",
                     appearance.iconClassName,
                     errorMessage && "text-error-400"
                   )}
@@ -136,7 +167,7 @@ const Input = forwardRef(
                 icon.right
               )}
             </div>
-          )}
+          ) : null}
           {text.right && (
             <span className="ml-3 text-sm font-semibold text-neutral-900 md:text-xs md:font-medium">
               {text.right}

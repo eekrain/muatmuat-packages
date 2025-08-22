@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
@@ -54,10 +56,19 @@ const OrderWithAdditionalCost = () => {
           </div>
           <div className="flex min-w-[230px] max-w-[230px] flex-col gap-y-3">
             <span className="text-xs font-bold">{idrFormat(900000)}</span>
-            <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
-              <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
-              <span>Lama Belum Dibayarkan : 2 Hari</span>
-            </div>
+            {false ? (
+              <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
+                <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
+                <span>Lama Belum Dibayarkan : 2 Hari</span>
+              </div>
+            ) : null}
+            {true ? (
+              <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
+                <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
+                <span>Tanggal Pembayaran : 04 Jan 2025 18:00 WIB</span>
+                <span>Opsi Pembayaran : Kartu Kredit</span>
+              </div>
+            ) : null}
           </div>
           <div className="w-[415px]">
             <MuatBongkarStepperWithModal
@@ -67,25 +78,30 @@ const OrderWithAdditionalCost = () => {
               pickupLocations={[
                 {
                   fullAddress:
-                    "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+                    // "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+                    "Kota Surabaya, Kec. Tegalsari Tegalsari Tegalsari",
                 },
               ]}
               dropoffLocations={[
                 {
                   fullAddress:
-                    "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+                    // "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+                    "Kota Pasuruan, Kec. Klojen",
                 },
                 {
                   fullAddress:
-                    "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang",
+                    // "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang",
+                    "Kota Pasuruan, Kec. Klojen",
                 },
               ]}
             />
           </div>
         </div>
-        <Button className="px-6" variant="muattrans-primary" onClick={() => {}}>
-          Detail
-        </Button>
+        <Link href={`/laporan/tambahan-biaya/123/detail-tambahan-biaya`}>
+          <Button className="px-6" variant="muattrans-primary">
+            Detail
+          </Button>
+        </Link>
       </div>
     </>
   );

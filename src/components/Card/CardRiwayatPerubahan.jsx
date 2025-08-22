@@ -6,7 +6,51 @@ import {
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
-const Root = ({ title = "Detail Perubahan", className, children }) => {
+// import { Collapsible, CollapsibleTrigger } from "@/components/Collapsible";
+// import IconComponent from "@/components/IconComponent/IconComponent";
+
+const Root = ({ title = "Riwayat Aktivitas", children }) => {
+  return (
+    <div className="w-full rounded-xl bg-white p-6 shadow-md">
+      <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>
+
+      <div className="relative mt-6 rounded-xl border border-neutral-400 p-4">
+        <div className="absolute bottom-4 left-6 top-4 w-px border-l-2 border-dashed border-neutral-400" />
+        <div className="flex flex-col gap-6">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+const Item = ({ isActive, timestamp, actor, action, children }) => {
+  return (
+    <div className="relative z-10 flex items-start gap-3">
+      <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-neutral-300">
+        {isActive && (
+          <div className="h-4 w-4 rounded-full bg-muat-trans-primary-400" />
+        )}
+      </div>
+      <div className="flex flex-1 flex-col items-start pt-px">
+        <div className="flex w-full items-center gap-3">
+          <p className="w-[124px] flex-shrink-0 text-xs font-medium text-neutral-600">
+            {timestamp}
+          </p>
+          <p className="flex-1 text-xs font-medium text-neutral-900">
+            <span className="font-semibold">{actor}</span> {action}
+          </p>
+        </div>
+
+        <div className="relative w-full pl-[136px]">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+const ContentPerubahan = ({
+  title = "Detail Perubahan",
+  className,
+  children,
+}) => {
   return (
     <Collapsible
       defaultOpen
@@ -77,7 +121,7 @@ const ChangeDetailColumn = ({ label, children }) => (
   </div>
 );
 
-const PerubahanDriver = ({ isFirst, timestamp, oldDriver, newDriver }) => {
+const ItemPerubahanDriver = ({ isFirst, timestamp, before, after }) => {
   return (
     <ChangeSection
       iconSrc="/icons/card-perubahan/driver.svg"
@@ -87,32 +131,32 @@ const PerubahanDriver = ({ isFirst, timestamp, oldDriver, newDriver }) => {
     >
       <ChangeDetailColumn label="Driver Awal">
         <img
-          src={oldDriver.picture}
-          alt={`Driver ${oldDriver.name}`}
-          className="h-12 w-12 rounded-lg border border-neutral-400 object-cover"
+          src={before.picture}
+          alt={`Driver ${before.name}`}
+          className="h-12 w-12 flex-shrink-0 rounded-lg border border-neutral-400 object-cover"
         />
-        <p className="text-xs font-bold text-neutral-900">{oldDriver.name}</p>
+        <p className="text-xs font-bold text-neutral-900">{before.name}</p>
       </ChangeDetailColumn>
       <div className="w-px self-stretch bg-neutral-400" />
       <ChangeDetailColumn label="Driver Baru">
         <img
-          src={newDriver.picture}
-          alt={`Driver ${newDriver.name}`}
-          className="h-12 w-12 rounded-lg border border-neutral-400 object-cover"
+          src={after.picture}
+          alt={`Driver ${after.name}`}
+          className="h-12 w-12 flex-shrink-0 rounded-lg border border-neutral-400 object-cover"
         />
-        <p className="text-xs font-bold text-neutral-900">{newDriver.name}</p>
+        <p className="text-xs font-bold text-neutral-900">{after.name}</p>
       </ChangeDetailColumn>
     </ChangeSection>
   );
 };
 
-const PerubahanArmada = ({ isFirst, timestamp, oldArmada, newArmada }) => {
-  const ArmadaInfo = ({ picture, plate, driverName }) => (
+const ItemPerubahanArmada = ({ isFirst, timestamp, before, after }) => {
+  const ArmadaInfo = ({ picture, plate, name }) => (
     <>
       <img
         src={picture}
         alt={`Armada ${plate}`}
-        className="h-12 w-12 rounded-lg border border-neutral-400 object-cover"
+        className="h-12 w-12 flex-shrink-0 rounded-lg border border-neutral-400 object-cover"
       />
       <div className="flex h-12 flex-col justify-between text-xs text-neutral-900">
         <p className="font-bold">{plate}</p>
@@ -123,7 +167,7 @@ const PerubahanArmada = ({ isFirst, timestamp, oldArmada, newArmada }) => {
             height={16}
             className="flex-shrink-0 text-neutral-700"
           />
-          <p className="font-medium">{driverName}</p>
+          <p className="font-medium">{name}</p>
         </div>
       </div>
     </>
@@ -138,22 +182,29 @@ const PerubahanArmada = ({ isFirst, timestamp, oldArmada, newArmada }) => {
     >
       <ChangeDetailColumn label="Armada Awal">
         <ArmadaInfo
-          picture={oldArmada.picture}
-          plate={oldArmada.plate}
-          driverName={oldArmada.driverName}
+          picture={before.picture}
+          plate={before.plate}
+          name={before.name}
         />
       </ChangeDetailColumn>
       <div className="w-px self-stretch bg-neutral-400" />
       <ChangeDetailColumn label="Armada Baru">
         <ArmadaInfo
-          picture={newArmada.picture}
-          plate={newArmada.plate}
-          driverName={newArmada.driverName}
+          picture={after.picture}
+          plate={after.plate}
+          name={after.name}
         />
       </ChangeDetailColumn>
     </ChangeSection>
   );
 };
 
-const CardPerubahan = { Root, PerubahanDriver, PerubahanArmada };
-export default CardPerubahan;
+const CardRiwayatPerubahan = {
+  Root,
+  Item,
+  ContentPerubahan,
+  ItemPerubahanDriver,
+  ItemPerubahanArmada,
+};
+
+export default CardRiwayatPerubahan;

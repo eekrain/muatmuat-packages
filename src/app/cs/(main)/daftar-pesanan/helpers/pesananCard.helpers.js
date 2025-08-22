@@ -97,13 +97,6 @@ export const useGetActionItems = ({
           isLink: true,
           href: `/daftar-pesanan/${order.id}`,
         });
-        if (hasMultipleUnits) {
-          actions.push({
-            label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-            isDestructive: true,
-            onClick: onCancelFleet,
-          });
-        }
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
           isDestructive: true,
@@ -121,26 +114,6 @@ export const useGetActionItems = ({
           isLink: true,
           href: `/daftar-pesanan/${order.id}`,
         });
-        if (order.orderType === "Terjadwal") {
-          actions.push({
-            label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-            isDestructive: true,
-            onClick: onCancelFleet,
-          });
-          actions.push({
-            label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
-            isDestructive: true,
-            onClick: onCancelOrder,
-            disabled: !canCancel,
-          });
-        }
-        break;
-      case ORDER_STATUS.PERLU_ASSIGN_ARMADA:
-        actions.push({
-          label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
-          isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
-        });
         if (hasMultipleUnits) {
           actions.push({
             label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
@@ -148,6 +121,19 @@ export const useGetActionItems = ({
             onClick: onCancelFleet,
           });
         }
+        actions.push({
+          label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
+          isDestructive: true,
+          onClick: onCancelOrder,
+          disabled: !canCancel,
+        });
+        break;
+      case ORDER_STATUS.PERLU_ASSIGN_ARMADA:
+        actions.push({
+          label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
+          isLink: true,
+          href: `/daftar-pesanan/${order.id}`,
+        });
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
           isDestructive: true,
@@ -191,11 +177,13 @@ export const useGetActionItems = ({
           isLink: true,
           href: `/daftar-pesanan/${order.id}`,
         });
-        actions.push({
-          label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
-          isDestructive: true,
-          onClick: onCancelFleet,
-        });
+        if (hasMultipleUnits) {
+          actions.push({
+            label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
+            isDestructive: true,
+            onClick: onCancelFleet,
+          });
+        }
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
           isDestructive: true,
@@ -327,14 +315,16 @@ export const useGetActionItems = ({
         });
         break;
       case ORDER_STATUS.SELESAI:
-        actions.push({
-          label: t(
-            "pesananCard.actionUploadArchive",
-            {},
-            "Unggah Dokumen Arsip"
-          ),
-          onClick: onUploadArchive,
-        });
+        if (order.hasDocumentsUploaded) {
+          actions.push({
+            label: t(
+              "pesananCard.actionUploadArchive",
+              {},
+              "Unggah Dokumen Arsip"
+            ),
+            onClick: onUploadArchive,
+          });
+        }
         actions.push({
           label: t(
             "pesananCard.actionViewReceipt",
@@ -374,14 +364,20 @@ export const useGetActionItems = ({
     }
     return actions;
   }, [
-    order,
     userRole,
+    order.truckCount,
+    order.orderStatus,
+    order.id,
+    order.hasDocumentsUploaded,
+    order.hasReceiptUploaded,
     t,
-    onViewChange,
     onViewFleet,
-    onCancelFleet,
     onCancelOrder,
+    onViewChange,
+    onCancelFleet,
     onViewCancellationReason,
+    onViewArchive,
+    onUploadArchive,
   ]);
 };
 

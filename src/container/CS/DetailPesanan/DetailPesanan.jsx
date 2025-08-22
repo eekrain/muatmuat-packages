@@ -16,7 +16,7 @@ import { TabRiwayatAktivitas } from "./TabRiwayatAktivitas/TabRiwayatAktivitas";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
-  const [activeTab, setActiveTab] = useState("riwayat-aktivitas");
+  const [activeTab, setActiveTab] = useState("lacak-armada");
 
   const { data: dataDetailPesanan } = useGetOrderDetailCS(params.orderId);
 

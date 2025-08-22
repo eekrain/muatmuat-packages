@@ -147,7 +147,7 @@ const LacakArmada = ({ dataOrderDetail }) => {
               />
             ))
           ) : (
-            <div className="flex w-full flex-col items-center justify-center bg-white px-4 py-[60px]">
+            <div className="flex w-full flex-col items-center justify-center bg-white px-4">
               <Image
                 src="/img/daftarprodukicon.png"
                 width={95}
@@ -155,11 +155,11 @@ const LacakArmada = ({ dataOrderDetail }) => {
                 alt="Empty cart"
               />
               <div className="mt-2 font-semibold text-neutral-600">
-                Belum ada perubahan armada
+                Belum ada riwayat perubahan
               </div>
-              <div className="mb-3 text-center text-xs font-medium text-neutral-600">
-                Perubahan armada maupun armada dibatalkan dan armada selesai
-                akan ditampilkan disini
+              <div className="mb-3 max-w-full text-center text-xs font-medium text-neutral-600">
+                Riwayat perubahan armada maupun pembatalan armada akan
+                ditampilkan disini
               </div>
             </div>
           )}

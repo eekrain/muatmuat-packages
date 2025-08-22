@@ -30,10 +30,12 @@ const LaporanTambahanBiaya = ({
   pagination,
   periodHistory,
   filterOptions,
+  hasNoReports,
   lastFilterField,
   onChangeQueryParams,
 }) => {
   const { t } = useTranslation();
+  const isFirstTimer = false;
 
   const [tempSearch, setTempSearch] = useState("");
 
@@ -41,12 +43,12 @@ const LaporanTambahanBiaya = ({
     return [
       {
         value: "active",
-        label: <>Aktif{true ? <span className="ml-1">{`(4)`}</span> : null}</>,
+        label: <>Aktif{true ? <span className="ml-1">{`(1)`}</span> : null}</>,
       },
       {
-        value: "done",
+        value: "completed",
         label: (
-          <>Selesai{true ? <span className="ml-1">{`(1)`}</span> : null}</>
+          <>Selesai{true ? <span className="ml-1">{`(20)`}</span> : null}</>
         ),
       },
     ];
@@ -98,50 +100,69 @@ const LaporanTambahanBiaya = ({
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-y-4 p-6">
       <h1 className="text-xl font-bold">Laporan Tambahan Biaya</h1>
-      <div className="flex items-center justify-between">
-        <Tabs
-          className="flex flex-col gap-y-4"
-          value={activeTab}
-          onValueChange={setActiveTab}
-        >
-          <TabsList className="w-fit justify-start">
-            {tabItems.map((tabItem, key) => (
-              <TabsTriggerWithSeparator
-                key={key}
-                value={tabItem.value}
-                activeColor="primary-700"
-                className="px-6 !text-base text-neutral-900"
-                showSeparator={key !== tabItems.length - 1}
-              >
-                <span className="whitespace-nowrap">{tabItem.label}</span>
-              </TabsTriggerWithSeparator>
-            ))}
-          </TabsList>
-        </Tabs>
-        <div className="flex items-center gap-x-3">
-          <DropdownPeriode
-            // disable
-            // disable={orders.length === 0}
-            options={periodOptions(t)}
-            onSelect={() => {}}
-            recentSelections={recentSelections}
-            value={null}
-            //   onSelect={handleSelectPeriod}
-            //   recentSelections={recentPeriodOptions}
-            //   value={currentPeriodValue}
-          />
-          <Button
-            disabled={reports.length === 0}
-            variant="muattrans-primary"
-            iconLeft="/icons/download16.svg"
-            onClick={() => {}}
+      {isFirstTimer ? null : (
+        <div className="flex items-center justify-between">
+          <Tabs
+            className="flex flex-col gap-y-4"
+            value={activeTab}
+            onValueChange={setActiveTab}
           >
-            Unduh
-          </Button>
+            <TabsList className="w-fit justify-start">
+              {tabItems.map((tabItem, key) => (
+                <TabsTriggerWithSeparator
+                  key={key}
+                  value={tabItem.value}
+                  activeColor="primary-700"
+                  className="px-6 !text-base text-neutral-900"
+                  showSeparator={key !== tabItems.length - 1}
+                >
+                  <span className="whitespace-nowrap">{tabItem.label}</span>
+                </TabsTriggerWithSeparator>
+              ))}
+            </TabsList>
+          </Tabs>
+          {reports.length === 0 ? null : (
+            <div className="flex items-center gap-x-3">
+              <DropdownPeriode
+                // disable
+                // disable={orders.length === 0}
+                options={periodOptions(t)}
+                onSelect={() => {}}
+                recentSelections={recentSelections}
+                value={null}
+                //   onSelect={handleSelectPeriod}
+                //   recentSelections={recentPeriodOptions}
+                //   value={currentPeriodValue}
+              />
+              <Button
+                disabled={reports.length === 0}
+                variant="muattrans-primary"
+                iconLeft="/icons/download16.svg"
+                onClick={() => {}}
+              >
+                Unduh
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      )}
       <Card className="border-none">
-        {reports.length === 0 ? (
+        {isFirstTimer || hasNoReports ? (
+          <div className="flex h-[280px] items-center justify-center">
+            <DataNotFound
+              type="data"
+              title={
+                activeTab === "active"
+                  ? "Belum Ada Laporan Tambahan Biaya"
+                  : "Belum Ada Laporan Tambahan Biaya Selesai"
+              }
+              className="gap-3"
+              textClass="w-full"
+              width={96}
+              height={77}
+            />
+          </div>
+        ) : reports.length === 0 && activeTab === "completed" ? (
           <div className="flex h-[280px] items-center justify-center">
             <DataNotFound
               type="data"
@@ -190,7 +211,7 @@ const LaporanTambahanBiaya = ({
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${reports?.length} Laporan`}
+                  {`Total : ${20 || reports?.length} Laporan`}
                 </span>
               </div>
               {false ? (
@@ -247,7 +268,7 @@ const LaporanTambahanBiaya = ({
       {reports.length > 0 ? (
         <Pagination
           currentPage={1}
-          totalPages={1}
+          totalPages={2}
           perPage={10}
           onPageChange={() => {}}
           onPerPageChange={() => {}}
