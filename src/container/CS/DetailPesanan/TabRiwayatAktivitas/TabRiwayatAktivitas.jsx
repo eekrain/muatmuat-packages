@@ -1,10 +1,8 @@
 // import { Collapsible, CollapsibleTrigger } from "@/components/Collapsible";
 // import IconComponent from "@/components/IconComponent/IconComponent";
+import CardRiwayatPerubahan from "@/components/Card/CardRiwayatPerubahan";
 import { TabsContent } from "@/components/Tabs/Tabs";
 import { formatDate } from "@/lib/utils/dateFormat";
-
-import CardPerubahan from "../../../../components/Card/CardPerubahan";
-import CardRiwayat from "../../../../components/Card/CardRiwayat";
 
 export const activityData = [
   {
@@ -16,26 +14,25 @@ export const activityData = [
     changes: {
       driver: {
         timestamp: "08 Jan 2025 12:00 WIB",
-        awal: {
+        before: {
           name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
           picture: "https://picsum.photos/200?random=21",
         },
-        baru: {
+        after: {
           name: "Yoel Gallagher",
           picture: "https://picsum.photos/200?random=22",
         },
       },
       armada: {
         timestamp: "10 Jan 2025 10:00 WIB",
-        awal: {
+        before: {
           plate: "AE 1111 LBA",
-          driverName:
-            "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra",
+          name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra",
           picture: "https://picsum.photos/200?random=23",
         },
-        baru: {
+        after: {
           plate: "AE 2222 LBA",
-          driverName: "Yoel",
+          name: "Yoel",
           picture: "https://picsum.photos/200?random=24",
         },
       },
@@ -52,9 +49,9 @@ export const activityData = [
 export const TabRiwayatAktivitas = () => {
   return (
     <TabsContent className="flex flex-col gap-y-4" value="riwayat-aktivitas">
-      <CardRiwayat.Root title="Riwayat Aktivitas">
+      <CardRiwayatPerubahan.Root title="Riwayat Aktivitas">
         {activityData.map((item, idx) => (
-          <CardRiwayat.Item
+          <CardRiwayatPerubahan.Item
             key={item.id}
             isActive={idx === 0}
             timestamp={item.timestamp}
@@ -62,27 +59,27 @@ export const TabRiwayatAktivitas = () => {
             action={item.action}
           >
             {item?.changes && (
-              <CardPerubahan.Root className="mt-3">
+              <CardRiwayatPerubahan.ContentPerubahan className="mt-3">
                 {item.changes?.driver && (
-                  <CardPerubahan.PerubahanDriver
+                  <CardRiwayatPerubahan.ItemPerubahanDriver
                     timestamp={item.changes.driver.timestamp}
-                    oldDriver={item.changes.driver.awal}
-                    newDriver={item.changes.driver.baru}
+                    before={item.changes.driver.before}
+                    after={item.changes.driver.after}
                     isFirst={true}
                   />
                 )}
                 {item.changes?.armada && (
-                  <CardPerubahan.PerubahanArmada
+                  <CardRiwayatPerubahan.ItemPerubahanArmada
                     timestamp={item.changes.armada.timestamp}
-                    oldArmada={item.changes.armada.awal}
-                    newArmada={item.changes.armada.baru}
+                    before={item.changes.armada.before}
+                    after={item.changes.armada.after}
                   />
                 )}
-              </CardPerubahan.Root>
+              </CardRiwayatPerubahan.ContentPerubahan>
             )}
-          </CardRiwayat.Item>
+          </CardRiwayatPerubahan.Item>
         ))}
-      </CardRiwayat.Root>
+      </CardRiwayatPerubahan.Root>
     </TabsContent>
   );
 };
