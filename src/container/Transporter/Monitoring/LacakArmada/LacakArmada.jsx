@@ -5,9 +5,11 @@ import { ChevronDown, X } from "lucide-react";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const LacakArmada = ({ onClose, orderId }) => {
+  const { t } = useTranslation();
   const [expandedVehicles, setExpandedVehicles] = useState({});
 
   // Mock data - replace with actual API call using orderId
@@ -203,7 +205,11 @@ const LacakArmada = ({ onClose, orderId }) => {
                         {/* Frame 1171276813 - Left section with "Estimasi Tiba" */}
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium leading-[110%] text-[#7B7B7B]">
-                            Estimasi Tiba di Lokasi Bongkar
+                            {t(
+                              "LacakArmada.estimatedArrival",
+                              {},
+                              "Estimasi Tiba di Lokasi Bongkar"
+                            )}
                           </span>
                           <span className="text-xs font-semibold leading-[110%] text-black">
                             -

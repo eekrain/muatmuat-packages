@@ -8,7 +8,7 @@ import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
-import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
@@ -26,6 +26,7 @@ const DaftarArmada = ({
   onFleetClick,
   onOpenRiwayatSOS,
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
@@ -41,22 +42,71 @@ const DaftarArmada = ({
   // State untuk mengontrol buka/tutup popover filter
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  // State untuk parameter API
+  const [apiParams, setApiParams] = useState({
+    page: 1,
+    limit: 50,
+    sort: "asc",
+    filter: "",
+    search: null,
+    fleetId: null,
+  });
+
+  // Map filter values to API format
+  const mapFilterToAPI = (filters) => {
+    const mapping = {
+      ON_DUTY: "onDuty",
+      WAITING_LOADING_TIME: "WaitingLoadingTime",
+      READY_FOR_ORDER: "ReadyForOrder",
+      INACTIVE: "inactive",
+      NOT_PAIRED: "notPaired",
+      NEEDS_RESPONSE: "needResponse",
+    };
+
+    return filters.map((filter) => mapping[filter] || filter);
+  };
+
+  // Update API parameters when filters or search change
+  const updateApiParams = () => {
+    const allFilters = [
+      ...mapFilterToAPI(truckStatusFilter),
+      ...mapFilterToAPI(orderStatusFilter),
+    ];
+
+    const newParams = {
+      page: 1,
+      limit: 50,
+      sort: "asc",
+      filter: allFilters.join(","),
+      search: searchTerm || null,
+      fleetId: selectedFleetId,
+    };
+
+    console.log("Updating API params:", newParams); // Debug log
+    setApiParams(newParams);
+  };
+
+  // Update API params when dependencies change
+  useEffect(() => {
+    updateApiParams();
+  }, [truckStatusFilter, orderStatusFilter, searchTerm, selectedFleetId]);
+
+  console.log("Calling useGetFleetList with params:", apiParams); // Debug log
+
   const {
     data: fleetData,
     isLoading,
     error,
     mutate: refetchFleets,
-  } = useGetFleetList({
-    search: searchTerm,
-    sosOnly: activeTab === "sos",
-    truckStatus: truckStatusFilter,
-    orderStatus: orderStatusFilter,
-  });
+  } = useGetFleetList(apiParams);
 
   const fleets = fleetData?.fleets || [];
   const totalFleets = fleetData?.pagination?.totalFleets || fleets.length;
   const sosCount = fleetData?.filter?.sos || 0;
   const hasFilterData = fleetData?.filter;
+
+  console.log("DaftarArmada received fleetData:", fleetData); // Debug log
+  console.log("DaftarArmada filter counts:", fleetData?.filter); // Debug log
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
 
   // Variabel boolean untuk menentukan apakah ada filter yang aktif
@@ -129,8 +179,32 @@ const DaftarArmada = ({
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
-    refetchFleets(); // Memicu pengambilan data ulang dengan filter baru
     setIsPopoverOpen(false); // Menutup popover setelah filter diterapkan
+  };
+
+  // Function to update pagination
+  const handlePageChange = (newPage) => {
+    setApiParams((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  // Function to update limit
+  const handleLimitChange = (newLimit) => {
+    setApiParams((prev) => ({
+      ...prev,
+      limit: newLimit,
+      page: 1, // Reset to first page when changing limit
+    }));
+  };
+
+  // Function to update sort
+  const handleSortChange = (newSort) => {
+    setApiParams((prev) => ({
+      ...prev,
+      sort: newSort,
+    }));
   };
 
   const handleFleetCardClick = (fleet) => {
@@ -170,8 +244,10 @@ const DaftarArmada = ({
       <div className="px-4">
         <div className="pb-3">
           <h2 className="text-[14px] font-bold text-gray-900">
-            Daftar Armada{" "}
-            <span className="font-semibold">({totalFleets} Armada)</span>
+            {t("DaftarArmada.title", {}, "Daftar Armada")}{" "}
+            <span className="font-semibold">
+              ({totalFleets} {t("DaftarArmada.fleetUnit", {}, "Armada")})
+            </span>
           </h2>
         </div>
       </div>
@@ -180,7 +256,11 @@ const DaftarArmada = ({
       <div className="mb-4 px-4">
         <div className="flex gap-3">
           <Search
-            placeholder="Cari No. Polisi / Nama Driver"
+            placeholder={t(
+              "DaftarArmada.searchPlaceholder",
+              {},
+              "Cari No. Polisi / Nama Driver"
+            )}
             onSearch={setSearchTerm}
             autoSearch={true}
             debounceTime={300}
@@ -194,6 +274,8 @@ const DaftarArmada = ({
               isPopoverOpen={isPopoverOpen}
               onOpenChange={setIsPopoverOpen}
               isFilterActive={isFilterActive}
+              currentTruckFilters={truckStatusFilter}
+              currentOrderFilters={orderStatusFilter}
             />
           )}
         </div>
@@ -210,7 +292,7 @@ const DaftarArmada = ({
             }`}
             onClick={() => setActiveTab("sos")}
           >
-            SOS ({sosCount})
+            {t("DaftarArmada.sosTab", { count: sosCount }, `SOS (${sosCount})`)}
             {/* Notifikasi dot bisa ditambahkan logika tambahan jika diperlukan */}
             <NotificationDot
               size="sm"
@@ -227,7 +309,11 @@ const DaftarArmada = ({
             }`}
             onClick={() => setActiveTab("all")}
           >
-            Semua ({totalFleets})
+            {t(
+              "DaftarArmada.allTab",
+              { count: totalFleets },
+              `Semua (${totalFleets})`
+            )}
           </button>
         </div>
       )}
@@ -237,15 +323,23 @@ const DaftarArmada = ({
         {isLoading ? (
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-            <span className="ml-2 text-gray-600">Loading fleet data...</span>
+            <span className="ml-2 text-gray-600">
+              {t("DaftarArmada.loadingFleet", {}, "Loading fleet data...")}
+            </span>
           </div>
         ) : error ? (
           <div className="flex h-32 items-center justify-center">
             <div className="text-center">
               <AlertTriangle className="mx-auto mb-2 h-8 w-8 text-red-500" />
-              <p className="text-sm text-red-600">Failed to load fleet data</p>
+              <p className="text-sm text-red-600">
+                {t(
+                  "DaftarArmada.errorLoadingFleet",
+                  {},
+                  "Failed to load fleet data"
+                )}
+              </p>
               <p className="mt-1 text-xs text-gray-500">
-                Please try again later
+                {t("DaftarArmada.tryAgainLater", {}, "Please try again later")}
               </p>
             </div>
           </div>
@@ -257,8 +351,16 @@ const DaftarArmada = ({
                 truckStatusFilter.length > 0 ||
                 orderStatusFilter.length > 0 ||
                 activeTab === "sos"
-                  ? "Data Tidak Ditemukan. Mohon coba hapus beberapa filter"
-                  : "Keyword Tidak Ditemukan"
+                  ? t(
+                      "DaftarArmada.dataNotFoundWithFilter",
+                      {},
+                      "Data Tidak Ditemukan. Mohon coba hapus beberapa filter"
+                    )
+                  : t(
+                      "DaftarArmada.keywordNotFound",
+                      {},
+                      "Keyword Tidak Ditemukan"
+                    )
               }
             />
           </div>
@@ -300,7 +402,7 @@ const DaftarArmada = ({
           vehicleId={selectedFleet.fleetId}
           vehiclePlate={selectedFleet.licensePlate}
           currentDriverId={selectedFleet.driver?.id || null}
-          title="Pilih Driver"
+          title={t("DaftarArmada.selectDriverTitle", {}, "Pilih Driver")}
           closeButtonClassName={"[&_svg]:text-primary-700"}
         />
       )}

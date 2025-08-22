@@ -1,21 +1,70 @@
 // referensi : https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=827-101729&t=NgdDLUIPMZQKBhuh-4
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { toast } from "@/lib/toast";
+import { cancelOrder } from "@/services/Transporter/daftar-pesanan/detail-pesanan/cancelOrder";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 import AlertProsesCariArmada from "./components/AlertProsesCariArmada";
 import AlertResponPerubahan from "./components/AlertResponPerubahan";
 
+// import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
+// import { ModalFooter } from "@/components/Modal/Modal";
+
 const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   // Nanti disesuaikan Lagi
   const pathname = usePathname();
+  const [isCancelling, setIsCancelling] = useState(false);
+  // const [showCancelModal, setShowCancelModal] = useState(false);
 
   const segments = pathname.replace(/\/+$/, "").split("/");
   const root = `/${segments[1] || ""}`;
   const isMonitoring = root === "/monitoring";
   const router = useRouter();
+
+  const handleCancelOrder = async () => {
+    if (!dataOrderDetail?.orderId) {
+      toast.error("Order ID tidak ditemukan");
+      return;
+    }
+
+    setIsCancelling(true);
+    // setShowCancelModal(false);
+
+    try {
+      const result = await cancelOrder(dataOrderDetail.orderId, {
+        reason: "Dibatalkan oleh transporter",
+      });
+
+      if (result.success) {
+        const invoiceNumber =
+          dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode;
+        toast.success(`Berhasil membatalkan pesanan ${invoiceNumber}`);
+
+        // Refresh the page or redirect
+        router.refresh();
+      } else {
+        toast.error(result.message || "Gagal membatalkan pesanan");
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      toast.error("Terjadi kesalahan saat membatalkan pesanan");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  // const openCancelModal = () => {
+  //   setShowCancelModal(true);
+  // };
+
+  // const closeCancelModal = () => {
+  //   setShowCancelModal(false);
+  // };
+
   return (
     <div>
       <div className="flex h-6 items-center justify-between">
@@ -58,33 +107,16 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
               Unduh DO
             </Button>
           ) : null}
-          {[
-            // Referensi: LDN-333
-            // Harusnya Ada Case Button "unduh Batalkan" Pesanan tidak muncul untuk SCHEDULED_FLEET. referensi :
-            ORDER_STATUS.SCHEDULED_FLEET,
-            // Referensi: LDN-334
-            ORDER_STATUS.NEED_ASSIGN_FLEET,
-            // Referensi: LDN-336
-            ORDER_STATUS.NEED_CONFIRMATION_READY,
-            // Referensi: LDN-337
-            ORDER_STATUS.NEED_CHANGE_RESPONSE,
-            ORDER_STATUS.CONFIRMED,
-          ].includes(dataOrderDetail?.orderStatus) &&
-            dataOrderDetail?.orderStatus !== ORDER_STATUS.HEADING_TO_LOADING &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.DOCUMENT_PREPARATION &&
-            dataOrderDetail?.orderStatus !== ORDER_STATUS.DOCUMENT_DELIVERY &&
-            dataOrderDetail?.orderStatus !== ORDER_STATUS.COMPLETED &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.CANCELLED_BY_TRANSPORTER &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.CANCELLED_BY_SHIPPER &&
-            dataOrderDetail?.orderStatus !==
-              ORDER_STATUS.CANCELLED_BY_SYSTEM && (
-              <Button variant="muatparts-error-secondary" onClick={() => {}}>
-                Batalkan Pesanan
-              </Button>
-            )}
+          {dataOrderDetail?.isCancellable && (
+            <Button
+              variant="muatparts-error-secondary"
+              onClick={handleCancelOrder}
+              disabled={isCancelling}
+              loading={isCancelling}
+            >
+              {isCancelling ? "Membatalkan..." : "Batalkan Pesanan"}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -97,6 +129,46 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
       {dataOrderDetail?.orderStatus === ORDER_STATUS.WAITING_CHANGE_FLEET && (
         <AlertProsesCariArmada />
       )}
+
+      {/* Cancel Order Confirmation Modal */}
+      {/* <Modal open={showCancelModal} onOpenChange={closeCancelModal}>
+        <ModalContent>
+          <ModalHeader>
+            <h2 className="text-lg font-semibold text-neutral-900">
+              Konfirmasi Pembatalan Pesanan
+            </h2>
+          </ModalHeader>
+          <div>
+            <p className="text-sm text-neutral-600">
+              Apakah Anda yakin ingin membatalkan pesanan{" "}
+              <span className="font-semibold">
+                {dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode}
+              </span>
+              ?
+            </p>
+            <p className="mt-2 text-xs text-neutral-500">
+              Tindakan ini tidak dapat dibatalkan.
+            </p>
+          </div> {/* Tidak sesuai desain karena tidak ada desainnya, jadi kalau kamu dapat task ini tinggal sesuaikan saja*/}
+      {/* <ModalFooter>
+            <Button
+              variant="muatparts-neutral-secondary"
+              onClick={closeCancelModal}
+              disabled={isCancelling}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="muatparts-error"
+              onClick={handleCancelOrder}
+              disabled={isCancelling}
+              loading={isCancelling}
+            >
+              {isCancelling ? "Membatalkan..." : "Ya, Batalkan Pesanan"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal> */}
     </div>
   );
 };

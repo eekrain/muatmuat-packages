@@ -52,6 +52,7 @@ const Dropdown = ({
   isError = false,
   minWidth = false,
   position,
+  listItemClassName,
 }) => {
   const [errorMessage, setErrorMessage] = useState(false);
 
@@ -154,7 +155,7 @@ const Dropdown = ({
       <ul className={`${style.listOptions} `}>
         {searchBy.map((val, index) => (
           <li
-            className={`${style.list} select-none`}
+            className={`${style.list} select-none ${listItemClassName || ""}`}
             key={index}
             onClick={(e) => {
               if (!isMultipleSelected) {
@@ -175,20 +176,24 @@ const Dropdown = ({
               }
             }}
           >
-            {isMultipleSelected && (
-              <Checkbox
-                className={style.checkBox}
-                label=""
-                value={val.value}
-                checked={selected.filter((a) => a.value === val.value).length}
-              />
-            )}
-            <span className={style.content}>
-              {val?.title && (
-                <span className="font-[600] leading-[14px]">{val?.title}</span>
+            <div className="flex items-center gap-2">
+              {isMultipleSelected && (
+                <Checkbox
+                  className={style.checkBox}
+                  label=""
+                  value={val.value}
+                  checked={selected.filter((a) => a.value === val.value).length}
+                />
               )}
-              <span className="line-clamp-2 font-[500]">{val?.name}</span>
-            </span>
+              <span className={style.content}>
+                {val?.title && (
+                  <span className="font-[600] leading-[14px]">
+                    {val?.title}
+                  </span>
+                )}
+                <span className="line-clamp-2 font-[500]">{val?.name}</span>
+              </span>
+            </div>
             {!!selected.filter((a) => a.value === val.value).length &&
               !isMultipleSelected && (
                 <span className="h-4 w-4">
@@ -201,14 +206,14 @@ const Dropdown = ({
           <>
             <span
               onClick={onClickTextOther}
-              className={`${style.list} hover:unset cursor-default select-none border-y border-neutral-400`}
+              className={`${style.list} hover:unset cursor-default select-none border-y border-neutral-400 ${listItemClassName || ""}`}
             >
               {optionsOtherText ? optionsOtherText : "Opsi Lainnya"}
             </span>
             {optionsOther?.map((val) => {
               return (
                 <li
-                  className={`${style.list} ter select-none`}
+                  className={`${style.list} ter select-none ${listItemClassName || ""}`}
                   key={val.name}
                   onClick={(e) => {
                     if (!isMultipleSelected) {
@@ -229,24 +234,26 @@ const Dropdown = ({
                     }
                   }}
                 >
-                  {isMultipleSelected && (
-                    <Checkbox
-                      className={style.checkBox}
-                      label=""
-                      value={val.value}
-                      checked={
-                        selected.filter((a) => a.value === val.value).length
-                      }
-                    />
-                  )}
-                  <span className={style.content}>
-                    {val?.title && (
-                      <span className="font-[600] leading-[14px]">
-                        {val?.title}
-                      </span>
+                  <div className="flex items-center gap-2">
+                    {isMultipleSelected && (
+                      <Checkbox
+                        className={style.checkBox}
+                        label=""
+                        value={val.value}
+                        checked={
+                          selected.filter((a) => a.value === val.value).length
+                        }
+                      />
                     )}
-                    <span className="font-[500]">{val?.name}</span>
-                  </span>
+                    <span className={style.content}>
+                      {val?.title && (
+                        <span className="font-[600] leading-[14px]">
+                          {val?.title}
+                        </span>
+                      )}
+                      <span className="font-[500]">{val?.name}</span>
+                    </span>
+                  </div>
                 </li>
               );
             })}
@@ -399,4 +406,5 @@ Dropdown.propTypes = {
   fixedPlaceholder: PropTypes.bool,
   isError: PropTypes.bool,
   onClick: PropTypes.func,
+  listItemClassName: PropTypes.string,
 };

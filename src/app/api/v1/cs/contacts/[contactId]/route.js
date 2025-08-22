@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { contactData } from "./mockData";
 
 export async function GET(request, { params }) {
-  const { contactId } = params;
+  const { contactId } = await params;
 
   const data = contactData[contactId];
 

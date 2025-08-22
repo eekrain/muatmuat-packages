@@ -9,11 +9,13 @@ import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatu
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetOrdersMultiFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getOrdersMultiFleetTracking";
 import { getTrackingStatusBadge } from "@/utils/Transporter/trackingStatus";
 
 const LihatPosisiArmada = ({ onClose, orderId }) => {
+  const { t } = useTranslation();
   const [expandedVehicles, setExpandedVehicles] = useState({});
 
   // Fetch multi-fleet tracking data
@@ -27,9 +29,20 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
   };
 
   const breadcrumbData = [
-    { name: "Monitoring", href: "/monitoring" },
-    { name: "Detail Pesanan" },
-    { name: "Lihat Posisi Armada" },
+    {
+      name: t("LihatPosisiArmada.breadcrumb.monitoring", {}, "Monitoring"),
+      href: "/monitoring",
+    },
+    {
+      name: t("LihatPosisiArmada.breadcrumb.orderDetail", {}, "Detail Pesanan"),
+    },
+    {
+      name: t(
+        "LihatPosisiArmada.breadcrumb.viewFleetPosition",
+        {},
+        "Lihat Posisi Armada"
+      ),
+    },
   ];
 
   return (
@@ -42,7 +55,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
         <button
           onClick={onClose}
           className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-neutral-100"
-          aria-label="Tutup panel"
+          aria-label={t("LihatPosisiArmada.closePanel", {}, "Tutup panel")}
         >
           <IconComponent
             src="/icons/arrow-left24.svg"
@@ -50,14 +63,16 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
           />
         </button>
         <h1 className="text-base font-bold text-neutral-900">
-          Lihat Posisi Armada
+          {t("LihatPosisiArmada.title", {}, "Lihat Posisi Armada")}
         </h1>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
-            <div className="text-sm text-neutral-500">Loading...</div>
+            <div className="text-sm text-neutral-500">
+              {t("LihatPosisiArmada.loading", {}, "Loading...")}
+            </div>
           </div>
         ) : (
           <div className="space-y-4">

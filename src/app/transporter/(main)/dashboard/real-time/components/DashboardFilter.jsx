@@ -240,10 +240,7 @@ const DashboardFilter = ({
                         onChange={(e) =>
                           handleSearchChange(category.key, e.target.value)
                         }
-                        placeholder={searchPlaceholder.replace(
-                          "{category}",
-                          category.label || ""
-                        )}
+                        placeholder={category.searchPlaceholder}
                         icon={{
                           left: (
                             <IconComponent

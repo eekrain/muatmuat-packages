@@ -3,77 +3,139 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 
 import { OrderStatusTitle } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { useGetFleetTrackingCS } from "@/services/CS/monitoring/detail-pesanan-cs/getFleetTracking";
+import { useGetAvailableTransportersCS } from "@/services/CS/monitoring/detail-pesanan-cs/getAvailableTransportersCS";
+import { useGetFleetTrackingCS } from "@/services/CS/monitoring/detail-pesanan-cs/getFleetTrackingCS";
 
 const Context = createContext(null);
 
 export const LacakArmadaProvider = ({ children }) => {
   const params = useParams();
-  const { data } = useGetFleetTrackingCS(params.orderId);
 
-  // State for managing filter selections
+  // --- API CALLS ---
+  const { data: fleetTrackingData } = useGetFleetTrackingCS(params.orderId);
+  const { data: availableTransporters } = useGetAvailableTransportersCS(
+    params.orderId
+  );
+
+  // --- STATE MANAGEMENT ---
+  const [isEdit, setIsEdit] = useState(false);
+  const [assignments, setAssignments] = useState({});
   const [selectedTransporters, setSelectedTransporters] = useState(new Set());
   const [selectedStatuses, setSelectedStatuses] = useState(new Set());
   const [transporterSearchQuery, setTransporterSearchQuery] = useState("");
   const [searchInputValue, setSearchInputValue] = useState("");
   const [mainSearchQuery, setMainSearchQuery] = useState("");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [changeSummary, setChangeSummary] = useState(null);
 
-  // Calculate total armada by summing all fleets from all transporters
-  const totalArmada =
-    data?.reduce((total, transporter) => {
-      return total + (transporter?.fleets?.length || 0);
-    }, 0) || 0;
-
-  // Calculate total SOS by checking sosStatus in each fleet of each transporter
-  const totalSos =
-    data?.reduce((total, transporter) => {
-      const sosCount =
-        transporter?.fleets?.filter((fleet) => fleet?.sosStatus?.hasSOS)
-          ?.length || 0;
-      return total + sosCount;
-    }, 0) || 0;
-
-  const filterOptions = useMemo(() => {
-    const transporter = data?.map((item) => ({
-      label: item?.companyName,
-      value: item?.transporterId,
-    }));
-
-    const status = new Set();
-    data?.forEach((element) => {
-      element?.fleets?.forEach((fleet) => {
-        status.add(fleet?.orderStatus);
+  // --- EFFECTS ---
+  useEffect(() => {
+    if (isEdit && fleetTrackingData) {
+      const initialAssignments = {};
+      fleetTrackingData.forEach((transporter, transporterIndex) => {
+        const unassignedCount =
+          transporter.fleetsOrdered - (transporter.fleets?.length || 0);
+        if (unassignedCount > 0) {
+          for (let i = 0; i < unassignedCount; i++) {
+            const unassignedId = `${transporter.transporterId}-${transporterIndex}-unassigned-${i}`;
+            initialAssignments[unassignedId] = {
+              type: "SAME_TRANSPORTER",
+              transporterId: null,
+            };
+          }
+        }
       });
+      setAssignments(initialAssignments);
+    } else {
+      setAssignments({});
+    }
+  }, [isEdit, fleetTrackingData]);
+
+  const handleAssignmentChange = useCallback((unassignedId, newValue) => {
+    setAssignments((prev) => ({
+      ...prev,
+      [unassignedId]: newValue,
+    }));
+  }, []);
+
+  const handleSaveChanges = () => {
+    const summary = {
+      oldTransporters: [],
+      newTransporters: [],
+      blastCount: 0,
+    };
+
+    const oldTransporterMap = new Map();
+    const newTransporterMap = new Map();
+
+    Object.entries(assignments).forEach(([key, value]) => {
+      const keyParts = key.split("-");
+      const transporterId = keyParts.slice(0, 5).join("-");
+      const transporterIndex = parseInt(keyParts[5], 10);
+      const uniqueMapKey = `${transporterId}-${transporterIndex}`;
+      const oldTransporter = fleetTrackingData[transporterIndex];
+
+      if (!oldTransporter) return;
+
+      const processOldTransporter = () => {
+        if (!oldTransporterMap.has(uniqueMapKey)) {
+          oldTransporterMap.set(uniqueMapKey, {
+            name: oldTransporter.companyName,
+            logo: oldTransporter.companyPicture,
+            phone: oldTransporter.companyPhone,
+            units: 0,
+          });
+        }
+        oldTransporterMap.get(uniqueMapKey).units++;
+      };
+
+      if (value.type === "REBLAST") {
+        summary.blastCount += 1;
+        processOldTransporter();
+      }
+
+      if (value.type === "CHOOSE_TRANSPORTER" && value.transporterId) {
+        processOldTransporter();
+        const newTransporter = availableTransporters.find(
+          (t) => t.value === value.transporterId
+        );
+
+        if (newTransporter && !newTransporterMap.has(newTransporter.value)) {
+          newTransporterMap.set(newTransporter.value, {
+            ...newTransporter,
+            units: 0,
+          });
+        }
+        if (newTransporter) newTransporterMap.get(newTransporter.value).units++;
+      }
     });
 
-    return {
-      transporter,
-      status: [...status].map((status) => ({
-        label: OrderStatusTitle[status],
-        value: status,
-      })),
-    };
-  }, [data]);
+    summary.oldTransporters = Array.from(oldTransporterMap.values());
+    summary.newTransporters = Array.from(newTransporterMap.values());
 
-  // Filtered transporters based on search query
-  const filteredTransporters = useMemo(() => {
-    if (!transporterSearchQuery.trim()) {
-      return filterOptions.transporter || [];
-    }
+    setChangeSummary(summary);
+    setIsConfirmModalOpen(true);
+  };
 
-    return (filterOptions.transporter || []).filter((transporter) =>
-      transporter.label
-        ?.toLowerCase()
-        .includes(transporterSearchQuery.toLowerCase())
+  const executeSaveChanges = () => {
+    console.log(
+      "CONFIRMED: Saving changes for unassigned fleets:",
+      assignments
     );
-  }, [filterOptions.transporter, transporterSearchQuery]);
+    alert("Perubahan telah dikirim! (Lihat console untuk detail)");
+    setIsConfirmModalOpen(false);
+    setIsEdit(false);
+    setChangeSummary(null);
+  };
 
-  // Filter functions
+  // --- FILTER HANDLERS ---
+
   const toggleTransporterFilter = (transporterId) => {
     setSelectedTransporters((prev) => {
       const newSet = new Set(prev);
@@ -103,7 +165,6 @@ export const LacakArmadaProvider = ({ children }) => {
     setSelectedStatuses(new Set());
   };
 
-  // Individual remove filter functions
   const removeTransporterFilter = useCallback((transporterId) => {
     setSelectedTransporters((prev) => {
       const newSet = new Set(prev);
@@ -120,11 +181,53 @@ export const LacakArmadaProvider = ({ children }) => {
     });
   }, []);
 
-  // Get applied filters with labels for display
+  // --- DERIVED STATE & MEMOS ---
+  const totalArmada =
+    fleetTrackingData?.reduce((total, transporter) => {
+      return total + (transporter?.fleets?.length || 0);
+    }, 0) || 0;
+
+  const totalSos =
+    fleetTrackingData?.reduce((total, transporter) => {
+      const sosCount =
+        transporter?.fleets?.filter((fleet) => fleet?.sosStatus?.hasSOS)
+          ?.length || 0;
+      return total + sosCount;
+    }, 0) || 0;
+
+  const filterOptions = useMemo(() => {
+    const transporter = fleetTrackingData?.map((item) => ({
+      label: item?.companyName,
+      value: item?.transporterId,
+    }));
+    const status = new Set();
+    fleetTrackingData?.forEach((element) => {
+      element?.fleets?.forEach((fleet) => {
+        status.add(fleet?.orderStatus);
+      });
+    });
+    return {
+      transporter,
+      status: [...status].map((s) => ({
+        label: OrderStatusTitle[s],
+        value: s,
+      })),
+    };
+  }, [fleetTrackingData]);
+
+  const filteredTransporters = useMemo(() => {
+    if (!transporterSearchQuery.trim()) {
+      return filterOptions.transporter || [];
+    }
+    return (filterOptions.transporter || []).filter((transporter) =>
+      transporter.label
+        ?.toLowerCase()
+        .includes(transporterSearchQuery.toLowerCase())
+    );
+  }, [filterOptions.transporter, transporterSearchQuery]);
+
   const appliedFilters = useMemo(() => {
     const filters = [];
-
-    // Add selected transporters
     selectedTransporters.forEach((transporterId) => {
       const transporter = filterOptions.transporter?.find(
         (t) => t.value === transporterId
@@ -138,8 +241,6 @@ export const LacakArmadaProvider = ({ children }) => {
         });
       }
     });
-
-    // Add selected statuses
     selectedStatuses.forEach((status) => {
       const statusOption = filterOptions.status?.find(
         (s) => s.value === status
@@ -153,7 +254,6 @@ export const LacakArmadaProvider = ({ children }) => {
         });
       }
     });
-
     return filters;
   }, [
     selectedTransporters,
@@ -163,30 +263,22 @@ export const LacakArmadaProvider = ({ children }) => {
     removeStatusFilter,
   ]);
 
-  // Check if any filters are active
   const hasActiveFilters =
     selectedTransporters.size > 0 || selectedStatuses.size > 0;
-
-  // Check if search is active
   const hasActiveSearch = mainSearchQuery.trim().length > 0;
 
-  // Filtered data based on selected filters (without search)
   const filteredDataByFilters = useMemo(() => {
     if (!hasActiveFilters) {
-      return data || [];
+      return fleetTrackingData || [];
     }
-
-    return (data || [])
+    return (fleetTrackingData || [])
       .map((transporter) => {
-        // If transporter filter is active and this transporter is not selected, exclude it
         if (
           selectedTransporters.size > 0 &&
           !selectedTransporters.has(transporter.transporterId)
         ) {
           return { ...transporter, fleets: [] };
         }
-
-        // Filter fleets by status if status filter is active
         if (selectedStatuses.size > 0) {
           const filteredFleets =
             transporter.fleets?.filter((fleet) =>
@@ -194,24 +286,23 @@ export const LacakArmadaProvider = ({ children }) => {
             ) || [];
           return { ...transporter, fleets: filteredFleets };
         }
-
         return transporter;
       })
       .filter((transporter) => {
-        // Remove transporters with no fleets if transporter filter is not active
-        // or if they have at least one fleet
         return selectedTransporters.size === 0 || transporter.fleets.length > 0;
       });
-  }, [data, selectedTransporters, selectedStatuses, hasActiveFilters]);
+  }, [
+    fleetTrackingData,
+    selectedTransporters,
+    selectedStatuses,
+    hasActiveFilters,
+  ]);
 
-  // Final data with search applied
   const finalData = useMemo(() => {
     if (!mainSearchQuery.trim() || !filteredDataByFilters) {
       return filteredDataByFilters;
     }
-
     const searchLower = mainSearchQuery.toLowerCase();
-
     return filteredDataByFilters
       .map((transporter) => {
         const filteredFleets = transporter.fleets.filter((fleet) => {
@@ -221,7 +312,6 @@ export const LacakArmadaProvider = ({ children }) => {
             transporter.companyName?.toLowerCase().includes(searchLower)
           );
         });
-
         return {
           ...transporter,
           fleets: filteredFleets,
@@ -229,7 +319,7 @@ export const LacakArmadaProvider = ({ children }) => {
       })
       .filter((transporter) => transporter.fleets.length > 0);
   }, [mainSearchQuery, filteredDataByFilters]);
-  // Check if search has no results
+
   const hasNoSearchResults = useMemo(() => {
     return (
       hasActiveSearch &&
@@ -242,40 +332,42 @@ export const LacakArmadaProvider = ({ children }) => {
     );
   }, [hasActiveSearch, finalData]);
 
-  const [isEdit, setIsEdit] = useState(false);
+  // --- CONTEXT VALUE ---
+  const value = {
+    data: fleetTrackingData,
+    isEdit,
+    setIsEdit,
+    assignments,
+    handleAssignmentChange,
+    handleSaveChanges,
+    availableTransporters: availableTransporters || [],
+    isConfirmModalOpen,
+    setIsConfirmModalOpen,
+    changeSummary,
+    executeSaveChanges,
+    filteredDataByFilters,
+    totalArmada,
+    totalSos,
+    filterOptions,
+    filteredTransporters,
+    selectedTransporters,
+    selectedStatuses,
+    transporterSearchQuery,
+    setTransporterSearchQuery,
+    searchInputValue,
+    setSearchInputValue,
+    mainSearchQuery,
+    setMainSearchQuery,
+    toggleTransporterFilter,
+    toggleStatusFilter,
+    clearAllFilters,
+    appliedFilters,
+    hasActiveFilters,
+    hasActiveSearch,
+    hasNoSearchResults,
+  };
 
-  return (
-    <Context.Provider
-      value={{
-        totalArmada,
-        totalSos,
-        data: finalData,
-        filteredDataByFilters,
-        filterOptions,
-        filteredTransporters,
-        selectedTransporters,
-        selectedStatuses,
-        transporterSearchQuery,
-        setTransporterSearchQuery,
-        searchInputValue,
-        setSearchInputValue,
-        mainSearchQuery,
-        setMainSearchQuery,
-        toggleTransporterFilter,
-        toggleStatusFilter,
-        clearAllFilters,
-        appliedFilters,
-        hasActiveFilters,
-        hasActiveSearch,
-        hasNoSearchResults,
-
-        isEdit,
-        setIsEdit,
-      }}
-    >
-      {children}
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export const useLacakArmadaContext = () => {

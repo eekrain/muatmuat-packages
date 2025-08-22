@@ -7,6 +7,7 @@ import { Modal, ModalContent } from "@/components/Modal";
 import { ModalTitle, ModalTrigger } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 const RingkasanPendapatanAktif = ({ dataOrderDetail }) => {
   const [showDetail, setShowDetail] = useState(false);
@@ -59,7 +60,8 @@ const RingkasanPendapatanAktif = ({ dataOrderDetail }) => {
                   dataOrderDetail?.incomeSummary.totalRouteChange
                 )}
               />
-              {dataOrderDetail?.orderStatus === "CANCELLED_TRANSPORTER" && (
+              {dataOrderDetail?.orderStatus ===
+                ORDER_STATUS.CANCELLED_BY_TRANSPORTER && (
                 <>
                   <CardPayment.LineItem
                     label={"Nominal Bantuan Tambahan"}
@@ -123,12 +125,12 @@ const RingkasanPendapatanAktif = ({ dataOrderDetail }) => {
                                 <div className="flex w-full items-center justify-between gap-2">
                                   <p className="text-xs font-semibold text-neutral-900">
                                     <span className="font-bold">
-                                      {dataOrderDetail?.vehicle?.plateNumber ||
-                                        "B 1234 XYZ"}
+                                      {dataOrderDetail?.fleets?.[0]
+                                        ?.licensePlate || "B 1234 XYZ"}
                                     </span>{" "}
                                     -{" "}
-                                    {dataOrderDetail?.driver?.name ||
-                                      "Budi Santoso"}
+                                    {dataOrderDetail?.fleets?.[0]?.driver
+                                      ?.name || "Budi Santoso"}
                                   </p>
                                   <p className="text-xs font-medium text-error-400">
                                     -Rp400.000

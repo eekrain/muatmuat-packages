@@ -335,6 +335,7 @@ const PesananAktifTab = ({
           {},
           "Daftar Pesanan Aktif Masih Kosong"
         )}
+        subtitle=""
         className="h-[500px] !shadow-none"
       />
     );

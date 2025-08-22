@@ -511,17 +511,17 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
               {/* Status & Actions */}
               <div className="flex w-fit flex-col items-end gap-2">
                 <SimpleDropdown>
-                  <SimpleDropdownTrigger asChild>
+                  <SimpleDropdownTrigger asChild className="group">
                     {viewMode !== "default" ? (
                       <button className="rounded-md p-1 hover:bg-neutral-100">
                         <MoreVertical className="h-5 w-5 text-neutral-900" />
                       </button>
                     ) : (
-                      <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-400 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+                      <button className="group flex h-8 items-center justify-between gap-2 rounded-md border border-neutral-400 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none aria-[expanded=true]:border-primary-700">
                         <span className="text-xs font-medium leading-tight text-black">
                           {t("pesananCard.action", {}, "Aksi")}
                         </span>
-                        <ChevronDown className="h-3 w-3 text-neutral-700" />
+                        <ChevronDown className="h-3 w-3 text-neutral-700 transition-transform duration-200 group-aria-[expanded=true]:rotate-180" />
                       </button>
                     )}
                   </SimpleDropdownTrigger>
@@ -620,13 +620,24 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
           text: "Ya, Batalkan",
           onClick: () => {
             closeModal("confirmCancelOrder");
-            toast.success(
-              `Berhasil membatalkan pesanan ${order.orderCode} - ${order.transporter.name}`
-            );
+            openModal("cancelOrderReason");
           },
           classname:
             "border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
         }}
+      />
+      <CancelReasonModal
+        isOpen={modalState.cancelOrderReason}
+        onClose={() => closeModal("cancelOrderReason")}
+        onSubmit={(reason) => {
+          console.log("Cancelling order with reason:", reason);
+          toast.success(
+            `Berhasil membatalkan pesanan ${order.orderCode} - ${order.transporter.name}`
+          );
+          closeModal("cancelOrderReason");
+        }}
+        title="Masukkan Alasan Pembatalan"
+        placeholder="Masukkan alasan pembatalan pesanan"
       />
       <ConfirmationModal
         isOpen={modalState.confirmCancelFleet}

@@ -63,10 +63,21 @@ const DaftarPesananPage = () => {
     () => [
       { name: t("daftarPesanan.periodAll", {}, "Semua Periode"), value: "" },
       { name: t("daftarPesanan.periodToday", {}, "Hari Ini"), value: 0 },
-      { name: t("daftarPesanan.period7Days", {}, "7 Hari Terakhir"), value: 7 },
       {
-        name: t("daftarPesanan.period30Days", {}, "30 Hari Terakhir"),
+        name: t("daftarPesanan.periodWeek", {}, "1 Minggu Terakhir"),
+        value: 7,
+      },
+      {
+        name: t("daftarPesanan.periodMonth", {}, "30 Hari Terakhir"),
         value: 30,
+      },
+      {
+        name: t("daftarPesanan.period3Month", {}, "90 Hari Terakhir"),
+        value: 90,
+      },
+      {
+        name: t("daftarPesanan.periodYear", {}, "1 Tahun Terakhir"),
+        value: 365,
       },
     ],
     [t]
@@ -90,7 +101,10 @@ const DaftarPesananPage = () => {
   const disableDownloadButton = isLoading || !hasData;
   const disableUploadButton = isLoading || !hasData;
   const disablePeriodButton =
-    isLoading || (!hasData && lastAction !== "period");
+    isLoading ||
+    (!hasData &&
+      lastAction !== "period" &&
+      period?.value === periodOptions?.[0]?.value);
 
   const renderEmpty = () => {
     if (isEmptyState) {
