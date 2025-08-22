@@ -1,3 +1,5 @@
+import { useRouter } from "next/navigation";
+
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -8,6 +10,7 @@ const TransporterEmptyStates = ({
   showSearchNotFoundState,
   showFilterNotFoundState,
 }) => {
+  const router = useRouter();
   if (error) {
     return (
       <div className="flex h-[280px] w-full flex-col items-center justify-center">
@@ -25,6 +28,7 @@ const TransporterEmptyStates = ({
       <div className="flex h-[280px] w-full flex-col items-center justify-center">
         <DataNotFound type="data" title="Belum ada Transporter" />
         <Button
+          onClick={() => router.push("/user/add")}
           iconLeft={
             <IconComponent
               src="/icons/plus16.svg"
