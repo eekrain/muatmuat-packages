@@ -7,6 +7,7 @@ import { Alert } from "./Alert";
 import { AppliedFilterBubbles } from "./AppliedFilterBubbles";
 import { Content } from "./Content";
 import { Filter } from "./Filter";
+import { ModalKonfirmasiPerubahanPesanan } from "./ModalKonfirmasiPerubahanPesanan";
 import { LacakArmadaProvider, useLacakArmadaContext } from "./use-lacak-armada";
 
 export const TabLacakArmada = (props) => {
@@ -25,9 +26,14 @@ export const Inner = () => {
     setMainSearchQuery,
     searchInputValue,
     setSearchInputValue,
-
     isEdit,
     setIsEdit,
+    handleSaveChanges,
+
+    isConfirmModalOpen,
+    setIsConfirmModalOpen,
+    changeSummary,
+    executeSaveChanges,
   } = useLacakArmadaContext();
 
   const handleSearchKeyPress = (e) => {
@@ -39,9 +45,7 @@ export const Inner = () => {
   return (
     <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
       <Alert />
-
-      <div className="min flex w-full max-w-[1200px] flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
-        {/* Card Header */}
+      <div className="flex w-full max-w-[1200px] flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
         <div
           className={cn(
             "flex items-center justify-between gap-6",
@@ -83,13 +87,12 @@ export const Inner = () => {
                 <Filter />
               </div>
             )}
-
             {data?.length > 0 && !isEdit ? (
               <div className="flex items-center gap-3">
                 <Button
                   variant="muattrans-primary-secondary"
                   className="h-8 min-w-[160px] !rounded-full !text-sm"
-                  onClick={() => setIsEdit((prev) => !prev)}
+                  onClick={() => setIsEdit(true)}
                 >
                   Ubah Transporter
                 </Button>
@@ -105,32 +108,32 @@ export const Inner = () => {
                 <Button
                   variant="muattrans-error-secondary"
                   className="h-8 w-[105px] !rounded-full !text-sm"
-                  onClick={() => setIsEdit((prev) => !prev)}
+                  onClick={() => setIsEdit(false)}
                 >
                   Batalkan
                 </Button>
                 <Button
                   variant="muattrans-primary"
                   className="h-8 w-[112px] !rounded-full !text-sm"
+                  onClick={handleSaveChanges}
                 >
                   Simpan
                 </Button>
               </div>
             ) : null}
           </div>
-
           <AppliedFilterBubbles />
         </div>
-
         <Content />
       </div>
 
-      {false && (
-        <div>
-          totalSos: {totalSos}
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
-      )}
+      <ModalKonfirmasiPerubahanPesanan
+        open={isConfirmModalOpen}
+        onOpenChange={setIsConfirmModalOpen}
+        changes={changeSummary}
+        onConfirm={executeSaveChanges}
+        onCancel={() => setIsConfirmModalOpen(false)}
+      />
     </TabsContent>
   );
 };

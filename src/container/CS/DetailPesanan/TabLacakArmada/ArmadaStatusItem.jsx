@@ -4,10 +4,6 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { useTranslation } from "@/hooks/use-translation";
 import { getStatusDriverMetadataCS } from "@/lib/normalizers/CS/getStatusDriverMetadata";
 
-/**
- * Renders a single armada status item.
- * This is a sub-component used by LacakArmadaCard.
- */
 export const ArmadaStatusItem = ({ item }) => {
   const { t } = useTranslation();
   const status = getStatusDriverMetadataCS({
@@ -30,7 +26,6 @@ export const ArmadaStatusItem = ({ item }) => {
           )}
         </div>
       )}
-
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
@@ -51,7 +46,6 @@ export const ArmadaStatusItem = ({ item }) => {
             </div>
           </div>
         </div>
-
         <div className="w-[742px] pr-4 text-center text-neutral-500">
           <StepperContainer
             activeIndex={item?.stepStatus?.activeIndex || 0}
