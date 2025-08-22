@@ -29,7 +29,14 @@ const LoginPage = () => {
   const LoginSchema = v.object({
     emailOrPhone: v.pipe(
       v.string(),
-      v.minLength(1, "No. Whatsapp / Email wajib diisi"),
+      v.minLength(
+        1,
+        t(
+          "LoginPage.errorEmailRequired",
+          {},
+          "No. Whatsapp / Email wajib diisi"
+        )
+      ),
       v.email(t("LoginPage.errorEmailInvalid", {}, "Format email tidak valid."))
     ),
     password: v.pipe(
