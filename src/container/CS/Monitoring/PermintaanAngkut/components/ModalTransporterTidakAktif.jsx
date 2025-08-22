@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 // ++ ADDED: useMemo
 
 import Button from "@/components/Button/Button";
@@ -29,6 +30,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
   const { data, isLoading } = useGetInactiveTransporter();
   const allTransporters = data?.transporters || [];
   const [searchValue, setSearchValue] = useState("");
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // FIXED: Removed useState and useEffect for filteredTransporters.
   // Instead, derive the filtered list directly using useMemo to prevent infinite loops.
@@ -68,7 +70,9 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${showHubungiModal ? "hidden" : ""}`}
+      >
         <div className="relative h-[460px] w-[600px] rounded-xl bg-white p-6 shadow-lg">
           <div className="mb-4 flex items-center justify-center">
             <h2 className="text-[16px] font-bold text-neutral-900">
@@ -138,6 +142,10 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
                       <Button
                         variant="muattrans-primary-secondary"
                         className="h-8 w-[90px] rounded-full text-sm font-semibold"
+                        onClick={() => {
+                          setShowHubungiModal(true);
+                          setSelectedTransporter(transporter);
+                        }}
                       >
                         Hubungi
                       </Button>
@@ -166,6 +174,12 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
           onSelesaikan={() => setShowDetailModal(false)}
         />
       )}
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={selectedTransporter || null}
+      />
     </>
   );
 };

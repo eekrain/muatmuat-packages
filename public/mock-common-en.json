@@ -1531,5 +1531,17 @@
   "RiwayatTransporterTidakAktif.download": "Download",
   "RiwayatTransporterTidakAktif.error": "An error occurred while loading data. Please try again.",
   "RiwayatTransporterTidakAktif.searchPlaceholder": "Search Transporter",
-  "RiwayatTransporterTidakAktif.totalCountLabel": "Report"
+  "RiwayatTransporterTidakAktif.totalCountLabel": "Report",
+  "permintaanAngkutCS.toastInfoSearchMinChars": "Please enter at least 3 characters to search.",
+  "permintaanAngkutCS.titlePageHeader": "Transport Service Request",
+  "permintaanAngkutCS.buttonInactiveTransporter": "Inactive Transporter",
+  "permintaanAngkutCS.placeholderSearchRequest": "Search Transport Service Request",
+  "permintaanAngkutCS.tabAll": "All",
+  "permintaanAngkutCS.tabInstant": "Instant",
+  "permintaanAngkutCS.tabScheduled": "Scheduled",
+  "permintaanAngkutCS.tabHalalLogistics": "Halal Logistics",
+  "permintaanAngkutCS.textLoadingRequests": "Loading requests...",
+  "permintaanAngkutCS.textNoRequestsTitle": "Oops, there are no transport service requests yet",
+  "permintaanAngkutCS.textNoRequestsSubtitle": "No shipper has created a transport service request yet",
+  "permintaanAngkutCS.textKeywordNotFound": "Keyword Not Found"
 }

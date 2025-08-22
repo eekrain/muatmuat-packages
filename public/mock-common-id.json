@@ -1530,5 +1530,17 @@
   "RiwayatTransporterTidakAktif.download": "Unduh",
   "RiwayatTransporterTidakAktif.error": "Terjadi kesalahan saat memuat data. Silakan coba lagi.",
   "RiwayatTransporterTidakAktif.searchPlaceholder": "Cari Transporter ",
-  "RiwayatTransporterTidakAktif.totalCountLabel": "Laporan"
+  "RiwayatTransporterTidakAktif.totalCountLabel": "Laporan",
+  "permintaanAngkutCS.toastInfoSearchMinChars": "Masukkan minimal 3 karakter untuk melakukan pencarian.",
+  "permintaanAngkutCS.titlePageHeader": "Permintaan Jasa Angkut",
+  "permintaanAngkutCS.buttonInactiveTransporter": "Transporter Tidak Aktif",
+  "permintaanAngkutCS.placeholderSearchRequest": "Cari Permintaan Jasa Angkut",
+  "permintaanAngkutCS.tabAll": "Semua",
+  "permintaanAngkutCS.tabInstant": "Instan",
+  "permintaanAngkutCS.tabScheduled": "Terjadwal",
+  "permintaanAngkutCS.tabHalalLogistics": "Halal Logistik",
+  "permintaanAngkutCS.textLoadingRequests": "Memuat permintaan...",
+  "permintaanAngkutCS.textNoRequestsTitle": "Oops, belum ada permintaan jasa angkut",
+  "permintaanAngkutCS.textNoRequestsSubtitle": "Belum ada shipper yang membuat permintaan jasa angkut",
+  "permintaanAngkutCS.textKeywordNotFound": "Keyword Tidak Ditemukan"
 }

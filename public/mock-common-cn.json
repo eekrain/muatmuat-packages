@@ -1379,5 +1379,17 @@
   "RiwayatTransporterTidakAktif.download": "下载",
   "RiwayatTransporterTidakAktif.error": "加载数据时发生错误。请重试。",
   "RiwayatTransporterTidakAktif.searchPlaceholder": "搜索运输商",
-  "RiwayatTransporterTidakAktif.totalCountLabel": "报告"
+  "RiwayatTransporterTidakAktif.totalCountLabel": "报告",
+  "permintaanAngkutCS.toastInfoSearchMinChars": "请输入至少3个字符进行搜索。",
+  "permintaanAngkutCS.titlePageHeader": "运输服务请求",
+  "permintaanAngkutCS.buttonInactiveTransporter": "非活跃运输商",
+  "permintaanAngkutCS.placeholderSearchRequest": "搜索运输服务请求",
+  "permintaanAngkutCS.tabAll": "全部",
+  "permintaanAngkutCS.tabInstant": "即时",
+  "permintaanAngkutCS.tabScheduled": "预定",
+  "permintaanAngkutCS.tabHalalLogistics": "清真物流",
+  "permintaanAngkutCS.textLoadingRequests": "正在加载请求...",
+  "permintaanAngkutCS.textNoRequestsTitle": "哎呀，暂无运输服务请求",
+  "permintaanAngkutCS.textNoRequestsSubtitle": "尚无托运人创建运输服务请求",
+  "permintaanAngkutCS.textKeywordNotFound": "未找到关键词"
 }
