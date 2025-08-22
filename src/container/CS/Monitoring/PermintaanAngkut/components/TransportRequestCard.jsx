@@ -8,6 +8,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -23,18 +24,13 @@ const TransportRequestCard = ({
   onUnderstand,
   onShowDetail,
 }) => {
-  // FIXED: Removed the local 'isSaved' state and the useEffect that synchronized it.
-  // The 'isBookmarked' prop is now the single source of truth.
-
+  const { t } = useTranslation();
   const [showDetail, setShowDetail] = useState(false);
   const [showModalTransporter, setShowModalTransporter] = useState(false);
   const [showModalDisimpan, setShowModalDisimpan] = useState(false);
   const [showModalDilihat, setShowModalDilihat] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
 
-  // FIXED: The handleSave function no longer manages local state.
-  // It now calculates the intended new state based on the 'isBookmarked' prop
-  // and tells the parent component to update.
   const handleSave = () => {
     const newSavedState = !isBookmarked;
     if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
@@ -105,7 +101,7 @@ const TransportRequestCard = ({
     const absSec = Math.abs(seconds);
     const days = Math.floor(absSec / 86400);
     if (days > 0) {
-      return `${seconds < 0 ? "-" : ""}${days} Hari`;
+      return `${seconds < 0 ? "-" : ""}${t("TransportRequestCard.timeDays", { days }, "{days} Hari")}`;
     }
     const hours = Math.floor((absSec % 86400) / 3600);
     const minutes = Math.floor((absSec % 3600) / 60);
@@ -119,29 +115,6 @@ const TransportRequestCard = ({
       seconds < 0 ? "-" : ""
     }${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
-
-  let loadTimeText = request.loadTimeText;
-  let loadTimeColor = "bg-primary-50 text-primary-700";
-  if (request.loadTimeStart && request.shipperInfo?.createdAt) {
-    const createdAt = new Date(request.shipperInfo.createdAt);
-    const muatDate = new Date(request.loadTimeStart);
-    createdAt.setHours(0, 0, 0, 0);
-    muatDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.round((muatDate - createdAt) / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) {
-      loadTimeText = "Muat Hari Ini";
-      loadTimeColor = "bg-success-50 text-success-400";
-    } else if (diffDays === 1) {
-      loadTimeText = "Muat Besok";
-      loadTimeColor = "bg-success-50 text-success-400";
-    } else if (diffDays >= 2 && diffDays <= 5) {
-      loadTimeText = `Muat ${diffDays} Hari Lagi`;
-      loadTimeColor = "bg-warning-100 text-warning-900";
-    } else if (diffDays > 5) {
-      loadTimeText = `Muat ${diffDays} Hari Lagi`;
-      loadTimeColor = "bg-primary-50 text-primary-700";
-    }
-  }
 
   // The rest of the component remains the same...
   return (
@@ -176,7 +149,11 @@ const TransportRequestCard = ({
                     )}
                   />
                   <p className="cursor-pointer text-xs font-medium text-primary-700">
-                    Hubungi Shipper
+                    {t(
+                      "TransportRequestCard.buttonContactShipper",
+                      {},
+                      "Hubungi Shipper"
+                    )}
                   </p>
                   <HubungiModal
                     isOpen={showHubungiModal}
@@ -197,10 +174,29 @@ const TransportRequestCard = ({
                   const diffHour = Math.floor(diffMin / 60);
                   const diffDay = Math.floor(diffHour / 24);
 
-                  if (diffDay > 0) return `${diffDay} Hari yang lalu`;
-                  if (diffHour > 0) return `${diffHour} Jam yang lalu`;
-                  if (diffMin > 0) return `${diffMin} Menit yang lalu`;
-                  return `${diffSec} Detik yang lalu`;
+                  if (diffDay > 0)
+                    return t(
+                      "TransportRequestCard.timeDaysAgo",
+                      { days: diffDay },
+                      "{days} Hari yang lalu"
+                    );
+                  if (diffHour > 0)
+                    return t(
+                      "TransportRequestCard.timeHoursAgo",
+                      { hours: diffHour },
+                      "{hours} Jam yang lalu"
+                    );
+                  if (diffMin > 0)
+                    return t(
+                      "TransportRequestCard.timeMinutesAgo",
+                      { minutes: diffMin },
+                      "{minutes} Menit yang lalu"
+                    );
+                  return t(
+                    "TransportRequestCard.timeSecondsAgo",
+                    { seconds: diffSec },
+                    "{seconds} Detik yang lalu"
+                  );
                 })()}
               </p>
               <p className="text-xs font-semibold text-neutral-900">
@@ -208,7 +204,11 @@ const TransportRequestCard = ({
               </p>
               {request.reblast !== "1" && (
                 <p className="text-xs text-gray-600">
-                  Permintaan ke-{request.reblast}
+                  {t(
+                    "TransportRequestCard.labelRequestNumber",
+                    { number: request.reblast },
+                    "Permintaan ke-{number}"
+                  )}
                 </p>
               )}
             </div>
@@ -228,7 +228,9 @@ const TransportRequestCard = ({
                       : "bg-primary-50 text-primary-700"
                 )}
               >
-                {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
+                {request.orderType === "INSTANT"
+                  ? t("TransportRequestCard.labelInstant", {}, "Instan")
+                  : t("TransportRequestCard.labelScheduled", {}, "Terjadwal")}
               </span>
               {(() => {
                 const createdAt = request.shipperInfo?.createdAt;
@@ -257,16 +259,32 @@ const TransportRequestCard = ({
                 let label = "";
                 let colorClass = "";
                 if (diffDays === 0) {
-                  label = "Muat Hari Ini";
+                  label = t(
+                    "TransportRequestCard.labelLoadToday",
+                    {},
+                    "Muat Hari Ini"
+                  );
                   colorClass = "bg-success-50 text-success-400";
                 } else if (diffDays === 1) {
-                  label = "Muat Besok";
+                  label = t(
+                    "TransportRequestCard.labelLoadTomorrow",
+                    {},
+                    "Muat Besok"
+                  );
                   colorClass = "bg-success-50 text-success-400";
                 } else if (diffDays >= 2 && diffDays <= 5) {
-                  label = `Muat ${diffDays} Hari`;
+                  label = t(
+                    "TransportRequestCard.labelLoadInDays",
+                    { days: diffDays },
+                    "Muat {days} Hari Lagi"
+                  );
                   colorClass = "bg-warning-100 text-warning-900";
                 } else if (diffDays > 5) {
-                  label = `Muat ${diffDays} Hari`;
+                  label = t(
+                    "TransportRequestCard.labelLoadInDays",
+                    { days: diffDays },
+                    "Muat {days} Hari Lagi"
+                  );
                   colorClass = "bg-primary-50 text-primary-700";
                 } else {
                   label = "-";
@@ -292,7 +310,11 @@ const TransportRequestCard = ({
                       : "bg-error-50 text-error-400"
                   )}
                 >
-                  Potensi Overload
+                  {t(
+                    "TransportRequestCard.labelPotentialOverload",
+                    {},
+                    "Potensi Overload"
+                  )}
                 </span>
               )}
               {request.isHalalLogistics && (
@@ -316,11 +338,12 @@ const TransportRequestCard = ({
                       />
                     </div>
                   }
-                >
-                  Memerlukan pengiriman
-                  <br />
-                  dengan sertifikasi halal logistik
-                </InfoTooltip>
+                  render={t(
+                    "TransportRequestCard.infoTooltipHalalLogistics",
+                    {},
+                    "Memerlukan pengiriman<br />dengan sertifikasi halal logistik"
+                  )}
+                />
               )}
             </div>
           </div>
@@ -332,13 +355,21 @@ const TransportRequestCard = ({
                   {
                     fullAddress: request.locations?.pickupLocations?.[0]
                       ? `${request.locations.pickupLocations[0].city}, ${request.locations.pickupLocations[0].district}`
-                      : "Lokasi Muat",
+                      : t(
+                          "TransportRequestCard.labelPickupLocation",
+                          {},
+                          "Lokasi Muat"
+                        ),
                     type: "pickup",
                   },
                   {
                     fullAddress: request.locations?.dropoffLocations?.[0]
                       ? `${request.locations.dropoffLocations[0].city}, ${request.locations.dropoffLocations[0].district}`
-                      : "Lokasi Bongkar",
+                      : t(
+                          "TransportRequestCard.labelDropoffLocation",
+                          {},
+                          "Lokasi Bongkar"
+                        ),
                     type: "dropoff",
                   },
                 ].map((location, index) => (
@@ -366,7 +397,11 @@ const TransportRequestCard = ({
             </div>
             <div className="text-right">
               <div className="text-[12px] font-medium text-neutral-600">
-                Estimasi Jarak
+                {t(
+                  "TransportRequestCard.labelEstimatedDistance",
+                  {},
+                  "Estimasi Jarak"
+                )}
               </div>
               <div
                 className={cn(
@@ -389,12 +424,16 @@ const TransportRequestCard = ({
               />
               <div className="flex-1">
                 <div className="text-xs font-medium text-neutral-600">
-                  Informasi Muatan (Total :{" "}
-                  {formatWeight(
-                    request.cargo?.items?.[0]?.weight || 0,
-                    request.cargo?.items?.[0]?.weightUnit || "kg"
+                  {t(
+                    "TransportRequestCard.titleCargoInformationTotal",
+                    {
+                      weight: formatWeight(
+                        request.cargo?.items?.[0]?.weight || 0,
+                        request.cargo?.items?.[0]?.weightUnit || "kg"
+                      ),
+                    },
+                    "Informasi Muatan (Total : {weight})"
                   )}
-                  )
                 </div>
                 <div
                   className={cn(
@@ -416,13 +455,21 @@ const TransportRequestCard = ({
                               cursor: "pointer",
                             }}
                           >
-                            +{request.cargo.additionalItems} lainnya
+                            {t(
+                              "TransportRequestCard.labelAdditionalItems",
+                              { count: request.cargo.additionalItems },
+                              "+{count} lainnya"
+                            )}
                           </span>
                         }
                       >
                         <div className="text-sm">
                           <div className="mb-2 font-medium">
-                            Informasi Muatan
+                            {t(
+                              "TransportRequestCard.titleCargoInformation",
+                              {},
+                              "Informasi Muatan"
+                            )}
                           </div>
                           <div className="space-y-1">
                             {request.cargo.items
@@ -456,7 +503,11 @@ const TransportRequestCard = ({
               />
               <div className="flex-1">
                 <div className="text-xs font-medium text-neutral-600">
-                  Kebutuhan Armada
+                  {t(
+                    "TransportRequestCard.labelFleetRequirement",
+                    {},
+                    "Kebutuhan Armada"
+                  )}
                 </div>
                 <div
                   className={cn(
@@ -464,8 +515,15 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.vehicle?.truckCount} Unit (
-                  {request.vehicle?.truckType} - {request.vehicle?.carrierType})
+                  {t(
+                    "TransportRequestCard.labelFleetDetails",
+                    {
+                      count: request.vehicle?.truckCount,
+                      truckType: request.vehicle?.truckType,
+                      carrierType: request.vehicle?.carrierType,
+                    },
+                    "{count} Unit ({truckType} - {carrierType})"
+                  )}
                 </div>
               </div>
             </div>
@@ -478,7 +536,7 @@ const TransportRequestCard = ({
               />
               <div className="flex-1">
                 <div className="text-xs font-medium text-neutral-600">
-                  Waktu Muat
+                  {t("TransportRequestCard.labelLoadTime", {}, "Waktu Muat")}
                 </div>
                 <div
                   className={cn(
@@ -498,7 +556,17 @@ const TransportRequestCard = ({
               onClick={() => setShowDetail((prev) => !prev)}
             >
               <span className="text-xs font-medium text-primary-700">
-                {showDetail ? "Sembunyikan" : "Lihat Selengkapnya"}
+                {showDetail
+                  ? t(
+                      "TransportRequestCard.buttonHideDetails",
+                      {},
+                      "Sembunyikan"
+                    )
+                  : t(
+                      "TransportRequestCard.buttonShowDetails",
+                      {},
+                      "Lihat Selengkapnya"
+                    )}
               </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -519,7 +587,11 @@ const TransportRequestCard = ({
             </div>
             <div className="flex flex-col items-end">
               <span className="text-[10px] text-neutral-600">
-                Potensi Pendapatan
+                {t(
+                  "TransportRequestCard.labelPotentialIncome",
+                  {},
+                  "Potensi Pendapatan"
+                )}
               </span>
               <span className="text-[12px] font-bold text-primary-700">
                 {request.pricing?.potentialIncome
@@ -551,7 +623,11 @@ const TransportRequestCard = ({
                     : "text-neutral-600"
                 )}
               >
-                {request.counters?.available ?? 0} Transporter Tersedia
+                {t(
+                  "TransportRequestCard.labelAvailableTransporters",
+                  { count: request.counters?.available ?? 0 },
+                  "{count} Transporter Tersedia"
+                )}
               </span>
             </div>
             {showModalTransporter && (
@@ -575,7 +651,11 @@ const TransportRequestCard = ({
                     : "text-neutral-600"
                 )}
               >
-                {request.counters?.viewed ?? 0} Dilihat
+                {t(
+                  "TransportRequestCard.labelViewed",
+                  { count: request.counters?.viewed ?? 0 },
+                  "{count} Dilihat"
+                )}
               </span>
             </div>
             {showModalDilihat && (
@@ -601,7 +681,11 @@ const TransportRequestCard = ({
                     : "text-neutral-600"
                 )}
               >
-                {request.counters?.saved ?? 0} Disimpan
+                {t(
+                  "TransportRequestCard.labelSaved",
+                  { count: request.counters?.saved ?? 0 },
+                  "{count} Disimpan"
+                )}
               </span>
             </div>
             {showModalDisimpan && (
@@ -617,14 +701,18 @@ const TransportRequestCard = ({
                 className="h-8 w-[180px] rounded-[24px] px-4 text-[14px] font-semibold"
                 onClick={handleDetail}
               >
-                Detail
+                {t("TransportRequestCard.buttonDetail", {}, "Detail")}
               </Button>
               <Button
                 variant="muattrans-warning"
                 className="h-8 w-[180px] rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
                 onClick={handleAccept}
               >
-                Assign Transporter
+                {t(
+                  "TransportRequestCard.buttonAssignTransporter",
+                  {},
+                  "Assign Transporter"
+                )}
               </Button>
             </>
           </div>
@@ -639,7 +727,11 @@ const TransportRequestCard = ({
               color: "#EE4343",
             }}
           >
-            Permintaan sudah diambil transporter lain
+            {t(
+              "TransportRequestCard.alertRequestTaken",
+              {},
+              "Permintaan sudah diambil transporter lain"
+            )}
           </div>
           <div
             className="absolute bottom-6 left-3 z-10 flex h-8 w-[270px] cursor-pointer items-center justify-center rounded-[24px] bg-[#FFC217] px-4 text-[14px] font-semibold hover:bg-[#F9A307]"
@@ -649,7 +741,7 @@ const TransportRequestCard = ({
             }}
             onClick={handleUnderstand}
           >
-            Mengerti
+            {t("TransportRequestCard.buttonUnderstand", {}, "Mengerti")}
             <NotificationDot
               position="absolute"
               positionClasses="right-[1px] top-[-1px]"
