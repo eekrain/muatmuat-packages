@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { AlertTriangle, Loader2, X } from "lucide-react";
+import { AlertTriangle, Loader2, SlidersHorizontal, X } from "lucide-react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
@@ -39,7 +39,47 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
     order: [],
     transporter: [],
   });
+  const [tempFilterValues, setTempFilterValues] = useState({
+    truck: [],
+    order: [],
+    transporter: [],
+  });
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
+
+  // Initialize tempFilterValues with current filterValues on first render
+  useEffect(() => {
+    setTempFilterValues(filterValues);
+  }, []); // Only run once on mount
+
+  // Keep track of draft values that persist between popover opens
+  const [draftFilterValues, setDraftFilterValues] = useState({
+    truck: [],
+    order: [],
+    transporter: [],
+  });
+
+  // Sync temporary values when popover opens
+  useEffect(() => {
+    if (isFilterPopoverOpen) {
+      // Use draft values if they exist, otherwise use current filter values
+      if (
+        draftFilterValues.transporter.length > 0 ||
+        draftFilterValues.truck.length > 0 ||
+        draftFilterValues.order.length > 0
+      ) {
+        setTempFilterValues(draftFilterValues);
+      } else {
+        setTempFilterValues(filterValues);
+      }
+    }
+  }, [isFilterPopoverOpen, filterValues, draftFilterValues]);
+
+  // Check if any filter is active
+  const isFilterActive = useMemo(() => {
+    return Object.values(filterValues).some((value) =>
+      Array.isArray(value) ? value.length > 0 : Boolean(value)
+    );
+  }, [filterValues]);
 
   // Fetch active SOS data using getListSOSData API
   const {
@@ -77,18 +117,51 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
     return [...activeSosItems, ...historySosItems];
   }, [activeSosItems, historySosItems]);
 
-  // Fungsi filter berdasarkan pencarian
+  // Fungsi filter berdasarkan pencarian dan filter values
   const filterFn = (fleet) => {
-    if (!searchTerm) return true;
+    // Filter berdasarkan search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const searchMatch =
+        (fleet.licensePlate || "").toLowerCase().includes(searchLower) ||
+        (fleet?.driver?.fullName || "").toLowerCase().includes(searchLower) ||
+        (fleet?.transporter?.companyName || "")
+          .toLowerCase()
+          .includes(searchLower);
+      if (!searchMatch) return false;
+    }
 
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      (fleet.licensePlate || "").toLowerCase().includes(searchLower) ||
-      (fleet?.driver?.fullName || "").toLowerCase().includes(searchLower) ||
-      (fleet?.transporter?.companyName || "")
-        .toLowerCase()
-        .includes(searchLower)
-    );
+    // Filter berdasarkan transporter
+    if (filterValues.transporter.length > 0) {
+      const transporterMatch = filterValues.transporter.some(
+        (transporterId) => {
+          // Match berdasarkan transporter ID atau nama perusahaan
+          return (
+            fleet?.transporter?.id === transporterId ||
+            fleet?.transporter?.companyName === transporterId
+          );
+        }
+      );
+      if (!transporterMatch) return false;
+    }
+
+    // Filter berdasarkan truck (license plate)
+    if (filterValues.truck.length > 0) {
+      const truckMatch = filterValues.truck.some((truckId) => {
+        return fleet?.fleet?.licensePlate === truckId;
+      });
+      if (!truckMatch) return false;
+    }
+
+    // Filter berdasarkan order status
+    if (filterValues.order.length > 0) {
+      const orderMatch = filterValues.order.some((orderStatus) => {
+        return fleet?.sosStatus === orderStatus;
+      });
+      if (!orderMatch) return false;
+    }
+
+    return true;
   };
 
   const filteredSosData = activeSosItems.filter(filterFn);
@@ -202,6 +275,11 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <Search
+              disabled={
+                activeTab === "sos"
+                  ? activeSosItems.length === 0
+                  : historySosItems.length === 0
+              }
               placeholder="Cari No. Polisi / Driver / Transporter"
               onSearch={setSearchTerm}
               autoSearch={true}
@@ -215,17 +293,53 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
             onOpenChange={setIsFilterPopoverOpen}
           >
             <PopoverTrigger asChild>
-              <Button
-                variant="muattrans-outline-primary"
-                iconLeft={
-                  <IconComponent
-                    src="/icons/monitoring/filter.svg"
-                    className="size-4"
-                  />
+              <button
+                type="button"
+                disabled={
+                  activeTab === "sos"
+                    ? activeSosItems.length === 0
+                    : historySosItems.length === 0
                 }
+                className={`flex h-8 items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold transition-colors ${
+                  (
+                    activeTab === "sos"
+                      ? activeSosItems.length === 0
+                      : historySosItems.length === 0
+                  )
+                    ? "cursor-not-allowed border-neutral-500 bg-neutral-200 text-neutral-500" // Style disabled
+                    : isFilterActive
+                      ? "border-primary-700 text-primary-700 hover:border-primary-700 hover:bg-gray-50" // Style saat aktif
+                      : "border-neutral-600 text-neutral-600 hover:border-primary-700 hover:bg-gray-50" // Style default
+                }`}
               >
+                <SlidersHorizontal
+                  className={`h-4 w-4 ${
+                    (
+                      activeTab === "sos"
+                        ? activeSosItems.length === 0
+                        : historySosItems.length === 0
+                    )
+                      ? "text-neutral-500"
+                      : isFilterActive
+                        ? "text-primary-700"
+                        : "text-neutral-600"
+                  }`}
+                />
                 Filter
-              </Button>
+                {isFilterActive &&
+                  (activeTab === "sos"
+                    ? activeSosItems.length > 0
+                    : historySosItems.length > 0) && (
+                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+                      {Object.values(filterValues).reduce(
+                        (count, value) =>
+                          count +
+                          (Array.isArray(value) ? value.length : value ? 1 : 0),
+                        0
+                      )}
+                    </span>
+                  )}
+              </button>
             </PopoverTrigger>
             <PopoverContent
               className="w-[300px] rounded-xl border-0 bg-white p-0 shadow-lg"
@@ -276,21 +390,33 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                   <CustomDropdown
                     className="w-[250px]"
                     options={[
-                      { name: "Truk Jaya Abadi", value: "truk-jaya" },
-                      { name: "Siba Surya", value: "siba-surya" },
-                      { name: "PT. Laju Logistik", value: "laju-logistik" },
-                      {
-                        name: "CV Surabaya Logistik",
-                        value: "surabaya-logistik",
-                      },
-                      { name: "Logisdong", value: "logisdong" },
+                      { name: "PT ABC Transport", value: "trans123" },
+                      { name: "PT XYZ Logistics", value: "trans456" },
+                      { name: "PT DEF Cargo", value: "trans789" },
                     ]}
                     placeholder="Semua Transporter"
                     searchPlaceholder="Cari Transporter"
                     isMultipleSelected={true}
+                    defaultValue={(() => {
+                      const defaultValue = tempFilterValues.transporter
+                        .map((id) =>
+                          [
+                            { name: "PT ABC Transport", value: "trans123" },
+                            { name: "PT XYZ Logistics", value: "trans456" },
+                            { name: "PT DEF Cargo", value: "trans789" },
+                          ].find((opt) => opt.value === id)
+                        )
+                        .filter(Boolean);
+                      console.log("CustomDropdown defaultValue:", defaultValue);
+                      console.log(
+                        "tempFilterValues.transporter:",
+                        tempFilterValues.transporter
+                      );
+                      return defaultValue;
+                    })()}
                     onSelected={(selected) => {
                       const transporterIds = selected.map((item) => item.value);
-                      setFilterValues((prev) => ({
+                      setTempFilterValues((prev) => ({
                         ...prev,
                         transporter: transporterIds,
                       }));
@@ -304,11 +430,26 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                     variant="muattrans-primary-secondary"
                     size="small"
                     onClick={() => {
+                      // Reset temporary values to empty
+                      setTempFilterValues({
+                        truck: [],
+                        order: [],
+                        transporter: [],
+                      });
+                      // Also clear draft values
+                      setDraftFilterValues({
+                        truck: [],
+                        order: [],
+                        transporter: [],
+                      });
+                      // Reset actual filter values to clear all active filters
                       setFilterValues({
                         truck: [],
                         order: [],
                         transporter: [],
                       });
+                      // Clear search term as well
+                      setSearchTerm("");
                     }}
                     className="min-w-[112px]"
                   >
@@ -318,8 +459,11 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                     variant="muattrans-primary"
                     size="small"
                     onClick={() => {
-                      console.log("Applied filters:", filterValues);
-                      // TODO: Implement actual filtering logic for SOS data
+                      // Apply temporary filters to actual filter values
+                      setFilterValues(tempFilterValues);
+                      // Save current temp values as draft for next time
+                      setDraftFilterValues(tempFilterValues);
+                      console.log("Applied filters:", tempFilterValues);
                       setIsFilterPopoverOpen(false);
                     }}
                     className="min-w-[115px]"
@@ -390,7 +534,8 @@ const SOSCSContainer = ({ onClose, onExpand }) => {
                 key={`${activeTab}-${fleet.fleetId || index}`}
                 className="border-neutral-400 p-0 !shadow-none"
               >
-                {!fleet.acknowledgeAt && (
+                {((activeTab === "sos" && !fleet.acknowledgeAt) ||
+                  (activeTab === "all" && !fleet.resolvedAt)) && (
                   <CardHeader className="border-t-none rounded-t-md bg-red-500 p-1">
                     <div className="flex items-center justify-center gap-2">
                       <AlertTriangle className="h-4 w-4 text-white" />
