@@ -620,13 +620,24 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
           text: "Ya, Batalkan",
           onClick: () => {
             closeModal("confirmCancelOrder");
-            toast.success(
-              `Berhasil membatalkan pesanan ${order.orderCode} - ${order.transporter.name}`
-            );
+            openModal("cancelOrderReason");
           },
           classname:
             "border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
         }}
+      />
+      <CancelReasonModal
+        isOpen={modalState.cancelOrderReason}
+        onClose={() => closeModal("cancelOrderReason")}
+        onSubmit={(reason) => {
+          console.log("Cancelling order with reason:", reason);
+          toast.success(
+            `Berhasil membatalkan pesanan ${order.orderCode} - ${order.transporter.name}`
+          );
+          closeModal("cancelOrderReason");
+        }}
+        title="Masukkan Alasan Pembatalan"
+        placeholder="Masukkan alasan pembatalan pesanan"
       />
       <ConfirmationModal
         isOpen={modalState.confirmCancelFleet}
