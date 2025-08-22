@@ -260,7 +260,7 @@ const Period = ({
 
       {isOpen && (
         <ul className="absolute z-20 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg">
-          {options.map((option) => (
+          {options.map((option, idx) => (
             <li
               key={option.value}
               className={cn(
@@ -270,7 +270,10 @@ const Period = ({
               onClick={() => handleSelect(option)}
             >
               <div className="flex w-full items-center justify-between">
-                <span className="line-clamp-1">{option.name}</span>
+                <span className="line-clamp-1">
+                  {option.name}
+                  {idx === 0 && " (Default)"}
+                </span>
                 {selected?.value === option?.value && (
                   <IconComponent
                     className="icon-stroke-primary-700"
@@ -283,7 +286,10 @@ const Period = ({
           <hr className="border-neutral-400" />
           <li
             className="cursor-pointer px-[10px] py-2 font-medium"
-            onClick={() => setIsPeriode(true)}
+            onClick={() => {
+              setIsPeriode(true);
+              setIsOpen(false);
+            }}
           >
             <div className="flex w-full gap-2">
               <Plus width={15} height={15} className="text-primary-700" />
@@ -340,7 +346,11 @@ const Period = ({
                   onChange={() => {}}
                   classInput="w-full"
                   status={validate.start_date ? "error" : undefined}
-                  className="!w-[136px] max-w-none"
+                  className={cn(
+                    "!w-[136px] max-w-none",
+                    inputDateCustom.status === "start_date" &&
+                      "cursor-pointer [&>div]:border-primary-700"
+                  )}
                   placeholder={t(
                     "Period.placeholderStartDate",
                     {},
@@ -379,7 +389,11 @@ const Period = ({
                   onChange={() => {}}
                   classInput="w-full"
                   status={validate.end_date ? "error" : undefined}
-                  className="!w-[136px] max-w-none"
+                  className={cn(
+                    "!w-[136px] max-w-none",
+                    inputDateCustom.status === "end_date" &&
+                      "cursor-pointer [&>div]:border-primary-700"
+                  )}
                   placeholder={t(
                     "Period.placeholderEndDate",
                     {},

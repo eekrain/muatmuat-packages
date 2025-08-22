@@ -31,9 +31,12 @@ const apiResultAvailableTransporters = {
         },
         status: {
           isActive: true,
-          activityStatus: "INACTIVE",
+          activityStatus: "ACTIVE",
           lastActivity: "2025-01-15T14:30:00Z",
           inactiveReason: null,
+          current: 20,
+          total: 40,
+          inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
         },
         rating: {
           average: 4.5,
@@ -82,7 +85,7 @@ const apiResultAvailableTransporters = {
               licensePlate: "B 1234 XYZ",
               truckType: "Truk Fuso",
               carrierType: "Box",
-              operationalStatus: "NOT_READY_FOR_ORDER",
+              operationalStatus: "INACTIVE",
               lastLocation: {
                 distance: 10,
                 latitude: -6.2088,
@@ -121,10 +124,13 @@ const apiResultAvailableTransporters = {
           email: "transporter@example.com",
         },
         status: {
-          isActive: true,
-          activityStatus: "INACTIVE",
+          isActive: false,
+          activityStatus: "ACTIVE",
           lastActivity: "2025-01-15T14:30:00Z",
           inactiveReason: null,
+          current: 5,
+          total: 7,
+          inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
         },
         rating: {
           average: 4.5,
@@ -149,7 +155,7 @@ const apiResultAvailableTransporters = {
               licensePlate: "B 1234 XYZ",
               truckType: "Truk Fuso",
               carrierType: "Box",
-              operationalStatus: "READY_FOR_ORDER",
+              operationalStatus: "NOT_PAIRED", // READY_FOR_ORDER, ON_DUTY, WAITING_LOADING_TIME, NOT_PAIRED, INACTIVE
               lastLocation: {
                 distance: 10,
                 latitude: -6.2088,
@@ -162,18 +168,13 @@ const apiResultAvailableTransporters = {
                 name: "Rizky Aditya Pratama",
                 phone: "+628987654321",
               },
-              inactivityInfo: {
-                lastActiveAt: "2025-01-15T12:00:00Z",
-                inactiveDuration: 180,
-                inactivityReason: "Maintenance",
-              },
             },
             {
               id: "fleet-uuid-2",
               licensePlate: "B 1234 XYZ",
               truckType: "Truk Fuso",
               carrierType: "Box",
-              operationalStatus: "NOT_READY_FOR_ORDER",
+              operationalStatus: "READY_FOR_ORDER",
               lastLocation: {
                 distance: 10,
                 latitude: -6.2088,
@@ -212,10 +213,13 @@ const apiResultAvailableTransporters = {
           email: "transporter@example.com",
         },
         status: {
-          isActive: true,
-          activityStatus: "INACTIVE",
+          isActive: false,
+          activityStatus: "ACTIVE",
           lastActivity: "2025-01-15T14:30:00Z",
           inactiveReason: null,
+          current: 10,
+          total: 11,
+          inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
         },
         rating: {
           average: 4.5,
@@ -264,7 +268,7 @@ const apiResultAvailableTransporters = {
               licensePlate: "B 1234 XYZ",
               truckType: "Truk Fuso",
               carrierType: "Box",
-              operationalStatus: "NOT_READY_FOR_ORDER",
+              operationalStatus: "INACTIVE",
               lastLocation: {
                 distance: 10,
                 latitude: -6.2088,

@@ -137,12 +137,12 @@ const TransportRequestCard = ({
   // Calculate loadTimeText (e.g., 'Muat 3 Hari Lagi')
   let loadTimeText = request.loadTimeText;
   let loadTimeColor = "bg-primary-50 text-primary-700";
-  if (request.loadTimeStart) {
-    const today = new Date();
+  if (request.loadTimeStart && request.shipperInfo?.createdAt) {
+    const createdAt = new Date(request.shipperInfo.createdAt);
     const muatDate = new Date(request.loadTimeStart);
-    today.setHours(0, 0, 0, 0);
+    createdAt.setHours(0, 0, 0, 0);
     muatDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.round((muatDate - today) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.round((muatDate - createdAt) / (1000 * 60 * 60 * 24));
     if (diffDays === 0) {
       loadTimeText = "Muat Hari Ini";
       loadTimeColor = "bg-success-50 text-success-400";
@@ -253,15 +253,61 @@ const TransportRequestCard = ({
                 {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
               </span>
 
-              {/* Load Time Label */}
-              <span
-                className={cn(
-                  "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
-                  request.isTaken ? "text-neutral-700" : loadTimeColor
-                )}
-              >
-                {loadTimeText || "Muat 7 Hari Lagi"}
-              </span>
+              {(() => {
+                // Ambil tanggal dari request
+                const createdAt = request.shipperInfo?.createdAt;
+                const loadTimeStart = request.loadTimeStart;
+                if (!createdAt || !loadTimeStart) {
+                  return (
+                    <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                      -
+                    </span>
+                  );
+                }
+                const createdDate = new Date(createdAt);
+                const loadDate = new Date(loadTimeStart);
+                if (isNaN(createdDate.getTime()) || isNaN(loadDate.getTime())) {
+                  return (
+                    <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+                      -
+                    </span>
+                  );
+                }
+                // Set jam, menit, detik ke 0 agar hanya tanggal yang dibandingkan
+                createdDate.setHours(0, 0, 0, 0);
+                loadDate.setHours(0, 0, 0, 0);
+                const diffDays = Math.round(
+                  (loadDate - createdDate) / (1000 * 60 * 60 * 24)
+                );
+                let label = "";
+                let colorClass = "";
+                if (diffDays === 0) {
+                  label = "Muat Hari Ini";
+                  colorClass = "bg-success-50 text-success-400";
+                } else if (diffDays === 1) {
+                  label = "Muat Besok";
+                  colorClass = "bg-success-50 text-success-400";
+                } else if (diffDays >= 2 && diffDays <= 5) {
+                  label = `Muat ${diffDays} Hari`;
+                  colorClass = "bg-warning-100 text-warning-900";
+                } else if (diffDays > 5) {
+                  label = `Muat ${diffDays} Hari`;
+                  colorClass = "bg-primary-50 text-primary-700";
+                } else {
+                  label = "-";
+                  colorClass = "bg-primary-50 text-primary-700";
+                }
+                return (
+                  <span
+                    className={cn(
+                      "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                      request.isTaken ? "text-neutral-700" : colorClass
+                    )}
+                  >
+                    {label}
+                  </span>
+                );
+              })()}
 
               {/* Overload Badge */}
               {request.potentialOverload && (
@@ -682,7 +728,7 @@ const TransportRequestCard = ({
       <HubungiModal
         isOpen={showHubungiModal}
         onClose={() => setShowHubungiModal(false)}
-        transporterData={request.shipperInfo || null}
+        transporterContacts={request.shipperInfo || null}
       />
     </div>
   );

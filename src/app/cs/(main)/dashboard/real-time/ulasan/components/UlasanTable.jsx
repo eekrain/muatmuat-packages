@@ -267,15 +267,20 @@ const UlasanTable = () => {
   const filterConfig = {
     categories: [
       {
-        key: "ratingFilter",
-        label: t("csUlasan.filter.rating", {}, "Rating"),
-        type: "checkbox-multi",
-      },
-      {
         key: "transporterFilter",
         label: t("csUlasan.filter.transporter", {}, "Transporter"),
         type: "checkbox-multi",
         searchable: true, // Enables search field in hover submenu
+        searchPlaceholder: t(
+          "csUlasan.filter.transporter.searchPlaceholder",
+          {},
+          "Cari Transporter"
+        ),
+      },
+      {
+        key: "ratingFilter",
+        label: t("csUlasan.filter.rating", {}, "Rating"),
+        type: "checkbox-multi",
       },
     ],
     data: {

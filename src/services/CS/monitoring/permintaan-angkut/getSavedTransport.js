@@ -13,121 +13,227 @@ const apiResultSavedTransporters = {
   Data: {
     transporters: [
       {
-        id: "saved-uuid-1",
-        companyName: "PT Transporter ABC",
-        logo: "https://cdn.example.com/logo.jpg",
-        savedAt: "2024-12-15T10:00:00Z",
-        lastUsed: "2025-01-10T15:30:00Z",
-        usageStats: {
-          totalAssignments: 15,
-          successfulOrders: 14,
-          canceledOrders: 1,
-          avgRating: 4.7,
+        id: "transporter-uuid-1",
+        companyName:
+          "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Tbk",
+        logo: "https://cdn.example.com/transporter_logo.jpg",
+        lastSavedAt: "2025-01-15T15:00:00Z",
+        fleet: {
+          totalUnits: 10,
+          activeUnits: 8,
+          inactiveUnits: 2,
+          matchingUnits: 3,
         },
-        currentStatus: {
-          isActive: true,
+        contact: {
+          emergencyContact: {
+            phone: "+628123456789",
+            position: "Direktur",
+            name: "John",
+            email: "transporter@example.com",
+          },
+          picContacts: [
+            { name: "Jane Doe", position: "Manager", phone: "+628111111111" },
+            {
+              name: "Bob Smith",
+              position: "Supervisor",
+              phone: "+628222222222",
+            },
+          ],
+          primaryContact: {
+            phone: "+628123456789",
+            fullAddress: "Jl. Merdeka No. 1, Jakarta",
+          },
+        },
+        status: {
+          isActive: false,
           activityStatus: "ACTIVE",
           lastActivity: "2025-01-15T14:30:00Z",
-          availableFleet: 5,
+          inactiveReason: null,
+          current: 5,
+          total: 7,
+          inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
         },
-        fleet: {
-          totalUnits: 8,
-          activeUnits: 6,
-          inactiveUnits: 2,
+        rating: {
+          average: 4.5,
+          totalReviews: 125,
         },
-        tags: ["reliable", "fast-response", "halal-certified"],
-        fleetDetails: [
+        history: {
+          completedOrders: 85,
+          canceledOrders: 2,
+          rejectedOrders: 1,
+          hasRejectedThisRequest: false,
+        },
+        verification: {
+          status: "VERIFIED",
+          isHalalCertified: false,
+          halalCertificateNo: null,
+          halalExpiryDate: null,
+        },
+        activity: [
           {
-            id: "fleet-uuid-1",
-            licensePlate: "L 1111 LBA",
-            truckType: "Truk Fuso",
-            carrierType: "Box",
-            operationalStatus: "NOT_READY_FOR_ORDER",
-            lastLocation: {
-              distance: 10,
-              latitude: -7.9467,
-              longitude: 112.6154,
-              lastUpdate: "2025-01-15T14:45:00Z",
-              City: "DKJ Jakarta",
-              District: "Kec. Kepulauan Seribu Selatan Seribu Selatan",
-            },
-            driver: {
-              name: "Rizky Aditya Pratama",
-              phone: "+628987654321",
-            },
-            truckImage: "/truck-placeholder.png",
-          },
-          {
-            id: "fleet-uuid-2",
-            licensePlate: "L 2222 LBA",
-            truckType: "Truk Fuso",
-            carrierType: "Box",
-            operationalStatus: "NOT_READY_FOR_ORDER",
-            lastLocation: {
-              distance: 10,
-              latitude: -6.2088,
-              longitude: 106.8456,
-              lastUpdate: "2025-01-15T14:45:00Z",
-              City: "Surabaya",
-              District: "Peneleh",
-              address:
-                "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta",
-            },
-            driver: {
-              name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
-              phone: "+628987654321",
-            },
-            truckImage: "/truck-placeholder.png",
+            id: "activity-uuid-1",
+            createdAt: "2025-01-15T13:00:00Z",
+            type: "VIEWED_ORDER",
+            description: "Transporter viewed the order.",
           },
         ],
+        expandedDetails: {
+          fleetDetails: [
+            {
+              id: "fleet-uuid-1",
+              licensePlate: "B 1234 XYZ",
+              truckType: "Truk Fuso",
+              carrierType: "Box",
+              operationalStatus: "NOT_PAIRED", // READY_FOR_ORDER, ON_DUTY, WAITING_LOADING_TIME, NOT_PAIRED, INACTIVE
+              lastLocation: {
+                distance: 10,
+                latitude: -6.2088,
+                longitude: 106.8456,
+                lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
+              },
+              driver: {
+                name: "Rizky Aditya Pratama",
+                phone: "+628987654321",
+              },
+            },
+            {
+              id: "fleet-uuid-2",
+              licensePlate: "B 1234 XYZ",
+              truckType: "Truk Fuso",
+              carrierType: "Box",
+              operationalStatus: "READY_FOR_ORDER",
+              lastLocation: {
+                distance: 10,
+                latitude: -6.2088,
+                longitude: 106.8456,
+                lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
+              },
+              driver: {
+                name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+                phone: "+628987654321",
+              },
+              inactivityInfo: {
+                lastActiveAt: "2025-01-15T12:00:00Z",
+                inactiveDuration: 180,
+                inactivityReason: "Maintenance",
+              },
+            },
+          ],
+        },
       },
       {
-        id: "saved-uuid-2",
-        companyName: "PT Transporter XYZ",
-        logo: "https://cdn.example.com/logo2.jpg",
-        savedAt: "2024-11-20T09:00:00Z",
-        lastUsed: "2025-01-12T12:00:00Z",
-        usageStats: {
-          totalAssignments: 10,
-          successfulOrders: 9,
-          canceledOrders: 1,
-          avgRating: 4.5,
-        },
-        currentStatus: {
-          isActive: false,
-          activityStatus: "INACTIVE",
-          lastActivity: "2025-01-13T10:00:00Z",
-          availableFleet: 2,
-        },
+        id: "transporter-uuid-2",
+        companyName:
+          "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Tbk",
+        logo: "https://cdn.example.com/transporter_logo.jpg",
+        lastViewedAt: "2025-01-15T15:00:00Z",
         fleet: {
-          totalUnits: 5,
-          activeUnits: 2,
-          inactiveUnits: 3,
+          totalUnits: 10,
+          activeUnits: 8,
+          inactiveUnits: 2,
+          matchingUnits: 3,
         },
-        tags: ["trusted", "halal-certified"],
-        fleetDetails: [
+        contact: {
+          emergencyContact: {
+            phone: "+628123456789",
+            position: "Direktur",
+            name: "John",
+            email: "transporter@example.com",
+          },
+          picContacts: [
+            { name: "Jane Doe", position: "Manager", phone: "+628111111111" },
+            {
+              name: "Bob Smith",
+              position: "Supervisor",
+              phone: "+628222222222",
+            },
+          ],
+          primaryContact: {
+            phone: "+628123456789",
+            fullAddress: "Jl. Merdeka No. 1, Jakarta",
+          },
+        },
+        status: {
+          isActive: true,
+          activityStatus: "INACTIVE",
+          lastActivity: "2025-01-15T14:30:00Z",
+          inactiveReason: "Sering idle",
+        },
+        rating: {
+          average: 4.5,
+          totalReviews: 125,
+        },
+        history: {
+          completedOrders: 35,
+          canceledOrders: 30,
+          rejectedOrders: 1,
+          hasRejectedThisRequest: true,
+        },
+        verification: {
+          status: "VERIFIED",
+          isHalalCertified: false,
+          halalCertificateNo: null,
+          halalExpiryDate: null,
+        },
+        activity: [
           {
-            id: "fleet-uuid-3",
-            licensePlate: "B 3333 XYZ",
-            truckType: "Truk Fuso",
-            carrierType: "Box",
-            operationalStatus: "READY_FOR_ORDER",
-            lastLocation: {
-              distance: 10,
-              latitude: -7.9467,
-              longitude: 112.6154,
-              lastUpdate: "2025-01-15T14:45:00Z",
-              City: "Surabaya",
-              District: "Peneleh",
-              address: "Kec. Lowokwaru, Kota Malang",
-            },
-            driver: {
-              name: "Yudi Sutrisno",
-              phone: "+628987654321",
-            },
-            truckImage: "/truck-placeholder.png",
+            id: "activity-uuid-1",
+            createdAt: "2025-01-15T13:00:00Z",
+            type: "VIEWED_ORDER",
+            description: "Transporter viewed the order.",
           },
         ],
+        expandedDetails: {
+          fleetDetails: [
+            {
+              id: "fleet-uuid-1",
+              licensePlate: "B 1234 XYZ",
+              truckType: "Truk Fuso",
+              carrierType: "Box",
+              operationalStatus: "NOT_PAIRED", // READY_FOR_ORDER, ON_DUTY, WAITING_LOADING_TIME, NOT_PAIRED, INACTIVE
+              lastLocation: {
+                distance: 10,
+                latitude: -6.2088,
+                longitude: 106.8456,
+                lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
+              },
+              driver: {
+                name: "Rizky Aditya Pratama",
+                phone: "+628987654321",
+              },
+            },
+            {
+              id: "fleet-uuid-2",
+              licensePlate: "B 1234 XYZ",
+              truckType: "Truk Fuso",
+              carrierType: "Box",
+              operationalStatus: "READY_FOR_ORDER",
+              lastLocation: {
+                distance: 10,
+                latitude: -6.2088,
+                longitude: 106.8456,
+                lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
+              },
+              driver: {
+                name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+                phone: "+628987654321",
+              },
+              inactivityInfo: {
+                lastActiveAt: "2025-01-15T12:00:00Z",
+                inactiveDuration: 180,
+                inactivityReason: "Maintenance",
+              },
+            },
+          ],
+        },
       },
     ],
     pagination: {
