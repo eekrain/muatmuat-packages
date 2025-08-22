@@ -157,6 +157,22 @@ export const useMonitoringHandlers = (
     [panelsDispatch, selectionsDispatch]
   );
 
+  const handleDetailRequest = useCallback(
+    (request) => {
+      // Collapse the bottom panel when detail request is clicked
+      panelsDispatch({
+        type: PANEL_ACTIONS.SET_BOTTOM_EXPANDED,
+        payload: false,
+      });
+    },
+    [panelsDispatch]
+  );
+
+  const handleCloseDetailRequest = useCallback(() => {
+    // Expand the bottom panel when closing detail view
+    panelsDispatch({ type: PANEL_ACTIONS.SET_BOTTOM_EXPANDED, payload: true });
+  }, [panelsDispatch]);
+
   const handleTogglePilihArmada = useCallback(() => {
     panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
   }, [panelsDispatch]);
@@ -182,6 +198,8 @@ export const useMonitoringHandlers = (
     handleResetZoom,
     handleTruckClick,
     handleAcceptRequest,
+    handleDetailRequest,
+    handleCloseDetailRequest,
     handleTogglePilihArmada,
     handleOpenRiwayatSOS,
     handleCloseRiwayatSOS,

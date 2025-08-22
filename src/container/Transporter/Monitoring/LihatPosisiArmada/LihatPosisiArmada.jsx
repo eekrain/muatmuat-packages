@@ -120,7 +120,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-neutral-300 bg-white">
                       <img
                         src={`/img/mock-armada/${["one", "two", "three"][index % 3]}.png`}
-                        alt="Ikon Truk"
+                        alt={t("LihatPosisiArmada.truckIcon", {}, "Ikon Truk")}
                         className="h-6 w-6 object-contain"
                       />
                     </div>
@@ -147,8 +147,16 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                       className="rounded-full p-1 transition-colors hover:bg-neutral-100"
                       aria-label={
                         expandedVehicles[vehicle.vehicleId]
-                          ? "Sembunyikan detail"
-                          : "Tampilkan detail"
+                          ? t(
+                              "LihatPosisiArmada.hideDetail",
+                              {},
+                              "Sembunyikan detail"
+                            )
+                          : t(
+                              "LihatPosisiArmada.showDetail",
+                              {},
+                              "Tampilkan detail"
+                            )
                       }
                     >
                       <ChevronDown
@@ -166,7 +174,11 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     <div className="bg-neutral-100 p-3">
                       <div className="flex items-center justify-between gap-2">
                         <span className="w-[120px] text-xs font-medium text-neutral-600">
-                          Estimasi Tiba di Lokasi Bongkar
+                          {t(
+                            "LihatPosisiArmada.estimatedArrival",
+                            {},
+                            "Estimasi Tiba di Lokasi Bongkar"
+                          )}
                         </span>
                         <span className="text-xs font-semibold">
                           {vehicle.estimatedArrival
@@ -187,7 +199,11 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
 
                     <div className="pt-4">
                       <h3 className="mb-4 text-xs font-semibold text-neutral-900">
-                        Detail Status Driver
+                        {t(
+                          "LihatPosisiArmada.driverStatusDetail",
+                          {},
+                          "Detail Status Driver"
+                        )}
                       </h3>
                       <DriverTimeline
                         dataTimeline={

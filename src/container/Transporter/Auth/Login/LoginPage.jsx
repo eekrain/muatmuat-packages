@@ -34,7 +34,7 @@ const LoginPage = () => {
         t(
           "LoginPage.errorEmailRequired",
           {},
-          "No. Whatsapp / Email wajib diisi."
+          "No. Whatsapp / Email wajib diisi"
         )
       ),
       v.email(t("LoginPage.errorEmailInvalid", {}, "Format email tidak valid."))

@@ -100,6 +100,8 @@ const Page = () => {
     handleResetZoom,
     handleTruckClick,
     handleAcceptRequest,
+    handleDetailRequest,
+    handleCloseDetailRequest,
     handleTogglePilihArmada,
     handleOpenRiwayatSOS,
     handleCloseRiwayatSOS,
@@ -605,7 +607,11 @@ const Page = () => {
               {!panels.isFullscreen && !panels.showLacakArmada && (
                 <>
                   <MonitoringTabsContent value="permintaan">
-                    <PermintaanAngkut onAcceptRequest={handleAcceptRequest} />
+                    <PermintaanAngkut
+                      onAcceptRequest={handleAcceptRequest}
+                      onDetailRequest={handleDetailRequest}
+                      onCloseDetailRequest={handleCloseDetailRequest}
+                    />
                   </MonitoringTabsContent>
 
                   <MonitoringTabsContent value="urgent">
