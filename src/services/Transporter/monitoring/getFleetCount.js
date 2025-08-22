@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockFleetCount = true;
+const isMockFleetCount = false;
 
 const apiResultFleetCount = {
   data: {
@@ -24,7 +24,9 @@ export const fetcherFleetCount = async () => {
     return result.data.Data;
   }
 
-  const result = await fetcherMuatrans.get("v1/monitoring/fleet-count");
+  const result = await fetcherMuatrans.get(
+    "v1/transporter/monitoring/maps/fleet-count"
+  );
   return result?.data?.Data || {};
 };
 
