@@ -155,11 +155,11 @@ const LacakArmada = ({ dataOrderDetail }) => {
                 alt="Empty cart"
               />
               <div className="mt-2 font-semibold text-neutral-600">
-                Belum ada riwayat perubahan
+                Belum ada perubahan armada
               </div>
               <div className="mb-3 max-w-full text-center text-xs font-medium text-neutral-600">
-                Riwayat perubahan armada maupun pembatalan armada akan
-                ditampilkan disini
+                Perubahan armada maupun armada dibatalkan dan armada selesai
+                akan ditampilkan disini
               </div>
             </div>
           )}
