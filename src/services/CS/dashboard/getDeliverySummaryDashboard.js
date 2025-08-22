@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
 // Set to true in your environment (.env.local) to use mock data.
-const useMockData = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
+const useMockData = true;
 
 // --- Mock Data ---
 // Mock data for a successful delivery summary response.
@@ -15,11 +15,10 @@ export const mockAPIResult = {
       Text: "OK",
     },
     Data: {
-      totalDistance: 208.27,
+      totalDistance: 2129.27,
       totalTonnage: 200506,
-      utilizedFleets: 6,
     },
-    Type: "DASHBOARD_TRANSPORTER_DELIVERY_SUMMARY",
+    Type: "DASHBOARD_CS_DELIVERY_SUMMARY",
   },
 };
 

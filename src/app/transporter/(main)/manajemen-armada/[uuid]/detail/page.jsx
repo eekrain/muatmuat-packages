@@ -184,8 +184,16 @@ const Page = () => {
   }
 
   return (
-    // 1. Wrap your component with LightboxProvider
-    <LightboxProvider images={vehicleImages} title="Foto Armada">
+    <LightboxProvider
+      images={vehicleImages}
+      title={(currentIndex) => {
+        const photo = data?.vehicle?.photos[currentIndex];
+        if (!photo) return "Foto Armada";
+        return `Foto Tampak ${
+          VehiclesPhotoTranslate[photo.photoType] || photo.photoType
+        } Kendaraan`;
+      }}
+    >
       <div className="flex flex-col gap-4 pb-11 pt-6">
         <BreadCrumb data={breadCrumbData} />
         <div className="flex items-center justify-between">

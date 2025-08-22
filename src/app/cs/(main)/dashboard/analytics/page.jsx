@@ -3,6 +3,8 @@
 import React from "react";
 
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
+import LeaderboardCombo from "@/container/CS/Dashboard/LeaderboardCombo";
+import LeaderboardTop10 from "@/container/CS/Dashboard/LeaderboardTop10";
 import ShipmentSummary from "@/container/CS/Dashboard/ShipmentSummary";
 import TotalAdditionalCost from "@/container/CS/Dashboard/TotalAdditionalCost";
 import TotalIncome from "@/container/CS/Dashboard/TotalIncome";
@@ -61,10 +63,25 @@ function Page() {
         />
       </div>
       <ShipmentSummary />
-      {/* <div className="flex flex-row pt-4 gap-4">
-          <TotalIncome />
-          <TotalAdditionalCost />
-        </div> */}
+      <div className="pb flex flex-row gap-4 pt-4">
+        <TotalIncome />
+        <TotalAdditionalCost />
+      </div>
+      <div className="flex flex-row gap-4 pb-4 pt-4">
+        <LeaderboardTop10
+          title="Transporter"
+          tooltipText="10 nama transporter yang paling banyak menyelesaikan pesanan"
+        />
+        <LeaderboardTop10
+          title="Transporter"
+          tooltipText="10 Kota/Kabupaten yang paling banyak menjadi tujuan muat"
+        />
+        <LeaderboardTop10
+          title="Transporter"
+          tooltipText="10 Kota/Kabupaten yang paling banyak menjadi tujuan bongkar"
+        />
+      </div>
+      <LeaderboardCombo />
     </div>
   );
 }

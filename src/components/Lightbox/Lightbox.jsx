@@ -128,6 +128,13 @@ export const LightboxProvider = ({
     return images;
   }, [image, images]);
 
+  const displayTitle = useMemo(() => {
+    if (typeof title === "function") {
+      return title(current);
+    }
+    return title;
+  }, [current, title]);
+
   if (!mounted) return null;
 
   return (
@@ -160,7 +167,7 @@ export const LightboxProvider = ({
           )}
           type="lightbox"
         >
-          <h1 className={lightboxTitleVariants({ variant })}>{title}</h1>
+          <h1 className={lightboxTitleVariants({ variant })}>{displayTitle}</h1>
           <div className="relative w-full bg-white">
             <img
               src={memoizedImages[current]}

@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import DonutChart from "@/components/Chart/DonutChart";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import { useGetDashboardAnalyticsAdditionalCost } from "@/services/CS/dashboard/getAdditionalCost";
 
@@ -46,55 +46,55 @@ const TotalAdditionalCost = () => {
   return (
     <Card className="h-[400px] w-[400px] !border-none">
       <CardHeader className="flex flex-col gap-y-6 border-none !px-6 !py-5">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
           <h1 className="text-lg font-bold text-neutral-900">
             Total Tambahan Biaya
           </h1>
-          <InfoTooltip
-            appearance={{
-              iconClassName: "h-6 w-6 cursor-pointer text-neutral-700",
-            }}
-          >
-            Jumlah biaya tambahan dari semua pesanan.
-          </InfoTooltip>
+          <Link href="/dashboard/analytics/laporan">
+            <p className="cursor-pointer text-xs font-medium text-primary-700">
+              Lihat Laporan
+            </p>
+          </Link>
         </div>
-        <div>
-          <p className="text-lg font-bold text-neutral-900">
-            {/* FIX: Used `totalAdditionalCost` and added fallback for safety */}
-            {`Rp${(data?.totalAdditionalCost || 0).toLocaleString("id-ID")}`}
-          </p>
-          <p className="text-xs font-medium text-neutral-600">
-            {data?.periodLabel || "Tidak ada data"}
-          </p>
-        </div>
+        {hasData && (
+          <div>
+            <p className="text-lg font-bold text-neutral-900">
+              {`Rp${(data?.totalAdditionalCost || 0).toLocaleString("id-ID")}`}
+            </p>
+            <p className="text-xs font-medium text-neutral-600">
+              {data?.periodLabel || "Tidak ada data"}
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="h-[173px] !px-0 !py-0">
         {hasData ? (
           <DonutChart
             data={donutChartData}
             className="flex flex-col !p-0"
+            chartClassname="w-[210px] h-[210px]"
             legendClassname="flex flex-row gap-x-3 pt-3"
             itemLegendClassname="gap-y-2 gap-x-[5px] items-start"
-            tooltipClassname="w-full h-[23px]"
-            textTooltipClassname="flex-row gap-[1px]"
-            centerTooltipClassname="w-full h-[23px]"
-            textCenterTooltipClassname="flex-row flex gap-[2px]"
+            tooltipClassname="w-full h-[36px]"
+            textTooltipClassname="flex-col gap-[1px]"
+            centerTooltipClassname="w-full h-[36px]"
+            textCenterTooltipClassname="flex-col flex gap-[2px]"
+            centerTextLabelClassname="text-[12px]"
+            prefixTooltipCenterText="Total"
+            LegendSecondRowSufix={false}
+            centerTextTitleTooltipClassname="text-2xl"
+            prefixTooltipCenterValue="Rp"
+            showTextLabel={false}
           />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3">
-            <ImageComponent
-              src="/img/dashboard/missed-order.png"
-              alt="Tidak Ada Biaya Tambahan"
-              width={95}
-              height={95}
-            />
-            <p className="text-base font-semibold text-neutral-600">
-              Belum Ada Biaya Tambahan
-            </p>
-            <p className="pt-[2px] text-xs font-medium text-neutral-600">
-              Saat ini tidak ada data biaya tambahan yang tercatat.
-            </p>
-          </div>
+          <DataEmpty
+            isResponsive={false}
+            titleClassname="pb-2"
+            className="mt-8 bg-transparent"
+            src="/icons/dashboard/money-not-found.svg"
+            title="Belum Ada Total Tambahan Biaya"
+            subtitle="Total tambahan biaya yang diterima transporter akan ditampilkan disini"
+          />
         )}
       </CardContent>
     </Card>

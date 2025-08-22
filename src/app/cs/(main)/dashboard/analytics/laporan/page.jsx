@@ -228,7 +228,7 @@ function Page() {
   };
 
   return (
-    <div className="p-6">
+    <div className="mx-auto w-full max-w-[1280px] p-6">
       <BreadCrumb data={breadcrumbItems} />
       <div className="flex flex-row items-center justify-between pt-4">
         <PageTitle>Laporan Ringkasan Pengiriman</PageTitle>

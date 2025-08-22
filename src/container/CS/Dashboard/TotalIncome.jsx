@@ -4,13 +4,13 @@ import { useMemo } from "react";
 
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import LineChart from "@/components/Chart/LineChart";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetDashboardAnalyticsIncome } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsIncome";
+import { useGetCsDashboardAnalyticsIncome } from "@/services/CS/dashboard/getIncomeAnalytics";
 
 const TotalIncome = () => {
   // Fetch income analytics data using the custom SWR hook
-  const { data: incomeData, isLoading } = useGetDashboardAnalyticsIncome();
+  const { data: incomeData, isLoading } = useGetCsDashboardAnalyticsIncome();
 
   // Memoize the chart data directly from the API response without transformation
   const chartData = useMemo(() => {
@@ -34,37 +34,33 @@ const TotalIncome = () => {
       <CardHeader className="flex flex-col gap-y-6 border-none !px-6 !py-5">
         <div className="flex flex-row items-center">
           <h1 className="text-lg font-bold text-neutral-900">
-            Total Pendapatan Diterima
+            Total Pendapatan
           </h1>
         </div>
-        <div>
-          <p className="text-lg font-bold text-neutral-900">
-            {`Rp${incomeData.totalIncome.toLocaleString("id-ID")}`}
-          </p>
-          <p className="text-xs font-medium text-neutral-600">
-            {incomeData?.periodLabel || "Tidak ada data"}
-          </p>
-        </div>
+        {hasData && (
+          <div>
+            <p className="text-lg font-bold text-neutral-900">
+              {`Rp${incomeData?.totalIncome?.toLocaleString("id-ID") || 0}`}
+            </p>
+            <p className="text-xs font-medium text-neutral-600">
+              {incomeData?.periodLabel || "Tidak ada data"}
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="h-[182px] !px-0 !py-0">
         {hasData ? (
-          <LineChart data={chartData} />
+          <LineChart data={chartData} height={262} />
         ) : (
-          // Empty State when no data is available
-          <div className="flex h-full flex-col items-center justify-center gap-3">
-            <ImageComponent
-              src="/img/dashboard/empty-revenue.png"
-              alt="Total Orders"
-              width={95}
-              height={95}
-            />
-            <p className="text-base font-semibold text-neutral-600">
-              Belum Ada Pendapatan Diterima
-            </p>
-            <p className="pt-[2px] text-xs font-medium text-neutral-600">
-              Pendapatan kamu akan muncul di sini setelah ada transaksi masuk
-            </p>
-          </div>
+          <DataEmpty
+            isResponsive={false}
+            subtitleClassname="max-w-full"
+            titleClassname="pb-2"
+            className="mt-8 bg-transparent"
+            src="/icons/dashboard/money-not-found.svg"
+            title="Belum Ada Total Pendapatan"
+            subtitle="Total pendapatan yang diterima muatrans akan ditampilkan disini"
+          />
         )}
       </CardContent>
     </Card>

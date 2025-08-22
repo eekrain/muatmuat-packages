@@ -63,17 +63,14 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const LineChart = ({ data, dataKeys = [] }) => {
-  /**
-   * Formats the Y-axis tick values from a number to a string like "10JT".
-   */
+const LineChart = ({ data, width = "100%", height = 182 }) => {
   const yAxisFormatter = (value) => {
     if (value === 0) return "";
     return `${formatNumberShorthand(value)}`;
   };
 
   return (
-    <ResponsiveContainer width="100%" height={182}>
+    <ResponsiveContainer width={width} height={height}>
       <AreaChart
         data={data}
         margin={{

@@ -230,12 +230,10 @@ const DaftarArmadaCs = ({
             defaultValue={searchTerm}
             className="w-full"
           />
-          {activeTab === "all" && (
-            <FilterPopoverArmada
-              onApplyFilter={handleApplyFilter}
-              filterCounts={fleetData?.summary?.statusBreakdown}
-            />
-          )}
+          <FilterPopoverArmada
+            onApplyFilter={handleApplyFilter}
+            filterCounts={fleetData?.summary?.statusBreakdown}
+          />
         </div>
       </div>
 

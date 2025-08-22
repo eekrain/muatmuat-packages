@@ -17,16 +17,15 @@ import {
 import { cn } from "@/lib/utils";
 import { formatNumberShorthand } from "@/lib/utils/formatNumberShorthand";
 
-// --- MODIFICATION START ---
-// Added textLabel to the props
 const CustomRechartsTooltip = ({
   active,
   payload,
   tooltipClassname,
   textTooltipClassname,
   textLabel,
+  prefixTooltipCenterValue = "",
+  showTextLabel = true,
 }) => {
-  // --- MODIFICATION END ---
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -44,8 +43,7 @@ const CustomRechartsTooltip = ({
         >
           <p className="">{data.name}:</p>
           <p className="">
-            {/* This will now work correctly */}
-            {`${data.value.toLocaleString("id-ID")} ${textLabel}`}
+            {`${prefixTooltipCenterValue}${data.value.toLocaleString("id-ID")}${showTextLabel ? ` ${textLabel}` : ""}`}
           </p>
         </div>
       </div>
@@ -59,6 +57,8 @@ const CustomLegend = ({
   showThirdRow,
   legendClassname,
   itemLegendClassname,
+  secondRowSufix = true,
+  sufixValueLegend = "",
 }) => (
   <div className={cn("flex flex-col justify-center gap-y-3", legendClassname)}>
     {data.map((entry, index) => (
@@ -72,9 +72,9 @@ const CustomLegend = ({
         />
         <div className="flex flex-col">
           <p className="text-xxs font-medium text-neutral-900">{`${entry.name} (${entry.percentage}%)`}</p>
-          <p className="text-xxs font-bold text-neutral-900">{`${entry.value.toLocaleString(
+          <p className="text-xxs font-bold text-neutral-900">{`${sufixValueLegend}${entry.value.toLocaleString(
             "id-ID"
-          )} ${entry.unit}`}</p>
+          )}${secondRowSufix ? ` ${entry.unit}` : ""}`}</p>
           {showThirdRow && entry.price && (
             <p className="text-xxs font-medium text-neutral-900">{`Rp${entry.price.toLocaleString(
               "id-ID"
@@ -89,7 +89,6 @@ const CustomLegend = ({
 // The main Donut Chart component
 const DonutChart = ({
   data,
-
   className,
   tooltipClassname,
   legendClassname,
@@ -98,11 +97,18 @@ const DonutChart = ({
   textTooltipClassname,
   centerTooltipClassname,
   textCenterTooltipClassname,
+  centerTextLabelClassname,
+  centerTextTitleTooltipClassname,
+  prefixTooltipCenterText = "",
+  prefixTooltipCenterValue = "",
+  showTextLabel = true,
   showThirdRow = false,
+  LegendSecondRowSufix = true,
 }) => {
   const textLabel = data[0]?.unit || "";
   const centerTextValue = data[0]?.value || 0;
   const centerTextLabel = textLabel;
+  // Removed the hardcoded const prefixTooltipCenterValue = ""
 
   return (
     <TooltipProvider>
@@ -117,14 +123,13 @@ const DonutChart = ({
             <PieChart>
               <RechartsTooltip
                 content={
-                  // --- MODIFICATION START ---
-                  // Pass the textLabel prop down to the custom tooltip
                   <CustomRechartsTooltip
                     tooltipClassname={tooltipClassname}
                     textLabel={textLabel}
                     textTooltipClassname={textTooltipClassname}
+                    prefixTooltipCenterValue={prefixTooltipCenterValue}
+                    showTextLabel={showTextLabel}
                   />
-                  // --- MODIFICATION END ---
                 }
                 cursor={{ fill: "transparent" }}
                 wrapperStyle={{ zIndex: 999 }}
@@ -154,17 +159,27 @@ const DonutChart = ({
           <RadixTooltip>
             <TooltipTrigger asChild>
               <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer text-center">
-                <p className="text-base font-bold text-neutral-900">
+                <p
+                  className={cn(
+                    "text-base font-bold text-neutral-900",
+                    centerTextTitleTooltipClassname
+                  )}
+                >
                   {formatNumberShorthand(centerTextValue)}
                 </p>
-                <p className="text-base font-bold text-neutral-900">
+                <p
+                  className={cn(
+                    "text-base font-bold text-neutral-900",
+                    centerTextLabelClassname
+                  )}
+                >
                   {centerTextLabel}
                 </p>
               </div>
             </TooltipTrigger>
             <TooltipContent
               className={cn(
-                "z-50 flex h-[36px] w-[112px] items-center justify-start rounded-lg border border-neutral-200 bg-white p-2 shadow-lg",
+                "z-50 flex h-auto min-h-[36px] w-auto min-w-[112px] items-center justify-start rounded-lg border border-neutral-200 bg-white p-2 shadow-lg",
                 centerTooltipClassname
               )}
             >
@@ -174,8 +189,14 @@ const DonutChart = ({
                   textCenterTooltipClassname
                 )}
               >
-                <p>{centerTextValue.toLocaleString("id-ID")}</p>
-                <p>{centerTextLabel}</p>
+                <p>
+                  {prefixTooltipCenterValue}
+                  {centerTextValue.toLocaleString("id-ID")}
+                </p>
+                <div className="flex flex-row gap-x-[2px]">
+                  {prefixTooltipCenterText && <p>{prefixTooltipCenterText}</p>}
+                  <p>{centerTextLabel}</p>
+                </div>
               </div>
             </TooltipContent>
           </RadixTooltip>
@@ -186,6 +207,8 @@ const DonutChart = ({
           showThirdRow={showThirdRow}
           legendClassname={legendClassname}
           itemLegendClassname={itemLegendClassname}
+          secondRowSufix={LegendSecondRowSufix}
+          sufixValueLegend={prefixTooltipCenterValue}
         />
       </div>
     </TooltipProvider>

@@ -76,12 +76,13 @@ const TotalShipper = () => {
             itemLegendClassname="gap-y-2 gap-x-[5px] items-start"
             tooltipClassname="w-full h-[23px]"
             textTooltipClassname="flex-row gap-[1px]"
-            centerTooltipClassname="w-full h-[23px]"
+            centerTooltipClassname="w-full min-h-0 h-[23px] text-center min-w-0"
             textCenterTooltipClassname="flex-row flex gap-[2px]"
           />
         ) : (
           <DataEmpty
             isResponsive={false}
+            titleClassname="pb-2"
             className="bg-transparent !py-8"
             src="/icons/dashboard/blue-box.svg"
             title="Belum Ada Shipper Terdaftar"

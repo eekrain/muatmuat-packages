@@ -66,7 +66,7 @@ const TotalTransporterShipper = () => {
     return (
       <Card className="!border-none">
         <CardHeader className="!border-none">
-          <p>Total Transporter, Driver, dan Fleet</p>
+          <p>Total Transporter & Armada Terdaftar</p>
         </CardHeader>
         <CardContent className="flex h-[208px] items-center justify-center">
           <LoadingStatic />
@@ -79,7 +79,7 @@ const TotalTransporterShipper = () => {
     return (
       <Card className="!border-none">
         <CardHeader className="!border-none">
-          <p>Total Transporter, Driver, dan Fleet</p>
+          <p>Total Transporter & Armada Terdaftar</p>
         </CardHeader>
         <CardContent className="flex h-[208px] items-center justify-center">
           <p className="text-sm text-error-500">Gagal memuat data.</p>
@@ -93,7 +93,7 @@ const TotalTransporterShipper = () => {
     <Card className="h-[285px] w-[920px] !border-none">
       <CardHeader className="flex items-center justify-between !border-none !px-6 !py-5">
         <p className="text-base font-bold text-neutral-900">
-          Total Transporter, Driver, dan Fleet
+          Total Transporter & Armada Terdaftar
         </p>
         <Link href="/dashboard/analytics/laporan">
           <p className="cursor-pointer text-xs font-medium text-primary-700">
@@ -116,10 +116,11 @@ const TotalTransporterShipper = () => {
                   itemLegendClassname="gap-y-2 gap-x-[5px] items-start"
                   tooltipClassname="w-full h-[23px]"
                   textTooltipClassname="flex-row gap-[1px]"
-                  centerTooltipClassname="w-full h-[23px]"
-                  textCenterTooltipClassname="flex-row flex gap-[2px]"
+                  centerTooltipClassname="w-full min-h-0 h-[23px] text-center min-w-0"
+                  textCenterTooltipClassname="flex-row flex gap-[2px] w-none"
+                  centerTextLabelClassname="text-[12px]"
                 />
-                {/* Render the separator if it's not the last chart */}
+
                 {index < allChartData.length - 1 && (
                   <hr className="h-[70px] w-0 border border-neutral-400" />
                 )}
@@ -129,10 +130,12 @@ const TotalTransporterShipper = () => {
         ) : (
           <DataEmpty
             isResponsive={false}
+            subtitleClassname="max-w-full"
+            titleClassname="pb-2"
             className="bg-transparent !py-8"
             src="/icons/dashboard/blue-box.svg"
-            title="Belum Ada Data Terdaftar"
-            subtitle="Data total transporter, driver, dan fleet akan ditampilkan disini"
+            title="Belum Ada Transporter Terdaftar"
+            subtitle="Data total transporter yang telah terdaftar beserta armada dan driver nya akan ditampilkan disini"
           />
         )}
       </CardContent>
