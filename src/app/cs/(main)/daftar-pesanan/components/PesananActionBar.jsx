@@ -45,11 +45,15 @@ const PesananActionBar = ({
     [urgentCounts]
   );
 
+  const isFilterActive = Object.values(activeFilters).some(
+    (val) => Array.isArray(val) && val.length > 0
+  );
+
   const noData = totalItems === 0;
   const disableSearch =
     loading || (noData && lastAction !== "search" && localSearch === "");
   const disableFilter =
-    loading || (noData && lastAction !== "filter" && activeFilters);
+    loading || (noData && lastAction !== "filter" && !isFilterActive);
   const disableUrgent =
     loading ||
     (noData && lastAction !== "urgent" && urgentStatusFilter === "all") ||
@@ -57,6 +61,10 @@ const PesananActionBar = ({
   const disableSort = loading || noData;
   const disableViewBy = loading || noData;
 
+  console.log("PesananActionBar", {
+    disableFilter,
+    activeFilters,
+  });
   const filterConfig = useMemo(
     () => ({
       categories: [
