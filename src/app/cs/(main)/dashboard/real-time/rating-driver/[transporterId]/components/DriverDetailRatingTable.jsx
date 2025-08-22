@@ -10,6 +10,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetDriverRatings } from "@/services/CS/dashboard/realtime/getDriverRatings";
 
 const DriverDetailRatingTable = () => {
   const { t } = useTranslation();
@@ -29,7 +30,6 @@ const DriverDetailRatingTable = () => {
     },
     summary: { averageRatingAll: 0 },
   });
-  const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -37,34 +37,44 @@ const DriverDetailRatingTable = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
+  // Build query string for API call
+  const queryString = useMemo(() => {
+    const params = new URLSearchParams({ page: currentPage, limit: perPage });
+    if (searchValue) params.append("search", searchValue);
+    if (sortConfig.sort) {
+      params.append("sort", sortConfig.sort);
+      params.append("order", sortConfig.order);
+    }
+    if (filters.ratingFilter?.length) {
+      filters.ratingFilter.forEach((r) => params.append("ratingFilter", r.id));
+    }
+    return params.toString();
+  }, [currentPage, perPage, sortConfig, searchValue, filters]);
+
+  // Use SWR hook for data fetching
+  const {
+    data: apiData,
+    error,
+    isLoading,
+  } = useGetDriverRatings(transporterId, queryString);
+  const loading = isLoading;
+
+  // Update table data when API data changes
   useEffect(() => {
-    if (!transporterId) return;
-    const fetchData = async () => {
-      setLoading(true);
-      const params = new URLSearchParams({ page: currentPage, limit: perPage });
-      if (searchValue) params.append("search", searchValue);
-      if (sortConfig.sort) {
-        params.append("sort", sortConfig.sort);
-        params.append("order", sortConfig.order);
-      }
-      if (filters.ratingFilter?.length) {
-        filters.ratingFilter.forEach((r) =>
-          params.append("ratingFilter", r.id)
-        );
-      }
-      try {
-        const response = await fetch(
-          `/api/v1/cs/transporters/${transporterId}/drivers/ratings?${params.toString()}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        setTableData(result.Data);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [transporterId, currentPage, perPage, sortConfig, searchValue, filters]);
+    if (apiData) {
+      setTableData({
+        drivers: apiData.drivers || [],
+        transporter: apiData.transporter || {},
+        pagination: apiData.pagination || {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
+        summary: { averageRatingAll: apiData.transporter?.overallRating || 0 },
+      });
+    }
+  }, [apiData]);
 
   const columns = useMemo(
     () => [
@@ -89,28 +99,28 @@ const DriverDetailRatingTable = () => {
               className="text-xs font-bold"
             />
             <div className="mt-1 flex items-center gap-px">
-              <IconComponent src="/icons/phone16.svg" width={14} height={14} />
+              <IconComponent src="/icons/call16.svg" width={14} height={14} />
               <p className="text-neutral-900">{row.phoneNumber}</p>
             </div>
           </div>
         ),
       },
       {
-        key: "rating",
+        key: "averageRating",
         header: t("csDriverRating.table.header.rating", {}, "Rating"),
         sortable: true,
         render: (row) => (
           <div className="flex items-center gap-1 font-semibold">
             <IconComponent src="/icons/star_icon.svg" />
             <p className="mt-1 text-xs">
-              {Number(row.rating).toFixed(1)}
+              {Number(row.rating?.averageRating || 0).toFixed(1)}
               <span className="text-[10px] text-neutral-600">/5</span>
             </p>
           </div>
         ),
       },
       {
-        key: "orderCount",
+        key: "totalOrders",
         header: t(
           "csDriverRating.table.header.orderCount",
           {},
@@ -119,7 +129,7 @@ const DriverDetailRatingTable = () => {
         sortable: true,
         className: "text-xs font-medium",
         render: (row) =>
-          `${row.orderCount} ${t("csDriverRating.table.orderUnit", {}, "Pesanan")}`,
+          `${row.orderStats?.totalOrders || row.orderCount || 0} ${t("csDriverRating.table.orderUnit", {}, "Pesanan")}`,
       },
     ],
     [currentPage, perPage, t]
@@ -270,7 +280,7 @@ const DriverDetailRatingTable = () => {
               )}{" "}
               :
               <span className="ml-1 text-base font-bold">
-                {tableData.summary.averageRatingAll}
+                {Number(tableData.summary.averageRatingAll).toFixed(1)}
                 <span className="text-sm font-medium text-neutral-600">/5</span>
               </span>
             </div>

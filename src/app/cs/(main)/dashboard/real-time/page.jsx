@@ -1,42 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import DashboardSection from "@/app/transporter/(main)/dashboard/real-time/components/DashboardSection";
 import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/StatCard";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetAllDashboardData } from "@/services/CS/dashboard/realtime/getDashboardData";
 
 import SkeletonLoading from "./components/SkeletonLoading";
 import TransporterRatingCard from "./components/TransporterRatingCard";
 
 const CSDashboardPage = () => {
   const { t } = useTranslation();
-  const [dashboardData, setDashboardData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: dashboardData, error, isLoading } = useGetAllDashboardData();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/v1/cs/dashboard/data");
-        if (!response.ok) throw new Error("Failed to fetch dashboard data");
-        const result = await response.json();
-        setDashboardData(result.Data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-    const interval = setInterval(fetchData, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  if (loading && !dashboardData) {
+  if (isLoading && !dashboardData) {
     return <SkeletonLoading />;
+  }
+
+  if (error) {
+    console.error("Dashboard data fetch error:", error);
   }
 
   const orderStatusMap = [
@@ -110,7 +92,7 @@ const CSDashboardPage = () => {
 
   const attentionItemsMap = [
     {
-      key: "perluResponPerubahan",
+      key: "perluResponsePerubahan",
       labelKey: "csDashboard.attention.needsChangeResponse",
       labelFallback: "Perlu Respon Perubahan",
       tooltipKey: "csDashboard.tooltip.needsChangeResponse",
@@ -198,7 +180,7 @@ const CSDashboardPage = () => {
               <StatCard
                 key={item.key}
                 label={t(item.labelKey, {}, item.labelFallback)}
-                value={dashboardData?.attentionItems?.[item.key] || 0}
+                value={dashboardData?.needAttention?.[item.key] || 0}
                 href={item.href || "/daftar-pesanan"}
                 tooltipText={t(item.tooltipKey, {}, item.tooltipFallback)}
               />

@@ -5,34 +5,32 @@ import xior from "xior";
 export const mockAPIResult = {
   data: {
     Message: {
-      Code: 201,
-      Text: "Created",
+      Code: 200,
+      Text: "OTP verified successfully",
     },
     Data: {
-      message: "OTP sent successfully",
-      email: "user1@company.com",
-      phoneNumber: "081234567100",
-      expiresIn: "2025-08-20 15:35:29",
-      token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cmFuc3BvcnRlcklkIjoiODQ2MjNiYjQtOGZmMS00OTc5LTk3ZGEtNDlkN2ZlYTRlYjA4IiwidHlwZSI6IkVNQUlMX1ZFUklGSUNBVElPTiIsImlhdCI6MTc1NTY3ODU4NiwiZXhwIjoxNzU2MjgzMzg2fQ.bjGS9mIfEOiTE_ZMWb2GZCnq1_YkRohNoW4ScunourA",
+      message: "OTP verified successfully",
+      transporterId: "a2544dbc-f2e0-48c5-a030-f361d1a6bec9",
+      accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     },
-    Type: "TRANSPORTER_VERIFY_EMAIL",
+    Type: "TRANSPORTER_VERIFY_OTP",
   },
 };
 
 /**
- * Verify email verification for transporter
- * @param {Object} data - Request body containing email, token, password, and confirmPassword
+ * Verify OTP for transporter authentication
+ * @param {Object} data - Request body containing phoneNumber, otpCode, and token
  * @returns {Promise} API response
  */
-export const verifyEmailVerification = async (data) => {
+export const verifyOtp = async (data) => {
   // Create Basic Auth header using environment variables
   const basicAuth = btoa(
     `${process.env.NEXT_PUBLIC_BASIC_AUTH_USERNAME}:${process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD}`
   );
 
   const response = await xior.post(
-    "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/email-verification/verify",
+    "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/verify-otp",
     data,
     {
       headers: {
@@ -44,12 +42,12 @@ export const verifyEmailVerification = async (data) => {
 };
 
 /**
- * SWR mutation hook for verifying email verification
+ * SWR mutation hook for verifying OTP
  * @returns {Object} SWR mutation object with trigger, data, error, isMutating
  */
-export const useVerifyEmailVerification = () =>
+export const useVerifyOtp = () =>
   useSWRMutation(
-    "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/email-verification/verify",
+    "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/verify-otp",
     (url, { arg }) => {
       // Create Basic Auth header using environment variables
       const basicAuth = btoa(

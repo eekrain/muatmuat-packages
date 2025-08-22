@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
@@ -10,58 +10,80 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetTransporterRatings } from "@/services/CS/dashboard/realtime/getTransporterRatings";
 
 const TransporterRatingTable = () => {
   const { t } = useTranslation(); // <-- INSTANTIATE HOOK
   const router = useRouter();
-  const [tableData, setTableData] = useState({
-    transporters: [],
-    pagination: {
-      currentPage: 1,
-      totalPages: 1,
-      totalItems: 0,
-      itemsPerPage: 10,
-    },
-    summary: { averageRatingAll: 0 },
-  });
-  const [loading, setLoading] = useState(true);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({
-    sort: "companyName",
+    sort: "company_name",
     order: "asc",
   });
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const params = new URLSearchParams({ page: currentPage, limit: perPage });
-      if (searchValue) params.append("search", searchValue);
-      if (sortConfig.sort) {
-        params.append("sort", sortConfig.sort);
-        params.append("order", sortConfig.order);
-      }
-      if (filters.ratingFilter?.length) {
-        filters.ratingFilter.forEach((r) =>
-          params.append("ratingFilter", r.id)
-        );
-      }
-      try {
-        const response = await fetch(
-          `/api/v1/cs/transporters/ratings?${params.toString()}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        setTableData(result.Data);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+  // Build query string for API
+  const queryString = useMemo(() => {
+    const params = new URLSearchParams({ page: currentPage, limit: perPage });
+    if (searchValue) params.append("search", searchValue);
+    if (sortConfig.sort) {
+      params.append("sort", sortConfig.sort);
+      params.append("order", sortConfig.order);
+    }
+    if (filters.ratingFilter?.length) {
+      filters.ratingFilter.forEach((r) => params.append("ratingFilter", r.id));
+    }
+    return params.toString();
   }, [currentPage, perPage, sortConfig, searchValue, filters]);
+
+  // Use SWR hook for data fetching
+  const {
+    data: apiData,
+    error,
+    isLoading,
+  } = useGetTransporterRatings(queryString);
+  console.log(apiData);
+
+  // Transform API data to match UI expectations
+  const tableData = useMemo(() => {
+    if (!apiData) {
+      return {
+        transporters: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
+        summary: { averageRatingAll: 0 },
+      };
+    }
+
+    // Transform transporter data to match UI structure
+    const transformedTransporters =
+      apiData.transporters?.map((transporter) => ({
+        id: transporter.id,
+        companyName: transporter.companyName,
+        logo: transporter.logo,
+        rating: transporter.rating?.averageRating || 0,
+        orderCount: transporter.orderStats?.totalOrders || 0,
+      })) || [];
+
+    return {
+      transporters: transformedTransporters,
+      pagination: {
+        currentPage: apiData.pagination?.currentPage || 1,
+        totalPages: apiData.pagination?.totalPages || 1,
+        totalItems: apiData.pagination?.totalItems || 0,
+        itemsPerPage: apiData.pagination?.itemsPerPage || 10,
+      },
+      summary: {
+        averageRatingAll: apiData.statistics?.averageRatingAll || 0,
+      },
+    };
+  }, [apiData]);
 
   const columns = useMemo(
     () => [
@@ -74,7 +96,7 @@ const TransporterRatingTable = () => {
         render: (_, index) => (currentPage - 1) * perPage + index + 1,
       },
       {
-        key: "companyName",
+        key: "company_name",
         width: "680px",
         header: t(
           "csRatingTransporter.table.header.transporter",
@@ -100,7 +122,7 @@ const TransporterRatingTable = () => {
         ),
       },
       {
-        key: "rating",
+        key: "average_rating",
         header: t("csRatingTransporter.table.header.rating", {}, "Rating"),
         sortable: true,
         render: (row) => (
@@ -115,7 +137,7 @@ const TransporterRatingTable = () => {
         ),
       },
       {
-        key: "orderCount",
+        key: "total_orders",
         header: t(
           "csRatingTransporter.table.header.orderCount",
           {},
@@ -145,7 +167,6 @@ const TransporterRatingTable = () => {
     ],
     [currentPage, perPage, router, t]
   );
-
   const filterConfig = {
     categories: [
       {
@@ -222,7 +243,7 @@ const TransporterRatingTable = () => {
             iconClassName: "text-muat-trans-secondary-900",
           }}
           iconLeft="/icons/download16.svg"
-          disabled={loading || !tableData.transporters.length}
+          disabled={isLoading || !tableData.transporters.length}
         >
           {t("csRatingTransporter.button.download", {}, "Unduh")}
         </Button>
@@ -230,7 +251,7 @@ const TransporterRatingTable = () => {
       <DashboardDataTable
         data={tableData.transporters}
         columns={columns}
-        loading={loading}
+        loading={isLoading}
         totalItems={tableData.pagination.totalItems}
         currentPage={tableData.pagination.currentPage}
         perPage={tableData.pagination.itemsPerPage}
