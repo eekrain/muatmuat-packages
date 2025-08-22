@@ -1336,5 +1336,12 @@
   "NoFleetOverlay.description": "Mulai tambahkan armada untuk menggunakan fitur maps",
   "NoFleetOverlay.addFleetButton": "Tambah Armada",
   "MonitoringPage.requestTab": "Permintaan Angkut",
-  "MonitoringPage.urgentTab": "Urgent Issue"
+  "MonitoringPage.urgentTab": "Urgent Issue",
+  "LihatPosisiArmada.truckIcon": "Ikon Truk",
+  "LihatPosisiArmada.hideDetail": "Sembunyikan detail",
+  "LihatPosisiArmada.showDetail": "Tampilkan detail",
+  "LihatPosisiArmada.estimatedArrival": "Estimasi Tiba di Lokasi Bongkar",
+  "LihatPosisiArmada.driverStatusDetail": "Detail Status Driver",
+  "BadgeSOSPopover.sosLabel": "SOS",
+  "BadgeSOSPopover.viewSosButton": "Lihat SOS"
 }

@@ -1337,5 +1337,12 @@
   "NoFleetOverlay.description": "Start adding fleet to use the maps feature",
   "NoFleetOverlay.addFleetButton": "Add Fleet",
   "MonitoringPage.requestTab": "Transport Request",
-  "MonitoringPage.urgentTab": "Urgent Issue"
+  "MonitoringPage.urgentTab": "Urgent Issue",
+  "LihatPosisiArmada.truckIcon": "Truck Icon",
+  "LihatPosisiArmada.hideDetail": "Hide details",
+  "LihatPosisiArmada.showDetail": "Show details",
+  "LihatPosisiArmada.estimatedArrival": "Estimated Arrival at Unloading Location",
+  "LihatPosisiArmada.driverStatusDetail": "Driver Status Detail",
+  "BadgeSOSPopover.sosLabel": "SOS",
+  "BadgeSOSPopover.viewSosButton": "View SOS"
 }
