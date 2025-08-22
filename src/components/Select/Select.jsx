@@ -269,7 +269,10 @@ const SelectItem = ({
       type="button"
       onClick={handleSelect}
       disabled={disabled}
+      role="option"
+      aria-selected={isSelected ? "true" : "false"}
       className={cn(
+        "group",
         "flex w-full cursor-pointer items-center justify-between px-2.5 text-left transition-colors hover:bg-neutral-200",
 
         disabled && "cursor-not-allowed opacity-50",

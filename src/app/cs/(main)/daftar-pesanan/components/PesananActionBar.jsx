@@ -9,6 +9,7 @@ import { FilterSelect } from "@/components/Form/FilterSelect";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
 
 const PesananActionBar = ({
   searchQuery,
@@ -181,7 +182,12 @@ const PesananActionBar = ({
             onChange={onUrgentStatusChange}
             disabled={disableUrgent}
             className="w-[158px] !border-neutral-600 hover:!border-primary-700"
-            itemClassName="hover:!bg-neutral-200"
+            contentClassName="relative overflow-hidden"
+            itemClassName={cn(
+              "bg-white",
+              "hover:!bg-neutral-200",
+              "aria-selected:font-semibold"
+            )}
             displayValueOverride={
               urgentStatusFilter !== "all"
                 ? urgentStatusOptions.find(
@@ -212,9 +218,9 @@ const PesananActionBar = ({
           itemClassName="hover:!bg-neutral-200"
         />
       </div>
-      <div className="flex items-center gap-4 text-xs text-gray-600">
+      <div className="flex items-center gap-3 text-xs text-gray-600">
         <span>View by:</span>
-        <div className="w-[150px]">
+        <div className="">
           <FilterSelect
             options={[
               { label: "Pesanan", value: "pesanan" },
@@ -223,8 +229,13 @@ const PesananActionBar = ({
             ]}
             value={viewBy}
             onChange={onViewByChange}
-            className="!border-neutral-600 hover:!border-primary-700"
-            itemClassName="hover:!bg-neutral-200 text-neutral-900 font-medium"
+            className="w-[132px] !border-neutral-600 hover:!border-primary-700"
+            contentClassName="min-w-[132px] relative overflow-hidden"
+            itemClassName={cn(
+              "font-medium text-neutral-900 hover:!bg-neutral-200",
+              "hover:!bg-neutral-200",
+              "bg-white aria-selected:font-semibold"
+            )}
             disabled={disableViewBy}
           />
         </div>
