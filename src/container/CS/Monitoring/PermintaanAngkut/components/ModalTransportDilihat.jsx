@@ -24,38 +24,47 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
     setExpandedCardId((prev) => (prev === id ? null : id));
   };
 
-  // Handle search
-  const handleSearch = (value) => {
-    setSearchValue(value);
-    if (!value) {
-      setFilteredTransporters(allTransporters);
-      return;
-    }
-    const lower = value.toLowerCase();
-    setFilteredTransporters(
-      allTransporters.filter(
-        (t) =>
-          t.companyName.toLowerCase().includes(lower) ||
-          (t.fleet &&
-            (String(t.fleet.matchingUnits).includes(lower) ||
-              String(t.fleet.activeUnits).includes(lower) ||
-              String(t.fleet.inactiveUnits).includes(lower))) ||
-          t.expandedDetails?.fleetDetails?.some(
-            (fleet) =>
-              fleet.licensePlate.toLowerCase().includes(lower) ||
-              fleet.driver.name.toLowerCase().includes(lower)
-          )
-      )
-    );
-  };
+  // Real-time search dengan debounce dan minimal 3 karakter
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (!searchValue || searchValue.length < 3) {
+        setFilteredTransporters(allTransporters);
+        return;
+      }
+      const lower = searchValue.toLowerCase();
+      setFilteredTransporters(
+        allTransporters.filter(
+          (t) =>
+            t.companyName.toLowerCase().includes(lower) ||
+            (t.fleet &&
+              (String(t.fleet.matchingUnits).includes(lower) ||
+                String(t.fleet.activeUnits).includes(lower) ||
+                String(t.fleet.inactiveUnits).includes(lower))) ||
+            t.expandedDetails?.fleetDetails?.some(
+              (fleet) =>
+                fleet.licensePlate.toLowerCase().includes(lower) ||
+                fleet.driver.name.toLowerCase().includes(lower)
+            )
+        )
+      );
+    }, 300); // debounce 300ms
+    return () => clearTimeout(handler);
+  }, [searchValue, allTransporters]);
 
   // Update filteredTransporters jika data berubah
   React.useEffect(() => {
     setFilteredTransporters(allTransporters);
   }, [allTransporters]);
 
+  // Handle search input
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${showHubungiModal ? "hidden" : ""}`}
+    >
       <div className="relative w-[600px] rounded-xl bg-white p-6 shadow-lg">
         {/* Header */}
         <div className="mb-4 flex items-center justify-center">

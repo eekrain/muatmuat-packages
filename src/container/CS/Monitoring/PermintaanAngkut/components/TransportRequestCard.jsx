@@ -23,10 +23,8 @@ const TransportRequestCard = ({
   onUnderstand,
   onShowDetail,
 }) => {
-  // Use the prop if provided, otherwise fall back to request.isSaved
-  const [isSaved, setIsSaved] = useState(
-    isBookmarked !== undefined ? isBookmarked : request.isSaved
-  );
+  // FIXED: Removed the local 'isSaved' state and the useEffect that synchronized it.
+  // The 'isBookmarked' prop is now the single source of truth.
 
   const [showDetail, setShowDetail] = useState(false);
   const [showModalTransporter, setShowModalTransporter] = useState(false);
@@ -34,16 +32,11 @@ const TransportRequestCard = ({
   const [showModalDilihat, setShowModalDilihat] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
 
-  // Update local state when prop changes
-  useEffect(() => {
-    if (isBookmarked !== undefined) {
-      setIsSaved(isBookmarked);
-    }
-  }, [isBookmarked]);
-
+  // FIXED: The handleSave function no longer manages local state.
+  // It now calculates the intended new state based on the 'isBookmarked' prop
+  // and tells the parent component to update.
   const handleSave = () => {
-    const newSavedState = !isSaved;
-    setIsSaved(newSavedState);
+    const newSavedState = !isBookmarked;
     if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
   };
 
@@ -80,7 +73,6 @@ const TransportRequestCard = ({
     return `${weight.toLocaleString("id-ID")} ${unit}`;
   };
 
-  // Parse countdown string (HH:mm:ss) to seconds
   const parseCountdownToSeconds = (str) => {
     if (!str) return 0;
     const parts = str.split(":");
@@ -89,7 +81,6 @@ const TransportRequestCard = ({
     return h * 3600 + m * 60 + s;
   };
 
-  // Countdown logic: start at createdAt, allow negative values
   const getCountdownSeconds = () => {
     if (!request.timeLabels?.countdown || !request.shipperInfo?.createdAt)
       return 0;
@@ -97,7 +88,6 @@ const TransportRequestCard = ({
     const now = new Date();
     const initial = parseCountdownToSeconds(request.timeLabels.countdown);
     const elapsed = Math.floor((now - start) / 1000);
-    // Allow negative countdown if time has passed
     return initial - elapsed;
   };
 
@@ -110,9 +100,7 @@ const TransportRequestCard = ({
     return () => clearInterval(interval);
     // eslint-disable-next-line
   }, [request.timeLabels?.countdown, request.shipperInfo?.createdAt]);
-  // (removed duplicate countdown state/effect)
 
-  // Format always as hh:mm:ss for < 1 day
   const formatHHMMSS = (seconds) => {
     const absSec = Math.abs(seconds);
     const days = Math.floor(absSec / 86400);
@@ -123,18 +111,15 @@ const TransportRequestCard = ({
     const minutes = Math.floor((absSec % 3600) / 60);
     const secs = absSec % 60;
     if (absSec < 3600) {
-      // Less than 1 hour: show mm:ss only
       return `${
         seconds < 0 ? "-" : ""
       }${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
     }
-    // 1 hour to < 1 day: show hh:mm:ss
     return `${
       seconds < 0 ? "-" : ""
     }${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  // Calculate loadTimeText (e.g., 'Muat 3 Hari Lagi')
   let loadTimeText = request.loadTimeText;
   let loadTimeColor = "bg-primary-50 text-primary-700";
   if (request.loadTimeStart && request.shipperInfo?.createdAt) {
@@ -158,6 +143,7 @@ const TransportRequestCard = ({
     }
   }
 
+  // The rest of the component remains the same...
   return (
     <div className="relative">
       <div
@@ -192,12 +178,10 @@ const TransportRequestCard = ({
                   <p className="cursor-pointer text-xs font-medium text-primary-700">
                     Hubungi Shipper
                   </p>
-
-                  {/* HubungiModal integration */}
                   <HubungiModal
                     isOpen={showHubungiModal}
                     onClose={() => setShowHubungiModal(false)}
-                    transporterData={null} // TODO: pass actual transporter data if available
+                    transporterData={null}
                   />
                 </div>
               </div>
@@ -205,11 +189,8 @@ const TransportRequestCard = ({
             <div className="flex flex-col items-end">
               <p className="text-xs text-gray-600">
                 {(() => {
-                  // Anggap createdAt sudah WIB
                   const created = new Date(request.shipperInfo?.createdAt);
                   const now = new Date();
-
-                  // Hitung selisih dalam ms
                   const diffMs = now - created;
                   const diffSec = Math.floor(diffMs / 1000);
                   const diffMin = Math.floor(diffSec / 60);
@@ -234,12 +215,9 @@ const TransportRequestCard = ({
           </div>
           <div className="border-b border-neutral-400"></div>
         </>
-
         <div className="p-3">
-          {/* Status Tags and Save Button Row */}
           <div className="mb-3 flex h-6 w-full items-start justify-between">
             <div className="flex flex-wrap items-center gap-2">
-              {/* Time Label */}
               <span
                 className={cn(
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
@@ -252,9 +230,7 @@ const TransportRequestCard = ({
               >
                 {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
               </span>
-
               {(() => {
-                // Ambil tanggal dari request
                 const createdAt = request.shipperInfo?.createdAt;
                 const loadTimeStart = request.loadTimeStart;
                 if (!createdAt || !loadTimeStart) {
@@ -273,7 +249,6 @@ const TransportRequestCard = ({
                     </span>
                   );
                 }
-                // Set jam, menit, detik ke 0 agar hanya tanggal yang dibandingkan
                 createdDate.setHours(0, 0, 0, 0);
                 loadDate.setHours(0, 0, 0, 0);
                 const diffDays = Math.round(
@@ -308,8 +283,6 @@ const TransportRequestCard = ({
                   </span>
                 );
               })()}
-
-              {/* Overload Badge */}
               {request.potentialOverload && (
                 <span
                   className={cn(
@@ -322,8 +295,6 @@ const TransportRequestCard = ({
                   Potensi Overload
                 </span>
               )}
-
-              {/* Halal Certification Required Badge */}
               {request.isHalalLogistics && (
                 <InfoTooltip
                   side="left"
@@ -353,11 +324,7 @@ const TransportRequestCard = ({
               )}
             </div>
           </div>
-
-          {/* Divider after status tags */}
           <div className="mb-3 border-b border-[#C4C4C4]"></div>
-
-          {/* Location Info */}
           <div className="mb-3 flex w-full justify-between">
             <div className="w-[279px]">
               <TimelineContainer>
@@ -413,11 +380,7 @@ const TransportRequestCard = ({
               </div>
             </div>
           </div>
-
-          {/* Divider after location */}
           <div className="mb-3 border-b border-[#C4C4C4]"></div>
-
-          {/* Cargo Info and Order Code Row */}
           <div className="mb-4 flex w-full items-start justify-between">
             <div className="flex flex-1 items-start gap-3">
               <IconComponent
@@ -485,7 +448,6 @@ const TransportRequestCard = ({
               </span>
             </div>
           </div>
-          {/* Vehicle Info */}
           {showDetail && (
             <div className="mb-4 flex items-start gap-3">
               <IconComponent
@@ -508,8 +470,6 @@ const TransportRequestCard = ({
               </div>
             </div>
           )}
-
-          {/* Schedule Info */}
           {showDetail && (
             <div className="mb-4 flex items-start gap-3">
               <IconComponent
@@ -532,10 +492,7 @@ const TransportRequestCard = ({
               </div>
             </div>
           )}
-
-          {/* Toggle Button */}
           <div className="mb-4 flex w-full items-center justify-between">
-            {/* Kiri */}
             <div
               className="flex cursor-pointer items-center gap-1"
               onClick={() => setShowDetail((prev) => !prev)}
@@ -560,8 +517,6 @@ const TransportRequestCard = ({
                 />
               </svg>
             </div>
-
-            {/* Kanan */}
             <div className="flex flex-col items-end">
               <span className="text-[10px] text-neutral-600">
                 Potensi Pendapatan
@@ -573,18 +528,13 @@ const TransportRequestCard = ({
               </span>
             </div>
           </div>
-
-          {/* Divider before action buttons */}
           <div
             className={cn(
               "border-b border-[#C4C4C4]",
               request.isTaken ? "mb-10" : "mb-3"
             )}
           ></div>
-
-          {/* Transporter Info */}
           <div className="mb-3 flex items-center gap-2">
-            {/* Transporter Tersedia */}
             <div
               className="flex cursor-pointer items-center gap-1"
               onClick={() => setShowModalTransporter(true)}
@@ -604,15 +554,11 @@ const TransportRequestCard = ({
                 {request.counters?.available ?? 0} Transporter Tersedia
               </span>
             </div>
-
-            {/* Modal */}
             {showModalTransporter && (
               <ModalTransportTersedia
                 onClose={() => setShowModalTransporter(false)}
               />
             )}
-
-            {/* Dilihat */}
             <div
               className="flex cursor-pointer items-center gap-1"
               onClick={() => setShowModalDilihat(true)}
@@ -637,8 +583,6 @@ const TransportRequestCard = ({
                 onClose={() => setShowModalDilihat(false)}
               />
             )}
-
-            {/* Disimpan */}
             <div
               className="flex cursor-pointer items-center gap-1"
               onClick={() => setShowModalDisimpan(true)}
@@ -666,8 +610,6 @@ const TransportRequestCard = ({
               />
             )}
           </div>
-
-          {/* Action Buttons */}
           <div className="flex items-center gap-1">
             <>
               <Button
@@ -688,11 +630,8 @@ const TransportRequestCard = ({
           </div>
         </div>
       </div>
-
-      {/* Render "Mengerti" button and message outside grayscale container but positioned correctly */}
       {request.isTaken && (
         <>
-          {/* Message positioned with 12px from divider line */}
           <div
             className="absolute bottom-[72px] left-3 z-10 w-[368px] rounded-md px-2 py-2 text-[10px] font-semibold"
             style={{
@@ -702,8 +641,6 @@ const TransportRequestCard = ({
           >
             Permintaan sudah diambil transporter lain
           </div>
-
-          {/* Button positioned with 12px from message */}
           <div
             className="absolute bottom-6 left-3 z-10 flex h-8 w-[270px] cursor-pointer items-center justify-center rounded-[24px] bg-[#FFC217] px-4 text-[14px] font-semibold hover:bg-[#F9A307]"
             style={{
@@ -723,8 +660,6 @@ const TransportRequestCard = ({
           </div>
         </>
       )}
-
-      {/* HubungiModal integration */}
       <HubungiModal
         isOpen={showHubungiModal}
         onClose={() => setShowHubungiModal(false)}
