@@ -8,7 +8,6 @@ import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
-import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
@@ -41,22 +40,71 @@ const DaftarArmada = ({
   // State untuk mengontrol buka/tutup popover filter
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  // State untuk parameter API
+  const [apiParams, setApiParams] = useState({
+    page: 1,
+    limit: 50,
+    sort: "asc",
+    filter: "",
+    search: null,
+    fleetId: null,
+  });
+
+  // Map filter values to API format
+  const mapFilterToAPI = (filters) => {
+    const mapping = {
+      ON_DUTY: "onDuty",
+      WAITING_LOADING_TIME: "WaitingLoadingTime",
+      READY_FOR_ORDER: "ReadyForOrder",
+      INACTIVE: "inactive",
+      NOT_PAIRED: "notPaired",
+      NEEDS_RESPONSE: "needResponse",
+    };
+
+    return filters.map((filter) => mapping[filter] || filter);
+  };
+
+  // Update API parameters when filters or search change
+  const updateApiParams = () => {
+    const allFilters = [
+      ...mapFilterToAPI(truckStatusFilter),
+      ...mapFilterToAPI(orderStatusFilter),
+    ];
+
+    const newParams = {
+      page: 1,
+      limit: 50,
+      sort: "asc",
+      filter: allFilters.join(","),
+      search: searchTerm || null,
+      fleetId: selectedFleetId,
+    };
+
+    console.log("Updating API params:", newParams); // Debug log
+    setApiParams(newParams);
+  };
+
+  // Update API params when dependencies change
+  useEffect(() => {
+    updateApiParams();
+  }, [truckStatusFilter, orderStatusFilter, searchTerm, selectedFleetId]);
+
+  console.log("Calling useGetFleetList with params:", apiParams); // Debug log
+
   const {
     data: fleetData,
     isLoading,
     error,
     mutate: refetchFleets,
-  } = useGetFleetList({
-    search: searchTerm,
-    sosOnly: activeTab === "sos",
-    truckStatus: truckStatusFilter,
-    orderStatus: orderStatusFilter,
-  });
+  } = useGetFleetList(apiParams);
 
   const fleets = fleetData?.fleets || [];
   const totalFleets = fleetData?.pagination?.totalFleets || fleets.length;
   const sosCount = fleetData?.filter?.sos || 0;
   const hasFilterData = fleetData?.filter;
+
+  console.log("DaftarArmada received fleetData:", fleetData); // Debug log
+  console.log("DaftarArmada filter counts:", fleetData?.filter); // Debug log
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
 
   // Variabel boolean untuk menentukan apakah ada filter yang aktif
@@ -129,8 +177,32 @@ const DaftarArmada = ({
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
-    refetchFleets(); // Memicu pengambilan data ulang dengan filter baru
     setIsPopoverOpen(false); // Menutup popover setelah filter diterapkan
+  };
+
+  // Function to update pagination
+  const handlePageChange = (newPage) => {
+    setApiParams((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  // Function to update limit
+  const handleLimitChange = (newLimit) => {
+    setApiParams((prev) => ({
+      ...prev,
+      limit: newLimit,
+      page: 1, // Reset to first page when changing limit
+    }));
+  };
+
+  // Function to update sort
+  const handleSortChange = (newSort) => {
+    setApiParams((prev) => ({
+      ...prev,
+      sort: newSort,
+    }));
   };
 
   const handleFleetCardClick = (fleet) => {
@@ -194,6 +266,8 @@ const DaftarArmada = ({
               isPopoverOpen={isPopoverOpen}
               onOpenChange={setIsPopoverOpen}
               isFilterActive={isFilterActive}
+              currentTruckFilters={truckStatusFilter}
+              currentOrderFilters={orderStatusFilter}
             />
           )}
         </div>
