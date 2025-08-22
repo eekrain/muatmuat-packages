@@ -60,7 +60,7 @@ const AdditionalFeeBottomsheet = ({
             title: "Biaya Administrasi",
             items: [
               {
-                label: "Admin Ubah Pesanan",
+                label: "Biaya Admin Ubah Pesanan",
                 price: calculatedPrice.penaltyFee,
               },
             ],
