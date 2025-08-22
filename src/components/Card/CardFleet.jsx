@@ -430,8 +430,8 @@ export default function CardFleet({
 }) {
   const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
 
-  const driverName = fleet?.driver?.name;
-  const phone = fleet?.driver?.phoneNumber;
+  const driverName = fleet?.driver?.name || null;
+  const phone = fleet?.driver?.phoneNumber || null;
   const locationText = fleet?.lastLocation?.address
     ? `${fleet.lastLocation.address.district || "-"}, ${
         fleet.lastLocation.address.city || "-"
@@ -479,7 +479,7 @@ export default function CardFleet({
     const showOnDuty = ["ON_DUTY", "WAITING_LOADING_TIME"].includes(
       fleet?.status
     );
-    const missingDriver = !driverName || !phone;
+    const missingDriver = !fleet?.driver || !driverName || !phone;
 
     const handleOpenResponseModal = (e) => {
       e.stopPropagation(); // Prevents the card from collapsing when the button is clicked
