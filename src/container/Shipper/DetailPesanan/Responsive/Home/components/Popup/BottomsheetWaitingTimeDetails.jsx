@@ -118,8 +118,8 @@ const BottomsheetWaitingTimeDetails = () => {
           <p className="text-xs font-medium text-neutral-900">
             {t(
               "BottomsheetWaitingTimeDetails.warningFreeHours",
-              {},
-              "FREE untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari 12 jam"
+              { freeHours: 12 },
+              "FREE untuk {freeHours} jam awal dan dikenakan biaya waktu tunggu lebih dari {freeHours} jam"
             )}
           </p>
         </Alert>
