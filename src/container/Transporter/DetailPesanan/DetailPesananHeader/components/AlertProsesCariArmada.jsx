@@ -1,6 +1,6 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-function AlertProsesCariArmada() {
+function AlertProsesCariArmada({ fleetFound }) {
   return (
     <div
       className={
@@ -26,9 +26,17 @@ function AlertProsesCariArmada() {
           Proses pencarian armada pengganti memerlukan waktu untuk beberapa
           saat.
         </h3>
-        <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
-          Terima kasih atas kesabaran kamu.
-        </p>
+        <div className="">
+          {fleetFound && (
+            <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
+              Armada pengganti telah berhasil ditemukan{" "}
+              <span className="font-bold">1/3 armada</span>
+            </p>
+          )}
+          <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
+            Terima kasih atas kesabaran kamu.
+          </p>
+        </div>
       </div>
     </div>
   );

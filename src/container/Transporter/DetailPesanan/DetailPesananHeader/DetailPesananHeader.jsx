@@ -126,8 +126,14 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
 
       {/* Referensi: LDN-12.2 */}
       {/* kondisi muncul masih perlu disesuaikan */}
-      {dataOrderDetail?.orderStatus === ORDER_STATUS.WAITING_CHANGE_FLEET && (
+      {dataOrderDetail?.orderStatus === ORDER_STATUS.CHANGE_FLEET && (
         <AlertProsesCariArmada />
+      )}
+
+      {/* Referensi: LDN-29.1 */}
+      {/* kondisi muncul masih perlu disesuaikan */}
+      {dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING && (
+        <AlertProsesCariArmada fleetFound={true} />
       )}
 
       {/* Cancel Order Confirmation Modal */}

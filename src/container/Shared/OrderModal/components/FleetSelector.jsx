@@ -63,11 +63,19 @@ const FleetSelector = ({
 
           {/* Fleet Options */}
           <div className="max-h-[300px] overflow-y-auto">
-            {filteredFleetOptions.length === 0 ? (
-              <div className="p-4 text-center text-sm text-neutral-500">
-                Tidak ada armada yang sesuai
+            {/* Case: No data from the backend */}
+            {fleetOptions.length === 0 ? (
+              <div className="font-meduim py-5 text-center text-xs text-neutral-900">
+                Belum ada armada pengganti yang tersedia. <br /> Tambahkan
+                armada yang sesuai untuk dapat menampilkan armada pengganti.
+              </div>
+            ) : // Case: No matching results after filtering
+            filteredFleetOptions.length === 0 ? (
+              <div className="p-4 text-center text-xs text-neutral-900">
+                Data Tidak Ditemukan
               </div>
             ) : (
+              // Case: Display filtered results
               filteredFleetOptions.map((fleet) => (
                 <Select.Item
                   key={fleet.id}

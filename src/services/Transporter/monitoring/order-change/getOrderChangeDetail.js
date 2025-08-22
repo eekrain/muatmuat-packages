@@ -106,13 +106,13 @@ const apiResultOrderChangeDetail = {
         },
         {
           locationType: "DROPOFF",
-          fullAddress: "Jl. Daan Mogot No. 100, Cengkareng, Jakarta Barat",
+          fullAddress: "Jl. Raya Bogor KM 19, Kramat Jati, Jakarta Timur",
           latitude: -6.1412,
           longitude: 106.7378,
         },
         {
           locationType: "DROPOFF",
-          fullAddress: "Jl. Pluit Raya No. 25, Penjaringan, Jakarta Utara",
+          fullAddress: "Jl. Kelapa Gading Boulevard, Jakarta Utara",
           latitude: -6.1176,
           longitude: 106.7896,
         },

@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 
-const useMockData = false;
+const useMockData = true;
 
 const mockApiResult = {
   Message: {
@@ -18,7 +18,7 @@ const mockApiResult = {
     // orderStatus: ORDER_STATUS.NEED_CHANGE_RESPONSE,
     // orderStatus: "CONFIRMED_ORDER",
     // orderStatus: "CANCELLED_BY_TRANSPORTER_2",
-    // orderStatus: "SCHEDULED_FLEET",
+    orderStatus: "SCHEDULED_FLEET",
     // orderStatus: "WAITING_PAYMENT_2",
     // orderStatus: ORDER_STATUS.DOCUMENT_PREPARATION,
     // orderStatus: ORDER_STATUS.COMPLETED,
@@ -27,7 +27,8 @@ const mockApiResult = {
     // orderStatus: "WAITING_PAYMENT_2", // Status dengan angka untuk testing
     // orderStatus: "UNKNOWN_STATUS_3", // Status yang tidak ada di enum untuk testing
     // orderStatus: "CUSTOM_LOADING_1", // Status custom untuk testing
-    orderStatus: ORDER_STATUS.NEED_ASSIGN_FLEET, // Status untuk trigger Assign Armada button
+    // orderStatus: ORDER_STATUS.NEED_ASSIGN_FLEET, // Status untuk trigger Assign Armada button
+    // orderStatus : ORDER_STATUS.CHANGE_FLEET,
     orderStatusUnit: 1, // Unit untuk testing
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
@@ -35,7 +36,7 @@ const mockApiResult = {
     estimatedDistance: 178,
     truckCount: 1,
     hasSOSAlert: true,
-    hasResponseDraft: true,
+    hasResponseDraft: false,
     isCancellable: true, // Pastikan bisa dibatalkan
     isHalalLogistics: true,
     vehicle: {
