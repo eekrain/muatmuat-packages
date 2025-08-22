@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const Root = ({ children, className }) => (
   <div
     className={cn(
-      "flex w-full flex-col bg-white md:w-[338px] md:overflow-hidden md:rounded-xl md:shadow-md",
+      "flex w-full flex-col bg-white md:w-[338px] md:overflow-hidden md:rounded-xl md:shadow-muat",
       className
     )}
   >
