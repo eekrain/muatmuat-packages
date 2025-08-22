@@ -110,7 +110,7 @@ const LacakArmada = ({ dataOrderDetail }) => {
   };
   return (
     <Card className="rounded-xl border-none">
-      <CardContent className="flex flex-col gap-4 p-6">
+      <CardContent className="flex flex-col gap-y-6 p-6">
         <LacakArmadaHeader
           activeCount={aktifCount}
           historyCount={riwayatCount}
