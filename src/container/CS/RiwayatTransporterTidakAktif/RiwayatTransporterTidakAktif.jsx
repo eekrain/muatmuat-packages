@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -10,6 +11,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetTransporterInactive } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactive";
 
 import DataTable from "./DataTable";
+import ModalDetailTransporterTidakAktif from "./ModalDetailTransporterTidakAktif";
 import NoOrderTable from "./NoOrderTable";
 
 const RiwayatTransporterTidakAktif = () => {
@@ -23,6 +25,9 @@ const RiwayatTransporterTidakAktif = () => {
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [filters, setFilters] = useState({});
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedTransporter, setSelectedTransporter] = useState(null);
 
   // Use the transporter inactive service
   const params = {
@@ -214,10 +219,13 @@ const RiwayatTransporterTidakAktif = () => {
               {row.transporterName}
             </span>
 
-            <div className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer">
+            <button
+              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer"
+              onClick={() => setShowHubungiModal(true)}
+            >
               <IconComponent src={"/icons/call-blue.svg"} />
               <div>Hubungi</div>
-            </div>
+            </button>
           </div>
         </div>
       ),
@@ -226,6 +234,7 @@ const RiwayatTransporterTidakAktif = () => {
       key: "condition",
       header: "Kondisi",
       width: "430px",
+      sortable: false,
       className: "align-top !px-2.5",
       headerClassName: "px-2.5",
       render: (row, _index) => (
@@ -246,11 +255,18 @@ const RiwayatTransporterTidakAktif = () => {
         <Button
           className="!px-[36.5px]"
           variant="muattrans-primary"
-          onClick={() =>
-            router.push(
-              `/laporan/riwayat-transporter-tidak-aktif/${row.transporterId}/riwayat-transporter`
-            )
-          }
+          onClick={() => {
+            if (
+              row.condition === TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE
+            ) {
+              setSelectedTransporter(row);
+              setShowDetailModal(true);
+            } else {
+              router.push(
+                `/laporan/riwayat-transporter-tidak-aktif/${row.transporterId}/riwayat-transporter`
+              );
+            }
+          }}
         >
           Detail
         </Button>
@@ -280,6 +296,28 @@ const RiwayatTransporterTidakAktif = () => {
           </Button>
         </div>
       </div>
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={null} // TODO: pass actual transporter data
+      />
+
+      {showDetailModal && selectedTransporter && (
+        <ModalDetailTransporterTidakAktif
+          transporter={{
+            transporterName: selectedTransporter.transporterName,
+            logoUrl: "/icons/company-placeholder.svg",
+          }}
+          detail={{
+            lastActiveAt: selectedTransporter.dateCompleted,
+            inactiveDuration: 120, // Mock data - 2 hours
+          }}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedTransporter(null);
+          }}
+        />
+      )}
       {isError ? (
         <div className="flex items-center justify-center p-8">
           <span className="text-error-500">

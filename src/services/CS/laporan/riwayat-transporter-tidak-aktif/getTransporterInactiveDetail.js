@@ -1,6 +1,7 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
+import { TransporterInactiveTypeEnum } from "@/lib/constants/Transporter/laporan/transporterInactive.enum";
 
 const useMockData = true;
 
@@ -15,6 +16,7 @@ export const mockTransporterInactiveFleetDetails = {
         id: "550e8400-e29b-41d4-a716-446655440001",
         name: "PT Logistik Prima Express",
         companyName: "PT Logistik Prima Express",
+        status: TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED, // Change to ADMIN_IDLE_DETECTED to test idle status
         contactInfo: {
           phoneNumber: "+6281234567890",
           picName: "Budi Santoso",
