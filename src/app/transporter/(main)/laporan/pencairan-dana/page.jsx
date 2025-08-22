@@ -196,7 +196,7 @@ export default function Page() {
           {},
           "Rekening Pencairan"
         ),
-        searchable: true,
+        searchable: false,
       },
     ],
     data: {

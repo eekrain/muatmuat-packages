@@ -567,10 +567,10 @@ export default function Page() {
                           province.pagination?.defaultShow || 12
                         );
 
-                    // Calculate actual selected count from visible cities
-                    const actualSelectedCount = showSelectedOnly
-                      ? visibleCities.length
-                      : visibleCities.filter((city) => city.isSelected).length;
+                    // Calculate actual selected count from ALL cities in province
+                    const actualSelectedCount = province.cities.filter(
+                      (city) => city.isSelected
+                    ).length;
 
                     return (
                       <div
@@ -590,8 +590,8 @@ export default function Page() {
                         <div className="mb-4 flex items-center gap-3">
                           <Checkbox
                             checked={
-                              visibleCities.length > 0 &&
-                              visibleCities.every((city) => city.isSelected)
+                              province.cities.length > 0 &&
+                              province.cities.every((city) => city.isSelected)
                             }
                             onChange={(e) =>
                               handleSelectAllProvince(province.id, e.checked)
@@ -660,7 +660,7 @@ export default function Page() {
                               className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
                             >
                               {isExpanded
-                                ? "Lihat Lebih Sedikit"
+                                ? "Sembunyikan"
                                 : "Lihat Selengkapnya"}
                               <ChevronDown
                                 size={16}

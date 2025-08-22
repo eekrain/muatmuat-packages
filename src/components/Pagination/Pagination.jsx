@@ -19,6 +19,7 @@ const Pagination = ({
   variants,
   className,
   paginationCounter,
+  showPerPageLabel = "Tampilkan Jumlah Data",
 }) => {
   const perPageOptions = [10, 20, 40];
   const buttonClassname = buttonVariants[variants] || buttonVariants.muatrans;
@@ -167,7 +168,7 @@ const Pagination = ({
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold text-neutral-600">
           {/* {t("labelTampilkanJumlahData")} */}
-          Tampilkan Jumlah Data
+          {showPerPageLabel}
         </span>
         <div className="flex gap-2">
           {perPageOptions.map((option) => (

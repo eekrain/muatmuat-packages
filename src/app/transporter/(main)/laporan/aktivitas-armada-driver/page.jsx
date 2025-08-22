@@ -483,7 +483,7 @@ export default function Page() {
     <div className="mx-auto mt-7 max-w-full px-0">
       {/* Header Section */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Laporan Aktivitas</h1>
+        <h1 className="text-xl font-bold">Laporan Aktivitas</h1>
       </div>
 
       {/* Tabs */}
@@ -493,7 +493,7 @@ export default function Page() {
           value={selectedTab}
           onValueChange={handleTabChange}
         >
-          <TabsList className="w-1/2">
+          <TabsList className="w-[390px]">
             <TabsTriggerWithSeparator value="armada" activeColor="primary-700">
               Aktivitas Armada ({countLoading ? "..." : countData.fleet || 0})
             </TabsTriggerWithSeparator>

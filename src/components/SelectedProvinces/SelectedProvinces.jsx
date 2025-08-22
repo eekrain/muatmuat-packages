@@ -88,7 +88,7 @@ export function SelectedProvinces({
             onClick={() => handleScroll(-200)}
             disabled={isLeftArrowDisabled}
           >
-            <ChevronLeft size={16} className="text-neutral-500" />
+            <ChevronLeft size={28} className="text-[#1B1B1B]" />
           </Button>
         )}
         <div
@@ -116,7 +116,7 @@ export function SelectedProvinces({
             onClick={() => handleScroll(200)}
             disabled={isRightArrowDisabled}
           >
-            <ChevronRight size={16} className="text-neutral-500" />
+            <ChevronRight size={28} className="text-[#1B1B1B]" />
           </Button>
         )}
         {showAddButton && (
