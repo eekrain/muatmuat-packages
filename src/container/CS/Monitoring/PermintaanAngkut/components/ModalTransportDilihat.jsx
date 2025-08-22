@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import { useGetViewedOrder } from "@/services/CS/monitoring/permintaan-angkut/getViewedOrder";
 
 const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
+  const [selectedTransporter, setSelectedTransporter] = useState(null);
+
   // Ambil data transporter dari mock API
   const { data, isLoading } = useGetViewedOrder(orderId);
   const allTransporters = data?.transporters || [];
@@ -56,7 +60,7 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
         {/* Header */}
         <div className="mb-4 flex items-center justify-center">
           <h2 className="text-[16px] font-bold text-neutral-900">
-            Transporter Melihat Pesanan
+            Transporter Melihat Permintaan
           </h2>
           <button
             onClick={onClose}
@@ -173,6 +177,10 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                       <Button
                         variant="muattrans-primary-secondary"
                         className="h-8 w-[107px] rounded-full text-sm font-semibold"
+                        onClick={() => {
+                          setShowHubungiModal(true);
+                          setSelectedTransporter(transporter);
+                        }}
                       >
                         Hubungi
                       </Button>
@@ -201,17 +209,18 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                   <div className="px-4">
                     <div className="pb-3 text-xs">
                       {/* Status/Info tambahan bisa di sini */}
-                      {transporter.status.activityStatus === "INACTIVE" ? (
+                      {!transporter.status.isActive && (
                         <>
                           <div className="mb-3 border-b border-neutral-400"></div>
                           <span className="font-medium text-error-400">
-                            {`Admin Terdeteksi Sering Idle (${transporter.history?.canceledOrders ?? 0}/${transporter.history?.completedOrders ?? 0} Order)`}
+                            {`Admin Terdeteksi Sering Idle (${transporter.status?.current ?? 0}/${transporter.status?.total ?? 0} Order)`}
                           </span>
+                          {/* Detail link dummy */}
                           <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
                             Detail
                           </span>
                         </>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 </div>
@@ -264,14 +273,30 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                               </div>
                               <span
                                 className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
-                                  fleet.operationalStatus === "READY_FOR_ORDER"
+                                  [
+                                    "READY_FOR_ORDER",
+                                    "ON_DUTY",
+                                    "WAITING_LOADING_TIME",
+                                  ].includes(fleet.operationalStatus)
                                     ? "bg-success-50 text-success-400"
-                                    : "bg-neutral-200 text-neutral-600"
-                                } `}
+                                    : ["NOT_PAIRED", "INACTIVE"].includes(
+                                          fleet.operationalStatus
+                                        )
+                                      ? "bg-neutral-200 text-neutral-600"
+                                      : "bg-neutral-200 text-neutral-600"
+                                }`}
                               >
-                                {fleet.operationalStatus === "READY_FOR_ORDER"
+                                {[
+                                  "READY_FOR_ORDER",
+                                  "ON_DUTY",
+                                  "WAITING_LOADING_TIME",
+                                ].includes(fleet.operationalStatus)
                                   ? "Aktif"
-                                  : "Nonaktif"}
+                                  : ["NOT_PAIRED", "INACTIVE"].includes(
+                                        fleet.operationalStatus
+                                      )
+                                    ? "Nonaktif"
+                                    : "-"}
                               </span>
                             </div>
                           )
@@ -285,6 +310,13 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
           )}
         </div>
       </div>
+
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={selectedTransporter || null}
+      />
     </div>
   );
 };

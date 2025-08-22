@@ -383,7 +383,7 @@ const PermintaanAngkutCS = () => {
                 {data?.tabCounters?.hasBlinkNode && (
                   <NotificationDot
                     position="absolute"
-                    positionClasses="-right-3 -top-1.5"
+                    positionClasses="-right-4 -top-1.5"
                     animated={true}
                     size="md"
                     color="red"
@@ -469,7 +469,7 @@ const PermintaanAngkutCS = () => {
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto bg-white px-4">
+        <div className="mx-2 flex-1 overflow-y-auto bg-white px-2">
           {/* Always show content regardless of suspension status */}
           <RequestList
             requests={data?.requests || []}
