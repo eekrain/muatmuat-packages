@@ -83,6 +83,9 @@ const DaftarArmadaCs = ({
     useState(null);
   const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
+  const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
+  const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
 
   const {
     data: fleetData,
@@ -188,6 +191,9 @@ const DaftarArmadaCs = ({
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
+    setSelectedTruckStatuses(truckStatuses);
+    setSelectedOrderStatuses(orderStatuses);
+    setIsFilterPopoverOpen(false);
   };
 
   const handleFleetCardClick = (fleet) => {
@@ -233,6 +239,14 @@ const DaftarArmadaCs = ({
           <FilterPopoverArmada
             onApplyFilter={handleApplyFilter}
             filterCounts={fleetData?.summary?.statusBreakdown}
+            isPopoverOpen={isFilterPopoverOpen}
+            onOpenChange={setIsFilterPopoverOpen}
+            isFilterActive={
+              selectedTruckStatuses.length > 0 ||
+              selectedOrderStatuses.length > 0
+            }
+            currentTruckFilters={selectedTruckStatuses}
+            currentOrderFilters={selectedOrderStatuses}
           />
         </div>
       </div>
