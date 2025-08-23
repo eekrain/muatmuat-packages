@@ -7,7 +7,6 @@ import { Info, Phone, Truck } from "lucide-react";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import Input from "@/components/Form/Input";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
@@ -34,7 +33,7 @@ const ModalUbahDriver = ({
   const [driverWithVehicle, setDriverWithVehicle] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   //toggle radio button dan badge jadwal driver tidak ada
-  const isDriverAvaliable = true;
+  const isDriverAvaliable = false;
 
   // Fetch drivers list with integrated API
   const {
@@ -155,10 +154,10 @@ const ModalUbahDriver = ({
                 {/* Search Input */}
                 <Search
                   placeholder="Cari No. Polisi / Nama Driver"
-                  onSearch={""}
+                  onSearch={setSearchValue}
                   autoSearch={true}
                   debounceTime={300}
-                  defaultValue={""}
+                  defaultValue={searchValue}
                 />
 
                 {/* Driver List */}
@@ -176,14 +175,13 @@ const ModalUbahDriver = ({
                   ) : drivers.length === 0 ? (
                     <DataNotFound
                       className="h-[291px] gap-y-5"
-                      title="Keyword Tidak Ditemukan Di Sistem"
+                      title="Keyword Tidak Ditemukan"
                     />
                   ) : (
                     drivers.map((driver) => (
                       <div
                         key={driver.id}
-                        className="flex h-[92px] cursor-pointer items-center gap-3 py-3 first:h-20 first:pt-0 last:pb-0"
-                        onClick={() => setSelectedDriverId(driver.id)}
+                        className="flex h-[92px] items-center gap-3 py-3 first:h-20 first:pt-0 last:pb-0"
                       >
                         {/* Driver Photo */}
                         <img
@@ -216,8 +214,10 @@ const ModalUbahDriver = ({
                               <p>0822-31001-2312</p>
                             </div>
                           </div>
-                          <div className="flex h-3 items-center text-xxs">
-                            <a className="text-blue-500">Cek Jadwal Driver</a>
+                          <div className="flex h-3 cursor-pointer items-center text-xxs">
+                            <a className="text-blue-500 hover:text-blue-800">
+                              Cek Jadwal Driver
+                            </a>
                           </div>
                         </div>
 
@@ -242,7 +242,7 @@ const ModalUbahDriver = ({
                             name="driver"
                             value={driver.id}
                             checked={selectedDriverId === driver.id}
-                            onChange={() => setSelectedDriverId(driver.id)}
+                            onClick={() => setSelectedDriverId(driver.id)}
                             className={"gap-0"}
                           />
                         )}
