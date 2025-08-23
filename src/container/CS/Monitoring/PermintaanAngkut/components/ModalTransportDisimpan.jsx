@@ -1,29 +1,28 @@
 import React, { useState } from "react";
 
+// Import the hook
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetSavedTransporters } from "@/services/CS/monitoring/permintaan-angkut/getSavedTransport";
 
 const ModalTransportDisimpan = ({ onClose }) => {
+  const { t } = useTranslation(); // Instantiate the hook
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
-  // Ambil data transporter dari mock API
   const { data, isLoading } = useGetSavedTransporters();
   const allTransporters = data?.transporters || [];
-  // State untuk hasil search
   const [searchValue, setSearchValue] = React.useState("");
   const [filteredTransporters, setFilteredTransporters] =
     React.useState(allTransporters);
-
-  // State untuk expand/hide detail per card
   const [expandedCardId, setExpandedCardId] = React.useState(null);
+
   const handleToggleExpand = (id) => {
     setExpandedCardId((prev) => (prev === id ? null : id));
   };
 
-  // Real-time search dengan debounce dan minimal 3 karakter
   React.useEffect(() => {
     const handler = setTimeout(() => {
       if (!searchValue || searchValue.length < 3) {
@@ -38,16 +37,14 @@ const ModalTransportDisimpan = ({ onClose }) => {
             t.tags?.some((tag) => tag.toLowerCase().includes(lower))
         )
       );
-    }, 300); // debounce 300ms
+    }, 300);
     return () => clearTimeout(handler);
   }, [searchValue, allTransporters]);
 
-  // Update filteredTransporters jika data berubah
   React.useEffect(() => {
     setFilteredTransporters(allTransporters);
   }, [allTransporters]);
 
-  // Handle search input
   const handleSearch = (value) => {
     setSearchValue(value);
   };
@@ -60,7 +57,11 @@ const ModalTransportDisimpan = ({ onClose }) => {
         {/* Header */}
         <div className="mb-4 flex items-center justify-center">
           <h2 className="text-[16px] font-bold text-neutral-900">
-            Transporter Menyimpan Permintaan
+            {t(
+              "ModalTransportDisimpan.titleSavedTransporterRequests",
+              {},
+              "Transporter Menyimpan Permintaan"
+            )}
           </h2>
           <button
             onClick={onClose}
@@ -71,7 +72,11 @@ const ModalTransportDisimpan = ({ onClose }) => {
         </div>
         {/* Search Bar */}
         <Search
-          placeholder="Cari Nama Transporter / Tag / Status"
+          placeholder={t(
+            "ModalTransportDisimpan.placeholderSearch",
+            {},
+            "Cari Nama Transporter / Tag / Status"
+          )}
           onSearch={handleSearch}
           autoSearch={true}
           debounceTime={300}
@@ -84,7 +89,9 @@ const ModalTransportDisimpan = ({ onClose }) => {
           style={{ minWidth: "calc(100% + 12px)" }}
         >
           {isLoading ? (
-            <div className="py-8 text-center text-neutral-400">Loading...</div>
+            <div className="py-8 text-center text-neutral-400">
+              {t("ModalTransportDisimpan.textLoading", {}, "Loading...")}
+            </div>
           ) : filteredTransporters.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <img
@@ -93,7 +100,11 @@ const ModalTransportDisimpan = ({ onClose }) => {
                 className="mb-4 h-[140px] w-[140px]"
               />
               <div className="text-lg font-medium text-neutral-500">
-                Keyword Tidak Ditemukan
+                {t(
+                  "ModalTransportDisimpan.textKeywordNotFound",
+                  {},
+                  "Keyword Tidak Ditemukan"
+                )}
               </div>
             </div>
           ) : (
@@ -120,7 +131,11 @@ const ModalTransportDisimpan = ({ onClose }) => {
                             : transporter.companyName}
                         </div>
                         <div className="mt-2 text-xs font-medium text-neutral-900">
-                          Disimpan pada{" "}
+                          {t(
+                            "ModalTransportDisimpan.labelSavedOn",
+                            {},
+                            "Disimpan pada "
+                          )}
                           {new Date(
                             transporter.lastSavedAt
                           ).toLocaleDateString()}
@@ -131,30 +146,41 @@ const ModalTransportDisimpan = ({ onClose }) => {
                               src="/icons/truk16.svg"
                               className="h-[14px] w-[14px] rounded"
                             />
-                            {transporter.fleet.activeUnits} Armada Aktif
+                            {t(
+                              "ModalTransportDisimpan.textActiveFleet",
+                              { count: transporter.fleet.activeUnits },
+                              "{count} Armada Aktif"
+                            )}
                           </span>
                           <span className="flex items-center gap-1 text-[10px] font-medium text-neutral-900">
                             <IconComponent
                               src="/icons/truk16.svg"
                               className="h-[14px] w-[14px] rounded"
                             />
-                            {transporter.fleet.inactiveUnits} Armada Nonaktif
+                            {t(
+                              "ModalTransportDisimpan.textInactiveFleet",
+                              { count: transporter.fleet.inactiveUnits },
+                              "{count} Armada Nonaktif"
+                            )}
                           </span>
                         </div>
                         <div className="mt-1 text-[10px] font-medium text-neutral-600">
-                          Disimpan :{" "}
-                          {new Date(transporter.lastSavedAt).toLocaleString(
-                            "id-ID",
+                          {t(
+                            "ModalTransportDisimpan.textSavedAtDateTime",
                             {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            }
-                          )}{" "}
-                          WIB
+                              datetime: new Date(
+                                transporter.lastSavedAt
+                              ).toLocaleString("id-ID", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              }),
+                            },
+                            "Disimpan : {datetime} WIB"
+                          )}
                         </div>
                       </div>
                     </div>
@@ -168,7 +194,11 @@ const ModalTransportDisimpan = ({ onClose }) => {
                           setSelectedTransporter(transporter);
                         }}
                       >
-                        Hubungi
+                        {t(
+                          "ModalTransportDisimpan.buttonContact",
+                          {},
+                          "Hubungi"
+                        )}
                       </Button>
                       <button
                         type="button"
@@ -194,16 +224,25 @@ const ModalTransportDisimpan = ({ onClose }) => {
                   {/* Border pembatas di sini */}
                   <div className="px-4">
                     <div className="pb-3 text-xs">
-                      {/* Status/Info tambahan bisa di sini */}
                       {!transporter.status.isActive && (
                         <>
                           <div className="mb-3 border-b border-neutral-400"></div>
                           <span className="font-medium text-error-400">
-                            {`Admin Terdeteksi Sering Idle (${transporter.status?.current ?? 0}/${transporter.status?.total ?? 0} Order)`}
+                            {t(
+                              "ModalTransportDisimpan.messageErrorAdminIdle",
+                              {
+                                current: transporter.status?.current ?? 0,
+                                total: transporter.status?.total ?? 0,
+                              },
+                              "Admin Terdeteksi Sering Idle ({current}/{total} Order)"
+                            )}
                           </span>
-                          {/* Detail link dummy */}
                           <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
-                            Detail
+                            {t(
+                              "ModalTransportDisimpan.linkDetails",
+                              {},
+                              "Detail"
+                            )}
                           </span>
                         </>
                       )}
@@ -212,10 +251,13 @@ const ModalTransportDisimpan = ({ onClose }) => {
                 </div>
                 {expandedCardId === transporter.id && (
                   <div className="rounded-xl bg-white">
-                    {/* Daftar Armada Yang Cocok */}
                     <div className="p-4">
                       <div className="mb-3 text-xs font-bold text-neutral-900">
-                        Daftar Armada Yang Cocok
+                        {t(
+                          "ModalTransportDisimpan.titleMatchingFleetList",
+                          {},
+                          "Daftar Armada Yang Cocok"
+                        )}
                       </div>
                       <div className="space-y-3">
                         {transporter.expandedDetails?.fleetDetails?.map(
@@ -244,8 +286,13 @@ const ModalTransportDisimpan = ({ onClose }) => {
                                       src="/icons/location-driver.svg"
                                       className="h-[14px] w-[14px]"
                                     />
-                                    {fleet.lastLocation.distance} km dari lokasi
-                                    muat -
+                                    {t(
+                                      "ModalTransportDisimpan.textDistanceFromLoading",
+                                      {
+                                        distance: fleet.lastLocation.distance,
+                                      },
+                                      "{distance} km dari lokasi muat -"
+                                    )}
                                     <span className="font-semibold text-neutral-900">
                                       {(() => {
                                         const lokasi = `${fleet.lastLocation.District}, ${fleet.lastLocation.City}`;
@@ -277,11 +324,19 @@ const ModalTransportDisimpan = ({ onClose }) => {
                                   "ON_DUTY",
                                   "WAITING_LOADING_TIME",
                                 ].includes(fleet.operationalStatus)
-                                  ? "Aktif"
+                                  ? t(
+                                      "ModalTransportDisimpan.statusActive",
+                                      {},
+                                      "Aktif"
+                                    )
                                   : ["NOT_PAIRED", "INACTIVE"].includes(
                                         fleet.operationalStatus
                                       )
-                                    ? "Nonaktif"
+                                    ? t(
+                                        "ModalTransportDisimpan.statusInactive",
+                                        {},
+                                        "Nonaktif"
+                                      )
                                     : "-"}
                               </span>
                             </div>
@@ -296,7 +351,6 @@ const ModalTransportDisimpan = ({ onClose }) => {
           )}
         </div>
       </div>
-      {/* HubungiModal integration */}
       <HubungiModal
         isOpen={showHubungiModal}
         onClose={() => setShowHubungiModal(false)}

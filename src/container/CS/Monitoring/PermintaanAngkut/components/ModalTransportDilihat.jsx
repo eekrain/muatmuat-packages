@@ -4,9 +4,11 @@ import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetViewedOrder } from "@/services/CS/monitoring/permintaan-angkut/getViewedOrder";
 
 const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
+  const { t } = useTranslation();
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
 
@@ -61,6 +63,20 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
     setSearchValue(value);
   };
 
+  const formatLastViewedDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    const options = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+    const dateStr = date.toLocaleDateString("id-ID", options);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${dateStr} ${hours}:${minutes} WIB`;
+  };
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${showHubungiModal ? "hidden" : ""}`}
@@ -69,7 +85,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
         {/* Header */}
         <div className="mb-4 flex items-center justify-center">
           <h2 className="text-[16px] font-bold text-neutral-900">
-            Transporter Melihat Permintaan
+            {t(
+              "ModalTransportDilihat.titleModal",
+              {},
+              "Transporter Melihat Permintaan"
+            )}
           </h2>
           <button
             onClick={onClose}
@@ -80,7 +100,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
         </div>
         {/* Search Bar */}
         <Search
-          placeholder="Cari No. Polisi / Nama Driver / Transporter "
+          placeholder={t(
+            "ModalTransportDilihat.placeholderSearch",
+            {},
+            "Cari No. Polisi / Nama Driver / Transporter "
+          )}
           onSearch={handleSearch}
           autoSearch={true}
           debounceTime={300}
@@ -93,7 +117,9 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
           style={{ minWidth: "calc(100% + 12px)" }}
         >
           {isLoading ? (
-            <div className="py-8 text-center text-neutral-400">Loading...</div>
+            <div className="py-8 text-center text-neutral-400">
+              {t("ModalTransportDilihat.textLoading", {}, "Loading...")}
+            </div>
           ) : filteredTransporters.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <img
@@ -102,7 +128,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                 className="mb-4 h-[140px] w-[140px]"
               />
               <div className="text-lg font-medium text-neutral-500">
-                Keyword Tidak Ditemukan
+                {t(
+                  "ModalTransportDilihat.textKeywordNotFound",
+                  {},
+                  "Keyword Tidak Ditemukan"
+                )}
               </div>
             </div>
           ) : (
@@ -116,7 +146,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                   {transporter.history?.hasRejectedThisRequest && (
                     <div className="absolute -top-0 right-0 z-10">
                       <div className="rounded-bl-lg rounded-tr-xl bg-red-500 px-5 py-[6px] text-xs font-semibold text-white shadow-lg">
-                        Menolak Permintaan
+                        {t(
+                          "ModalTransportDilihat.badgeRequestRejected",
+                          {},
+                          "Menolak Permintaan"
+                        )}
                       </div>
                     </div>
                   )}
@@ -137,7 +171,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                             : transporter.companyName}
                         </div>
                         <div className="mt-2 text-xs font-medium text-neutral-900">
-                          {transporter.fleet.matchingUnits} Armada Yang Cocok
+                          {t(
+                            "ModalTransportDilihat.cardMatchingFleets",
+                            { matchingUnits: transporter.fleet.matchingUnits },
+                            `${transporter.fleet.matchingUnits} Armada Yang Cocok`
+                          )}
                         </div>
                         <div className="mt-2 flex items-center gap-4">
                           <span className="flex items-center gap-1 text-[10px] font-medium text-neutral-900">
@@ -145,39 +183,38 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                               src="/icons/truk16.svg"
                               className="h-[14px] w-[14px] rounded"
                             />
-                            {transporter.fleet.activeUnits} Armada Aktif
+                            {t(
+                              "ModalTransportDilihat.cardActiveFleets",
+                              { activeUnits: transporter.fleet.activeUnits },
+                              `${transporter.fleet.activeUnits} Armada Aktif`
+                            )}
                           </span>
                           <span className="flex items-center gap-1 text-[10px] font-medium text-neutral-900">
                             <IconComponent
                               src="/icons/truk16.svg"
                               className="h-[14px] w-[14px] rounded"
                             />
-                            {transporter.fleet.inactiveUnits} Armada Nonaktif
+                            {t(
+                              "ModalTransportDilihat.cardInactiveFleets",
+                              {
+                                inactiveUnits: transporter.fleet.inactiveUnits,
+                              },
+                              `${transporter.fleet.inactiveUnits} Armada Nonaktif`
+                            )}
                           </span>
                         </div>
                         <div className="mt-2 text-[10px] font-medium text-neutral-600">
-                          {`Dilihat: ${(() => {
-                            if (!transporter.lastViewedAt) return "-";
-                            const date = new Date(transporter.lastViewedAt);
-                            const options = {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            };
-                            const dateStr = date.toLocaleDateString(
-                              "id-ID",
-                              options
-                            );
-                            const hours = String(date.getHours()).padStart(
-                              2,
-                              "0"
-                            );
-                            const minutes = String(date.getMinutes()).padStart(
-                              2,
-                              "0"
-                            );
-                            return `${dateStr} ${hours}:${minutes} WIB`;
-                          })()}`}
+                          {t(
+                            "ModalTransportDilihat.cardLastViewedAt",
+                            {
+                              datetime: formatLastViewedDate(
+                                transporter.lastViewedAt
+                              ),
+                            },
+                            `Dilihat: ${formatLastViewedDate(
+                              transporter.lastViewedAt
+                            )}`
+                          )}
                         </div>
                       </div>
                     </div>
@@ -191,7 +228,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                           setSelectedTransporter(transporter);
                         }}
                       >
-                        Hubungi
+                        {t(
+                          "ModalTransportDilihat.buttonContact",
+                          {},
+                          "Hubungi"
+                        )}
                       </Button>
                       <button
                         type="button"
@@ -199,7 +240,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={`h-6 w-6 text-neutral-700 transition-transform duration-300 ${expandedCardId === transporter.id ? "rotate-180" : ""}`}
+                          className={`h-6 w-6 text-neutral-700 transition-transform duration-300 ${
+                            expandedCardId === transporter.id
+                              ? "rotate-180"
+                              : ""
+                          }`}
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -222,11 +267,24 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                         <>
                           <div className="mb-3 border-b border-neutral-400"></div>
                           <span className="font-medium text-error-400">
-                            {`Admin Terdeteksi Sering Idle (${transporter.status?.current ?? 0}/${transporter.status?.total ?? 0} Order)`}
+                            {t(
+                              "ModalTransportDilihat.messageAdminIdleWarning",
+                              {
+                                current: transporter.status?.current ?? 0,
+                                total: transporter.status?.total ?? 0,
+                              },
+                              `Admin Terdeteksi Sering Idle (${
+                                transporter.status?.current ?? 0
+                              }/${transporter.status?.total ?? 0} Order)`
+                            )}
                           </span>
                           {/* Detail link dummy */}
                           <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
-                            Detail
+                            {t(
+                              "ModalTransportDilihat.linkDetails",
+                              {},
+                              "Detail"
+                            )}
                           </span>
                         </>
                       )}
@@ -238,7 +296,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                     {/* Daftar Armada Yang Cocok */}
                     <div className="p-4">
                       <div className="mb-3 text-xs font-bold text-neutral-900">
-                        Daftar Armada Yang Cocok
+                        {t(
+                          "ModalTransportDilihat.titleMatchingFleetsList",
+                          {},
+                          "Daftar Armada Yang Cocok"
+                        )}
                       </div>
                       <div className="space-y-3">
                         {transporter.expandedDetails?.fleetDetails?.map(
@@ -267,8 +329,11 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                                       src="/icons/location-driver.svg"
                                       className="h-[14px] w-[14px]"
                                     />
-                                    {fleet.lastLocation.distance} km dari lokasi
-                                    muat -
+                                    {t(
+                                      "ModalTransportDilihat.textDistanceFromLoadLocation",
+                                      { distance: fleet.lastLocation.distance },
+                                      `${fleet.lastLocation.distance} km dari lokasi muat -`
+                                    )}
                                     <span className="font-semibold text-neutral-900">
                                       {(() => {
                                         const lokasi = `${fleet.lastLocation.District}, ${fleet.lastLocation.City}`;
@@ -300,11 +365,19 @@ const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
                                   "ON_DUTY",
                                   "WAITING_LOADING_TIME",
                                 ].includes(fleet.operationalStatus)
-                                  ? "Aktif"
+                                  ? t(
+                                      "ModalTransportDilihat.statusActive",
+                                      {},
+                                      "Aktif"
+                                    )
                                   : ["NOT_PAIRED", "INACTIVE"].includes(
                                         fleet.operationalStatus
                                       )
-                                    ? "Nonaktif"
+                                    ? t(
+                                        "ModalTransportDilihat.statusInactive",
+                                        {},
+                                        "Nonaktif"
+                                      )
                                     : "-"}
                               </span>
                             </div>
