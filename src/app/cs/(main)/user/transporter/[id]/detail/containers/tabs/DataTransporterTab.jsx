@@ -207,7 +207,6 @@ const DataTransporterTab = () => {
 
   // Extract transporter details from API response
   const transporterData = apiResponse?.Data;
-
   useEffect(() => {
     if (
       transporterData?.company?.latitude &&

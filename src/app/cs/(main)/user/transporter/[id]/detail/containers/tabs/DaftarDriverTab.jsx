@@ -20,20 +20,41 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
 
+  // Status label mapping from API status to display label
+  const getStatusLabel = (apiStatus) => {
+    const statusMap = {
+      READY_FOR_ORDER: "Siap Menerima Order",
+      SCHEDULED: "Akan Muat Hari Ini",
+      ON_DUTY: "Bertugas",
+      NOT_PAIRED: "Belum Dipasangkan",
+      NON_ACTIVE: "Nonaktif",
+      WAITING_FOR_LOADING: "Menunggu Jam Muat",
+    };
+    return statusMap[apiStatus] || apiStatus;
+  };
+
   // Status badge helper
   const getStatusBadge = (status) => {
     let variant = "success";
     if (status === "Siap Menerima Order") {
       variant = "success"; // Green
     } else if (
-      status === "Menunggu Jam Muat" ||
-      status === "Belum Dipasangkan"
+      status === "Akan Muat Hari Ini" ||
+      status === "Menunggu Jam Muat"
     ) {
       variant = "warning"; // Yellow/Orange
     } else if (status === "Bertugas") {
       variant = "primary"; // Blue
+    } else if (status === "Belum Dipasangkan") {
+      variant = "warning"; // Yellow/Orange
     } else if (status === "Nonaktif") {
-      variant = "neutral"; // Red
+      variant = "neutral"; // Gray
+    } else if (status === "Verifikasi Ditolak") {
+      variant = "error"; // Red
+    } else if (status === "Dalam Verifikasi") {
+      variant = "warning"; // Yellow/Orange
+    } else if (status === "Non Aktif") {
+      variant = "neutral"; // Gray
     }
     return <BadgeStatus variant={variant}>{status}</BadgeStatus>;
   };
@@ -76,7 +97,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
       sortable: true,
       render: (row) => (
         <div className="text-[10px] font-medium">
-          {row.assignedVehicle || "-"}
+          {row.truckLicensePlate || "-"}
         </div>
       ),
     },
@@ -86,8 +107,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
       sortable: false,
       render: (row) => (
         <div className="line-clamp-2 text-[10px] font-medium">
-          {row.vehicleType ||
-            "Ultra Long Wheelbase Heavy Duty 10x4 Axle Diesel Truck - Multi Axle Expandable Flatbed Modular Cargo Carrier for Oversized Materials and Equipment Transportation Needs"}
+          {row.truckType || ""}
         </div>
       ),
     },
@@ -106,11 +126,12 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
       categories: [{ key: "status", label: "Status" }],
       data: {
         status: [
-          { id: "Menunggu Jam Muat", label: "Menunggu Jam Muat" },
-          { id: "Siap Menerima Order", label: "Siap Menerima Order" },
-          { id: "Bertugas", label: "Bertugas" },
-          { id: "Belum Dipasangkan", label: "Belum Dipasangkan" },
-          { id: "Nonaktif", label: "Nonaktif" },
+          { id: "READY_FOR_ORDER", label: "Siap Menerima Order" },
+          { id: "WAITING_FOR_LOADING", label: "Menunggu Jam Muat" },
+          { id: "SCHEDULED", label: "Akan Muat Hari Ini" },
+          { id: "ON_DUTY", label: "Bertugas" },
+          { id: "NOT_PAIRED", label: "Belum Dipasangkan" },
+          { id: "NON_ACTIVE", label: "Nonaktif" },
         ],
       },
     };
@@ -207,9 +228,28 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
     setCurrentPage(1);
   };
 
+  // Transform API data to match component expectations
+  const transformDriverData = (apiDrivers) => {
+    if (!apiDrivers || !Array.isArray(apiDrivers)) return [];
+
+    return apiDrivers.map((driver) => ({
+      id: driver.id,
+      name: driver.name,
+      phone: driver.phoneNumber,
+      truckLicensePlate: driver.truckLicensePlate,
+      truckType: driver.truckType,
+      truckCarrierType: driver.truckCarrierType,
+      status: getStatusLabel(driver.status),
+      avatar: driver.photo || null,
+    }));
+  };
+
+  // Transform and prepare data
+  const transformedData = transformDriverData(mockDriverData);
+
   // Data filtering and pagination
   const getFilteredData = () => {
-    let filteredData = [...mockDriverData];
+    let filteredData = [...transformedData];
 
     if (searchValue.trim() && searchValue.length >= 3) {
       filteredData = filteredData.filter((item) =>
@@ -222,7 +262,13 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
     if (filters.status) {
       const statusValue =
         typeof filters.status === "object" ? filters.status.id : filters.status;
-      filteredData = filteredData.filter((item) => item.status === statusValue);
+      filteredData = filteredData.filter((item) => {
+        // Get the original API status from the raw data
+        const originalDriver = mockDriverData?.find(
+          (driver) => driver.id === item.id
+        );
+        return originalDriver?.status === statusValue;
+      });
     }
 
     if (sortConfig.sort && sortConfig.order) {
@@ -260,7 +306,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
   const hasSearch = searchValue.trim().length > 0;
   const hasFilters = Object.keys(filters).length > 0;
   const hasData = filteredData.length > 0;
-  const originalDataExists = mockDriverData.length > 0;
+  const originalDataExists = transformedData.length > 0;
 
   const showNoDataState = !originalDataExists;
   const showSearchNotFoundState = hasSearch && !hasData && originalDataExists;

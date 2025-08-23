@@ -20,6 +20,18 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
 
+  // Status label mapping from API status to display label
+  const getStatusLabel = (apiStatus) => {
+    const statusMap = {
+      READY_FOR_ORDER: "Siap Menerima Order",
+      SCHEDULED: "Akan Muat Hari Ini",
+      ON_DUTY: "Bertugas",
+      NOT_PAIRED: "Belum Dipasangkan",
+      INACTIVE: "Nonaktif",
+    };
+    return statusMap[apiStatus] || apiStatus;
+  };
+
   // Status badge helper
   const getStatusBadge = (status) => {
     let variant = "success";
@@ -61,7 +73,10 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
           <div className="space-y-1 text-neutral-900">
             <div className="text-xs font-bold">{row.plateNumber}</div>
             <div className="line-clamp-2 text-xs font-medium">
-              {row.description}
+              {row.description === null || row.description === undefined
+                ? ""
+                : row.description}
+              {console.log(row)}
             </div>
           </div>
         </div>
@@ -107,7 +122,9 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
       key: "status",
       header: "Status",
       className: "min-w-[200px]",
-      render: (row) => getStatusBadge(row.status),
+      render: (row) => {
+        return getStatusBadge(row.status);
+      },
     },
   ];
 
@@ -117,11 +134,11 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
       categories: [{ key: "status", label: "Status" }],
       data: {
         status: [
-          { id: "Siap Menerima Order", label: "Siap Menerima Order" },
-          { id: "Akan Muat Hari Ini", label: "Akan Muat Hari Ini" },
-          { id: "Bertugas", label: "Bertugas" },
-          { id: "Belum Dipasangkan", label: "Belum Dipasangkan" },
-          { id: "Nonaktif", label: "Nonaktif" },
+          { id: "READY_FOR_ORDER", label: "Siap Menerima Order" },
+          { id: "SCHEDULED", label: "Akan Muat Hari Ini" },
+          { id: "ON_DUTY", label: "Bertugas" },
+          { id: "NOT_PAIRED", label: "Belum Dipasangkan" },
+          { id: "INACTIVE", label: "Nonaktif" },
         ],
       },
     };
@@ -218,9 +235,36 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     setCurrentPage(1);
   };
 
+  // Transform API data to match component expectations
+  const transformFleetData = (apiFleets) => {
+    if (!apiFleets || !Array.isArray(apiFleets)) return [];
+
+    return apiFleets.map((fleet) => ({
+      id: fleet.id,
+      plateNumber: fleet.licensePlate,
+      description: `${fleet.truckType} - ${fleet.truckCarrierType}`,
+      driverName: fleet.driverName || "-",
+      vehicleBrand: fleet.vehicleBrand,
+      vehicleType: fleet.vehicleType,
+      vehicleCategory: fleet.vehicleType,
+      stnkExpiry: fleet.stnkExpiryDate
+        ? new Date(fleet.stnkExpiryDate).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "-",
+      status: getStatusLabel(fleet.status),
+      image: fleet.truckImage || "/img/truck.png",
+    }));
+  };
+
+  // Transform and prepare data
+  const transformedData = transformFleetData(mockFleetData);
+
   // Data filtering and pagination
   const getFilteredData = () => {
-    let filteredData = [...(mockFleetData || [])];
+    let filteredData = [...transformedData];
 
     if (searchValue.trim() && searchValue.length >= 3) {
       filteredData = filteredData.filter((item) =>
@@ -233,7 +277,13 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     if (filters.status) {
       const statusValue =
         typeof filters.status === "object" ? filters.status.id : filters.status;
-      filteredData = filteredData.filter((item) => item.status === statusValue);
+      filteredData = filteredData.filter((item) => {
+        // Get the original API status from the raw data
+        const originalFleet = mockFleetData?.find(
+          (fleet) => fleet.id === item.id
+        );
+        return originalFleet?.status === statusValue;
+      });
     }
 
     if (sortConfig.sort && sortConfig.order) {
@@ -271,7 +321,7 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
   const hasSearch = searchValue.trim().length > 0;
   const hasFilters = Object.keys(filters).length > 0;
   const hasData = filteredData.length > 0;
-  const originalDataExists = (mockFleetData || []).length > 0;
+  const originalDataExists = transformedData.length > 0;
 
   const showNoDataState = !originalDataExists;
   const showSearchNotFoundState = hasSearch && !hasData && originalDataExists;
