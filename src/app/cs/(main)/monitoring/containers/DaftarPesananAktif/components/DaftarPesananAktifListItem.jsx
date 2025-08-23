@@ -1,9 +1,10 @@
 "use client";
 
+// ...existing code...
+import Avatar from "@/components/Avatar";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-// ...existing code...
 import OrderInformation from "./OrderInformation";
 
 // ...existing code...
@@ -32,7 +33,12 @@ const DaftarPesananAktifListItem = ({
               Transporter :
             </span>
             <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-red-600">
-              <span className="text-xs font-bold text-white">S</span>
+              {/* <span className="text-xs font-bold text-white">S</span> */}
+              <Avatar
+                src={row.transporterInfo?.image || "/img/placeholder-img.png"}
+                name={row.transporterInfo?.transporterName}
+                size={24}
+              />
             </div>
 
             <span className="line-clamp-1 flex-grow break-all text-xs font-semibold text-black">
@@ -57,7 +63,11 @@ const DaftarPesananAktifListItem = ({
               Shipper :
             </span>
             <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-600">
-              <span className="text-xs font-bold text-white">A</span>
+              <Avatar
+                src={row.shipperInfo?.image || "/img/placeholder-img.png"}
+                name={shipperName}
+                size={24}
+              />
             </div>
             <span className="line-clamp-1 flex-grow break-all text-xs font-semibold text-black">
               {shipperName}
