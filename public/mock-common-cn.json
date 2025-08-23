@@ -1470,5 +1470,12 @@
   "ModalTransportDisimpan.titleMatchingFleetList": "匹配车队列表",
   "ModalTransportDisimpan.textDistanceFromLoading": "距装货地点 {distance} 公里 -",
   "ModalTransportDisimpan.statusActive": "活动的",
-  "ModalTransportDisimpan.statusInactive": "不活动的"
+  "ModalTransportDisimpan.statusInactive": "不活动的",
+  "PermintaanAngkutDetailCS.titleDetailPermintaanJasaAngkut": "运输服务请求详情",
+  "PermintaanAngkutDetailCS.toastSuccessAssignTransporter": "已成功为请求 {orderCode} 分配运输商",
+  "PermintaanAngkutDetailCS.toastSuccessRequestClosed": "请求 {orderCode} 已成功关闭",
+  "PermintaanAngkutDetailCS.messageRequestTaken": "请求已被其他运输商接取",
+  "PermintaanAngkutDetailCS.buttonUnderstand": "明白",
+  "PermintaanAngkutDetailCS.buttonBack": "返回",
+  "PermintaanAngkutDetailCS.buttonAssignTransporter": "分配运输商"
 }

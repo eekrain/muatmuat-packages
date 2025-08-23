@@ -1622,5 +1622,12 @@
   "ModalTransportDisimpan.titleMatchingFleetList": "List of Matching Fleets",
   "ModalTransportDisimpan.textDistanceFromLoading": "{distance} km from loading location -",
   "ModalTransportDisimpan.statusActive": "Active",
-  "ModalTransportDisimpan.statusInactive": "Inactive"
+  "ModalTransportDisimpan.statusInactive": "Inactive",
+  "PermintaanAngkutDetailCS.titleDetailPermintaanJasaAngkut": "Transport Service Request Details",
+  "PermintaanAngkutDetailCS.toastSuccessAssignTransporter": "Transporter successfully assigned for request {orderCode}",
+  "PermintaanAngkutDetailCS.toastSuccessRequestClosed": "Request {orderCode} has been successfully closed",
+  "PermintaanAngkutDetailCS.messageRequestTaken": "Request has been taken by another transporter",
+  "PermintaanAngkutDetailCS.buttonUnderstand": "Understand",
+  "PermintaanAngkutDetailCS.buttonBack": "Back",
+  "PermintaanAngkutDetailCS.buttonAssignTransporter": "Assign Transporter"
 }

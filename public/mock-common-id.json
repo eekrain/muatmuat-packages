@@ -1621,5 +1621,12 @@
   "ModalTransportDisimpan.titleMatchingFleetList": "Daftar Armada Yang Cocok",
   "ModalTransportDisimpan.textDistanceFromLoading": "{distance} km dari lokasi muat -",
   "ModalTransportDisimpan.statusActive": "Aktif",
-  "ModalTransportDisimpan.statusInactive": "Nonaktif"
+  "ModalTransportDisimpan.statusInactive": "Nonaktif",
+  "PermintaanAngkutDetailCS.titleDetailPermintaanJasaAngkut": "Detail Permintaan Jasa Angkut",
+  "PermintaanAngkutDetailCS.toastSuccessAssignTransporter": "Transporter berhasil di-assign untuk permintaan {orderCode}",
+  "PermintaanAngkutDetailCS.toastSuccessRequestClosed": "Permintaan {orderCode} berhasil ditutup",
+  "PermintaanAngkutDetailCS.messageRequestTaken": "Permintaan sudah diambil transporter lain",
+  "PermintaanAngkutDetailCS.buttonUnderstand": "Mengerti",
+  "PermintaanAngkutDetailCS.buttonBack": "Kembali",
+  "PermintaanAngkutDetailCS.buttonAssignTransporter": "Assign Transporter"
 }
