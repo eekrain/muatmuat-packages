@@ -1455,5 +1455,20 @@
   "ModalTransportDilihat.titleMatchingFleetsList": "匹配车队列表",
   "ModalTransportDilihat.textDistanceFromLoadLocation": "距装货地点 {distance} 公里 -",
   "ModalTransportDilihat.statusActive": "活动的",
-  "ModalTransportDilihat.statusInactive": "非活动的"
+  "ModalTransportDilihat.statusInactive": "非活动的",
+  "ModalTransportDisimpan.titleSavedTransporterRequests": "已保存的运输商请求",
+  "ModalTransportDisimpan.placeholderSearch": "搜索运输商名称/标签/状态",
+  "ModalTransportDisimpan.textLoading": "加载中...",
+  "ModalTransportDisimpan.textKeywordNotFound": "未找到关键词",
+  "ModalTransportDisimpan.labelSavedOn": "保存于 ",
+  "ModalTransportDisimpan.textActiveFleet": "{count} 个活动车队",
+  "ModalTransportDisimpan.textInactiveFleet": "{count} 个非活动车队",
+  "ModalTransportDisimpan.textSavedAtDateTime": "保存于: {datetime} WIB",
+  "ModalTransportDispan.buttonContact": "联系",
+  "ModalTransportDisimpan.messageErrorAdminIdle": "检测到管理员频繁闲置 ({current}/{total} 个订单)",
+  "ModalTransportDisimpan.linkDetails": "详情",
+  "ModalTransportDisimpan.titleMatchingFleetList": "匹配车队列表",
+  "ModalTransportDisimpan.textDistanceFromLoading": "距装货地点 {distance} 公里 -",
+  "ModalTransportDisimpan.statusActive": "活动的",
+  "ModalTransportDisimpan.statusInactive": "不活动的"
 }

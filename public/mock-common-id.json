@@ -1606,5 +1606,20 @@
   "ModalTransportDilihat.titleMatchingFleetsList": "Daftar Armada Yang Cocok",
   "ModalTransportDilihat.textDistanceFromLoadLocation": "{distance} km dari lokasi muat -",
   "ModalTransportDilihat.statusActive": "Aktif",
-  "ModalTransportDilihat.statusInactive": "Nonaktif"
+  "ModalTransportDilihat.statusInactive": "Nonaktif",
+  "ModalTransportDisimpan.titleSavedTransporterRequests": "Transporter Menyimpan Permintaan",
+  "ModalTransportDisimpan.placeholderSearch": "Cari Nama Transporter / Tag / Status",
+  "ModalTransportDisimpan.textLoading": "Loading...",
+  "ModalTransportDisimpan.textKeywordNotFound": "Keyword Tidak Ditemukan",
+  "ModalTransportDisimpan.labelSavedOn": "Disimpan pada ",
+  "ModalTransportDisimpan.textActiveFleet": "{count} Armada Aktif",
+  "ModalTransportDisimpan.textInactiveFleet": "{count} Armada Nonaktif",
+  "ModalTransportDisimpan.textSavedAtDateTime": "Disimpan : {datetime} WIB",
+  "ModalTransportDispan.buttonContact": "Hubungi",
+  "ModalTransportDisimpan.messageErrorAdminIdle": "Admin Terdeteksi Sering Idle ({current}/{total} Order)",
+  "ModalTransportDisimpan.linkDetails": "Detail",
+  "ModalTransportDisimpan.titleMatchingFleetList": "Daftar Armada Yang Cocok",
+  "ModalTransportDisimpan.textDistanceFromLoading": "{distance} km dari lokasi muat -",
+  "ModalTransportDisimpan.statusActive": "Aktif",
+  "ModalTransportDisimpan.statusInactive": "Nonaktif"
 }

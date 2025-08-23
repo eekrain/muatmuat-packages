@@ -1607,5 +1607,20 @@
   "ModalTransportDilihat.titleMatchingFleetsList": "List of Matching Fleets",
   "ModalTransportDilihat.textDistanceFromLoadLocation": "{distance} km from loading location -",
   "ModalTransportDilihat.statusActive": "Active",
-  "ModalTransportDilihat.statusInactive": "Inactive"
+  "ModalTransportDilihat.statusInactive": "Inactive",
+  "ModalTransportDisimpan.titleSavedTransporterRequests": "Saved Transporter Requests",
+  "ModalTransportDisimpan.placeholderSearch": "Search Transporter Name / Tag / Status",
+  "ModalTransportDisimpan.textLoading": "Loading...",
+  "ModalTransportDisimpan.textKeywordNotFound": "Keyword Not Found",
+  "ModalTransportDisimpan.labelSavedOn": "Saved on ",
+  "ModalTransportDisimpan.textActiveFleet": "{count} Active Fleet",
+  "ModalTransportDisimpan.textInactiveFleet": "{count} Inactive Fleet",
+  "ModalTransportDisimpan.textSavedAtDateTime": "Saved: {datetime} WIB",
+  "ModalTransportDispan.buttonContact": "Contact",
+  "ModalTransportDisimpan.messageErrorAdminIdle": "Admin Detected Frequently Idle ({current}/{total} Orders)",
+  "ModalTransportDisimpan.linkDetails": "Details",
+  "ModalTransportDisimpan.titleMatchingFleetList": "List of Matching Fleets",
+  "ModalTransportDisimpan.textDistanceFromLoading": "{distance} km from loading location -",
+  "ModalTransportDisimpan.statusActive": "Active",
+  "ModalTransportDisimpan.statusInactive": "Inactive"
 }
