@@ -27,7 +27,7 @@ export const successResponse = {
                 pickupLocations: [
                   {
                     locationId: "loc-pickup-1",
-                    address: "Jl. Contoh No.1",
+                    fullAddress: "Jl. Contoh No.1",
                     city: "Kota Surabaya",
                     district: "Gubeng",
                   },
@@ -35,7 +35,7 @@ export const successResponse = {
                 dropoffLocations: [
                   {
                     locationId: "loc-dropoff-1",
-                    address: "Jl. Tujuan No.5",
+                    fullAddress: "Jl. Tujuan No.5",
                     city: "Kota Pasuruan",
                     province: "Jawa Timur",
                   },
@@ -63,7 +63,7 @@ export const successResponse = {
                 pickupLocations: [
                   {
                     locationId: "loc-pickup-2",
-                    address: "Jl. Lain No.2",
+                    fullAddress: "Jl. Lain No.2",
                     city: "Kota Surabaya",
                     district: "Tegalsari",
                   },
@@ -71,7 +71,7 @@ export const successResponse = {
                 dropoffLocations: [
                   {
                     locationId: "loc-dropoff-2",
-                    address: "Jl. Tujuan 2",
+                    fullAddress: "Jl. Tujuan 2",
                     city: "Kota Pasuruan",
                     province: "Jawa Timur",
                   },
