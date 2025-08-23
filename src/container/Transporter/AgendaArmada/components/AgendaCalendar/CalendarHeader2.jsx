@@ -1,10 +1,12 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { ButtonTab } from "./ButtonTab";
 import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 import { useDateNavigator } from "./use-date-navigator";
 
 export const CalendarHeader2 = () => {
+  const { t } = useTranslation();
   const { viewType, setViewType, summary } = useAgendaNavigatorStore();
   const { displayedDates, handleNext, handlePrev } = useDateNavigator();
 
@@ -19,13 +21,13 @@ export const CalendarHeader2 = () => {
           active={viewType === "armada"}
           onClick={() => handleViewChange("armada")}
         >
-          Armada
+          {t("CalendarHeader2.tabArmada", {}, "Armada")}
         </ButtonTab>
         <ButtonTab
           active={viewType === "driver"}
           onClick={() => handleViewChange("driver")}
         >
-          Driver
+          {t("CalendarHeader2.tabDriver", {}, "Driver")}
         </ButtonTab>
       </div>
 
@@ -57,7 +59,11 @@ export const CalendarHeader2 = () => {
         <button
           onClick={handlePrev}
           className="absolute left-[11px] top-1/2 flex size-8 flex-none -translate-y-1/2 items-center justify-center rounded-full border border-neutral-300 bg-white shadow-sm hover:bg-neutral-100"
-          aria-label="Previous dates"
+          aria-label={t(
+            "CalendarHeader2.ariaLabelPreviousDates",
+            {},
+            "Previous dates"
+          )}
         >
           <IconComponent
             src="/icons/agenda/chevron-left-sharp.svg"
@@ -69,7 +75,7 @@ export const CalendarHeader2 = () => {
         <button
           onClick={handleNext}
           className="absolute right-[11px] top-1/2 flex size-8 flex-none -translate-y-1/2 items-center justify-center rounded-full border border-neutral-300 bg-white shadow-sm"
-          aria-label="Next dates"
+          aria-label={t("CalendarHeader2.ariaLabelNextDates", {}, "Next dates")}
         >
           <IconComponent
             src="/icons/agenda/chevron-right-sharp.svg"

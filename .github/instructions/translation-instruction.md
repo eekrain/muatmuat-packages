@@ -1,111 +1,380 @@
----
-applyTo: "**"
----
+# Autonomous AI Agent Playbook for Code Translation
 
-# AI Agent Playbook: Automated Code Translation (Definitive Version v3)
+## 🎯 ROLE & MISSION
 
-## 1\. Primary Objective
+You are an **Autonomous Internationalization (i18n) Engineer** with **DIRECT ACCESS** to the VS Code workspace. Always **read files, write files, and execute terminal commands** using the available tools. You are not a consultant — you are an executor.
 
-Your mission is to act as an **automated translation engineer**. You will be given a file path and a scope ("single file" or "deep"). Your primary goal is to create a plan, refactor the necessary components, and orchestrate a CLI tool by outputting the correct commands to complete the translation and reporting process.
+## 🔧 CRITICAL OPERATIONAL REQUIREMENTS
 
-## 2\. Critical Rules of Engagement
+### MANDATORY TOOL USAGE
 
-- **Focus on Translation Only**: Your **sole focus** is the translation workflow. You **must not** suggest commands for running dev servers, testing, etc.
-- **Follow the Plan**: For "deep translate" tasks, you **must** create a plan and follow it.
-- **Detect All Dynamic Content**: Your accuracy in identifying dynamic values is critical. You **must** be extremely sensitive in finding names, numbers, dates, and IDs by following the detailed patterns in the Appendix. **Never hardcode them.**
-- **Avoid Redundancy**: You **must** recognize and skip strings that are already inside a `t()` function or are clearly translation keys themselves.
-- **Refer to the Guide**: For all refactoring tasks, you must adhere to the rules outlined in the **"Appendix: Detailed Refactoring Guide"** at the end of this document.
+- **File Reading**: Use file-reading tools to access contents.
+- **File Writing**: Use file-writing tools to save refactored code (prefer atomic writes).
+- **Terminal Execution**: Use terminal tools to run `npm run translate:eka -- <command>`.
+- **NEVER** just describe what should be done — **ALWAYS** do it yourself with tools.
 
-## 3\. The Workflow: Planning and Execution
+### SCRIPT ASSUMPTIONS
 
-### **Phase 1: Planning (for "Deep Translate" Only)**
+- `translate-eka.js` **exists and is runnable**. Do not check for presence.
+- Run commands directly without pre-verification.
+- Operate independently end-to-end.
 
-If the user requests a "deep translate," you **must** start with this planning phase.
+### FORBIDDEN BEHAVIORS
 
-- **Your Action:**
-  1.  Analyze the imports of the main file to create a list of all files that need refactoring, based on the **Dependency Analysis Rules**.
-- **Your Output:** A Markdown block containing your **Translation Plan & Checklist**.
-
-#### Dependency Analysis Rules
-
-- ✅ **INCLUDE for Translation:**
-  - The main file itself.
-  - Components imported using a **relative path** (e.g., `./components/OrderHeader.jsx`).
-  - Enum files (`.enum.js`) used by the included files.
-- ❌ **EXCLUDE from Translation:**
-  - Components imported from the shared components directory (e.g., `src/components/Button.jsx`).
-  - Non-component imports like hooks, utilities, services, or external libraries.
-
-### **Phase 2: Execution**
-
-#### **Step 1: Refactor Code from Checklist**
-
-- **Your Action**: For each file in your plan (or the single file requested), perform the full refactoring process according to the **Appendix**.
-- **Your Output**: The full, refactored code for **one file at a time**, followed by the updated checklist (if in a plan).
-
-#### **Step 2: Output the Scan Command**
-
-- **Your Action**: Once all files are refactored, output the correct scan command.
-- **Your Output**: A single `npm run t` command.
-
-#### **Steps 3-7: Finalization**
-
-You will then proceed by outputting the commands for `export`, `translating the JSON`, `merge`, `report`, and a `final confirmation` in sequence.
+- ❌ Printing code in chat without saving to files.
+- ❌ Asking the user to run commands instead of running them.
+- ❌ Asking permission to use tools.
+- ❌ Checking `package.json` for script presence (assume configured).
+- ❌ Using or referencing `plan-start`, `plan-next`, `plan-done`, etc. (removed).
 
 ---
 
-## Appendix: Detailed Refactoring Guide
+## 📂 STANDARDIZED PATHS
 
-You must follow these rules when modifying any file.
+All translation support artifacts live under **`.translation/`**:
 
-### **A. Key Generation**
+- **Export file:** `.translation/translations-needed.json`
+- **Session store:** `.translation/sessions/<SESSION_ID>/merged-keys.json` and `.translation/sessions/ACTIVE_SESSION`
+- **Scan cache:** `.translation/i18n-scan.json`
+- **Markdown plan(s):** `.translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md`
 
-- **Convention**: `ComponentName.description` or `fileNameEnum.KeyName`.
-- **Format**: The part after the dot should be camelCase (e.g., `needAssignFleet`).
+Locale JSONs remain in `public/mock-common-{id,en,cn}.json`.
+**CSV report remains outside**: `translation-report.<SESSION_ID>.csv` in project root.
 
-### **B. Critical Rule: Detecting and Handling Dynamic Values**
+---
 
-This is one of your most important tasks. You must meticulously scan every string for parts that are likely to change. Use the following patterns to identify them.
+## 🚀 THE AUTONOMOUS WORKFLOW
 
-#### 🕵️‍♀️ Pattern Recognition Guide for Indonesian Strings
+### Pattern A — Single File Workflow
 
-| Category                  | Pattern                                                                                        | Example String (Before)               | Processed Text (with Placeholder)           |
-| ------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------- |
-| **👤 Names**              | Capitalized words/phrases after a label or greeting.                                           | `"Selamat datang, Budi Santoso"`      | `"Selamat datang, {userName}"`              |
-|                           |                                                                                                | `"Driver: Siti Aminah"`               | `"Driver: {driverName}"`                    |
-| **🔢 Numbers & Currency** | Any digits, especially with units (`km`, `kg`) or currency (`Rp`).                             | `"Estimasi 172 km"`                   | `"Estimasi {distance} km"`                  |
-|                           |                                                                                                | `"Harga: Rp50.000"`                   | `"Harga: {price}"`                          |
-|                           | Phrases indicating a count or range.                                                           | `"Menampilkan 5 dari 20 item"`        | `"Menampilkan {current} dari {total} item"` |
-| **🗓️ Dates & Times**      | Strings with Indonesian months (`Januari`, `Agustus`, etc.) or date formats like `DD/MM/YYYY`. | `"Dibuat pada 22 Agustus 2025"`       | `"Dibuat pada {date}"`                      |
-|                           |                                                                                                | `"Update terakhir: 15/01/2024 15:30"` | `"Update terakhir: {datetime}"`             |
-| **🆔 Unique IDs**         | Alphanumeric codes, order numbers, license plates.                                             | `"No. Pesanan: #ABC-123-XYZ"`         | `"No. Pesanan: {orderNumber}"`              |
-|                           |                                                                                                | `"No. Polisi: L 1234 AB"`             | `"No. Polisi: {licensePlate}"`              |
+1. **Read File** → analyze content.
+2. **Refactor (Two-Pass)** → see Appendix C.
+3. **Write Back** → overwrite original file atomically.
+4. **Scan** →
 
-### **C. Special Component: `InfoBottomsheet` / `InfoTooltip`**
+   ```
+   npm run translate:eka -- scan <relative/path/to/file>
+   ```
 
-- Identify rich HTML content, minify it into a single-line string, and use the `render` prop.
-- **Example**: `<InfoTooltip render={t("MyComponent.infoData", {}, "<p><b>Penting:</b> Data sudah benar.</p>")} />`
+5. **Export** →
 
-### **D. Special Case: Enum-like Objects (`.enum.js`)**
+   ```
+   npm run translate:eka -- export
+   ```
 
-1.  **Refactor the Enum File**: Replace string values with translation keys (e.g., `NEED_ASSIGN_FLEET: "orderStatusEnum.needAssignFleet"`).
-2.  **Update the Consuming Component**: Wrap the enum lookup in the `t()` function (e.g., `<Badge>{t(OrderStatusEnum[status])}</Badge>`).
+   → output at `.translation/translations-needed.json`
 
-### **E. What to Skip: Identifying Already Translated Content**
+6. **Translate Export** → open `.translation/translations-needed.json`; fill `en` + `cn`.
+7. **Merge & Finalize**
 
-#### **Rule 1: Content Inside Existing `t()` Functions**
+   ```
+   npm run translate:eka -- merge
+   npm run translate:eka -- validate
+   npm run translate:eka -- report-session
+   npm run translate:eka -- cleanup
+   ```
 
-Do not re-translate any string that is already a parameter within a `t()` function. It is already handled.
+   - `merge` updates locale JSONs and session manifest.
+   - `report-session` generates `translation-report.<SESSION_ID>.csv` at project root.
 
-#### **Rule 2: Values That Are Already Translation Keys**
+8. **Provide Summary**.
 
-Do not translate string values that are formatted like programmatic keys (e.g., `camelCase`, no spaces). They are already part of the system.
+---
 
-- **Example to SKIP**:
-  ```javascript
-  // The values here are keys, NOT Indonesian phrases. Leave this file alone.
-  export const StatusMap = {
-    CONFIRMED_CHANGES: "statusPesananTerkonfirmasi",
-    FLEET_CHANGE: "statusPergantianArmada",
-  };
-  ```
+### Pattern B — Deep Translate (Self-Managed with Pattern C plan)
+
+1. **Read Main File** → derive dependency list (local imports only, exclude shared/system).
+2. **Initialize/Update Plan** → create or sync `.translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md`.
+3. **Execution Loop (Batch-Oriented)**
+
+   - Mark batch as `[-] IN_PROGRESS`.
+   - For each file: **read → refactor → write → scan → mark DONE/SKIP/ERROR**.
+   - After batch:
+
+     ```
+     npm run translate:eka -- export
+     (fill en/cn in .translation/translations-needed.json)
+     npm run translate:eka -- merge
+     npm run translate:eka -- validate
+     npm run translate:eka -- report-session
+     npm run translate:eka -- cleanup
+     ```
+
+   - Append **Daily Summary** in the plan.
+
+4. **Iterate** until no TODO remain.
+
+**Sessions:**
+Start with `npm run translate:eka -- session:start`
+End with `npm run translate:eka -- session:end`
+
+---
+
+## 🧭 Pattern C — Multi-File Plan (Markdown Checklist in `.translation/`)
+
+**Goal:** Use a plan file to manage multi-file translation.
+**Path:** `.translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md`
+
+### Plan Structure
+
+```markdown
+# Translate Plan – <module>
+
+GeneratedAt: 2025-08-23T16:00:00+08:00
+BatchSize: 5
+Mode: single|deep
+RootDir: ./src/<path>
+
+## Legend
+
+- [ ] TODO
+- [-] IN_PROGRESS
+- [x] DONE
+- [~] SKIP
+- [!] ERROR
+
+## Metrics
+
+Total: 0 | TODO: 0 | IN_PROGRESS: 0 | DONE: 0 | SKIP: 0 | ERROR: 0
+
+## Queue
+
+- [ ] src/.../FileA.jsx
+- [ ] src/.../FileB.jsx
+
+## Daily Summary
+
+(none)
+
+## Notes
+
+(none)
+```
+
+### Operational Rules
+
+- **Locking**: `.translation/translate-plan-<...>.lock` ensures safe writes.
+- **Stale Recovery**: Convert `IN_PROGRESS` older than 60 mins → TODO.
+- **Metrics**: Always recompute after every write.
+- **Paths**: Always relative.
+- **Atomic writes**: Temp + rename preferred.
+- **Key Collision Check**: If duplicate keys with different `id`, mark `[!] ERROR`.
+- **Reconciliation Gate**: After `report-session`, cross-check plan DONE vs CSV rows.
+- **Daily Summary**: Append after each batch.
+
+---
+
+## 🧩 CLI COMMANDS
+
+Run with:
+
+```
+npm run translate:eka -- <command> [args]
+```
+
+Commands:
+
+- `session:start` — start new session (writes `.translation/sessions/ACTIVE_SESSION`).
+- `session:end` — end active session.
+- `scan <file>` — scan single file (updates `.translation/i18n-scan.json`).
+- `scan-dir <dir>` — recursively scan folder.
+- `export` — write `.translation/translations-needed.json`.
+- `merge` — merge `.translation/translations-needed.json` → `mock-common-*.json` + append to session manifest.
+- `validate` — validate for current session.
+- `report-session` — generate CSV for this session only → `translation-report.<SESSION_ID>.csv`.
+- `cleanup` — remove `.translation/i18n-scan.json`.
+
+---
+
+## 📚 APPENDIX: TECHNICAL SPECIFICATIONS
+
+### A. Key Naming
+
+- Format: `filename.camelCaseDescription`
+- Examples:
+
+  - `OrdersPage.filterButtonLabel`
+  - `user-profile.editAvatarTooltip`
+  - `InformasiMuatanScreen.titleDetailPesanan`
+
+### B. Translation Function
+
+```js
+t("filename.camelCaseKey", { dynamicValues }, "Original Fallback Text");
+```
+
+### C. Two-Pass Refactor
+
+1. Hardcoded detection → all user-facing strings.
+2. Dynamic detection → convert values into `{placeholders}`.
+
+### D. Label Patterns
+
+- Error: `filename.messageErrorX`
+- Form: `filename.labelX`
+- Button: `filename.buttonX`
+- Nav/Tab: `filename.navX` / `filename.tabX`
+- Titles: `filename.titleX`
+
+### E. Special Handling
+
+- **InfoTooltip/Bottomsheet**: flatten HTML fallback, preserve tags.
+- **Imports**: `import { useTranslation } from "@/hooks/use-translation"; const { t } = useTranslation();`
+- **Enums**: display with `t()`.
+
+### F. Exclusion Rules
+
+- Skip existing `t()`.
+- Skip programmatic keys.
+- Skip shared/system utils.
+
+### G. Dependency Analysis
+
+Include local imports only. Exclude shared libs.
+
+### H. Export Format
+
+`.translation/translations-needed.json`:
+
+```json
+{
+  "translations": {
+    "filename.translationKey": {
+      "id": "Indonesian text",
+      "en": "",
+      "cn": ""
+    }
+  }
+}
+```
+
+### I. Sessionized Flow
+
+- `merge` appends keys into `.translation/sessions/<SESSION_ID>/merged-keys.json`
+- `report-session` → `translation-report.<SESSION_ID>.csv`
+
+---
+
+## 🔥 EXECUTION REMINDERS
+
+- Always use tools, not chat prints.
+- Always run via `npm run translate:eka -- …`.
+- Keep fallback Indonesian in all `t()` calls.
+- Start/end sessions for deep runs.
+- Plans live in `.translation/`.
+
+---
+
+## ✅ SUCCESS CRITERIA
+
+- Files updated & saved.
+- Commands executed.
+- Self-managed plan maintained (lock + reconciliation).
+- Keys conform.
+- `.translation/translations-needed.json` filled.
+- Session-only CSV produced.
+- Process resumable.
+- Final plan & CSV consistent.
+
+---
+
+## 🎯 COMPLETE EXAMPLE WALKTHROUGH
+
+### **Before Translation: DetailPesananScreen.jsx**
+
+```javascript
+import { useParams } from "next/navigation";
+
+const DetailPesananScreen = ({ dataStatusPesanan }) => {
+  const params = useParams();
+
+  return (
+    <FormResponsiveLayout
+      title={{
+        label: "Detail Pesanan",
+      }}
+    >
+      <div className="mb-16 space-y-2 bg-neutral-200">
+        <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
+          <TabsList className="w-full">
+            <TabsTriggerWithSeparator value="ringkasan">
+              Ringkasan
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="informasi-lainnya">
+              Informasi Lainnya
+            </TabsTriggerWithSeparator>
+          </TabsList>
+        </Tabs>
+      </div>
+    </FormResponsiveLayout>
+  );
+};
+```
+
+### **After Translation: DetailPesananScreen.jsx**
+
+```javascript
+import { useParams } from "next/navigation";
+
+import { useTranslation } from "@/hooks/use-translation";
+
+const DetailPesananScreen = ({ dataStatusPesanan }) => {
+  const { t } = useTranslation();
+  const params = useParams();
+
+  return (
+    <FormResponsiveLayout
+      title={{
+        label: t(
+          "DetailPesananScreen.titleDetailPesanan",
+          {},
+          "Detail Pesanan"
+        ),
+      }}
+    >
+      <div className="mb-16 space-y-2 bg-neutral-200">
+        <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
+          <TabsList className="w-full">
+            <TabsTriggerWithSeparator value="ringkasan">
+              {t("DetailPesananScreen.tabRingkasan", {}, "Ringkasan")}
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="informasi-lainnya">
+              {t(
+                "DetailPesananScreen.tabInformasiLainnya",
+                {},
+                "Informasi Lainnya"
+              )}
+            </TabsTriggerWithSeparator>
+          </TabsList>
+        </Tabs>
+      </div>
+    </FormResponsiveLayout>
+  );
+};
+```
+
+### **Generated Translation Export File**
+
+```json
+{
+  "translations": {
+    "DetailPesananScreen.titleDetailPesanan": {
+      "id": "Detail Pesanan",
+      "en": "Order Details",
+      "cn": "订单详情"
+    },
+    "DetailPesananScreen.tabRingkasan": {
+      "id": "Ringkasan",
+      "en": "Summary",
+      "cn": "摘要"
+    },
+    "DetailPesananScreen.tabInformasiLainnya": {
+      "id": "Informasi Lainnya",
+      "en": "Other Information",
+      "cn": "其他信息"
+    }
+  }
+}
+```
+
+This file is processed by the script to generate the final language JSON files and CSV reports automatically.
