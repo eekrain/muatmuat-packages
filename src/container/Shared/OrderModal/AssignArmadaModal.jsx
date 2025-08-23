@@ -14,6 +14,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
@@ -21,6 +22,7 @@ import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/d
 import ImageArmada from "./components/ImageArmada";
 
 const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,7 +48,11 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
             }
             return true;
           },
-          "Armada terpilih kurang dari kebutuhan"
+          t(
+            "AssignArmadaModal.notEnoughSelected",
+            {},
+            "Armada terpilih kurang dari kebutuhan"
+          )
         ),
         ["selectedArmada"]
       ),
@@ -59,7 +65,11 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
             }
             return true;
           },
-          "Jumlah Armada Yang Kamu Pilih Melebihi Kebutuhan"
+          t(
+            "AssignArmadaModal.tooManySelected",
+            {},
+            "Jumlah Armada Yang Kamu Pilih Melebihi Kebutuhan"
+          )
         ),
         ["selectedArmada"]
       )
@@ -100,11 +110,23 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
     try {
       console.log("Selected armada:", data.selectedArmada);
       const orderCode = orderData?.orderCode || "MT25A002A";
-      toast.success(`Berhasil assign armada untuk pesanan ${orderCode}`);
+      toast.success(
+        t(
+          "AssignArmadaModal.assignSuccess",
+          { orderCode },
+          `Berhasil assign armada untuk pesanan ${orderCode}`
+        )
+      );
       handleClose();
     } catch (error) {
       console.error("Error assigning armada:", error);
-      toast.error("Gagal assign armada. Silakan coba lagi.");
+      toast.error(
+        t(
+          "AssignArmadaModal.assignError",
+          {},
+          "Gagal assign armada. Silakan coba lagi."
+        )
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -151,7 +173,9 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
         <div className="flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-center px-6 pt-4">
-            <ModalTitle className="font-bold">Assign Armada</ModalTitle>
+            <ModalTitle className="font-bold">
+              {t("AssignArmadaModal.title", {}, "Assign Armada")}
+            </ModalTitle>
           </div>
 
           {/* Content */}
@@ -159,10 +183,18 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
             {/* Info Header */}
             <div className="mb-4 flex items-center justify-between">
               <p className="text-xs font-bold">
-                Pilih {totalUnitsNeeded} unit armada untuk ditugaskan
+                {t(
+                  "AssignArmadaModal.selectUnits",
+                  { count: totalUnitsNeeded },
+                  `Pilih ${totalUnitsNeeded} unit armada untuk ditugaskan`
+                )}
               </p>
               <Search
-                placeholder="Cari No. Polisi / Nama Driver"
+                placeholder={t(
+                  "AssignArmadaModal.searchPlaceholder",
+                  {},
+                  "Cari No. Polisi / Nama Driver"
+                )}
                 onSearch={setSearchValue}
                 containerClassName="h-8 w-[300px]"
                 inputClassName="text-sm"
@@ -175,7 +207,11 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
               {isLoading ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-neutral-600">
-                    Memuat data armada...
+                    {t(
+                      "AssignArmadaModal.loading",
+                      {},
+                      "Memuat data armada..."
+                    )}
                   </span>
                 </div>
               ) : filteredVehicles.length === 0 ? (
@@ -201,7 +237,13 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                               {vehicle.licensePlate}
                             </span>
                             <span className="text-xs font-semibold text-neutral-800">
-                              - {vehicle.driver?.name || "No Driver"}
+                              -{" "}
+                              {vehicle.driver?.name ||
+                                t(
+                                  "AssignArmadaModal.noDriver",
+                                  {},
+                                  "No Driver"
+                                )}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-xs">
@@ -210,7 +252,12 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                               className="h-3.5 w-3.5 text-muat-trans-secondary-900"
                             />
                             <span className="text-neutral-600">
-                              Jadwal Terdekat :{" "}
+                              {t(
+                                "AssignArmadaModal.nearestSchedule",
+                                {},
+                                "Jadwal Terdekat"
+                              )}{" "}
+                              :{" "}
                               {vehicle.nearestSchedule
                                 ? formatScheduleDate(
                                     vehicle.nearestSchedule.date
@@ -232,14 +279,22 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                                     )
                                   }
                                 >
-                                  Cek Jadwal Driver
+                                  {t(
+                                    "AssignArmadaModal.checkDriverSchedule",
+                                    {},
+                                    "Cek Jadwal Driver"
+                                  )}
                                 </Button>
                               </>
                             )}
                           </div>
                           {vehicle.isPotentialOverload && (
                             <span className="text-xs font-medium text-error-500">
-                              Potensi Overload
+                              {t(
+                                "AssignArmadaModal.potentialOverload",
+                                {},
+                                "Potensi Overload"
+                              )}
                             </span>
                           )}
                         </div>
@@ -269,8 +324,8 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                           className="h-8 w-[112px] px-6 text-sm"
                         >
                           {selectedArmada.includes(vehicle.id)
-                            ? "Dipilih"
-                            : "Pilih"}
+                            ? t("AssignArmadaModal.selected", {}, "Dipilih")
+                            : t("AssignArmadaModal.select", {}, "Pilih")}
                         </Button>
                       </div>
                     </div>
@@ -298,8 +353,11 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
           {/* Footer */}
           <div className="flex items-center justify-between px-6 pb-4">
             <p className="text-xs font-bold">
-              Total Unit Dipilih : {selectedArmada.length}/{totalUnitsNeeded}{" "}
-              Unit
+              {t(
+                "AssignArmadaModal.totalSelectedUnits",
+                { selected: selectedArmada.length, total: totalUnitsNeeded },
+                `Total Unit Dipilih : ${selectedArmada.length}/${totalUnitsNeeded} Unit`
+              )}
             </p>
             <div className="flex gap-3">
               <Button
@@ -308,7 +366,7 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                 disabled={isSubmitting}
                 className="px-6"
               >
-                Kembali
+                {t("AssignArmadaModal.back", {}, "Kembali")}
               </Button>
               <Button
                 variant="muattrans-primary"
@@ -317,7 +375,7 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                 {...((isSubmitting || isLoading) && { loading: true })}
                 className="px-6"
               >
-                Simpan
+                {t("AssignArmadaModal.save", {}, "Simpan")}
               </Button>
             </div>
           </div>

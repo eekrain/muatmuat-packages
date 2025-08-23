@@ -11,10 +11,12 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 
 const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
+  const { t } = useTranslation();
   const [confirmLoading, setConfirmLoading] = useState(false);
 
   // Use order data directly from the list
@@ -32,10 +34,22 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const orderCode = orderInfo?.orderCode || "MT25A001A";
-      toast.success(`Berhasil konfirmasi siap untuk pesanan ${orderCode}`);
+      toast.success(
+        t(
+          "ConfirmReadyModal.confirmSuccess",
+          { orderCode },
+          `Berhasil konfirmasi siap untuk pesanan ${orderCode}`
+        )
+      );
       onClose();
     } catch (error) {
-      toast.error("Gagal melakukan konfirmasi. Silakan coba lagi.");
+      toast.error(
+        t(
+          "ConfirmReadyModal.confirmError",
+          {},
+          "Gagal melakukan konfirmasi. Silakan coba lagi."
+        )
+      );
     } finally {
       setConfirmLoading(false);
     }
@@ -74,7 +88,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
           {/* Header */}
           <div className="flex items-center justify-center px-6 pt-6">
             <ModalTitle className="text-base font-bold leading-[120%] text-black">
-              Konfirmasi Siap
+              {t("ConfirmReadyModal.title", {}, "Konfirmasi Siap")}
             </ModalTitle>
           </div>
 

@@ -6,9 +6,12 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const ArmadaTidakTersediaModal = ({ isOpen, onClose, orderData }) => {
+  const { t } = useTranslation();
+
   const handleOpenChange = (open) => {
     if (!open) {
       onClose?.();
@@ -24,7 +27,11 @@ const ArmadaTidakTersediaModal = ({ isOpen, onClose, orderData }) => {
       >
         <ModalHeader size="small" />
         <ModalTitle className="sr-only">
-          Jumlah Armada Tidak Mencukupi Kebutuhan
+          {t(
+            "ArmadaTidakTersediaModal.title",
+            {},
+            "Jumlah Armada Tidak Mencukupi Kebutuhan"
+          )}
         </ModalTitle>
 
         {/* Modal Content */}
@@ -38,7 +45,11 @@ const ArmadaTidakTersediaModal = ({ isOpen, onClose, orderData }) => {
               "flex-none self-stretch"
             )}
           >
-            Jumlah Armada Tidak Mencukupi Kebutuhan
+            {t(
+              "ArmadaTidakTersediaModal.title",
+              {},
+              "Jumlah Armada Tidak Mencukupi Kebutuhan"
+            )}
           </h2>
 
           {/* Description */}
@@ -48,8 +59,11 @@ const ArmadaTidakTersediaModal = ({ isOpen, onClose, orderData }) => {
               "w-[338px] max-w-[338px] flex-none self-stretch"
             )}
           >
-            Jumlah unit yang tersedia tidak cukup untuk memenuhi kebutuhan
-            armada yang kamu terima.
+            {t(
+              "ArmadaTidakTersediaModal.description",
+              {},
+              "Jumlah unit yang tersedia tidak cukup untuk memenuhi kebutuhan armada yang kamu terima."
+            )}
           </p>
 
           {/* Additional Info */}
@@ -59,7 +73,11 @@ const ArmadaTidakTersediaModal = ({ isOpen, onClose, orderData }) => {
               "w-[338px] max-w-[338px] flex-none self-stretch"
             )}
           >
-            Segera hubungi dukungan pelanggan untuk tindakan lebih lanjut.
+            {t(
+              "ArmadaTidakTersediaModal.additionalInfo",
+              {},
+              "Segera hubungi dukungan pelanggan untuk tindakan lebih lanjut."
+            )}
           </p>
         </div>
       </ModalContent>
