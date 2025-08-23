@@ -1,60 +1,103 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-// ++ ADDED: useCallback
-
+// Component Imports
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
 import { ScrollableTabs } from "@/components/ScrollableTabs/ScrollableTabs";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+// Service (Hook) Imports
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
+// View & Child Component Imports
 import PermintaanAngkutDetailCS from "./PermintaanAngkutDetailCS.jsx";
 import ModalTransporterTidakAktif from "./components/ModalTransporterTidakAktif";
 import TransportRequestCard from "./components/TransportRequestCard";
 
-// ++ HELPER FUNCTION: Moved filtering logic outside the component for stability
+// --- Helper Functions ---
+// Helper for filtering requests based on search input.
 const filterRequests = (requests, searchValue, removedItems) => {
-  const trimmedSearch = searchValue.trim();
+  const trimmedSearch = searchValue.trim().toLowerCase();
+
+  // Always filter out removed items
+  const availableRequests = requests.filter(
+    (request) => !removedItems.has(request.id)
+  );
+
+  // Return early if search is too short
   if (trimmedSearch.length < 3) {
-    return requests.filter((request) => !removedItems.has(request.id));
+    return availableRequests;
   }
 
-  const searchTerm = trimmedSearch.toLowerCase();
+  return availableRequests.filter((request) => {
+    const searchableContent = [
+      request.orderCode,
+      request.shipperInfo?.name,
+      request.orderType,
+      request.loadTimeStart,
+      request.loadTimeEnd,
+      request.cargo?.description,
+      request.vehicle?.truckType,
+      request.vehicle?.carrierType,
+      request.pricing?.potentialIncome,
+      ...(request.locations?.pickupLocations?.map(
+        (loc) => `${loc.fullAddress} ${loc.city} ${loc.district}`
+      ) ?? []),
+      ...(request.locations?.dropoffLocations?.map(
+        (loc) => `${loc.fullAddress} ${loc.city} ${loc.district}`
+      ) ?? []),
+      ...(request.cargo?.items?.map((item) => item.name) ?? []),
+    ]
+      .join(" ")
+      .toLowerCase();
 
-  return requests
-    .filter((request) => !removedItems.has(request.id))
-    .filter((request) => {
-      const searchableContent = [
-        request.orderCode,
-        request.shipperInfo?.name,
-        request.orderType,
-        request.loadTimeStart,
-        request.loadTimeEnd,
-        request.cargo?.description,
-        request.vehicle?.truckType,
-        request.vehicle?.carrierType,
-        request.pricing?.potentialIncome,
-        ...(request.locations?.pickupLocations?.map(
-          (loc) => `${loc.fullAddress} ${loc.city} ${loc.district}`
-        ) ?? []),
-        ...(request.locations?.dropoffLocations?.map(
-          (loc) => `${loc.fullAddress} ${loc.city} ${loc.district}`
-        ) ?? []),
-        ...(request.cargo?.items?.map((item) => item.name) ?? []),
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return searchableContent.includes(searchTerm);
-    });
+    return searchableContent.includes(trimmedSearch);
+  });
 };
 
+// --- Main Component ---
 const PermintaanAngkutCS = () => {
+  const { t } = useTranslation();
+
+  // --- Constants ---
+  // Using a config object makes it easier to manage tabs and avoids repetition.
+  const TABS_CONFIG = [
+    {
+      id: "semua",
+      labelKey: "permintaanAngkutCS.tabAll",
+      fallback: "Semua",
+      params: {},
+      key: "all",
+    },
+    {
+      id: "instan",
+      labelKey: "permintaanAngkutCS.tabInstant",
+      fallback: "Instan",
+      params: { orderType: "INSTANT" },
+      key: "instant",
+    },
+    {
+      id: "terjadwal",
+      labelKey: "permintaanAngkutCS.tabScheduled",
+      fallback: "Terjadwal",
+      params: { orderType: "SCHEDULED" },
+      key: "scheduled",
+    },
+    {
+      id: "halal_logistik",
+      labelKey: "permintaanAngkutCS.tabHalalLogistics",
+      fallback: "Halal Logistik",
+      params: { isHalalLogistics: true },
+      icon: "/icons/halal.svg",
+      key: "halal",
+    },
+  ];
+
   const [showModalTransporterTidakAktif, setShowModalTransporterTidakAktif] =
     useState(false);
   const [activeTab, setActiveTab] = useState("semua");
@@ -63,111 +106,80 @@ const PermintaanAngkutCS = () => {
   const [removedItems, setRemovedItems] = useState(new Set());
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  // Memoize API parameters based on the active tab config.
   const params = useMemo(() => {
-    switch (activeTab) {
-      case "semua":
-        return {};
-      case "instan":
-        return { orderType: "INSTANT" };
-      case "terjadwal":
-        return { orderType: "SCHEDULED" };
-      case "halal_logistik":
-        return { isHalalLogistics: true };
-      case "disimpan":
-        return { isSaved: true };
-      default:
-        return {};
-    }
-  }, [activeTab]);
+    return TABS_CONFIG.find((tab) => tab.id === activeTab)?.params || {};
+  }, [activeTab, TABS_CONFIG]);
 
-  // FIXED: 'error' variable was removed as it was unused.
   const { data, isLoading } = useGetTransportRequestList(params);
   const { data: inactiveAlertData } = useGetInactiveTransporter();
 
-  const handleSearch = (value) => {
-    const trimmedValue = value.trim();
-    if (trimmedValue.length === 0 || trimmedValue.length >= 3) {
-      setSearchValue(value);
-    } else {
-      toast.info("Masukkan minimal 3 karakter untuk melakukan pencarian.");
-    }
-  };
+  const handleSearch = useCallback(
+    (value) => {
+      const trimmedValue = value.trim();
+      if (trimmedValue.length === 0 || trimmedValue.length >= 3) {
+        setSearchValue(value);
+      } else {
+        toast.info(
+          t(
+            "permintaanAngkutCS.toastInfoSearchMinChars",
+            {},
+            "Masukkan minimal 3 karakter untuk melakukan pencarian."
+          )
+        );
+      }
+    },
+    [t]
+  );
 
-  const handleTabChange = (tabName) => {
+  const handleTabChange = useCallback((tabName) => {
     setActiveTab(tabName);
-    setSearchValue("");
-  };
-
-  const handleBookmarkToggle = (requestId, newSavedState) => {
-    const newBookmarkedItems = new Set(bookmarkedItems);
-    const originalRequest = data?.requests?.find((req) => req.id === requestId);
-    const originalSavedState = originalRequest?.isSaved || false;
-    if (newSavedState === originalSavedState) {
-      newBookmarkedItems.delete(requestId);
-    } else {
-      newBookmarkedItems.add(requestId);
-    }
-    setBookmarkedItems(newBookmarkedItems);
-  };
-
-  const handleUnderstand = (requestId) => {
-    const newRemovedItems = new Set(removedItems);
-    newRemovedItems.add(requestId);
-    setRemovedItems(newRemovedItems);
-  };
-
-  const handleBackToList = () => {
-    setSelectedRequest(null);
-  };
-
-  const handleShowDetail = (request) => {
-    setSelectedRequest(request);
-  };
-
-  // FIXED: Inlined logic from getDynamicTabCounts to resolve the exhaustive-deps warning.
-  const dynamicTabCounts = useMemo(() => {
-    const requestsToCount = data?.requests || [];
-
-    const filteredForCount =
-      searchValue.trim().length >= 3
-        ? filterRequests(requestsToCount, searchValue, removedItems)
-        : requestsToCount;
-
-    const allCount = filteredForCount.length;
-    const instantCount = filteredForCount.filter(
-      (req) => req.orderType === "INSTANT"
-    ).length;
-    const scheduledCount = filteredForCount.filter(
-      (req) => req.orderType === "SCHEDULED"
-    ).length;
-    const halalCount = filteredForCount.filter(
-      (req) => req.isHalalLogistics
-    ).length;
-
-    return {
-      all: allCount,
-      instant: instantCount,
-      scheduled: scheduledCount,
-      halal: halalCount,
-      hasArrow:
-        allCount > 9 ||
-        instantCount > 9 ||
-        scheduledCount > 9 ||
-        halalCount > 9,
-    };
-  }, [data?.requests, searchValue, removedItems]);
-
-  // REMOVED: Unused functions 'formatCounter' and 'shouldAnimate'.
-
-  useEffect(() => {
-    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
-    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
-    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
-    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
-    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
-    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    setSearchValue(""); // Reset search on tab change
   }, []);
 
+  const handleBookmarkToggle = useCallback(
+    (requestId, newSavedState) => {
+      setBookmarkedItems((prevBookmarked) => {
+        const newBookmarked = new Set(prevBookmarked);
+        const originalRequest = data?.requests?.find(
+          (req) => req.id === requestId
+        );
+        const originalSavedState = originalRequest?.isSaved || false;
+
+        // Toggle logic: if the new state is different from original, track it.
+        // If it's the same, stop tracking it.
+        if (newSavedState === originalSavedState) {
+          newBookmarked.delete(requestId);
+        } else {
+          newBookmarked.add(requestId);
+        }
+        return newBookmarked;
+      });
+    },
+    [data?.requests]
+  );
+
+  const handleUnderstand = useCallback((requestId) => {
+    setRemovedItems((prevRemoved) => {
+      const newRemoved = new Set(prevRemoved);
+      newRemoved.add(requestId);
+      return newRemoved;
+    });
+  }, []);
+
+  const handleBackToList = useCallback(() => {
+    setSelectedRequest(null);
+  }, []);
+
+  const handleShowDetail = useCallback((request) => {
+    setSelectedRequest(request);
+  }, []);
+
+  const openInactiveTransporterModal = useCallback(() => {
+    setShowModalTransporterTidakAktif(true);
+  }, []);
+
+  // Display detail view if a request is selected
   if (selectedRequest) {
     return (
       <PermintaanAngkutDetailCS
@@ -180,134 +192,105 @@ const PermintaanAngkutCS = () => {
 
   return (
     <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-white">
-      <>
-        {/* Fixed Header - Search Input and Tabs */}
-        <div className="flex-shrink-0 bg-white px-4 py-6">
-          <div className="mb-4 flex justify-between">
-            <h1 className="text-base font-bold text-neutral-900">
-              Permintaan Jasa Angkut
-            </h1>
-            {inactiveAlertData?.alertSummary?.hasAlert && (
-              <div
-                className="flex cursor-pointer items-center text-xs font-medium text-primary-600"
-                onClick={() => setShowModalTransporterTidakAktif(true)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter")
-                    setShowModalTransporterTidakAktif(true);
-                }}
-              >
-                Transporter Tidak Aktif
-                <NotificationDot size="md" color="red" className="-top-1" />
-              </div>
+      {/* Fixed Header - Search Input and Tabs */}
+      <div className="flex-shrink-0 bg-white px-4 py-6">
+        <div className="mb-4 flex justify-between">
+          <h1 className="text-base font-bold text-neutral-900">
+            {t(
+              "permintaanAngkutCS.titlePageHeader",
+              {},
+              "Permintaan Jasa Angkut"
             )}
-          </div>
-
-          {/* Search Input */}
-          <div className="mb-4">
-            <Search
-              placeholder="Cari Permintaan Jasa Angkut"
-              onSearch={handleSearch}
-              autoSearch={false}
-              value={searchValue}
-              disabled={data?.userStatus?.isSuspended}
-              inputClassName="w-full"
-            />
-          </div>
-
-          {/* Tabs */}
-          <ScrollableTabs
-            className="h-7 w-auto max-w-[450px] gap-2"
-            dependencies={[dynamicTabCounts, activeTab]}
-            hasArrow={dynamicTabCounts.hasArrow}
-          >
+          </h1>
+          {inactiveAlertData?.alertSummary?.hasAlert && (
             <button
-              onClick={() => handleTabChange("semua")}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
-                activeTab === "semua"
-                  ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                  : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-              }`}
+              className="flex cursor-pointer items-center text-xs font-medium text-primary-600"
+              onClick={openInactiveTransporterModal}
             >
-              <span className="relative whitespace-nowrap">
-                Semua ({data?.tabCounters?.all ?? 0})
-              </span>
+              {t(
+                "permintaanAngkutCS.buttonInactiveTransporter",
+                {},
+                "Transporter Tidak Aktif"
+              )}
+              <NotificationDot size="md" color="red" className="-top-1" />
             </button>
-
-            <button
-              onClick={() => handleTabChange("instan")}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
-                activeTab === "instan"
-                  ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                  : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-              }`}
-            >
-              <span className="relative whitespace-nowrap">
-                Instan ({data?.tabCounters?.instant ?? 0})
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleTabChange("terjadwal")}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
-                activeTab === "terjadwal"
-                  ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                  : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-              }`}
-            >
-              <span className="relative whitespace-nowrap">
-                Terjadwal ({data?.tabCounters?.scheduled ?? 0})
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleTabChange("halal_logistik")}
-              className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
-                activeTab === "halal_logistik"
-                  ? "w-auto min-w-[124px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                  : "w-auto min-w-[124px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-              }`}
-            >
-              <IconComponent
-                src="/icons/halal.svg"
-                className="h-4 w-4 flex-shrink-0"
-              />
-              <span className="relative whitespace-nowrap">
-                Halal Logistik ({data?.tabCounters?.halal ?? 0})
-              </span>
-            </button>
-          </ScrollableTabs>
-        </div>
-
-        {/* Scrollable Content Area */}
-        <div className="mx-2 flex-1 overflow-y-auto bg-white px-2">
-          <RequestList
-            requests={data?.requests || []}
-            isLoading={isLoading}
-            isSuspended={data?.userStatus?.isSuspended}
-            onBookmarkToggle={handleBookmarkToggle}
-            bookmarkedItems={bookmarkedItems}
-            removedItems={removedItems}
-            onUnderstand={handleUnderstand}
-            searchValue={searchValue}
-            onShowDetail={handleShowDetail}
-          />
-          {showModalTransporterTidakAktif && (
-            <ModalTransporterTidakAktif
-              onClose={() => setShowModalTransporterTidakAktif(false)}
-            />
           )}
         </div>
-      </>
+
+        <div className="mb-4">
+          <Search
+            placeholder={t(
+              "permintaanAngkutCS.placeholderSearchRequest",
+              {},
+              "Cari Permintaan Jasa Angkut"
+            )}
+            onSearch={handleSearch}
+            autoSearch={false}
+            value={searchValue}
+            disabled={data?.userStatus?.isSuspended}
+            inputClassName="w-full"
+          />
+        </div>
+
+        <ScrollableTabs
+          className="h-7 w-auto max-w-[450px] gap-2"
+          dependencies={[data?.tabCounters, activeTab]}
+          hasArrow={Object.values(data?.tabCounters ?? {}).some(
+            (count) => count > 9
+          )}
+        >
+          {TABS_CONFIG.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
+                activeTab === tab.id
+                  ? "border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                  : "border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+              }`}
+            >
+              {tab.icon && (
+                <IconComponent
+                  src={tab.icon}
+                  className="h-4 w-4 flex-shrink-0"
+                />
+              )}
+              <span className="relative whitespace-nowrap">
+                {t(tab.labelKey, {}, tab.fallback)} (
+                {data?.tabCounters?.[tab.key] ?? 0})
+              </span>
+            </button>
+          ))}
+        </ScrollableTabs>
+      </div>
+
+      {/* Scrollable Content Area */}
+      <div className="mx-2 flex-1 overflow-y-auto bg-white px-2">
+        <RequestList
+          requests={data?.requests || []}
+          isLoading={isLoading}
+          isSuspended={data?.userStatus?.isSuspended}
+          onBookmarkToggle={handleBookmarkToggle}
+          bookmarkedItems={bookmarkedItems}
+          removedItems={removedItems}
+          onUnderstand={handleUnderstand}
+          searchValue={searchValue}
+          onShowDetail={handleShowDetail}
+        />
+        {showModalTransporterTidakAktif && (
+          <ModalTransporterTidakAktif
+            onClose={() => setShowModalTransporterTidakAktif(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
+// --- Child: Request List Component ---
 const RequestList = ({
   requests,
   isLoading,
-  // REMOVED: 'activeTab' prop was unused.
   isSuspended = false,
   onBookmarkToggle,
   bookmarkedItems,
@@ -316,7 +299,8 @@ const RequestList = ({
   searchValue,
   onShowDetail,
 }) => {
-  // FIXED: Moved useMemo to the top of the component before any conditional returns.
+  const { t } = useTranslation();
+
   const filteredRequests = useMemo(
     () => filterRequests(requests, searchValue, removedItems),
     [requests, searchValue, removedItems]
@@ -330,7 +314,13 @@ const RequestList = ({
             src="/icons/loader-truck-spinner.svg"
             className="h-6 w-6 animate-spin"
           />
-          <span className="text-sm font-medium">Memuat permintaan...</span>
+          <span className="text-sm font-medium">
+            {t(
+              "permintaanAngkutCS.textLoadingRequests",
+              {},
+              "Memuat permintaan..."
+            )}
+          </span>
         </div>
       </div>
     );
@@ -342,10 +332,18 @@ const RequestList = ({
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              Oops, belum ada permintaan jasa angkut
+              {t(
+                "permintaanAngkutCS.textNoRequestsTitle",
+                {},
+                "Oops, belum ada permintaan jasa angkut"
+              )}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              Belum ada shipper yang membuat permintaan jasa angkut{" "}
+              {t(
+                "permintaanAngkutCS.textNoRequestsSubtitle",
+                {},
+                "Belum ada shipper yang membuat permintaan jasa angkut"
+              )}
             </p>
           </div>
         </DataNotFound>
@@ -353,10 +351,8 @@ const RequestList = ({
     );
   }
 
-  const hasSearchResults =
-    searchValue && searchValue.trim() !== "" && filteredRequests.length === 0;
-
-  if (hasSearchResults) {
+  const isSearching = searchValue && searchValue.trim().length >= 3;
+  if (isSearching && filteredRequests.length === 0) {
     return (
       <div className="flex h-full items-center justify-center py-16">
         <div className="flex flex-col items-center gap-4">
@@ -366,7 +362,11 @@ const RequestList = ({
           />
           <div className="text-center">
             <h3 className="text-lg font-semibold text-[#868686]">
-              Keyword Tidak Ditemukan
+              {t(
+                "permintaanAngkutCS.textKeywordNotFound",
+                {},
+                "Keyword Tidak Ditemukan"
+              )}
             </h3>
           </div>
         </div>
@@ -377,8 +377,9 @@ const RequestList = ({
   return (
     <div className="space-y-4 pb-4">
       {filteredRequests.map((request) => {
-        const hasStateChanged = bookmarkedItems?.has(request.id);
-        const currentBookmarkState = hasStateChanged
+        // Determine the final bookmark state based on original data and local changes.
+        const hasLocalChange = bookmarkedItems.has(request.id);
+        const isBookmarked = hasLocalChange
           ? !request.isSaved
           : request.isSaved;
 
@@ -388,7 +389,7 @@ const RequestList = ({
             request={request}
             isSuspended={isSuspended}
             onBookmarkToggle={onBookmarkToggle}
-            isBookmarked={currentBookmarkState}
+            isBookmarked={isBookmarked}
             onUnderstand={onUnderstand}
             onShowDetail={onShowDetail}
           />
