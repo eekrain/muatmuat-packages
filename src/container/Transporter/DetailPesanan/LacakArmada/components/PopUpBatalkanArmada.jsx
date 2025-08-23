@@ -10,11 +10,17 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
-import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 
 const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState("");
+
+  const handleClose = () => {
+    // Reset states when closing
+    setIsChecked(false);
+    setError("");
+    onClose();
+  };
 
   const handleConfirm = () => {
     if (!isChecked) {
@@ -26,9 +32,9 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
   };
 
   return (
-    <Modal open={isOpen} onOpenChange={onClose}>
+    <Modal open={isOpen} onOpenChange={handleClose}>
       <ModalContent className="w-modal-small" type="muattrans">
-        <ModalHeader size="small" onClose={onClose} />
+        <ModalHeader size="small" onClose={handleClose} />
         <ModalTitle className="sr-only">Batalkan Armada</ModalTitle>
 
         <div className="flex flex-col items-center justify-center gap-6 p-8 text-center">
@@ -55,7 +61,7 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
                 onClick={() => setIsChecked(!isChecked)}
               >
                 Saya menyetujui{" "}
-                <span className="cursor-pointer text-primary-800">
+                <span className="cursor-pointer text-primary-700 hover:text-primary-800">
                   Syarat dan Ketentuan Muatrans
                 </span>
               </label>
@@ -69,7 +75,7 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
           <div className="flex w-full gap-3">
             <Button
               variant="muattrans-primary-secondary"
-              onClick={onClose}
+              onClick={handleClose}
               className="w-full"
             >
               Kembali

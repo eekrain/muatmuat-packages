@@ -5,11 +5,13 @@ import { useState } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import ImageArmada from "./components/ImageArmada";
 
 const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
 
   // Get assigned vehicles from order data
@@ -35,7 +37,9 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent className={cn("w-[600px] bg-white p-0")} type="muatmuat">
-        <ModalTitle className="sr-only">Lihat Armada</ModalTitle>
+        <ModalTitle className="sr-only">
+          {t("LihatArmadaModal.title", {}, "Lihat Armada")}
+        </ModalTitle>
 
         {/* Modal Content */}
         <div
@@ -51,14 +55,18 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
               "w-[540px] max-w-[540px] flex-none self-stretch"
             )}
           >
-            Daftar Armada
+            {t("LihatArmadaModal.fleetList", {}, "Daftar Armada")}
           </h2>
 
           {/* Search Component - only show if more than one vehicle */}
           {assignedVehicles.length > 1 && (
             <div className="w-full">
               <Search
-                placeholder="Cari No. Polisi / Nama Driver"
+                placeholder={t(
+                  "LihatArmadaModal.searchPlaceholder",
+                  {},
+                  "Cari No. Polisi / Nama Driver"
+                )}
                 onSearch={setSearchValue}
                 containerClassName="h-8 w-full"
                 inputClassName="text-sm"
@@ -80,8 +88,16 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
               <div className="flex items-center justify-center py-8">
                 <p className="text-sm text-neutral-500">
                   {assignedVehicles.length === 0
-                    ? "Belum ada armada yang ditugaskan"
-                    : "Tidak ada armada yang sesuai pencarian"}
+                    ? t(
+                        "LihatArmadaModal.noFleetAssigned",
+                        {},
+                        "Belum ada armada yang ditugaskan"
+                      )
+                    : t(
+                        "LihatArmadaModal.noMatchingFleet",
+                        {},
+                        "Tidak ada armada yang sesuai pencarian"
+                      )}
                 </p>
               </div>
             ) : (
@@ -109,7 +125,12 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
                       {/* AE 1111 LBA */}
                       <div className="h-2 w-[76px]">
                         <p className="text-xs font-bold leading-[120%] text-black">
-                          {vehicle.licensePlate || "No License Plate"}
+                          {vehicle.licensePlate ||
+                            t(
+                              "LihatArmadaModal.noLicensePlate",
+                              {},
+                              "No License Plate"
+                            )}
                         </p>
                       </div>
 
@@ -124,7 +145,8 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
                         {/* Noel Galagher */}
                         <div className="h-2 w-full">
                           <p className="text-xs font-medium leading-[120%] text-black">
-                            {vehicle.driverName || "No Driver"}
+                            {vehicle.driverName ||
+                              t("LihatArmadaModal.noDriver", {}, "No Driver")}
                           </p>
                         </div>
                       </div>

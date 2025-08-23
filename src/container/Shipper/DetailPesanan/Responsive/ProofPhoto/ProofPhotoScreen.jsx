@@ -78,7 +78,7 @@ const ProofPhotoScreen = () => {
           ? t(
               "labelBuktiMuatBarangMulti",
               { index },
-              "Bukti Muat Barang di Lokasi 1"
+              "Bukti Muat Barang di Lokasi {index}"
             )
           : t("labelBuktiMuatBarang", {}, "Bukti Muat Barang");
       } else {
@@ -86,21 +86,25 @@ const ProofPhotoScreen = () => {
           ? t(
               "labelBuktiBongkarBarangMulti",
               { index },
-              "Bukti Bongkar Barang di Lokasi 1"
+              "Bukti Bongkar Barang di Lokasi {index}"
             )
           : t("labelBuktiBongkarBarang", {}, "Bukti Bongkar Barang");
       }
     } else if (mode === "pods") {
       if (statusCode.includes("MUAT")) {
         return index > 0
-          ? t("labelPODMuatMulti", { index }, "Bukti POD Muat di Lokasi 1")
+          ? t(
+              "labelPODMuatMulti",
+              { index },
+              "Bukti POD Muat di Lokasi {index}"
+            )
           : t("labelPODMuat", {}, "Bukti POD Muat");
       } else {
         return index > 0
           ? t(
               "labelPODBongkarMulti",
               { index },
-              "Bukti POD Bongkar di Lokasi 1"
+              "Bukti POD Bongkar di Lokasi {index}"
             )
           : t("labelPODBongkar", {}, "Bukti POD Bongkar");
       }

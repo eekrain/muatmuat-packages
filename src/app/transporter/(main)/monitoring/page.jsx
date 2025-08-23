@@ -470,7 +470,7 @@ const Page = () => {
               style={{
                 height: panels.isBottomExpanded
                   ? "calc((100vh - 92px - 16px - 16px) / 2)"
-                  : "calc(100vh - 100vh + 64px)",
+                  : "calc(64px)",
               }}
             >
               {panels.showRiwayatSOS ? (

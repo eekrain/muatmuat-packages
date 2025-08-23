@@ -25,6 +25,7 @@ const LIST_SHOW_TOTAL_PRICE = [
 export const FooterDetailPesanan = ({
   dataStatusPesanan,
   dataRingkasanPembayaran,
+  dataRingkasanPesanan,
   isConfirmWaiting,
   onConfirmWaitingChange,
 }) => {
@@ -426,7 +427,13 @@ export const FooterDetailPesanan = ({
                 {t("FooterDetailPesanan.rute", {}, "Rute")}
               </div>
               <div className="text-xs font-medium leading-[1.1]">
-                {t("FooterDetailPesanan.estimasiJarak", {}, "Estimasi 178 km")}
+                {t(
+                  "FooterDetailPesanan.estimasiJarak",
+                  {
+                    distance: dataRingkasanPesanan?.estimatedDistance || "178",
+                  },
+                  "Estimasi {distance} km"
+                )}
               </div>
             </div>
           ) : null}

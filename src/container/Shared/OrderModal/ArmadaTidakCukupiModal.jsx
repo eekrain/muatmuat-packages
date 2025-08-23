@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import UbahJumlahUnitModal from "./UbahJumlahUnitModal";
@@ -19,6 +20,7 @@ const ArmadaTidakCukupiModal = ({
   onChangeUnit,
   orderData,
 }) => {
+  const { t } = useTranslation();
   const [showChangeUnitModal, setShowChangeUnitModal] = useState(false);
 
   const handleOpenChange = (open) => {
@@ -51,7 +53,11 @@ const ArmadaTidakCukupiModal = ({
         >
           <ModalHeader size="small" />
           <ModalTitle className="sr-only">
-            Jumlah Armada Tidak Mencukupi Kebutuhan
+            {t(
+              "ArmadaTidakCukupiModal.title",
+              {},
+              "Jumlah Armada Tidak Mencukupi Kebutuhan"
+            )}
           </ModalTitle>
 
           {/* Modal Content */}
@@ -68,7 +74,11 @@ const ArmadaTidakCukupiModal = ({
                 "flex-none self-stretch"
               )}
             >
-              Jumlah Armada Tidak Mencukupi Kebutuhan
+              {t(
+                "ArmadaTidakCukupiModal.title",
+                {},
+                "Jumlah Armada Tidak Mencukupi Kebutuhan"
+              )}
             </h2>
 
             {/* Description */}
@@ -78,8 +88,11 @@ const ArmadaTidakCukupiModal = ({
                 "flex-none self-stretch"
               )}
             >
-              Jumlah unit yang tersedia tidak cukup untuk memenuhi kebutuhan
-              armada yang kamu terima.
+              {t(
+                "ArmadaTidakCukupiModal.description",
+                {},
+                "Jumlah unit yang tersedia tidak cukup untuk memenuhi kebutuhan armada yang kamu terima."
+              )}
             </p>
 
             {/* Additional Info */}
@@ -89,7 +102,11 @@ const ArmadaTidakCukupiModal = ({
                 "flex-none self-stretch"
               )}
             >
-              Segera lakukan penyesuaian jumlah unit kamu.
+              {t(
+                "ArmadaTidakCukupiModal.additionalInfo",
+                {},
+                "Segera lakukan penyesuaian jumlah unit kamu."
+              )}
             </p>
 
             {/* Action Button */}
@@ -102,7 +119,11 @@ const ArmadaTidakCukupiModal = ({
                 "bg-[#F5C451] text-black hover:bg-[#F5C451]/90"
               )}
             >
-              Ubah Jumlah Unit
+              {t(
+                "ArmadaTidakCukupiModal.changeUnitButton",
+                {},
+                "Ubah Jumlah Unit"
+              )}
             </Button>
           </div>
         </ModalContent>
