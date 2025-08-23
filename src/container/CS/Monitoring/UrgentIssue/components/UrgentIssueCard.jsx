@@ -36,37 +36,35 @@ export const UrgentIssueCard = ({
   } = data || {};
 
   const { t } = useTranslation();
-  let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
-  let buttonLabel = t("UrgentIssueCard.buttonProcess", {}, "Proses");
-  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
-    statusDisplay = t("UrgentIssueCard.statusProcessing", {}, "diproses");
-    buttonLabel = t("UrgentIssueCard.buttonCompleted", {}, "Selesai");
-  }
-  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
-    statusDisplay = t("UrgentIssueCard.statusCompleted", {}, "selesai");
-    buttonLabel = t("UrgentIssueCard.buttonCompleted", {}, "Selesai");
-  }
-
   const router = useRouter();
-  const [showDetail, setShowDetail] = useState(false);
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
   const [showGroupSection, setShowGroupSection] = useState(false);
-
   // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
-
-  const { message, isLoading, isError } = useUpdateUrgentIssueStatus(
+  const { message, isError } = useUpdateUrgentIssueStatus(
     updateParams.id,
     updateParams.body
   );
+  const isCountDown = true;
+  const { formatted, isNegative } = useFlexibleCountdown(
+    new Date(), // start time
+    360 // durasi 6 menit (dalam detik)
+  );
+
+  // The rest of your component logic can now safely assume 't' is a function.
+  let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
+  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
+    statusDisplay = t("UrgentIssueCard.statusProcessing", {}, "diproses");
+  }
+  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
+    statusDisplay = t("UrgentIssueCard.statusCompleted", {}, "selesai");
+  }
 
   useEffect(() => {
     if (!updateParams.id || !updateParams.body) return;
-    console.log("message;", message);
-
     if (message?.Code === 200) {
       toast.success(
         `Urgent issue pesanan ${orderCode} berhasil ${
@@ -75,7 +73,6 @@ export const UrgentIssueCard = ({
             : "diselesaikan"
         }`
       );
-      // Reset updateParams setelah berhasil untuk mencegah toast muncul lagi
       setUpdateParams({ id: null, body: null });
     } else if (isError) {
       toast.error(
@@ -85,10 +82,14 @@ export const UrgentIssueCard = ({
             : "diselesaikan"
         }`
       );
-      // Reset updateParams setelah error untuk mencegah toast muncul lagi
       setUpdateParams({ id: null, body: null });
     }
   }, [message, isError, updateParams, orderCode]);
+
+  // Early return setelah semua hooks
+  if (typeof t !== "function") {
+    return null; // Or return a loading spinner, e.g., <p>Loading...</p>
+  }
 
   const handleClickOrder = (orderId) => {
     router.push(`/daftarpesanan/detailpesanan/${orderId}`);
@@ -121,13 +122,6 @@ export const UrgentIssueCard = ({
     toast.success("Testing click vehicle");
     alert("Testing click vehicle");
   };
-
-  const isCountDown = true;
-
-  const { formatted, isNegative } = useFlexibleCountdown(
-    new Date(), // start time
-    360 // durasi 6 menit (dalam detik)
-  );
 
   return (
     <>
@@ -372,7 +366,7 @@ export const UrgentIssueCard = ({
               <Button
                 type="button"
                 onClick={() => setModalUbahTransporter(true)}
-                variant="muatparts-error-secondary"
+                variant="muattrans-primary-secondary"
               >
                 Ubah Transporter
               </Button>
