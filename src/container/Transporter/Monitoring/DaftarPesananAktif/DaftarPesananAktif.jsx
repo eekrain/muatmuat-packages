@@ -54,6 +54,28 @@ const DaftarPesananAktif = ({
   onOnboardingShown,
 }) => {
   const { t } = useTranslation();
+
+  // Helper function to get translated action labels
+  const getTranslatedActionLabel = (actionType, fallbackLabel) => {
+    const translationKeys = {
+      TRACK_FLEET: "OrderActions.trackFleet",
+      VIEW_FLEET: "OrderActions.viewFleet",
+      VIEW_ORDER_DETAIL: "OrderActions.viewOrderDetail",
+      DETAIL_ARMADA: "OrderActions.detailArmada",
+      CANCEL_ORDER: "OrderActions.cancelOrder",
+      CANCEL_FLEET: "OrderActions.cancelFleet",
+      ASSIGN_FLEET: "OrderActions.assignFleet",
+      CHANGE_UNIT_COUNT: "OrderActions.changeUnitCount",
+      RESPOND_CHANGE: "OrderActions.respondChange",
+      CONFIRM_READY: "OrderActions.confirmReady",
+    };
+
+    const translationKey = translationKeys[actionType];
+    return translationKey
+      ? t(translationKey, null, fallbackLabel)
+      : fallbackLabel;
+  };
+
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
@@ -85,6 +107,41 @@ const DaftarPesananAktif = ({
   const [selectedOrderForChangeUnit, setSelectedOrderForChangeUnit] =
     useState(null);
   const router = useRouter();
+
+  // Helper function to translate status labels
+  const getTranslatedStatusLabel = (status) => {
+    const statusTranslations = {
+      WAITING_CONFIRMATION_SHIPPER: "OrderStatus.waitingConfirmationShipper",
+      CONFIRMED: "OrderStatus.confirmed",
+      NEED_ASSIGN_FLEET: "OrderStatus.needAssignFleet",
+      NEED_CONFIRMATION_READY: "OrderStatus.needConfirmationReady",
+      NEED_CHANGE_RESPONSE: "OrderStatus.needChangeResponse",
+      SCHEDULED_FLEET: "OrderStatus.scheduledFleet",
+      LOADING: "OrderStatus.loading",
+      UNLOADING: "OrderStatus.unloading",
+      PREPARE_DOCUMENT: "OrderStatus.prepareDocument",
+      DOCUMENT_DELIVERY: "OrderStatus.documentDelivery",
+      COMPLETED: "OrderStatus.completed",
+      HEADING_TO_LOADING: "OrderStatus.headingToLoading",
+      HEADING_TO_UNLOADING: "OrderStatus.headingToUnloading",
+      DOCUMENT_PREPARATION: "OrderStatus.documentPreparation",
+      CANCELLED_BY_TRANSPORTER: "OrderStatus.cancelledByTransporter",
+      CANCELLED_BY_SHIPPER: "OrderStatus.cancelledByShipper",
+      CANCELLED_BY_SYSTEM: "OrderStatus.cancelledBySystem",
+      ARMADA_DIJADWALKAN: "OrderStatus.armadaDijadwalkan",
+      WAITING_CHANGE_FLEET: "OrderStatus.waitingChangeFleet",
+      FLEET_FOUND: "OrderStatus.fleetFound",
+      WAITING_PAYMENT: "OrderStatus.waitingPayment",
+    };
+
+    const translationKey = statusTranslations[status];
+    const statusBadge = getOrderStatusBadge(status);
+
+    if (translationKey) {
+      return t(translationKey, {}, statusBadge.label);
+    }
+    return statusBadge.label;
+  };
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -507,8 +564,12 @@ const DaftarPesananAktif = ({
                 />
               )}
               {row.orderStatus === ORDER_STATUS.LOADING
-                ? `${statusBadge.label} : ${row.truckCount || 0} Unit`
-                : statusBadge.label}
+                ? t(
+                    "OrderStatus.loadingWithCount",
+                    { count: row.truckCount || 0 },
+                    `${getTranslatedStatusLabel(row.orderStatus)} : ${row.truckCount || 0} Unit`
+                  )
+                : getTranslatedStatusLabel(row.orderStatus)}
             </BadgeStatus>
             {row.orderStatus === ORDER_STATUS.LOADING && (
               <Button
@@ -622,7 +683,10 @@ const DaftarPesananAktif = ({
                         "text-error-400 hover:text-error-500"
                     )}
                   >
-                    {actionItem.label}
+                    {getTranslatedActionLabel(
+                      actionItem.type,
+                      actionItem.label
+                    )}
                   </SimpleDropdownItem>
                 ))}
               </SimpleDropdownContent>
