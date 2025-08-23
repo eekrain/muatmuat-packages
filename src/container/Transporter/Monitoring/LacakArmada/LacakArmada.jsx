@@ -120,7 +120,9 @@ const LacakArmada = ({ onClose, orderId }) => {
     <div className="flex h-full flex-col bg-white pt-12">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
-        <h2 className="text-base font-bold text-black">Lacak Armada</h2>
+        <h2 className="text-base font-bold text-black">
+          {t("LacakArmada.title", {}, "Lacak Armada")}
+        </h2>
         <button
           onClick={onClose}
           className="rounded-full p-1 transition-colors"
@@ -167,7 +169,7 @@ const LacakArmada = ({ onClose, orderId }) => {
                     </h3>
                     <div className="flex items-center gap-1">
                       <IconComponent
-                        src="/icons/user.svg"
+                        src="/icons/user16.svg"
                         className="h-4 w-4 text-[#461B02]"
                       />
                       <span className="text-xs font-medium leading-[120%] text-black">
@@ -222,7 +224,11 @@ const LacakArmada = ({ onClose, orderId }) => {
                   {/* Detail Status Driver Title */}
                   <div className="my-4">
                     <h3 className="text-xs font-semibold leading-[120%] text-black">
-                      Detail Status Driver
+                      {t(
+                        "LacakArmada.driverStatusDetail",
+                        {},
+                        "Detail Status Driver"
+                      )}
                     </h3>
                   </div>
 

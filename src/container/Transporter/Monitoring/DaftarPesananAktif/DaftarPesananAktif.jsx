@@ -878,49 +878,55 @@ const DaftarPesananAktif = ({
       </div>
       {/* Content */}
       {isExpanded && (
-        <div className="flex-1 overflow-hidden">
-          {/* Check if there are no active orders */}
-          {!isLoading && totalActiveOrders === 0 ? (
-            <div className="flex h-full items-center justify-center p-4">
-              <DataNotFound className="h-full gap-y-5 pb-10" type="data">
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-center text-base font-semibold leading-tight text-neutral-600">
-                    {t(
-                      "DaftarPesananAktif.emptyOrderList",
-                      {},
-                      "Oops, daftar pesananmu masih kosong"
-                    )}
-                  </p>
-                  <p className="text-center text-xs font-medium leading-tight text-neutral-600">
-                    {t(
-                      "DaftarPesananAktif.waitForNewRequests",
-                      {},
-                      "Mohon bersabar untuk menanti permintaan baru"
-                    )}
-                  </p>
-                </div>
-              </DataNotFound>
-            </div>
-          ) : (
-            <div className="h-full border-0">
-              <AlertPerubahanLokasi />
-              <Table
-                data={orders}
-                columns={columns}
-                loading={isLoading}
-                onSort={handleSort}
-                sortConfig={sortConfig}
-                emptyComponent={
-                  searchValue && searchValue.length > 2 ? (
-                    <SearchNotFound searchTerm={searchValue} className="py-0" />
-                  ) : (
-                    renderEmptyState()
-                  )
-                }
-              />
-            </div>
-          )}
-        </div>
+        <>
+          <AlertPerubahanLokasi />
+
+          <div className="flex-1 overflow-hidden">
+            {/* Check if there are no active orders */}
+            {!isLoading && totalActiveOrders === 0 ? (
+              <div className="flex h-full items-center justify-center p-4">
+                <DataNotFound className="h-full gap-y-5 pb-10" type="data">
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-center text-base font-semibold leading-tight text-neutral-600">
+                      {t(
+                        "DaftarPesananAktif.emptyOrderList",
+                        {},
+                        "Oops, daftar pesananmu masih kosong"
+                      )}
+                    </p>
+                    <p className="text-center text-xs font-medium leading-tight text-neutral-600">
+                      {t(
+                        "DaftarPesananAktif.waitForNewRequests",
+                        {},
+                        "Mohon bersabar untuk menanti permintaan baru"
+                      )}
+                    </p>
+                  </div>
+                </DataNotFound>
+              </div>
+            ) : (
+              <div className="h-full border-0">
+                <Table
+                  data={orders}
+                  columns={columns}
+                  loading={isLoading}
+                  onSort={handleSort}
+                  sortConfig={sortConfig}
+                  emptyComponent={
+                    searchValue && searchValue.length > 2 ? (
+                      <SearchNotFound
+                        searchTerm={searchValue}
+                        className="py-0"
+                      />
+                    ) : (
+                      renderEmptyState()
+                    )
+                  }
+                />
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* Assign Armada Wrapper - handles all armada assignment modals */}
