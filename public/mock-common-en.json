@@ -1591,5 +1591,21 @@
   "ModalTransportTersedia.titleMatchingFleetsList": "List of Matching Fleets",
   "ModalTransportTersedia.textDistanceFromLocation": "{distance} km from loading location -",
   "ModalTransportTersedia.statusActive": "Active",
-  "ModalTransportTersedia.statusInactive": "Inactive"
+  "ModalTransportTersedia.statusInactive": "Inactive",
+  "ModalTransportDilihat.titleModal": "Transporters Viewing Request",
+  "ModalTransportDilihat.placeholderSearch": "Search License Plate / Driver Name / Transporter",
+  "ModalTransportDilihat.textLoading": "Loading...",
+  "ModalTransportDilihat.textKeywordNotFound": "Keyword Not Found",
+  "ModalTransportDilihat.badgeRequestRejected": "Request Rejected",
+  "ModalTransportDilihat.cardMatchingFleets": "{matchingUnits} Matching Fleets",
+  "ModalTransportDilihat.cardActiveFleets": "{activeUnits} Active Fleets",
+  "ModalTransportDilihat.cardInactiveFleets": "{inactiveUnits} Inactive Fleets",
+  "ModalTransportDilihat.cardLastViewedAt": "Viewed: {datetime}",
+  "ModalTransportDilihat.buttonContact": "Contact",
+  "ModalTransportDilihat.messageAdminIdleWarning": "Admin Detected as Frequently Idle ({current}/{total} Orders)",
+  "ModalTransportDilihat.linkDetails": "Details",
+  "ModalTransportDilihat.titleMatchingFleetsList": "List of Matching Fleets",
+  "ModalTransportDilihat.textDistanceFromLoadLocation": "{distance} km from loading location -",
+  "ModalTransportDilihat.statusActive": "Active",
+  "ModalTransportDilihat.statusInactive": "Inactive"
 }

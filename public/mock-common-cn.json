@@ -1439,5 +1439,21 @@
   "ModalTransportTersedia.titleMatchingFleetsList": "匹配车队列表",
   "ModalTransportTersedia.textDistanceFromLocation": "距装货地点 {distance} 公里 -",
   "ModalTransportTersedia.statusActive": "活跃",
-  "ModalTransportTersedia.statusInactive": "不活跃"
+  "ModalTransportTersedia.statusInactive": "不活跃",
+  "ModalTransportDilihat.titleModal": "运输公司正在查看请求",
+  "ModalTransportDilihat.placeholderSearch": "搜索车牌号/司机姓名/运输公司",
+  "ModalTransportDilihat.textLoading": "正在加载...",
+  "ModalTransportDilihat.textKeywordNotFound": "未找到关键词",
+  "ModalTransportDilihat.badgeRequestRejected": "请求已拒绝",
+  "ModalTransportDilihat.cardMatchingFleets": "{matchingUnits} 个匹配的车队",
+  "ModalTransportDilihat.cardActiveFleets": "{activeUnits} 个活动车队",
+  "ModalTransportDilihat.cardInactiveFleets": "{inactiveUnits} 个非活动车队",
+  "ModalTransportDilihat.cardLastViewedAt": "查看时间：{datetime}",
+  "ModalTransportDilihat.buttonContact": "联系",
+  "ModalTransportDilihat.messageAdminIdleWarning": "检测到管理员经常闲置 ({current}/{total} 订单)",
+  "ModalTransportDilihat.linkDetails": "详情",
+  "ModalTransportDilihat.titleMatchingFleetsList": "匹配车队列表",
+  "ModalTransportDilihat.textDistanceFromLoadLocation": "距装货地点 {distance} 公里 -",
+  "ModalTransportDilihat.statusActive": "活动的",
+  "ModalTransportDilihat.statusInactive": "非活动的"
 }

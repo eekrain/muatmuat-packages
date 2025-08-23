@@ -1590,5 +1590,21 @@
   "ModalTransportTersedia.titleMatchingFleetsList": "Daftar Armada Yang Cocok",
   "ModalTransportTersedia.textDistanceFromLocation": "{distance} km dari lokasi muat -",
   "ModalTransportTersedia.statusActive": "Aktif",
-  "ModalTransportTersedia.statusInactive": "Nonaktif"
+  "ModalTransportTersedia.statusInactive": "Nonaktif",
+  "ModalTransportDilihat.titleModal": "Transporter Melihat Permintaan",
+  "ModalTransportDilihat.placeholderSearch": "Cari No. Polisi / Nama Driver / Transporter ",
+  "ModalTransportDilihat.textLoading": "Loading...",
+  "ModalTransportDilihat.textKeywordNotFound": "Keyword Tidak Ditemukan",
+  "ModalTransportDilihat.badgeRequestRejected": "Menolak Permintaan",
+  "ModalTransportDilihat.cardMatchingFleets": "{matchingUnits} Armada Yang Cocok",
+  "ModalTransportDilihat.cardActiveFleets": "{activeUnits} Armada Aktif",
+  "ModalTransportDilihat.cardInactiveFleets": "{inactiveUnits} Armada Nonaktif",
+  "ModalTransportDilihat.cardLastViewedAt": "Dilihat: {datetime}",
+  "ModalTransportDilihat.buttonContact": "Hubungi",
+  "ModalTransportDilihat.messageAdminIdleWarning": "Admin Terdeteksi Sering Idle ({current}/{total} Order)",
+  "ModalTransportDilihat.linkDetails": "Detail",
+  "ModalTransportDilihat.titleMatchingFleetsList": "Daftar Armada Yang Cocok",
+  "ModalTransportDilihat.textDistanceFromLoadLocation": "{distance} km dari lokasi muat -",
+  "ModalTransportDilihat.statusActive": "Aktif",
+  "ModalTransportDilihat.statusInactive": "Nonaktif"
 }
