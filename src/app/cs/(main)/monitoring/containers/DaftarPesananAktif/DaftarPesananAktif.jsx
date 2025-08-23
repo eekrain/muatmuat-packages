@@ -28,6 +28,7 @@ import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmada
 import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
 import DaftarPesananAktifListItemByTransporter from "./components/DaftarPesananAktifListItemByTransporter";
+import UrgentStatusFilter from "./components/UrgentStatusFilter";
 
 // Mock data for OrderChangeInfoModal
 const mockChangeDetails = {
@@ -295,11 +296,11 @@ const DaftarPesananAktif = ({
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
         // console.log("Detail Pesanan", row);
         if (row.sosStatus.hasSos) {
-          router.push(`/monitoring/riwayat-sos/${row.id}/detail-pesanan`);
+          router.push(`/monitoring/riwayat-sos/${row.orderId}/detail-pesanan`);
           break;
         }
         router.push(
-          `/monitoring/daftar-pesanan-aktif/${row.id}/detail-pesanan`
+          `/monitoring/daftar-pesanan-aktif/${row.orderId}/detail-pesanan`
         );
         break;
       case ORDER_ACTIONS.DETAIL_ARMADA.type:
@@ -342,7 +343,7 @@ const DaftarPesananAktif = ({
   };
 
   const orders = data?.Data?.orders || [];
-  const ordersByTransporters = dataByTransporter?.Data?.orders || [];
+  const ordersByTransporters = dataByTransporter?.Data?.transporters || [];
   const totalActiveOrders = activeOrdersCount?.totalActiveOrders || 0;
   const availableStatuses = activeOrdersCount?.availableStatuses || {};
 
@@ -441,18 +442,29 @@ const DaftarPesananAktif = ({
               {/* Status Urgent Dropdown */}
               <div className="relative">
                 <div className="relative">
-                  <FilterSelect
+                  {/* <FilterSelect
                     value={selectedStatusFilter}
                     onChange={setSelectedStatusFilter}
                     placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
                     options={getStatusOptions()}
                     // showNotificationDot={getStatusUrgentCount() > 0}
                     // notificationCount={getStatusUrgentCount()}
-                    className="max-w-[150px]"
+                    className="max-w-[150px] hover:border-primary-700"
                     disabled={isSearchNotFound || getStatusUrgentCount() === 0}
                     showNotificationDotWithoutNumber={
                       getStatusUrgentCount() > 0
                     }
+                    onFocus={() => {
+                      if (!isExpanded) {
+                        onToggleExpand();
+                      }
+                    }}
+                  /> */}
+                  <UrgentStatusFilter
+                    availableStatuses={availableStatuses}
+                    value={selectedStatusFilter}
+                    onChange={setSelectedStatusFilter}
+                    disabled={isSearchNotFound}
                     onFocus={() => {
                       if (!isExpanded) {
                         onToggleExpand();
@@ -469,7 +481,8 @@ const DaftarPesananAktif = ({
                 placeholder="By Pesanan"
                 options={groupByOptions}
                 icon="/icons/tabel.svg"
-                className="max-w-[148px]"
+                className="max-w-[148px] hover:border-primary-700"
+                itemClassName="hover:bg-neutral-100"
                 disabled={isSearchNotFound}
                 onFocus={() => {
                   if (!isExpanded) {
@@ -482,7 +495,8 @@ const DaftarPesananAktif = ({
               <FilterSelect
                 value={selectedSort}
                 onChange={setSelectedSort}
-                className="max-w-[136px]"
+                className="max-w-[136px] hover:border-primary-700"
+                itemClassName="hover:bg-neutral-100  !bg-none"
                 options={sortOptions}
                 icon="/icons/sorting16.svg"
                 disabled={isSearchNotFound}
@@ -625,9 +639,9 @@ const DaftarPesananAktif = ({
                   {selectedGroupBy === "BY_PESANAN"
                     ? orders.map((order) => (
                         <DaftarPesananAktifListItem
-                          key={order.id}
+                          key={order.orderId}
                           row={order}
-                          isOpen={openDropdowns[order.id]}
+                          isOpen={openDropdowns[order.orderId]}
                           onToggleDropdown={(id, isOpen) =>
                             setOpenDropdowns((prev) => ({
                               ...prev,
@@ -642,7 +656,7 @@ const DaftarPesananAktif = ({
                         <DaftarPesananAktifListItemByTransporter
                           key={order.id}
                           transporterData={order}
-                          isOpen={openDropdowns[order.id]}
+                          openDropdowns={openDropdowns}
                           onToggleDropdown={(id, isOpen) =>
                             setOpenDropdowns((prev) => ({
                               ...prev,
