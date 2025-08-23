@@ -83,7 +83,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
   return (
     <>
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${showHubungiModal ? "hidden" : ""}`}
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${showHubungiModal || showDetailModal ? "hidden" : ""}`}
       >
         <div className="relative h-[460px] w-[600px] rounded-xl bg-white p-6 shadow-lg">
           <div className="mb-4 flex items-center justify-center">

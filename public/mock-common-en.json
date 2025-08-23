@@ -1716,5 +1716,19 @@
   "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto": "Upload Supporting Photo",
   "ModalCatatanPenyelesaian.helperTextFileFormat": "With file format jpg/jpeg/png, max file size 10MB",
   "ModalCatatanPenyelesaian.buttonCancel": "Cancel",
-  "ModalCatatanPenyelesaian.buttonSave": "Save"
+  "ModalCatatanPenyelesaian.buttonSave": "Save",
+  "ModalDetailTransporterTidakAktif.titleDetailTransporterTidakAktif": "Inactive Transporter Details",
+  "ModalDetailTransporterTidakAktif.statusTransporterTidakAktif": "Inactive Transporter",
+  "ModalDetailTransporterTidakAktif.labelTanggalTerakhirAktif": "Last Active Date",
+  "ModalDetailTransporterTidakAktif.textJam": "{jam} Hours",
+  "ModalDetailTransporterTidakAktif.labelLamaTidakAktif": "Inactive Duration",
+  "ModalDetailTransporterTidakAktif.titleDetailPenyelesaian": "Completion Details",
+  "ModalDetailTransporterTidakAktif.labelTanggalDiselesaikan": "Date Completed",
+  "ModalDetailTransporterTidakAktif.labelCatatan": "Notes",
+  "ModalDetailTransporterTidakAktif.labelFotoPendukung": "Supporting Photos",
+  "ModalDetailTransporterTidakAktif.titleFotoPendukung": "Supporting Photos",
+  "ModalDetailTransporterTidakAktif.altFotoPendukung": "Supporting Photo {number}",
+  "ModalDetailTransporterTidakAktif.textTidakAdaFoto": "No photos",
+  "ModalDetailTransporterTidakAktif.buttonHubungi": "Contact",
+  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "Complete"
 }

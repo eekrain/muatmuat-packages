@@ -1715,5 +1715,19 @@
   "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto": "Upload Foto Pendukung",
   "ModalCatatanPenyelesaian.helperTextFileFormat": "Dengan format file jpg/jpeg/png, besar file maks. 10MB",
   "ModalCatatanPenyelesaian.buttonCancel": "Batal",
-  "ModalCatatanPenyelesaian.buttonSave": "Simpan"
+  "ModalCatatanPenyelesaian.buttonSave": "Simpan",
+  "ModalDetailTransporterTidakAktif.titleDetailTransporterTidakAktif": "Detail Transporter Tidak Aktif",
+  "ModalDetailTransporterTidakAktif.statusTransporterTidakAktif": "Transporter Tidak Aktif",
+  "ModalDetailTransporterTidakAktif.labelTanggalTerakhirAktif": "Tanggal Terakhir Aktif",
+  "ModalDetailTransporterTidakAktif.textJam": "{jam} Jam",
+  "ModalDetailTransporterTidakAktif.labelLamaTidakAktif": "Lama Tidak Aktif",
+  "ModalDetailTransporterTidakAktif.titleDetailPenyelesaian": "Detail Penyelesaian",
+  "ModalDetailTransporterTidakAktif.labelTanggalDiselesaikan": "Tanggal Diselesaikan",
+  "ModalDetailTransporterTidakAktif.labelCatatan": "Catatan",
+  "ModalDetailTransporterTidakAktif.labelFotoPendukung": "Foto Pendukung",
+  "ModalDetailTransporterTidakAktif.titleFotoPendukung": "Foto Pendukung",
+  "ModalDetailTransporterTidakAktif.altFotoPendukung": "Foto Pendukung {number}",
+  "ModalDetailTransporterTidakAktif.textTidakAdaFoto": "Tidak ada foto",
+  "ModalDetailTransporterTidakAktif.buttonHubungi": "Hubungi",
+  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "Selesaikan"
 }

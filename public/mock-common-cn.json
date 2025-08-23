@@ -1564,5 +1564,19 @@
   "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto": "上传证明照片",
   "ModalCatatanPenyelesaian.helperTextFileFormat": "文件格式为 jpg/jpeg/png，最大文件大小为 10MB",
   "ModalCatatanPenyelesaian.buttonCancel": "取消",
-  "ModalCatatanPenyelesaian.buttonSave": "保存"
+  "ModalCatatanPenyelesaian.buttonSave": "保存",
+  "ModalDetailTransporterTidakAktif.titleDetailTransporterTidakAktif": "非活跃运输商详情",
+  "ModalDetailTransporterTidakAktif.statusTransporterTidakAktif": "非活跃运输商",
+  "ModalDetailTransporterTidakAktif.labelTanggalTerakhirAktif": "最后活跃日期",
+  "ModalDetailTransporterTidakAktif.textJam": "{jam} 小时",
+  "ModalDetailTransporterTidakAktif.labelLamaTidakAktif": "非活跃时长",
+  "ModalDetailTransporterTidakAktif.titleDetailPenyelesaian": "完成详情",
+  "ModalDetailTransporterTidakAktif.labelTanggalDiselesaikan": "完成日期",
+  "ModalDetailTransporterTidakAktif.labelCatatan": "笔记",
+  "ModalDetailTransporterTidakAktif.labelFotoPendukung": "支持照片",
+  "ModalDetailTransporterTidakAktif.titleFotoPendukung": "支持照片",
+  "ModalDetailTransporterTidakAktif.altFotoPendukung": "支持照片 {number}",
+  "ModalDetailTransporterTidakAktif.textTidakAdaFoto": "没有照片",
+  "ModalDetailTransporterTidakAktif.buttonHubungi": "联系",
+  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "完成"
 }
