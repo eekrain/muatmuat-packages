@@ -286,6 +286,7 @@ const DetailPesananScreen = ({
         <FooterDetailPesanan
           dataStatusPesanan={dataStatusPesanan}
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          dataRingkasanPesanan={dataRingkasanPesanan}
           isConfirmWaiting={isConfirmWaiting}
           onConfirmWaitingChange={setIsConfirmWaiting}
         />
