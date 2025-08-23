@@ -1551,5 +1551,18 @@
   "DetailTransporter.totalCountLabelInactiveFleet": "非活动车队",
   "DetailTransporter.searchPlaceholderOrderOrTransporter": "搜索订单号/承运人名称",
   "DetailTransporter.totalCountLabelMissedOrders": "错过订单",
-  "DetailTransporterHeader.titleDetailTransporter": "运输商详情"
+  "DetailTransporterHeader.titleDetailTransporter": "运输商详情",
+  "ModalCatatanPenyelesaian.titleCompletionNotes": "完成说明",
+  "ModalCatatanPenyelesaian.headingEnterCompletionNotes": "输入完成说明",
+  "ModalCatatanPenyelesaian.labelTransporterNotResponding": "运输商未响应",
+  "ModalCatatanPenyelesaian.placeholderEnterCompletionNotes": "输入完成说明",
+  "ModalCatatanPenyelesaian.messageErrorCompletionNotesRequired": "必须填写完成说明",
+  "ModalCatatanPenyelesaian.toastSuccessResolveIssue": "成功解决运输商 {transporterName} 不活跃的问题",
+  "ModalCatatanPenyelesaian.alertFileSizeExceeds10MB": "文件大小超过10MB",
+  "ModalCatatanPenyelesaian.headingAttachSupportingPhotos": "附上证明照片",
+  "ModalCatatanPenyelesaian.textOptional": "（可选）",
+  "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto": "上传证明照片",
+  "ModalCatatanPenyelesaian.helperTextFileFormat": "文件格式为 jpg/jpeg/png，最大文件大小为 10MB",
+  "ModalCatatanPenyelesaian.buttonCancel": "取消",
+  "ModalCatatanPenyelesaian.buttonSave": "保存"
 }

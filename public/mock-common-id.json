@@ -1702,5 +1702,18 @@
   "DetailTransporter.totalCountLabelInactiveFleet": "Armada Nonaktif",
   "DetailTransporter.searchPlaceholderOrderOrTransporter": "Cari No. Pesanan / Nama Transporter",
   "DetailTransporter.totalCountLabelMissedOrders": "Order Terlewat",
-  "DetailTransporterHeader.titleDetailTransporter": "Detail Transporter"
+  "DetailTransporterHeader.titleDetailTransporter": "Detail Transporter",
+  "ModalCatatanPenyelesaian.titleCompletionNotes": "Catatan Penyelesaian",
+  "ModalCatatanPenyelesaian.headingEnterCompletionNotes": "Masukkan Catatan Penyelesaian",
+  "ModalCatatanPenyelesaian.labelTransporterNotResponding": "Transporter Tidak Menanggapi",
+  "ModalCatatanPenyelesaian.placeholderEnterCompletionNotes": "Masukkan catatan penyelesaian",
+  "ModalCatatanPenyelesaian.messageErrorCompletionNotesRequired": "Catatan penyelesaian wajib diisi",
+  "ModalCatatanPenyelesaian.toastSuccessResolveIssue": "Berhasil menyelesaikan masalah transporter tidak aktif {transporterName}",
+  "ModalCatatanPenyelesaian.alertFileSizeExceeds10MB": "Ukuran file melebihi 10MB",
+  "ModalCatatanPenyelesaian.headingAttachSupportingPhotos": "Masukkan Lampiran Foto Pendukung",
+  "ModalCatatanPenyelesaian.textOptional": "(Optional)",
+  "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto": "Upload Foto Pendukung",
+  "ModalCatatanPenyelesaian.helperTextFileFormat": "Dengan format file jpg/jpeg/png, besar file maks. 10MB",
+  "ModalCatatanPenyelesaian.buttonCancel": "Batal",
+  "ModalCatatanPenyelesaian.buttonSave": "Simpan"
 }

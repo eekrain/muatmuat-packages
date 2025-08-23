@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ const ModalCatatanPenyelesaian = ({
   isLoading = false,
   fleetNoteData,
 }) => {
+  const { t } = useTranslation();
   const [catatan, setCatatan] = useState("");
   const [catatanError, setCatatanError] = useState("");
   const [tidakMenanggapi, setTidakMenanggapi] = useState(false);
@@ -38,7 +40,13 @@ const ModalCatatanPenyelesaian = ({
     } else {
       if (file.size > 10 * 1024 * 1024) {
         // 10MB
-        alert("Ukuran file melebihi 10MB");
+        alert(
+          t(
+            "ModalCatatanPenyelesaian.alertFileSizeExceeds10MB",
+            {},
+            "Ukuran file melebihi 10MB"
+          )
+        );
         return;
       }
       const firstEmptyIndex = newFiles.findIndex((f) => f === null);
@@ -60,7 +68,13 @@ const ModalCatatanPenyelesaian = ({
   const handleConfirm = async () => {
     // Validate catatan if not disabled
     if (!tidakMenanggapi && !catatan.trim()) {
-      setCatatanError("Catatan penyelesaian wajib diisi");
+      setCatatanError(
+        t(
+          "ModalCatatanPenyelesaian.messageErrorCompletionNotesRequired",
+          {},
+          "Catatan penyelesaian wajib diisi"
+        )
+      );
       return;
     }
     setCatatanError("");
@@ -82,7 +96,11 @@ const ModalCatatanPenyelesaian = ({
         transporterName = mockData?.relatedEntities?.transporterName || "";
       }
       toast.success(
-        `Berhasil menyelesaikan masalah transporter tidak aktif ${transporterName}`
+        t(
+          "ModalCatatanPenyelesaian.toastSuccessResolveIssue",
+          { transporterName },
+          `Berhasil menyelesaikan masalah transporter tidak aktif ${transporterName}`
+        )
       );
       handleClose();
     } finally {
@@ -94,27 +112,46 @@ const ModalCatatanPenyelesaian = ({
     <Modal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <ModalContent className={cn("w-[486px] bg-white")} type="muattrans">
         <ModalHeader size="small" />
-        <ModalTitle className="sr-only">Catatan Penyelesaian</ModalTitle>
+        <ModalTitle className="sr-only">
+          {t(
+            "ModalCatatanPenyelesaian.titleCompletionNotes",
+            {},
+            "Catatan Penyelesaian"
+          )}
+        </ModalTitle>
         <div className="px-6 pt-9">
           <div className="flex flex-col gap-5">
             {/* Masukkan Catatan Penyelesaian */}
             <div className="flex flex-col">
               <h3 className="mb-4 text-[16px] font-bold text-black">
-                Masukkan Catatan Penyelesaian<span className="">*</span>
+                {t(
+                  "ModalCatatanPenyelesaian.headingEnterCompletionNotes",
+                  {},
+                  "Masukkan Catatan Penyelesaian"
+                )}
+                <span className="">*</span>
               </h3>
               <div className="mb-4">
                 <Checkbox
                   checked={tidakMenanggapi}
                   onChange={({ checked }) => setTidakMenanggapi(checked)}
                   disabled={isSubmitting || isLoading}
-                  label="Transporter Tidak Menanggapi"
+                  label={t(
+                    "ModalCatatanPenyelesaian.labelTransporterNotResponding",
+                    {},
+                    "Transporter Tidak Menanggapi"
+                  )}
                   appearance={{
                     labelClassName: "text-xs font-medium text-neutral-900",
                   }}
                 />
               </div>
               <Input
-                placeholder="Masukkan catatan penyelesaian"
+                placeholder={t(
+                  "ModalCatatanPenyelesaian.placeholderEnterCompletionNotes",
+                  {},
+                  "Masukkan catatan penyelesaian"
+                )}
                 maxLength={80}
                 value={catatan}
                 onChange={(e) => {
@@ -132,7 +169,9 @@ const ModalCatatanPenyelesaian = ({
                 }
               />
               <div
-                className={`relative flex w-full items-center justify-end text-xs ${catatanError ? "-top-3.5 pt-0" : "pt-2"}`}
+                className={`relative flex w-full items-center justify-end text-xs ${
+                  catatanError ? "-top-3.5 pt-0" : "pt-2"
+                }`}
               >
                 <span
                   className={
@@ -148,9 +187,13 @@ const ModalCatatanPenyelesaian = ({
             {/* Masukkan Lampiran Foto Pendukung */}
             <div className="flex flex-col">
               <h3 className="mb-4 text-[16px] font-bold text-neutral-900">
-                Masukkan Lampiran Foto Pendukung{" "}
+                {t(
+                  "ModalCatatanPenyelesaian.headingAttachSupportingPhotos",
+                  {},
+                  "Masukkan Lampiran Foto Pendukung"
+                )}{" "}
                 <span className="font font-normal italic text-neutral-900">
-                  (Optional)
+                  {t("ModalCatatanPenyelesaian.textOptional", {}, "(Optional)")}
                 </span>
               </h3>
               <div className="mb-3 flex flex-wrap gap-3">
@@ -167,12 +210,20 @@ const ModalCatatanPenyelesaian = ({
                     errorText=""
                     isBig={false}
                     className="!h-10 !w-10 !rounded"
-                    cropperTitle="Upload Foto Pendukung"
+                    cropperTitle={t(
+                      "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto",
+                      {},
+                      "Upload Foto Pendukung"
+                    )}
                   />
                 ))}
               </div>
               <p className="text-xs font-medium leading-tight text-neutral-500">
-                Dengan format file jpg/jpeg/png, besar file maks. 10MB
+                {t(
+                  "ModalCatatanPenyelesaian.helperTextFileFormat",
+                  {},
+                  "Dengan format file jpg/jpeg/png, besar file maks. 10MB"
+                )}
               </p>
             </div>
           </div>
@@ -184,7 +235,7 @@ const ModalCatatanPenyelesaian = ({
             disabled={isSubmitting || isLoading}
             className="px-8"
           >
-            Batal
+            {t("ModalCatatanPenyelesaian.buttonCancel", {}, "Batal")}
           </Button>
           <Button
             variant="muattrans-primary"
@@ -193,7 +244,7 @@ const ModalCatatanPenyelesaian = ({
             {...((isSubmitting || isLoading) && { loading: true })}
             className="px-8"
           >
-            Simpan
+            {t("ModalCatatanPenyelesaian.buttonSave", {}, "Simpan")}
           </Button>
         </ModalFooter>
       </ModalContent>

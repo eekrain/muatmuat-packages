@@ -1703,5 +1703,18 @@
   "DetailTransporter.totalCountLabelInactiveFleet": "Inactive Fleet",
   "DetailTransporter.searchPlaceholderOrderOrTransporter": "Search Order No. / Transporter Name",
   "DetailTransporter.totalCountLabelMissedOrders": "Missed Orders",
-  "DetailTransporterHeader.titleDetailTransporter": "Transporter Details"
+  "DetailTransporterHeader.titleDetailTransporter": "Transporter Details",
+  "ModalCatatanPenyelesaian.titleCompletionNotes": "Completion Notes",
+  "ModalCatatanPenyelesaian.headingEnterCompletionNotes": "Enter Completion Notes",
+  "ModalCatatanPenyelesaian.labelTransporterNotResponding": "Transporter Not Responding",
+  "ModalCatatanPenyelesaian.placeholderEnterCompletionNotes": "Enter completion notes",
+  "ModalCatatanPenyelesaian.messageErrorCompletionNotesRequired": "Completion notes are required",
+  "ModalCatatanPenyelesaian.toastSuccessResolveIssue": "Successfully resolved the issue of inactive transporter {transporterName}",
+  "ModalCatatanPenyelesaian.alertFileSizeExceeds10MB": "File size exceeds 10MB",
+  "ModalCatatanPenyelesaian.headingAttachSupportingPhotos": "Attach Supporting Photos",
+  "ModalCatatanPenyelesaian.textOptional": "(Optional)",
+  "ModalCatatanPenyelesaian.cropperTitleUploadSupportingPhoto": "Upload Supporting Photo",
+  "ModalCatatanPenyelesaian.helperTextFileFormat": "With file format jpg/jpeg/png, max file size 10MB",
+  "ModalCatatanPenyelesaian.buttonCancel": "Cancel",
+  "ModalCatatanPenyelesaian.buttonSave": "Save"
 }
