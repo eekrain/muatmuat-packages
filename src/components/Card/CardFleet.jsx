@@ -143,8 +143,13 @@ const SOSAlertHeader = ({
     )}
   >
     {showCategory && <SOSCategory category={category} />}
-    {reportAt && <TimeReportIncome reportTime={reportAt} />}
-    {completedAt && <TimeReportCompleted reportTime={completedAt} />}
+    {/* Jika waktu laporan selesai ada, hanya tampilkan laporan selesai */}
+    {/* Jika tidak ada, tampilkan laporan masuk */}
+    {completedAt ? (
+      <TimeReportCompleted reportTime={completedAt} />
+    ) : (
+      reportAt && <TimeReportIncome reportTime={reportAt} />
+    )}
   </div>
 );
 
