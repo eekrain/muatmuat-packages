@@ -1550,5 +1550,6 @@
   "DetailTransporter.searchPlaceholderDriverOrPlate": "搜索司机姓名/警察号码",
   "DetailTransporter.totalCountLabelInactiveFleet": "非活动车队",
   "DetailTransporter.searchPlaceholderOrderOrTransporter": "搜索订单号/承运人名称",
-  "DetailTransporter.totalCountLabelMissedOrders": "错过订单"
+  "DetailTransporter.totalCountLabelMissedOrders": "错过订单",
+  "DetailTransporterHeader.titleDetailTransporter": "运输商详情"
 }

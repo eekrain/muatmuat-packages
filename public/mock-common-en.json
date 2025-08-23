@@ -1702,5 +1702,6 @@
   "DetailTransporter.searchPlaceholderDriverOrPlate": "Search Driver Name / License Plate",
   "DetailTransporter.totalCountLabelInactiveFleet": "Inactive Fleet",
   "DetailTransporter.searchPlaceholderOrderOrTransporter": "Search Order No. / Transporter Name",
-  "DetailTransporter.totalCountLabelMissedOrders": "Missed Orders"
+  "DetailTransporter.totalCountLabelMissedOrders": "Missed Orders",
+  "DetailTransporterHeader.titleDetailTransporter": "Transporter Details"
 }

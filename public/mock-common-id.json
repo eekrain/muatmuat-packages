@@ -1701,5 +1701,6 @@
   "DetailTransporter.searchPlaceholderDriverOrPlate": "Cari Nama Driver / No. Polisi",
   "DetailTransporter.totalCountLabelInactiveFleet": "Armada Nonaktif",
   "DetailTransporter.searchPlaceholderOrderOrTransporter": "Cari No. Pesanan / Nama Transporter",
-  "DetailTransporter.totalCountLabelMissedOrders": "Order Terlewat"
+  "DetailTransporter.totalCountLabelMissedOrders": "Order Terlewat",
+  "DetailTransporterHeader.titleDetailTransporter": "Detail Transporter"
 }
