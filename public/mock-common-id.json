@@ -1796,5 +1796,9 @@
   "RespondChangeModal.messageConfirmNavigation": "Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin menutup modal ini?",
   "OtpContainer.titleChangeEmail": "Ubah Email",
   "OtpContainer.messageChangeEmailSuccess": "Berhasil mengubah Email Kamu",
-  "OtpContainer.buttonOk": "OK"
+  "OtpContainer.buttonOk": "OK",
+  "MuatBongkarStepperWithModal.viewOtherLocations": "Lihat Lokasi Lainnya",
+  "MuatBongkarStepperWithModal.modalTitle": "Lokasi Muat & Bongkar",
+  "MuatBongkarStepperWithModal.pickupLocation": "Lokasi Muat",
+  "MuatBongkarStepperWithModal.dropoffLocation": "Lokasi Bongkar"
 }

@@ -1796,5 +1796,9 @@
   "ModalDetailTransporterTidakAktif.altFotoPendukung": "Supporting Photo {number}",
   "ModalDetailTransporterTidakAktif.textTidakAdaFoto": "No photos",
   "ModalDetailTransporterTidakAktif.buttonHubungi": "Contact",
-  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "Complete"
+  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "Complete",
+  "MuatBongkarStepperWithModal.viewOtherLocations": "View Other Locations",
+  "MuatBongkarStepperWithModal.modalTitle": "Pickup & Dropoff Locations",
+  "MuatBongkarStepperWithModal.pickupLocation": "Pickup Location",
+  "MuatBongkarStepperWithModal.dropoffLocation": "Dropoff Location"
 }

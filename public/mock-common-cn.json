@@ -1796,5 +1796,9 @@
   "ModalDetailTransporterTidakAktif.altFotoPendukung": "支持照片 {number}",
   "ModalDetailTransporterTidakAktif.textTidakAdaFoto": "没有照片",
   "ModalDetailTransporterTidakAktif.buttonHubungi": "联系",
-  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "完成"
+  "ModalDetailTransporterTidakAktif.buttonSelesaikan": "完成",
+  "MuatBongkarStepperWithModal.viewOtherLocations": "查看其他位置",
+  "MuatBongkarStepperWithModal.modalTitle": "装货和卸货位置",
+  "MuatBongkarStepperWithModal.pickupLocation": "装货位置",
+  "MuatBongkarStepperWithModal.dropoffLocation": "卸货位置"
 }
