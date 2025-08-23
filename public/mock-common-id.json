@@ -1666,5 +1666,14 @@
   "DetailContent.altCargoPhoto": "Foto muatan {number}",
   "DetailContent.titleAdditionalServices": "Layanan Tambahan",
   "DetailContent.serviceSendDocuments": "Kirim Berkas",
-  "DetailContent.serviceAdditionalHelp": "Bantuan Tambahan"
+  "DetailContent.serviceAdditionalHelp": "Bantuan Tambahan",
+  "ModalTransporterTidakAktif.statusArmadaNonaktifTerlaluBanyak": "Armada Nonaktif Terlalu Banyak ({current}/{total})",
+  "ModalTransporterTidakAktif.statusAdminTerdeteksiSeringIdle": "Admin Terdeteksi Sering Idle ({current}/{total} Order)",
+  "ModalTransporterTidakAktif.statusTransporterTidakAktif": "Transporter Tidak Aktif",
+  "ModalTransporterTidakAktif.titleModal": "Transporter Tidak Aktif",
+  "ModalTransporterTidakAktif.placeholderSearch": "Cari No. Polisi / Nama Driver / Transporter ",
+  "ModalTransporterTidakAktif.textLoading": "Loading...",
+  "ModalTransporterTidakAktif.textKeywordTidakDitemukan": "Keyword Tidak Ditemukan",
+  "ModalTransporterTidakAktif.buttonHubungi": "Hubungi",
+  "ModalTransporterTidakAktif.buttonDetail": "Detail"
 }

@@ -1667,5 +1667,14 @@
   "DetailContent.altCargoPhoto": "Cargo photo {number}",
   "DetailContent.titleAdditionalServices": "Additional Services",
   "DetailContent.serviceSendDocuments": "Send Documents",
-  "DetailContent.serviceAdditionalHelp": "Additional Help"
+  "DetailContent.serviceAdditionalHelp": "Additional Help",
+  "ModalTransporterTidakAktif.statusArmadaNonaktifTerlaluBanyak": "Too Many Inactive Fleets ({current}/{total})",
+  "ModalTransporterTidakAktif.statusAdminTerdeteksiSeringIdle": "Admin Detected as Frequently Idle ({current}/{total} Orders)",
+  "ModalTransporterTidakAktif.statusTransporterTidakAktif": "Inactive Transporter",
+  "ModalTransporterTidakAktif.titleModal": "Inactive Transporter",
+  "ModalTransporterTidakAktif.placeholderSearch": "Search License Plate / Driver Name / Transporter ",
+  "ModalTransporterTidakAktif.textLoading": "Loading...",
+  "ModalTransporterTidakAktif.textKeywordTidakDitemukan": "Keyword Not Found",
+  "ModalTransporterTidakAktif.buttonHubungi": "Contact",
+  "ModalTransporterTidakAktif.buttonDetail": "Detail"
 }

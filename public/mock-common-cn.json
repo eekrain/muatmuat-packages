@@ -1515,5 +1515,14 @@
   "DetailContent.altCargoPhoto": "货物照片 {number}",
   "DetailContent.titleAdditionalServices": "附加服务",
   "DetailContent.serviceSendDocuments": "发送文件",
-  "DetailContent.serviceAdditionalHelp": "额外帮助"
+  "DetailContent.serviceAdditionalHelp": "额外帮助",
+  "ModalTransporterTidakAktif.statusArmadaNonaktifTerlaluBanyak": "无效车队过多 ({current}/{total})",
+  "ModalTransporterTidakAktif.statusAdminTerdeteksiSeringIdle": "检测到管理员经常闲置 ({current}/{total} 个订单)",
+  "ModalTransporterTidakAktif.statusTransporterTidakAktif": "运输商不活跃",
+  "ModalTransporterTidakAktif.titleModal": "运输商不活跃",
+  "ModalTransporterTidakAktif.placeholderSearch": "搜索车牌号/司机姓名/运输商",
+  "ModalTransporterTidakAktif.textLoading": "加载中...",
+  "ModalTransporterTidakAktif.textKeywordTidakDitemukan": "未找到关键词",
+  "ModalTransporterTidakAktif.buttonHubungi": "联系",
+  "ModalTransporterTidakAktif.buttonDetail": "详情"
 }
