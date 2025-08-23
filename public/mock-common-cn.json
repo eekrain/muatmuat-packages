@@ -1424,5 +1424,20 @@
   "TransportRequestCard.buttonDetail": "详情",
   "TransportRequestCard.buttonAssignTransporter": "分配运输商",
   "TransportRequestCard.alertRequestTaken": "请求已被其他运输商接受",
-  "TransportRequestCard.buttonUnderstand": "知道了"
+  "TransportRequestCard.buttonUnderstand": "知道了",
+  "ModalTransportTersedia.titleAvailableTransporters": "可用运输车",
+  "ModalTransportTersedia.placeholderSearch": "搜索车牌号/司机姓名/运输公司",
+  "ModalTransportTersedia.textLoading": "加载中...",
+  "ModalTransportTersedia.messageKeywordNotFound": "未找到关键词",
+  "ModalTransportTersedia.badgeRequestRejected": "请求被拒绝",
+  "ModalTransportTersedia.textMatchingFleets": "{matchingUnits} 匹配的车队",
+  "ModalTransportTersedia.textActiveFleets": "{activeUnits} 活跃车队",
+  "ModalTransportTersedia.textInactiveFleets": "{inactiveUnits} 非活跃车队",
+  "ModalTransportTersedia.buttonContact": "联系",
+  "ModalTransportTersedia.statusAdminIdle": "检测到管理员经常闲置（{current}/{total} 订单）",
+  "ModalTransportTersedia.linkDetails": "详情",
+  "ModalTransportTersedia.titleMatchingFleetsList": "匹配车队列表",
+  "ModalTransportTersedia.textDistanceFromLocation": "距装货地点 {distance} 公里 -",
+  "ModalTransportTersedia.statusActive": "活跃",
+  "ModalTransportTersedia.statusInactive": "不活跃"
 }

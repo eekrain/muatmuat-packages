@@ -1576,5 +1576,20 @@
   "TransportRequestCard.buttonDetail": "Detail",
   "TransportRequestCard.buttonAssignTransporter": "Assign Transporter",
   "TransportRequestCard.alertRequestTaken": "Request has been taken by another transporter",
-  "TransportRequestCard.buttonUnderstand": "Got it"
+  "TransportRequestCard.buttonUnderstand": "Got it",
+  "ModalTransportTersedia.titleAvailableTransporters": "Available Transporters",
+  "ModalTransportTersedia.placeholderSearch": "Search License Plate / Driver Name / Transporter",
+  "ModalTransportTersedia.textLoading": "Loading...",
+  "ModalTransportTersedia.messageKeywordNotFound": "Keyword Not Found",
+  "ModalTransportTersedia.badgeRequestRejected": "Request Rejected",
+  "ModalTransportTersedia.textMatchingFleets": "{matchingUnits} Matching Fleets",
+  "ModalTransportTersedia.textActiveFleets": "{activeUnits} Active Fleets",
+  "ModalTransportTersedia.textInactiveFleets": "{inactiveUnits} Inactive Fleets",
+  "ModalTransportTersedia.buttonContact": "Contact",
+  "ModalTransportTersedia.statusAdminIdle": "Admin Detected Frequently Idle ({current}/{total} Orders)",
+  "ModalTransportTersedia.linkDetails": "Details",
+  "ModalTransportTersedia.titleMatchingFleetsList": "List of Matching Fleets",
+  "ModalTransportTersedia.textDistanceFromLocation": "{distance} km from loading location -",
+  "ModalTransportTersedia.statusActive": "Active",
+  "ModalTransportTersedia.statusInactive": "Inactive"
 }

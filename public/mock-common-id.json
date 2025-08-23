@@ -1575,5 +1575,20 @@
   "TransportRequestCard.buttonDetail": "Detail",
   "TransportRequestCard.buttonAssignTransporter": "Assign Transporter",
   "TransportRequestCard.alertRequestTaken": "Permintaan sudah diambil transporter lain",
-  "TransportRequestCard.buttonUnderstand": "Mengerti"
+  "TransportRequestCard.buttonUnderstand": "Mengerti",
+  "ModalTransportTersedia.titleAvailableTransporters": "Transporter Tersedia",
+  "ModalTransportTersedia.placeholderSearch": "Cari No. Polisi / Nama Driver / Transporter",
+  "ModalTransportTersedia.textLoading": "Loading...",
+  "ModalTransportTersedia.messageKeywordNotFound": "Keyword Tidak Ditemukan",
+  "ModalTransportTersedia.badgeRequestRejected": "Menolak Permintaan",
+  "ModalTransportTersedia.textMatchingFleets": "{matchingUnits} Armada Yang Cocok",
+  "ModalTransportTersedia.textActiveFleets": "{activeUnits} Armada Aktif",
+  "ModalTransportTersedia.textInactiveFleets": "{inactiveUnits} Armada Nonaktif",
+  "ModalTransportTersedia.buttonContact": "Hubungi",
+  "ModalTransportTersedia.statusAdminIdle": "Admin Terdeteksi Sering Idle ({current}/{total} Order)",
+  "ModalTransportTersedia.linkDetails": "Detail",
+  "ModalTransportTersedia.titleMatchingFleetsList": "Daftar Armada Yang Cocok",
+  "ModalTransportTersedia.textDistanceFromLocation": "{distance} km dari lokasi muat -",
+  "ModalTransportTersedia.statusActive": "Aktif",
+  "ModalTransportTersedia.statusInactive": "Nonaktif"
 }

@@ -141,7 +141,7 @@ const apiResultTransportRequestList = {
         },
 
         pricing: {
-          potentialIncome: 200000,
+          potentialIncome: 200000000,
         },
         counters: {
           available: 25,
