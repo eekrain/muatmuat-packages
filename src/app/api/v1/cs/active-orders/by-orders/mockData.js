@@ -62,10 +62,11 @@ export const successResponse = {
         orderStatus: "CONFIRMED",
         orderStatusUnit: 0,
         sosUnit: 0,
+        // Changed to reuse transporter-uuid-2 to simulate multiple orders for same transporter
         transporterInfo: {
-          transporterId: "transporter-uuid-3",
-          transporterName: "PT Express Cargo",
-          phoneNumber: "081322334455",
+          transporterId: "transporter-uuid-2",
+          transporterName: "PT Kargo Nusantara",
+          phoneNumber: "082233445566",
         },
         shipperInfo: {
           shipperId: "shipper-uuid-3",
@@ -160,10 +161,11 @@ export const successResponse = {
         orderStatus: "NEED_CONFIRMATION_READY",
         orderStatusUnit: 0,
         sosUnit: 0,
+        // Also reuse transporter-uuid-2 here so transporter-uuid-2 has multiple shippers/orders
         transporterInfo: {
-          transporterId: "transporter-uuid-5",
-          transporterName: "PT Logistik Sejahtera",
-          phoneNumber: "081577889900",
+          transporterId: "transporter-uuid-2",
+          transporterName: "PT Kargo Nusantara",
+          phoneNumber: "082233445566",
         },
         shipperInfo: {
           shipperId: "shipper-uuid-5",

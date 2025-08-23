@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -11,14 +11,63 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { useGetTransporterFleets } from "@/services/CS/transporters/getTransporterFleets";
 
-const DaftarArmadaTab = ({ mockFleetData }) => {
+const DaftarArmadaTab = ({ transporterId }) => {
   // Local state for this tab
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+
+  // Prepare API parameters
+  const apiParams = useMemo(() => {
+    const params = {
+      page: currentPage,
+      limit: perPage,
+    };
+
+    // Add search parameter
+    if (searchValue.trim() && searchValue.length >= 3) {
+      params.search = searchValue.trim();
+    }
+
+    // Add status filter
+    if (filters.status) {
+      const statusValue =
+        typeof filters.status === "object" ? filters.status.id : filters.status;
+      params.status = statusValue;
+    }
+
+    // Add sorting
+    if (sortConfig.sort && sortConfig.order) {
+      params.sort = sortConfig.sort;
+      params.order = sortConfig.order;
+    }
+
+    return params;
+  }, [currentPage, perPage, searchValue, filters, sortConfig]);
+
+  // API call to get transporter fleets
+  const {
+    data: fleetData,
+    error,
+    isLoading,
+    mutate,
+  } = useGetTransporterFleets(transporterId, apiParams);
+
+  // Status label mapping from API status to display label
+  const getStatusLabel = (apiStatus) => {
+    const statusMap = {
+      READY_FOR_ORDER: "Siap Menerima Order",
+      SCHEDULED: "Akan Muat Hari Ini",
+      ON_DUTY: "Bertugas",
+      NOT_PAIRED: "Belum Dipasangkan",
+      INACTIVE: "Nonaktif",
+    };
+    return statusMap[apiStatus] || apiStatus;
+  };
 
   // Status badge helper
   const getStatusBadge = (status) => {
@@ -48,7 +97,7 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     {
       key: "plateNumber",
       header: "No. Pol Armada",
-      sortable: true,
+      sortable: false,
       render: (row) => (
         <div className="flex items-center gap-5">
           <div className="relative flex aspect-square size-14 items-center justify-center rounded-md border border-neutral-400 bg-white object-contain p-1">
@@ -61,7 +110,10 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
           <div className="space-y-1 text-neutral-900">
             <div className="text-xs font-bold">{row.plateNumber}</div>
             <div className="line-clamp-2 text-xs font-medium">
-              {row.description}
+              {row.description === null || row.description === undefined
+                ? ""
+                : row.description}
+              {console.log(row)}
             </div>
           </div>
         </div>
@@ -70,7 +122,7 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     {
       key: "driverName",
       header: "Nama Driver",
-      sortable: true,
+      sortable: false,
       render: (row) => (
         <div className="text-xs font-medium">{row.driverName}</div>
       ),
@@ -90,13 +142,13 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     {
       key: "vehicleCategory",
       header: "Tipe Kendaraan",
-      sortable: true,
+      sortable: false,
       render: (row) => (
         <div className="text-xs font-medium">{row.vehicleCategory}</div>
       ),
     },
     {
-      key: "stnkExpiry",
+      key: "license_plate",
       header: "Masa Berlaku STNK",
       sortable: true,
       render: (row) => (
@@ -107,7 +159,9 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
       key: "status",
       header: "Status",
       className: "min-w-[200px]",
-      render: (row) => getStatusBadge(row.status),
+      render: (row) => {
+        return getStatusBadge(row.status);
+      },
     },
   ];
 
@@ -117,11 +171,11 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
       categories: [{ key: "status", label: "Status" }],
       data: {
         status: [
-          { id: "Siap Menerima Order", label: "Siap Menerima Order" },
-          { id: "Akan Muat Hari Ini", label: "Akan Muat Hari Ini" },
-          { id: "Bertugas", label: "Bertugas" },
-          { id: "Belum Dipasangkan", label: "Belum Dipasangkan" },
-          { id: "Nonaktif", label: "Nonaktif" },
+          { id: "READY_FOR_ORDER", label: "Siap Menerima Order" },
+          { id: "SCHEDULED", label: "Akan Muat Hari Ini" },
+          { id: "ON_DUTY", label: "Bertugas" },
+          { id: "NOT_PAIRED", label: "Belum Dipasangkan" },
+          { id: "INACTIVE", label: "Nonaktif" },
         ],
       },
     };
@@ -159,8 +213,8 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     setCurrentPage(page);
   };
 
-  const handlePerPageChange = (limit) => {
-    setPerPage(limit);
+  const handlePerPageChange = (newPerPage) => {
+    setPerPage(newPerPage);
     setCurrentPage(1);
   };
 
@@ -218,65 +272,52 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
     setCurrentPage(1);
   };
 
-  // Data filtering and pagination
-  const getFilteredData = () => {
-    let filteredData = [...(mockFleetData || [])];
+  // Transform API data to match component expectations
+  const transformFleetData = (apiFleets) => {
+    if (!apiFleets || !Array.isArray(apiFleets)) return [];
 
-    if (searchValue.trim() && searchValue.length >= 3) {
-      filteredData = filteredData.filter((item) =>
-        Object.values(item).some((value) =>
-          value?.toString().toLowerCase().includes(searchValue.toLowerCase())
-        )
-      );
-    }
-
-    if (filters.status) {
-      const statusValue =
-        typeof filters.status === "object" ? filters.status.id : filters.status;
-      filteredData = filteredData.filter((item) => item.status === statusValue);
-    }
-
-    if (sortConfig.sort && sortConfig.order) {
-      filteredData.sort((a, b) => {
-        let aValue = a[sortConfig.sort];
-        let bValue = b[sortConfig.sort];
-
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
-
-        if (aValue < bValue) {
-          return sortConfig.order === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.order === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return filteredData;
+    return apiFleets.map((fleet) => ({
+      id: fleet.id,
+      plateNumber: fleet.licensePlate,
+      description: `${fleet.truckType} - ${fleet.truckCarrierType}`,
+      driverName: fleet.driverName || "-",
+      vehicleBrand: fleet.vehicleBrand,
+      vehicleType: fleet.vehicleType,
+      vehicleCategory: fleet.vehicleType,
+      stnkExpiry: fleet.stnkExpiryDate
+        ? new Date(fleet.stnkExpiryDate).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "-",
+      status: getStatusLabel(fleet.status),
+      image: fleet.truckImage || "/img/truck.png",
+    }));
   };
 
-  const filteredData = getFilteredData();
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / perPage);
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = startIndex + perPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
+  // Extract data from API response
+  const fleets = fleetData?.fleets || [];
+  const pagination = fleetData?.pagination || {};
+  const totalItems = pagination.totalItems || 0;
+  const totalPages = pagination.totalPages || 1;
+
+  // Transform API data to match component expectations
+  const transformedData = transformFleetData(fleets);
   const showPagination = totalItems >= 10;
 
   // Data state logic
   const hasSearch = searchValue.trim().length > 0;
   const hasFilters = Object.keys(filters).length > 0;
-  const hasData = filteredData.length > 0;
-  const originalDataExists = (mockFleetData || []).length > 0;
+  const hasData = transformedData.length > 0;
+  const originalDataExists =
+    !isLoading && (hasData || (!hasSearch && !hasFilters));
 
-  const showNoDataState = !originalDataExists;
-  const showSearchNotFoundState = hasSearch && !hasData && originalDataExists;
+  const showNoDataState =
+    !isLoading && !originalDataExists && !hasSearch && !hasFilters;
+  const showSearchNotFoundState = !isLoading && hasSearch && !hasData && !error;
   const showFilterNotFoundState =
-    hasFilters && !hasData && originalDataExists && !hasSearch;
+    !isLoading && hasFilters && !hasData && !error && !hasSearch;
 
   return (
     <TabsContent value="daftar-armada" className="">
@@ -358,7 +399,7 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
 
             {/* Table */}
             <Table
-              data={paginatedData}
+              data={transformedData}
               columns={fleetColumns}
               emptyComponent={
                 showSearchNotFoundState ? (
@@ -379,6 +420,7 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
               }
               onSort={handleSort}
               sortConfig={sortConfig}
+              loading={isLoading}
             />
           </>
         )}
@@ -393,6 +435,7 @@ const DaftarArmadaTab = ({ mockFleetData }) => {
             onPageChange={handlePageChange}
             onPerPageChange={handlePerPageChange}
             variants="muatrans"
+            totalItems={totalItems}
           />
         </div>
       )}
