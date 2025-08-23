@@ -33,7 +33,7 @@ export const mockAPIResult = {
           truckLicensePlate: "B 5678 DEF",
           truckType: "Colt Diesel Double",
           truckCarrierType: "Dump",
-          status: "AVAILABLE",
+          status: "READY_FOR_ORDER",
         },
         {
           id: "uuid-driver-3",
@@ -53,7 +53,7 @@ export const mockAPIResult = {
           truckLicensePlate: "B 3456 JKL",
           truckType: "Ultra Long Wheelbase Heavy Duty 10x4 Axle Diesel Truck",
           truckCarrierType: "Multi Axle Expandable Flatbed",
-          status: "UNASSIGNED",
+          status: "NOT_PAIRED",
         },
         {
           id: "uuid-driver-5",

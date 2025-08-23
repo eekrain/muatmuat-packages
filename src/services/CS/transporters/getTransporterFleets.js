@@ -37,7 +37,7 @@ export const mockAPIResult = {
           vehicleBrand: "Mitsubishi Fuso",
           vehicleType: "Commercial Diesel Truck",
           stnkExpiryDate: "2028-08-20",
-          status: "AVAILABLE",
+          status: "READY_FOR_ORDER",
         },
         {
           id: "uuid-fleet-3",
@@ -61,7 +61,7 @@ export const mockAPIResult = {
           vehicleBrand: "Mitsubishi Fuso",
           vehicleType: "Commercial Diesel Truck",
           stnkExpiryDate: "2028-08-20",
-          status: "UNASSIGNED",
+          status: "NOT_PAIRED",
         },
         {
           id: "uuid-fleet-5",
@@ -73,7 +73,7 @@ export const mockAPIResult = {
           vehicleBrand: "Mitsubishi Fuso",
           vehicleType: "Commercial Diesel Truck",
           stnkExpiryDate: "2028-08-29",
-          status: "UNASSIGNED",
+          status: "INACTIVE",
         },
         {
           id: "uuid-fleet-6",
@@ -97,7 +97,7 @@ export const mockAPIResult = {
           vehicleBrand: "Mitsubishi Fuso",
           vehicleType: "Commercial Diesel Truck",
           stnkExpiryDate: "2028-08-20",
-          status: "AVAILABLE",
+          status: "READY_FOR_ORDER",
         },
         {
           id: "uuid-fleet-8",
@@ -133,7 +133,7 @@ export const mockAPIResult = {
           vehicleBrand: "Mitsubishi Fuso Heavy Duty",
           vehicleType: "Commercial Diesel Truck Canter 4 Wheels",
           stnkExpiryDate: "2028-08-20",
-          status: "UNASSIGNED",
+          status: "INACTIVE",
         },
         {
           id: "uuid-fleet-11",
@@ -169,7 +169,7 @@ export const mockAPIResult = {
           vehicleBrand: "Mitsubishi Fuso Heavy Duty",
           vehicleType: "Commercial Diesel Truck Canter 4 Wheels",
           stnkExpiryDate: "2028-08-20",
-          status: "UNASSIGNED",
+          status: "READY_FOR_ORDER",
         },
       ],
       pagination: {

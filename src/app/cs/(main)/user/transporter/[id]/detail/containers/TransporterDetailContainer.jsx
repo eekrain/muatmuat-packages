@@ -13,8 +13,6 @@ import {
 } from "@/components/Tabs/Tabs";
 import { toast } from "@/lib/toast";
 import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
-import { useGetTransporterDrivers } from "@/services/CS/transporters/getTransporterDrivers";
-import { useGetTransporterFleets } from "@/services/CS/transporters/getTransporterFleets";
 
 import DaftarArmadaTab from "./tabs/DaftarArmadaTab";
 import DaftarDriverTab from "./tabs/DaftarDriverTab";
@@ -39,33 +37,8 @@ const TransporterDetailContainer = ({ transporterId }) => {
     isLoading,
     mutate,
   } = useGetTransporterDetails(transporterId);
-
-  // API call to get transporter fleets
-  const {
-    data: fleetData,
-    error: fleetError,
-    isLoading: fleetLoading,
-    mutate: mutateFleets,
-  } = useGetTransporterFleets(transporterId, {
-    page: 1,
-    limit: 10,
-  });
-
-  // API call to get transporter drivers
-  const {
-    data: driverData,
-    error: driverError,
-    isLoading: driverLoading,
-    mutate: mutateDrivers,
-  } = useGetTransporterDrivers(transporterId, {
-    page: 1,
-    limit: 10,
-  });
-
   // Extract transporter data from API response
   const transporterData = apiResponse?.Data;
-  const fleets = fleetData?.fleets || [];
-  const drivers = driverData?.drivers || [];
 
   const openHubungiModal = () => {
     setHubungiModalOpen(true);
@@ -310,9 +283,9 @@ const TransporterDetailContainer = ({ transporterId }) => {
           </div>
 
           {/* Tab Content */}
-          <DaftarArmadaTab mockFleetData={fleets} />
+          <DaftarArmadaTab transporterId={transporterId} />
 
-          <DaftarDriverTab mockDriverData={drivers} />
+          <DaftarDriverTab transporterId={transporterId} />
           <RekapPembatalanTab transporterId={transporterId} />
           <DataTransporterTab transporterId={transporterId} />
           <RiwayatStatusTab />
