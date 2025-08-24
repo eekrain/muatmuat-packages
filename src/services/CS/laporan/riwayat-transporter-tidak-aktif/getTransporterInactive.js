@@ -85,9 +85,18 @@ export const getTransporterInactiveList = async (params) => {
 
       // Apply condition filter
       if (params.condition) {
-        filteredItems = filteredItems.filter(
-          (item) => item.condition === params.condition
-        );
+        filteredItems = filteredItems.filter((item) => {
+          // Map the condition parameter to the actual enum value for comparison
+          const conditionMap = {
+            INACTIVE_FLEET_TOO_MANY:
+              TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY,
+            ADMIN_IDLE_DETECTED:
+              TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED,
+            TRANSPORTER_INACTIVE:
+              TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE,
+          };
+          return item.condition === conditionMap[params.condition];
+        });
       }
 
       // Apply date filters
