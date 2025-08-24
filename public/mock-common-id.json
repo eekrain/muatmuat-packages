@@ -2123,5 +2123,20 @@
   "DataTable.filterSearchPlaceholder": "Cari {category}",
   "DataTable.keywordNotFound": "Keyword Tidak Ditemukan",
   "DataTable.dataNotFound": "Data Tidak Ditemukan.",
-  "DataTable.tryRemoveSomeFilters": "Mohon coba hapus beberapa filter"
+  "DataTable.tryRemoveSomeFilters": "Mohon coba hapus beberapa filter",
+  "DashboardPage.addFleetTitle": "Tambahkan Armada",
+  "DashboardPage.addFleetDesc": "Kamu harus menambahkan armada yang akan digunakan untuk menerima pesanan.",
+  "DashboardPage.addFleetButton": "Tambah Armada",
+  "DashboardPage.addFleetStep": "Tambahkan Armada",
+  "DashboardPage.addDriverTitle": "Tambahkan Driver",
+  "DashboardPage.addDriverDesc": "Kamu harus menambahkan driver terlebih dahulu untuk dapat digunakan menerima pesanan.",
+  "DashboardPage.addDriverStep": "Tambahkan Driver",
+  "DashboardPage.pairFleetDriverTitle": "Pasangkan Armada dan Driver",
+  "DashboardPage.pairFleetDriverDesc": "Pasangkan armada dengan driver yang sesuai agar siap menerima pesanan pengiriman.",
+  "DashboardPage.pairFleetDriverStep": "Pasangkan Armada & Driver",
+  "DashboardPage.areaSettingTitle": "Atur Area Muat dan Muatan yang Dilayani",
+  "DashboardPage.areaSettingDesc": "Atur area muat dan jenis muatan agar kami dapat mencarikan pesanan yang sesuai untukmu.",
+  "DashboardPage.areaSettingStep": "Atur Area Muat & Muatan",
+  "DashboardPage.stepsTitle": "Langkah Mudah Untuk Mulai Mendapatkan Pesanan",
+  "DashboardPage.stepsDesc": "Ayo lengkapi informasi armada dan driver kamu untuk mulai menerima pesanan di muatrans"
 }

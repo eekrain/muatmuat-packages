@@ -2123,5 +2123,20 @@
   "DataTable.filterSearchPlaceholder": "Search {category}",
   "DataTable.keywordNotFound": "Keyword Not Found",
   "DataTable.dataNotFound": "Data Not Found.",
-  "DataTable.tryRemoveSomeFilters": "Please try removing some filters"
+  "DataTable.tryRemoveSomeFilters": "Please try removing some filters",
+  "DashboardPage.addFleetTitle": "Add Fleet",
+  "DashboardPage.addFleetDesc": "You must add a fleet to receive orders.",
+  "DashboardPage.addFleetButton": "Add Fleet",
+  "DashboardPage.addFleetStep": "Add Fleet",
+  "DashboardPage.addDriverTitle": "Add Driver",
+  "DashboardPage.addDriverDesc": "You must add a driver first to receive orders.",
+  "DashboardPage.addDriverStep": "Add Driver",
+  "DashboardPage.pairFleetDriverTitle": "Pair Fleet and Driver",
+  "DashboardPage.pairFleetDriverDesc": "Pair the fleet with the appropriate driver to be ready to receive delivery orders.",
+  "DashboardPage.pairFleetDriverStep": "Pair Fleet & Driver",
+  "DashboardPage.areaSettingTitle": "Set Loading Area and Cargo Served",
+  "DashboardPage.areaSettingDesc": "Set the loading area and cargo type so we can find suitable orders for you.",
+  "DashboardPage.areaSettingStep": "Set Loading Area & Cargo",
+  "DashboardPage.stepsTitle": "Easy Steps to Start Getting Orders",
+  "DashboardPage.stepsDesc": "Complete your fleet and driver information to start receiving orders on muatrans."
 }

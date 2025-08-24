@@ -227,7 +227,7 @@ const RiwayatTransporterTidakAktif = () => {
               {row.transporterName}
             </span>
             <button
-              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer"
+              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer hover:font-semibold hover:text-[#1257C6]"
               onClick={() => setShowHubungiModal(true)}
             >
               <IconComponent src={"/icons/call-blue.svg"} />
