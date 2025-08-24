@@ -13,6 +13,7 @@ import {
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
+import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";
 import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
@@ -62,10 +63,16 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
 
   const { data } = useGetDetailPesananData(params.orderId);
   const { data: waitingTimeRawData } = useGetWaitingTime(params.orderId);
+  const { data: overloadDataRaw } = useGetOverloadData(params.orderId);
 
   const waitingTimeRaw = useShallowMemo(
     () => waitingTimeRawData || [],
     [waitingTimeRawData]
+  );
+
+  const overloadData = useShallowMemo(
+    () => overloadDataRaw || {},
+    [overloadDataRaw]
   );
 
   const dataStatusPesanan = data?.dataStatusPesanan;
@@ -101,6 +108,7 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            overloadData={overloadData}
             oldDriverData={oldDriverData}
             paymentMethods={paymentMethods}
           />

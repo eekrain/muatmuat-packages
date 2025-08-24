@@ -65,6 +65,7 @@ const DetailPesananScreen = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  overloadData,
   oldDriverData,
   paymentMethods,
 }) => {
@@ -258,6 +259,7 @@ const DetailPesananScreen = ({
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            overloadData={overloadData}
             paymentMethods={paymentMethods}
           />
 
@@ -288,6 +290,7 @@ const DetailPesananScreen = ({
           dataRingkasanPembayaran={dataRingkasanPembayaran}
           isConfirmWaiting={isConfirmWaiting}
           onConfirmWaitingChange={setIsConfirmWaiting}
+          paymentMethods={paymentMethods}
         />
       ) : null}
 
