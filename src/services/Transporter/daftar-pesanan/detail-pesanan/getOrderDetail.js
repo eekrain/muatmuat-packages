@@ -269,7 +269,7 @@ const mockApiResult = {
           profileImage: "https://example.com/driver4.jpg",
         },
         hasSOSAlert: false,
-        currentStatus: TRACKING_STATUS.CANCELLED_BY_TRANSPORTER,
+        currentStatus: TRACKING_STATUS.SCHEDULED_FLEET,
         milestones: [
           {
             status: TRACKING_STATUS.SCHEDULED,
@@ -277,9 +277,185 @@ const mockApiResult = {
             completed: true,
           },
           {
-            status: "CANCELLED",
-            statusName: "Dibatalkan",
+            status: TRACKING_STATUS.LOADING,
+            statusName: "Proses Muat",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.UNLOADING,
+            statusName: "Proses Bongkar",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+            statusName: "Dokumen Sedang Disiapkan",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+            statusName: "Proses Pengiriman Dokumen",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.COMPLETED,
+            statusName: "Selesai",
+            completed: false,
+          },
+        ],
+        // Data untuk armada pengganti (jika ada)
+        replacementFleet: null,
+        // Data untuk driver pengganti (jika ada)
+        replacementDriver: null,
+        // Status perubahan armada
+        fleetChangeStatus: null,
+      },
+      {
+        id: "fleet-003",
+        licensePlate: "AE 4444 LBA",
+        vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+        driver: {
+          id: "uuid-4",
+          name: "Jamie Vardy",
+          phoneNumber: "081234567893",
+          profileImage: "https://example.com/driver4.jpg",
+        },
+        hasSOSAlert: false,
+        currentStatus: TRACKING_STATUS.MENUJU_KE_LOKASI_MUAT,
+        milestones: [
+          {
+            status: TRACKING_STATUS.SCHEDULED,
+            statusName: "Armada Dijadwalkan",
             completed: true,
+          },
+          {
+            status: TRACKING_STATUS.LOADING,
+            statusName: "Proses Muat",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.UNLOADING,
+            statusName: "Proses Bongkar",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+            statusName: "Dokumen Sedang Disiapkan",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+            statusName: "Proses Pengiriman Dokumen",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.COMPLETED,
+            statusName: "Selesai",
+            completed: false,
+          },
+        ],
+        // Data untuk armada pengganti (jika ada)
+        replacementFleet: null,
+        // Data untuk driver pengganti (jika ada)
+        replacementDriver: null,
+        // Status perubahan armada
+        fleetChangeStatus: null,
+      },
+      {
+        id: "fleet-003",
+        licensePlate: "AE 4444 LBA",
+        vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+        driver: {
+          id: "uuid-4",
+          name: "Crossroad",
+          phoneNumber: "081234567893",
+          profileImage: "https://example.com/driver4.jpg",
+        },
+        hasSOSAlert: false,
+        currentStatus: TRACKING_STATUS.TIBA_DI_LOKASI_MUAT,
+        milestones: [
+          {
+            status: TRACKING_STATUS.SCHEDULED,
+            statusName: "Armada Dijadwalkan",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.LOADING,
+            statusName: "Proses Muat",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.UNLOADING,
+            statusName: "Proses Bongkar",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+            statusName: "Dokumen Sedang Disiapkan",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+            statusName: "Proses Pengiriman Dokumen",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.COMPLETED,
+            statusName: "Selesai",
+            completed: false,
+          },
+        ],
+        // Data untuk armada pengganti (jika ada)
+        replacementFleet: null,
+        // Data untuk driver pengganti (jika ada)
+        replacementDriver: null,
+        // Status perubahan armada
+        fleetChangeStatus: null,
+      },
+      {
+        id: "fleet-003",
+        licensePlate: "AE 4444 LBA",
+        vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+        driver: {
+          id: "uuid-4",
+          name: "Syule",
+          phoneNumber: "081234567893",
+          profileImage: "https://example.com/driver4.jpg",
+        },
+        hasSOSAlert: false,
+        currentStatus: TRACKING_STATUS.ANTRI_DI_LOKASI_MUAT,
+        milestones: [
+          {
+            status: TRACKING_STATUS.SCHEDULED,
+            statusName: "Armada Dijadwalkan",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.LOADING,
+            statusName: "Proses Muat",
+            completed: true,
+          },
+          {
+            status: TRACKING_STATUS.UNLOADING,
+            statusName: "Proses Bongkar",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+            statusName: "Dokumen Sedang Disiapkan",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+            statusName: "Proses Pengiriman Dokumen",
+            completed: false,
+          },
+          {
+            status: TRACKING_STATUS.COMPLETED,
+            statusName: "Selesai",
+            completed: false,
           },
         ],
         // Data untuk armada pengganti (jika ada)

@@ -6,6 +6,7 @@ export const ModalKonfimasiBuktiDokumenDiterima = ({
   open,
   onOpenChange,
   onConfirm,
+  isLoading,
 }) => {
   const { t } = useTranslation();
 
@@ -31,6 +32,7 @@ export const ModalKonfimasiBuktiDokumenDiterima = ({
               className="min-w-[112px]"
               onClick={() => onOpenChange(false)}
               type="button"
+              disabled={isLoading}
             >
               {t(
                 "ModalKonfimasiBuktiDokumenDiterima.buttonNotYet",
@@ -43,6 +45,7 @@ export const ModalKonfimasiBuktiDokumenDiterima = ({
               className="min-w-[112px]"
               onClick={onConfirm}
               type="button"
+              disabled={isLoading}
             >
               {t(
                 "ModalKonfimasiBuktiDokumenDiterima.buttonAlready",

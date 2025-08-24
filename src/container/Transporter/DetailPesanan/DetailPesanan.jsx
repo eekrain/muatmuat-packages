@@ -80,7 +80,10 @@ const DetailPesanan = ({ breadcrumbData }) => {
         </TabsContent>
 
         <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
-          <LacakArmada dataOrderDetail={dataOrderDetail} />
+          <LacakArmada
+            dataOrderDetail={dataOrderDetail}
+            onNavigateToRiwayat={() => setActiveTab("riwayat-perubahan")}
+          />
         </TabsContent>
         <TabsContent
           className="flex flex-col gap-y-4"
