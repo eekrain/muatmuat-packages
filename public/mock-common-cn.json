@@ -2123,5 +2123,20 @@
   "DataTable.filterSearchPlaceholder": "搜索{category}",
   "DataTable.keywordNotFound": "未找到关键词",
   "DataTable.dataNotFound": "未找到数据。",
-  "DataTable.tryRemoveSomeFilters": "请尝试删除一些筛选条件"
+  "DataTable.tryRemoveSomeFilters": "请尝试删除一些筛选条件",
+  "DashboardPage.addFleetTitle": "添加车队",
+  "DashboardPage.addFleetDesc": "您必须添加车队才能接收订单。",
+  "DashboardPage.addFleetButton": "添加车队",
+  "DashboardPage.addFleetStep": "添加车队",
+  "DashboardPage.addDriverTitle": "添加司机",
+  "DashboardPage.addDriverDesc": "您必须先添加司机才能接收订单。",
+  "DashboardPage.addDriverStep": "添加司机",
+  "DashboardPage.pairFleetDriverTitle": "配对车队和司机",
+  "DashboardPage.pairFleetDriverDesc": "将车队与合适的司机配对，以便准备接收配送订单。",
+  "DashboardPage.pairFleetDriverStep": "配对车队和司机",
+  "DashboardPage.areaSettingTitle": "设置装货区域和服务货物",
+  "DashboardPage.areaSettingDesc": "设置装货区域和货物类型，以便我们为您匹配合适的订单。",
+  "DashboardPage.areaSettingStep": "设置装货区域和货物",
+  "DashboardPage.stepsTitle": "开始接单的简单步骤",
+  "DashboardPage.stepsDesc": "请完善您的车队和司机信息，以便在 muatrans 上开始接单。"
 }

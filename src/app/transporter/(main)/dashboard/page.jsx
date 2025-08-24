@@ -1,10 +1,8 @@
-import React from "react";
-
 import DashboardPage from "@/container/Transporter/Dashboard/Web/DashboardPage";
 
 function Page() {
   return (
-    <div>
+    <div className="pt-6">
       <DashboardPage />
     </div>
   );
