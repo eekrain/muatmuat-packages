@@ -8,12 +8,14 @@ import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
 
 const SOSContainer = ({ onClose, onExpand }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
@@ -119,11 +121,21 @@ const SOSContainer = ({ onClose, onExpand }) => {
         {/* Struktur flex sudah tidak diperlukan */}
         <div className="pb-3">
           <h2 className="text-[14px] font-bold text-gray-900">
-            SOS{" "}
+            {t("SOSContainer.title", {}, "SOS")}{" "}
             {totalActiveSos > 0 ? (
-              <span className="font-semibold">({totalActiveSos} Armada)</span>
+              <span className="font-semibold">
+                (
+                {t(
+                  "SOSContainer.fleetCount",
+                  { count: totalActiveSos },
+                  `${totalActiveSos} Armada`
+                )}
+                )
+              </span>
             ) : (
-              <span className="font-semibold">(Belum Ada Laporan)</span>
+              <span className="font-semibold">
+                ({t("SOSContainer.noReports", {}, "Belum Ada Laporan")})
+              </span>
             )}
           </h2>
         </div>
@@ -132,7 +144,11 @@ const SOSContainer = ({ onClose, onExpand }) => {
       {/* Search */}
       <div className="mb-4 px-4">
         <Search
-          placeholder="Cari No. Polisi / Nama Driver"
+          placeholder={t(
+            "SOSContainer.searchPlaceholder",
+            {},
+            "Cari No. Polisi / Nama Driver"
+          )}
           onSearch={setSearchTerm}
           autoSearch={true}
           debounceTime={300}
@@ -151,7 +167,11 @@ const SOSContainer = ({ onClose, onExpand }) => {
           }`}
           onClick={() => setActiveTab("sos")}
         >
-          SOS ({activeSosItems.length})
+          {t(
+            "SOSContainer.sosTab",
+            { count: activeSosItems.length },
+            `SOS (${activeSosItems.length})`
+          )}
           {activeSosItems.length > 0 && (
             <NotificationDot
               size="sm"
@@ -170,7 +190,11 @@ const SOSContainer = ({ onClose, onExpand }) => {
           }`}
           onClick={() => setActiveTab("all")}
         >
-          Riwayat ({historySosItems.length})
+          {t(
+            "SOSContainer.historyTab",
+            { count: historySosItems.length },
+            `Riwayat (${historySosItems.length})`
+          )}
         </button>
       </div>
 
@@ -179,15 +203,23 @@ const SOSContainer = ({ onClose, onExpand }) => {
         {isLoading ? (
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-            <span className="ml-2 text-gray-600">Loading SOS…</span>
+            <span className="ml-2 text-gray-600">
+              {t("SOSContainer.loadingSOS", {}, "Memuat SOS...")}
+            </span>
           </div>
         ) : error ? (
           <div className="flex h-32 items-center justify-center">
             <div className="text-center">
               <AlertTriangle className="mx-auto mb-2 h-8 w-8 text-red-500" />
-              <p className="text-sm text-red-600">Failed to load SOS list</p>
+              <p className="text-sm text-red-600">
+                {t(
+                  "SOSContainer.errorLoadingSOS",
+                  {},
+                  "Gagal memuat daftar SOS"
+                )}
+              </p>
               <p className="mt-1 text-xs text-gray-500">
-                Please try again later
+                {t("SOSContainer.tryAgainLater", {}, "Silakan coba lagi nanti")}
               </p>
             </div>
           </div>
@@ -207,22 +239,38 @@ const SOSContainer = ({ onClose, onExpand }) => {
           </div>
         ) : searchTerm ? (
           <DataNotFound
-            title="Data tidak ditemukan"
-            description={`Tidak ada data yang cocok dengan pencarian "${searchTerm}"`}
+            title={t("SOSContainer.dataNotFound", {}, "Data tidak ditemukan")}
+            description={t(
+              "SOSContainer.noMatchingData",
+              { searchTerm },
+              `Tidak ada data yang cocok dengan pencarian "${searchTerm}"`
+            )}
             type="search"
             className={"h-full"}
           />
         ) : activeTab === "sos" ? (
           <DataNotFound
-            title="Belum Ada Laporan SOS"
-            description="Saat ini tidak ada laporan SOS yang perlu ditangani."
+            title={t("SOSContainer.noSOSReports", {}, "Belum Ada Laporan SOS")}
+            description={t(
+              "SOSContainer.noSOSDescription",
+              {},
+              "Saat ini tidak ada laporan SOS yang perlu ditangani."
+            )}
             type="data"
             className={"h-full"}
           />
         ) : (
           <DataNotFound
-            title="Belum Ada Riwayat Laporan"
-            description="Belum ada riwayat laporan yang tercatat."
+            title={t(
+              "SOSContainer.noHistoryReports",
+              {},
+              "Belum Ada Riwayat Laporan"
+            )}
+            description={t(
+              "SOSContainer.noHistoryDescription",
+              {},
+              "Belum ada riwayat laporan yang tercatat."
+            )}
             type="data"
             className={"h-full"}
           />
@@ -237,7 +285,7 @@ const SOSContainer = ({ onClose, onExpand }) => {
           vehicleId={selectedFleet.fleetId}
           vehiclePlate={selectedFleet.licensePlate}
           currentDriverId={selectedFleet.driver?.id || null}
-          title="Pasangkan Driver"
+          title={t("SOSContainer.assignDriverTitle", {}, "Pasangkan Driver")}
         />
       )}
     </div>

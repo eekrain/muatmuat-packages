@@ -21,6 +21,7 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { formatDate } from "@/lib/utils/dateFormat";
@@ -65,29 +66,36 @@ const TruckIcon = ({ status }) => {
 };
 
 // Indikator Perlu Respon Perubahan
-const ResponseChangeIndicator = ({ isExpanded }) => (
-  <InfoTooltip
-    trigger={
-      <div
-        className={cn(
-          "group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]",
-          isExpanded ? "bg-warning-800" : "group-hover:bg-warning-800"
-        )}
-      >
-        <AlertTriangle
+const ResponseChangeIndicator = ({ isExpanded }) => {
+  const { t } = useTranslation();
+
+  return (
+    <InfoTooltip
+      trigger={
+        <div
           className={cn(
-            "h-4 w-4",
-            isExpanded ? "text-white" : "text-yellow-500 group-hover:text-white"
+            "group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]",
+            isExpanded ? "bg-warning-800" : "group-hover:bg-warning-800"
           )}
-        />
-      </div>
-    }
-  >
-    <p className="text-center">
-      Pesanan Perlu <br /> Respon Perubahan
-    </p>
-  </InfoTooltip>
-);
+        >
+          <AlertTriangle
+            className={cn(
+              "h-4 w-4",
+              isExpanded
+                ? "text-white"
+                : "text-yellow-500 group-hover:text-white"
+            )}
+          />
+        </div>
+      }
+    >
+      <p className="text-center">
+        {t("CardFleet.needsResponse", {}, "Pesanan Perlu")} <br />{" "}
+        {t("CardFleet.changeResponse", {}, "Respon Perubahan")}
+      </p>
+    </InfoTooltip>
+  );
+};
 
 // Indikator SOS
 const SOSIndicator = () => (
@@ -97,53 +105,89 @@ const SOSIndicator = () => (
 );
 
 // Waktu Laporan SOS Masuk
-const TimeReportIncome = ({ reportTime }) => (
-  <div className="flex items-center gap-1 text-xs text-neutral-600">
-    <Clock3 className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900" />
-    <span className="w-[95px] flex-shrink-0">Laporan Masuk:</span>
-    <span className="font-semibold text-neutral-900">
-      {reportTime ? formatDate(reportTime, "eeee, dd LLLL yyyy, HH:mm") : "-"}
-    </span>
-  </div>
-);
+const TimeReportIncome = ({ reportTime }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex items-center gap-1 text-xs text-neutral-600">
+      <Clock3 className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900" />
+      <span className="w-[95px] flex-shrink-0">
+        {t("CardFleet.reportReceived", {}, "Laporan Masuk:")}
+      </span>
+      <span className="font-semibold text-neutral-900">
+        {reportTime ? formatDate(reportTime, "eeee, dd LLLL yyyy, HH:mm") : "-"}
+      </span>
+    </div>
+  );
+};
 
 // Waktu Laporan SOS Selesai
-const TimeReportCompleted = ({ reportTime }) => (
-  <div className="flex items-center gap-1 text-xs text-neutral-600">
-    <IconComponent src={"/icons/monitoring/circle-check.svg"} />
-    <span className="w-[95px] flex-shrink-0">Laporan Selesai:</span>
-    <span className="font-semibold text-neutral-900">
-      {reportTime ? formatDate(reportTime, "eeee, dd LLLL yyyy, HH:mm") : "-"}
-    </span>
-  </div>
-);
+const TimeReportCompleted = ({ reportTime }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex items-center gap-1 text-xs text-neutral-600">
+      <IconComponent src={"/icons/monitoring/circle-check.svg"} />
+      <span className="w-[95px] flex-shrink-0">
+        {t("CardFleet.reportCompleted", {}, "Laporan Selesai:")}
+      </span>
+      <span className="font-semibold text-neutral-900">
+        {reportTime ? formatDate(reportTime, "eeee, dd LLLL yyyy, HH:mm") : "-"}
+      </span>
+    </div>
+  );
+};
 
 // Mapping untuk kategori SOS
-const getSOSCategoryDisplay = (category) => {
+const getSOSCategoryDisplay = (category, t) => {
   const categoryMap = {
-    MECHANICAL_ISSUE: "Masalah Mekanis",
-    ACCIDENT: "Kecelakaan",
-    BREAKDOWN: "Kendaraan Mogok",
-    FUEL_ISSUE: "Masalah Bahan Bakar",
-    TIRE_ISSUE: "Masalah Ban",
-    ENGINE_ISSUE: "Masalah Mesin",
-    ELECTRICAL_ISSUE: "Masalah Kelistrikan",
-    MEDICAL_EMERGENCY: "Darurat Medis",
-    SECURITY_ISSUE: "Masalah Keamanan",
-    TRAFFIC_ISSUE: "Masalah Lalu Lintas",
-    WEATHER_ISSUE: "Masalah Cuaca",
-    OTHER: "Lainnya",
+    MECHANICAL_ISSUE: t(
+      "CardFleet.sosCategory.mechanicalIssue",
+      {},
+      "Masalah Mekanis"
+    ),
+    ACCIDENT: t("CardFleet.sosCategory.accident", {}, "Kecelakaan"),
+    BREAKDOWN: t("CardFleet.sosCategory.breakdown", {}, "Kendaraan Mogok"),
+    FUEL_ISSUE: t("CardFleet.sosCategory.fuelIssue", {}, "Masalah Bahan Bakar"),
+    TIRE_ISSUE: t("CardFleet.sosCategory.tireIssue", {}, "Masalah Ban"),
+    ENGINE_ISSUE: t("CardFleet.sosCategory.engineIssue", {}, "Masalah Mesin"),
+    ELECTRICAL_ISSUE: t(
+      "CardFleet.sosCategory.electricalIssue",
+      {},
+      "Masalah Kelistrikan"
+    ),
+    MEDICAL_EMERGENCY: t(
+      "CardFleet.sosCategory.medicalEmergency",
+      {},
+      "Darurat Medis"
+    ),
+    SECURITY_ISSUE: t(
+      "CardFleet.sosCategory.securityIssue",
+      {},
+      "Masalah Keamanan"
+    ),
+    TRAFFIC_ISSUE: t(
+      "CardFleet.sosCategory.trafficIssue",
+      {},
+      "Masalah Lalu Lintas"
+    ),
+    WEATHER_ISSUE: t("CardFleet.sosCategory.weatherIssue", {}, "Masalah Cuaca"),
+    OTHER: t("CardFleet.sosCategory.other", {}, "Lainnya"),
   };
 
   return categoryMap[category] || category || "-";
 };
 
 // Kategori SOS
-const SOSCategory = ({ category }) => (
-  <p className="text-xs font-semibold text-error-400">
-    {getSOSCategoryDisplay(category)}
-  </p>
-);
+const SOSCategory = ({ category }) => {
+  const { t } = useTranslation();
+
+  return (
+    <p className="text-xs font-semibold text-error-400">
+      {getSOSCategoryDisplay(category, t)}
+    </p>
+  );
+};
 
 // Deskripsi SOS
 const SOSDescription = ({ description }) => (
@@ -203,42 +247,52 @@ const InfoWithTooltip = ({
 );
 
 // Info Driver
-const DriverInfo = ({ driverName, showLabel = false }) => (
-  <InfoWithTooltip
-    icon={User}
-    label="Driver"
-    value={driverName || "-"}
-    showLabel={showLabel}
-    className={showLabel ? "text-gray-900" : "text-neutral-900"}
-  />
-);
+const DriverInfo = ({ driverName, showLabel = false }) => {
+  const { t } = useTranslation();
+
+  return (
+    <InfoWithTooltip
+      icon={User}
+      label={t("CardFleet.driverLabel", {}, "Driver")}
+      value={driverName || "-"}
+      showLabel={showLabel}
+      className={showLabel ? "text-gray-900" : "text-neutral-900"}
+    />
+  );
+};
 
 // Info Lokasi
-const LocationInfo = ({ locationText, showLabel = false }) => (
-  <InfoWithTooltip
-    icon={MapPin}
-    label="Lokasi Terakhir"
-    value={locationText || "Unknown"}
-    showLabel={showLabel}
-    className={showLabel ? "text-gray-900" : "text-neutral-900"}
-  />
-);
+const LocationInfo = ({ locationText, showLabel = false }) => {
+  const { t } = useTranslation();
+
+  return (
+    <InfoWithTooltip
+      icon={MapPin}
+      label={t("CardFleet.lastLocationLabel", {}, "Lokasi Terakhir")}
+      value={locationText || t("CardFleet.unknownLocation", {}, "Unknown")}
+      showLabel={showLabel}
+      className={showLabel ? "text-gray-900" : "text-neutral-900"}
+    />
+  );
+};
 
 // Foto-Foto Laporan SOS
 const SOSPhotos = ({ photos = [], className }) => {
+  const { t } = useTranslation();
+
   if (!photos || photos.length === 0) return null;
 
   return (
     <div
       className={cn("flex flex-wrap gap-2", className)}
       onClick={(e) => e.stopPropagation()}
-      aria-label="Foto Laporan SOS"
+      aria-label={t("CardFleet.sosPhotosLabel", {}, "Foto Laporan SOS")}
     >
       {photos.map((image, index) => (
         <LightboxProvider
           key={`${image}-${index}`}
           images={photos}
-          title="Foto Laporan SOS"
+          title={t("CardFleet.sosPhotosTitle", {}, "Foto Laporan SOS")}
         >
           <LightboxPreview
             image={image}
@@ -305,50 +359,62 @@ const CardHeader = ({ isExpanded, fleet, showSOSBadge }) => (
   </div>
 );
 
-const DriverAndPhoneSection = ({ driverName, phone }) => (
-  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-    <DriverInfo driverName={driverName} showLabel />
-    <InfoWithTooltip
-      icon={Phone}
-      label="No. HP Driver"
-      value={phone ? phoneNumberFormat(phone) : "-"}
-      showLabel
-      className="text-gray-900"
-    />
-  </div>
-);
+const DriverAndPhoneSection = ({ driverName, phone }) => {
+  const { t } = useTranslation();
 
-// Bagian Info Lokasi & Tipe Armada
-const LocationAndFleetSection = ({ fleet }) => (
-  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-    <div>
-      <LocationInfo
-        locationText={
-          fleet?.lastLocation?.address?.district || "Lokasi tidak tersedia"
-        }
-        showLabel
-      />
-      <p className="ml-6 text-xxs font-semibold">
-        {fleet?.lastLocation?.address?.city || "Lokasi tidak tersedia"}
-      </p>
-    </div>
-    <div>
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <DriverInfo driverName={driverName} showLabel />
       <InfoWithTooltip
-        icon={Truck}
-        label="Armada"
-        value={fleet?.carrierType?.name || "-"}
+        icon={Phone}
+        label={t("CardFleet.driverPhoneLabel", {}, "No. HP Driver")}
+        value={phone ? phoneNumberFormat(phone) : "-"}
         showLabel
         className="text-gray-900"
       />
-      <p className="ml-6 text-xxs font-semibold">
-        {fleet?.truckType?.name || "-"}
-      </p>
     </div>
-  </div>
-);
+  );
+};
+
+// Bagian Info Lokasi & Tipe Armada
+const LocationAndFleetSection = ({ fleet }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <LocationInfo
+          locationText={
+            fleet?.lastLocation?.address?.district ||
+            t("CardFleet.locationNotAvailable", {}, "Lokasi tidak tersedia")
+          }
+          showLabel
+        />
+        <p className="ml-6 text-xxs font-semibold">
+          {fleet?.lastLocation?.address?.city ||
+            t("CardFleet.locationNotAvailable", {}, "Lokasi tidak tersedia")}
+        </p>
+      </div>
+      <div>
+        <InfoWithTooltip
+          icon={Truck}
+          label={t("CardFleet.fleetLabel", {}, "Armada")}
+          value={fleet?.carrierType?.name || "-"}
+          showLabel
+          className="text-gray-900"
+        />
+        <p className="ml-6 text-xxs font-semibold">
+          {fleet?.truckType?.name || "-"}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 // Detail saat status ON_DUTY
 const OnDutyDetails = ({ fleet }) => {
+  const { t } = useTranslation();
+
   // Handle both array and object formats for pickup/dropoff locations
   const pickup = Array.isArray(fleet?.activeOrder?.pickupLocation)
     ? fleet?.activeOrder?.pickupLocation[0]
@@ -364,21 +430,21 @@ const OnDutyDetails = ({ fleet }) => {
       return (
         <div className="flex items-center rounded-md bg-warning-100 p-2 text-xs font-semibold text-warning-900">
           <AlertTriangle className="mr-2 h-3 w-3" />
-          Perlu Respon Perubahan
+          {t("CardFleet.needsResponseChange", {}, "Perlu Respon Perubahan")}
         </div>
       );
     }
     if (status === "ON_DUTY") {
       return (
         <div className="rounded-md bg-primary-50 p-2 text-xs font-semibold text-blue-700">
-          Proses Muat
+          {t("CardFleet.loadingProcess", {}, "Proses Muat")}
         </div>
       );
     }
     if (status === "WAITING_LOADING_TIME") {
       return (
         <div className="rounded-md bg-blue-100 p-2 text-xs font-semibold text-blue-700">
-          Armada Dijadwalkan
+          {t("CardFleet.fleetScheduled", {}, "Armada Dijadwalkan")}
         </div>
       );
     }
@@ -388,14 +454,18 @@ const OnDutyDetails = ({ fleet }) => {
   return (
     <div className="mt-3 flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-3 py-3 pt-4">
       <div>
-        <p className="mb-3 text-xs text-gray-600">No. Pesanan</p>
+        <p className="mb-3 text-xs text-gray-600">
+          {t("CardFleet.orderNumber", {}, "No. Pesanan")}
+        </p>
         <p className="text-xs font-semibold text-black">
           {fleet?.activeOrder?.orderCode || "-"}
         </p>
       </div>
 
       <div className="py-1">
-        <p className="mb-2 text-xs text-gray-600">Lokasi Muat & Bongkar</p>
+        <p className="mb-2 text-xs text-gray-600">
+          {t("CardFleet.pickupDropoffLocation", {}, "Lokasi Muat & Bongkar")}
+        </p>
         <TimelineContainer>
           {pickup && (
             <LocationTimelineItem
@@ -403,7 +473,7 @@ const OnDutyDetails = ({ fleet }) => {
               isLast={!dropoff}
               index={0}
               activeIndex={0}
-              label="Lokasi Muat"
+              label={t("CardFleet.pickupLocation", {}, "Lokasi Muat")}
             />
           )}
           {dropoff && (
@@ -412,7 +482,7 @@ const OnDutyDetails = ({ fleet }) => {
               isLast
               index={1}
               activeIndex={0}
-              label="Lokasi Bongkar"
+              label={t("CardFleet.dropoffLocation", {}, "Lokasi Bongkar")}
             />
           )}
         </TimelineContainer>
@@ -424,7 +494,7 @@ const OnDutyDetails = ({ fleet }) => {
           className="text-xs text-blue-700 hover:underline"
           href={`/monitoring/order/${fleet?.activeOrder?.orderId}`} // Contoh link dinamis
         >
-          Lihat Detail
+          {t("CardFleet.viewDetail", {}, "Lihat Detail")}
         </Link>
       </div>
     </div>
@@ -462,15 +532,20 @@ export default function CardFleet({
   className,
   onAcknowledge,
 }) {
+  const { t } = useTranslation();
   const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
 
   const driverName = fleet?.driver?.name || null;
   const phone = fleet?.driver?.phoneNumber || null;
   const locationText = fleet?.lastLocation?.address
-    ? `${fleet.lastLocation.address.district || "Lokasi tidak tersedia"}, ${
-        fleet.lastLocation.address.city || "Lokasi tidak tersedia"
+    ? `${
+        fleet.lastLocation.address.district ||
+        t("CardFleet.locationNotAvailable", {}, "Lokasi tidak tersedia")
+      }, ${
+        fleet.lastLocation.address.city ||
+        t("CardFleet.locationNotAvailable", {}, "Lokasi tidak tersedia")
       }`
-    : "Lokasi tidak tersedia";
+    : t("CardFleet.locationNotAvailable", {}, "Lokasi tidak tersedia");
 
   const sosStatus = fleet?.detailSOS?.sosStatus;
   const isSOSNew = sosStatus === "NEW";
@@ -542,7 +617,7 @@ export default function CardFleet({
             className="w-full"
             onClick={(e) => handleActionClick(e, onOpenDriverModal)}
           >
-            Pasangkan Driver
+            {t("CardFleet.assignDriver", {}, "Pasangkan Driver")}
           </Button>
         )}
         {fleet?.needsResponseChange && (
@@ -551,7 +626,7 @@ export default function CardFleet({
             className="w-full"
             onClick={handleOpenResponseModal}
           >
-            Respon Perubahan
+            {t("CardFleet.respondChange", {}, "Respon Perubahan")}
           </Button>
         )}
 
@@ -562,13 +637,13 @@ export default function CardFleet({
               onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
               className="w-1/2"
             >
-              Riwayat SOS
+              {t("CardFleet.sosHistory", {}, "Riwayat SOS")}
             </Button>
             <Button
               className="w-1/2"
               onClick={(e) => handleActionClick(e, onAcknowledge)}
             >
-              Mengerti
+              {t("CardFleet.understand", {}, "Mengerti")}
             </Button>
           </div>
         ) : fleet?.hasSOSAlert ? (
@@ -576,7 +651,7 @@ export default function CardFleet({
             onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
             className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
           >
-            Riwayat SOS
+            {t("CardFleet.sosHistory", {}, "Riwayat SOS")}
           </button>
         ) : null}
       </div>

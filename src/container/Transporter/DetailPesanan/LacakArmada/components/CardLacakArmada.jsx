@@ -15,6 +15,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import {
   TRACKING_STATUS,
@@ -41,6 +42,7 @@ function CardLacakArmada({
   replacementDriver = null, // Add replacement driver prop
   fleetChangeStatus = null, // Add fleet change status prop
 }) {
+  const { t } = useTranslation();
   const { isMobile } = useDevice();
   const pathname = usePathname();
 
@@ -156,11 +158,11 @@ function CardLacakArmada({
   const currentSteps = isCancelledStatus(status)
     ? [
         {
-          label: "Armada Dijadwalkan",
+          label: t("CardLacakArmada.scheduledFleet", {}, "Armada Dijadwalkan"),
           icon: "/icons/stepper/stepper-scheduled.svg",
         },
         {
-          label: "Dibatalkan",
+          label: t("CardLacakArmada.cancelled", {}, "Dibatalkan"),
           status: "CANCELED",
           icon: "/icons/silang-white.svg",
         },
@@ -171,7 +173,9 @@ function CardLacakArmada({
   const handleOpenDriverModal = () => setIsDriverModalOpen(true);
   const handleCloseDriverModal = () => setIsDriverModalOpen(false);
   const handleDriverUpdateSuccess = (updatedVehicleId, newDriverId) => {
-    toast.success("Driver berhasil diubah!");
+    toast.success(
+      t("CardLacakArmada.driverChangeSuccess", {}, "Driver berhasil diubah!")
+    );
     handleCloseDriverModal();
   };
 
@@ -189,7 +193,13 @@ function CardLacakArmada({
   const handleConfirmAlasanPembatalan = async (data) => {
     // Logika untuk mengirim data pembatalan ke API ada di sini
     console.log("Submitting fleet cancellation with reason:", data);
-    toast.success(`Berhasil membatalkan armada ${plateNumber || "Plat Nomor"}`);
+    toast.success(
+      t(
+        "CardLacakArmada.fleetCancelSuccess",
+        { plateNumber: plateNumber || "Plat Nomor" },
+        `Berhasil membatalkan armada ${plateNumber || "Plat Nomor"}`
+      )
+    );
     // Tutup modal setelah konfirmasi
     handleCloseAlasanPembatalanModal();
     // Anda bisa menambahkan logic refresh data di sini jika perlu
@@ -201,7 +211,13 @@ function CardLacakArmada({
 
   const handleUbahArmadaSuccess = (updatedVehicleId, _optional) => {
     // callback ketika ModalUbahArmada sukses submit
-    toast.success("Permintaan ubah armada tersimpan (dummy).");
+    toast.success(
+      t(
+        "CardLacakArmada.fleetChangeRequestSuccess",
+        {},
+        "Permintaan ubah armada tersimpan (dummy)."
+      )
+    );
     handleCloseUbahArmadaModal();
     // kalau perlu refresh data parent, panggil di sini
   };
@@ -240,21 +256,25 @@ function CardLacakArmada({
                 }}
                 className="text-xs font-medium text-blue-600"
               >
-                Lihat Detail Pembatalan
+                {t(
+                  "CardLacakArmada.viewCancellationDetail",
+                  {},
+                  "Lihat Detail Pembatalan"
+                )}
               </button>
             )}
 
             {isSOS && (
               <>
                 <div className="mb-2 flex h-[24px] items-center rounded-md bg-error-400 px-3 text-xs font-semibold text-error-50">
-                  SOS
+                  {t("CardLacakArmada.sosLabel", {}, "SOS")}
                 </div>
                 <Button
                   className="text-xs"
                   onClick={onViewSosClick}
                   variant="link"
                 >
-                  Lihat SOS
+                  {t("CardLacakArmada.viewSOS", {}, "Lihat SOS")}
                 </Button>
               </>
             )}
@@ -275,19 +295,19 @@ function CardLacakArmada({
                 <SimpleDropdown>
                   <SimpleDropdownTrigger asChild>
                     <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
-                      Aksi Lainnya
+                      {t("CardLacakArmada.otherActions", {}, "Aksi Lainnya")}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </button>
                   </SimpleDropdownTrigger>
                   <SimpleDropdownContent align="end">
                     <SimpleDropdownItem onClick={handleOpenUbahArmadaModal}>
-                      Ubah Armada
+                      {t("CardLacakArmada.changeFleet", {}, "Ubah Armada")}
                     </SimpleDropdownItem>
                     <SimpleDropdownItem onClick={handleOpenDriverModal}>
-                      Ubah Driver
+                      {t("CardLacakArmada.changeDriver", {}, "Ubah Driver")}
                     </SimpleDropdownItem>
                     <SimpleDropdownItem onClick={handleCancelFleet}>
-                      Batalkan Armada
+                      {t("CardLacakArmada.cancelFleet", {}, "Batalkan Armada")}
                     </SimpleDropdownItem>
                   </SimpleDropdownContent>
                 </SimpleDropdown>
@@ -346,7 +366,23 @@ function CardLacakArmada({
             <div className="flex items-center gap-3">
               {fleetChangeStatus === "PENDING" && (
                 <p className="text-xs text-neutral-600">
-                  Armada pengganti <br /> sedang dalam proses <br /> pencarian
+                  {t(
+                    "CardLacakArmada.replacementFleetSearching",
+                    {},
+                    "Armada pengganti"
+                  )}{" "}
+                  <br />{" "}
+                  {t(
+                    "CardLacakArmada.replacementFleetSearchingProcess",
+                    {},
+                    "sedang dalam proses"
+                  )}{" "}
+                  <br />{" "}
+                  {t(
+                    "CardLacakArmada.replacementFleetSearchingText",
+                    {},
+                    "pencarian"
+                  )}
                 </p>
               )}
 
@@ -411,7 +447,7 @@ function CardLacakArmada({
           vehicleId={vehicleId}
           vehiclePlate={plateNumber}
           currentDriverId={driverId}
-          title="Pilih Driver"
+          title={t("CardLacakArmada.selectDriverTitle", {}, "Pilih Driver")}
         />
       )}
 
@@ -438,7 +474,7 @@ function CardLacakArmada({
           vehicleId={vehicleId}
           vehiclePlate={plateNumber}
           currentDriverId={driverId}
-          title="Pilih Armada"
+          title={t("CardLacakArmada.selectFleetTitle", {}, "Pilih Armada")}
         />
       )}
     </>

@@ -9,6 +9,11 @@ import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
+
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
+
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
 // Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
@@ -28,6 +33,7 @@ function LacakArmadaHeader({
   hidePositionButton = false,
   showDataNotFound = false,
 }) {
+  const { t } = useTranslation();
   // Handler to clear the search input
   const handleClearSearch = () => {
     onSearchChange?.({ target: { value: "" } });
@@ -41,18 +47,22 @@ function LacakArmadaHeader({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <h2 className="text-lg font-semibold text-neutral-900">
-            Lacak Armada
+            {t("LacakArmadaHeader.title", {}, "Lacak Armada")}
           </h2>
 
           {/* SOS Badge */}
           {isSOS && sosUnit > 0 && (
             <div className="flex items-center gap-2">
               <div className="inline-flex h-6 items-center justify-center rounded-md bg-red-500 px-3 text-xs font-semibold text-white">
-                SOS : {sosUnit} Unit
+                {t(
+                  "LacakArmadaHeader.sosUnit",
+                  { count: sosUnit },
+                  `SOS : ${sosUnit} Unit`
+                )}
               </div>
               {sosUnit > 1 && (
                 <a href="#" className="text-sm font-medium text-blue-600">
-                  Lihat SOS
+                  {t("LacakArmadaHeader.viewSOS", {}, "Lihat SOS")}
                 </a>
               )}
             </div>
@@ -70,7 +80,11 @@ function LacakArmadaHeader({
                     : "!border-neutral-400 !bg-neutral-200 !text-neutral-700 hover:!bg-neutral-300"
                 }`}
               >
-                Aktif ({activeCount})
+                {t(
+                  "LacakArmadaHeader.activeTab",
+                  { count: activeCount },
+                  `Aktif (${activeCount})`
+                )}
               </TagBubble>
             </div>
             <div
@@ -84,7 +98,11 @@ function LacakArmadaHeader({
                     : "!border-neutral-400 !bg-neutral-200 !text-neutral-700 hover:!bg-neutral-300"
                 }`}
               >
-                Riwayat ({historyCount})
+                {t(
+                  "LacakArmadaHeader.historyTab",
+                  { count: historyCount },
+                  `Riwayat (${historyCount})`
+                )}
               </TagBubble>
             </div>
           </div>
@@ -103,8 +121,16 @@ function LacakArmadaHeader({
               onClick={onDetailStatusClick}
             >
               {activeTab === "aktif"
-                ? "Lihat Posisi Armada"
-                : "Detail Status Armada"}
+                ? t(
+                    "LacakArmadaHeader.viewFleetPosition",
+                    {},
+                    "Lihat Posisi Armada"
+                  )
+                : t(
+                    "LacakArmadaHeader.fleetStatusDetail",
+                    {},
+                    "Detail Status Armada"
+                  )}
             </Button>
           )}
 
@@ -112,7 +138,11 @@ function LacakArmadaHeader({
             <div className="h-8 w-[305px] shrink-0">
               <Input
                 type="text"
-                placeholder="Cari No. Polisi / Nama Driver"
+                placeholder={t(
+                  "LacakArmadaHeader.searchPlaceholder",
+                  {},
+                  "Cari No. Polisi / Nama Driver"
+                )}
                 value={searchValue}
                 onChange={onSearchChange}
                 icon={{
@@ -145,7 +175,11 @@ function LacakArmadaHeader({
       {showDataNotFound && (
         <DataNotFound
           type="search"
-          title="Keyword Tidak Ditemukan"
+          title={t(
+            "LacakArmadaHeader.keywordNotFound",
+            {},
+            "Keyword Tidak Ditemukan"
+          )}
           className="h-[300px]"
         />
       )}

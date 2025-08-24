@@ -3,12 +3,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
+import { useTranslation } from "@/hooks/use-translation";
 import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 
 import CardLacakArmada from "./components/CardLacakArmada";
 import LacakArmadaHeader from "./components/LacakArmadaHeader";
 
 const LacakArmada = ({ dataOrderDetail }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
 
   // Tentukan tab aktif berdasarkan status order
@@ -155,11 +157,18 @@ const LacakArmada = ({ dataOrderDetail }) => {
                 alt="Empty cart"
               />
               <div className="mt-2 font-semibold text-neutral-600">
-                Belum ada perubahan armada
+                {t(
+                  "LacakArmada.noFleetChanges",
+                  {},
+                  "Belum ada perubahan armada"
+                )}
               </div>
               <div className="mb-3 max-w-full text-center text-xs font-medium text-neutral-600">
-                Perubahan armada maupun armada dibatalkan dan armada selesai
-                akan ditampilkan disini
+                {t(
+                  "LacakArmada.fleetChangesDescription",
+                  {},
+                  "Perubahan armada maupun armada dibatalkan dan armada selesai akan ditampilkan disini"
+                )}
               </div>
             </div>
           )}

@@ -8,6 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
 // --- Dummy Data (tanpa hint untuk overload) ---
@@ -81,6 +82,7 @@ function ArmadaOptionItem({
   recommendationHint,
   isPotentialOverload,
 }) {
+  const { t } = useTranslation();
   // tampilkan kanan hanya jika ada badge
   const showRightInfo = isRecommended || isPotentialOverload;
 
@@ -130,7 +132,7 @@ function ArmadaOptionItem({
             {isRecommended && (
               <>
                 <div className="inline-flex items-center rounded-md bg-success-400 px-3 py-1 text-[12px] font-semibold text-white">
-                  Rekomendasi
+                  {t("ModalUbahArmada.recommendationBadge", {}, "Rekomendasi")}
                 </div>
                 {/* hint hanya untuk rekomendasi */}
                 {recommendationHint && (
@@ -144,7 +146,11 @@ function ArmadaOptionItem({
             {/* Badge Potensi Overload (tanpa hint) */}
             {isPotentialOverload && (
               <div className="inline-flex items-center rounded-md bg-error-50 px-3 py-1 text-[12px] font-semibold text-error-400">
-                Potensi Overload
+                {t(
+                  "ModalUbahArmada.potentialOverloadBadge",
+                  {},
+                  "Potensi Overload"
+                )}
               </div>
             )}
           </div>
@@ -173,6 +179,7 @@ const ModalUbahArmada = ({
   currentDriverId,
   title = "Ubah Armada",
 }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [selectedDriverId, setSelectedDriverId] = useState(
     currentDriverId || null
@@ -194,7 +201,13 @@ const ModalUbahArmada = ({
 
   const handleSave = () => {
     if (selectedDriverId) {
-      toast.success("Berhasil mengubah armada (dummy)");
+      toast.success(
+        t(
+          "ModalUbahArmada.successMessage",
+          {},
+          "Berhasil mengubah armada (dummy)"
+        )
+      );
       onClose?.();
       onSuccess?.(vehicleId, selectedDriverId);
     }
@@ -212,7 +225,11 @@ const ModalUbahArmada = ({
 
           {/* Search */}
           <Search
-            placeholder="Cari Plat / Nama Driver / Tipe Armada"
+            placeholder={t(
+              "ModalUbahArmada.searchPlaceholder",
+              {},
+              "Cari Plat / Nama Driver / Tipe Armada"
+            )}
             onSearch={setSearchValue}
             autoSearch
             debounceTime={300}
@@ -247,10 +264,10 @@ const ModalUbahArmada = ({
           {/* Actions */}
           <div className="mt-4 flex justify-center gap-2">
             <Button variant="muattrans-primary-secondary" onClick={onClose}>
-              Batal
+              {t("ModalUbahArmada.cancelButton", {}, "Batal")}
             </Button>
             <Button variant="muattrans-primary" onClick={handleSave}>
-              Simpan
+              {t("ModalUbahArmada.saveButton", {}, "Simpan")}
             </Button>
           </div>
         </div>
