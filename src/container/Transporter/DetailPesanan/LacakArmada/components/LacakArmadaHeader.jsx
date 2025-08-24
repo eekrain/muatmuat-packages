@@ -13,12 +13,6 @@ import { useTranslation } from "@/hooks/use-translation";
 
 // Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
-// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
-
-// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
-
-// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
-
 function LacakArmadaHeader({
   sosUnit = 0,
   activeCount = 0,
@@ -29,7 +23,6 @@ function LacakArmadaHeader({
   searchValue = "",
   onSearchChange,
   onDetailStatusClick,
-  isSOS = false,
   hidePositionButton = false,
   showDataNotFound = false,
 }) {
@@ -51,16 +44,16 @@ function LacakArmadaHeader({
           </h2>
 
           {/* SOS Badge */}
-          {isSOS && sosUnit > 0 && (
+          {sosUnit > 0 && Number.isInteger(sosUnit) && (
             <div className="flex items-center gap-2">
               <div className="inline-flex h-6 items-center justify-center rounded-md bg-red-500 px-3 text-xs font-semibold text-white">
                 {t(
                   "LacakArmadaHeader.sosUnit",
-                  { count: sosUnit },
+                  { sosUnit: sosUnit },
                   `SOS : ${sosUnit} Unit`
                 )}
               </div>
-              {sosUnit > 1 && (
+              {sosUnit > 0 && (
                 <a href="#" className="text-sm font-medium text-blue-600">
                   {t("LacakArmadaHeader.viewSOS", {}, "Lihat SOS")}
                 </a>
@@ -82,7 +75,7 @@ function LacakArmadaHeader({
               >
                 {t(
                   "LacakArmadaHeader.activeTab",
-                  { count: activeCount },
+                  { activeCount: activeCount },
                   `Aktif (${activeCount})`
                 )}
               </TagBubble>
@@ -100,7 +93,7 @@ function LacakArmadaHeader({
               >
                 {t(
                   "LacakArmadaHeader.historyTab",
-                  { count: historyCount },
+                  { historyCount: historyCount },
                   `Riwayat (${historyCount})`
                 )}
               </TagBubble>

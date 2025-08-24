@@ -112,6 +112,9 @@ function CardLacakArmada({
       case "COMPLETED":
         icon = "/icons/stepper/stepper-completed.svg";
         break;
+      case "FLEET_REPLACEMENT_PROCESS":
+        icon = "/icons/stepper/stepper-fleet-change.svg";
+        break;
       case "MENUJU_KE_LOKASI_BONGKAR":
         icon = "/icons/stepper/stepper-box-opened.svg";
         break;
