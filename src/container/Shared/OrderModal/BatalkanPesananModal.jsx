@@ -10,6 +10,7 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const BatalkanPesananModal = ({
@@ -19,6 +20,7 @@ const BatalkanPesananModal = ({
   onOpenAlasanModal,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -54,7 +56,9 @@ const BatalkanPesananModal = ({
         type="muattrans"
       >
         <ModalHeader size="small" />
-        <ModalTitle className="sr-only">Batalkan Pesanan</ModalTitle>
+        <ModalTitle className="sr-only">
+          {t("BatalkanPesananModal.title", {}, "Batalkan Pesanan")}
+        </ModalTitle>
 
         {/* Modal Content */}
         <div
@@ -70,7 +74,7 @@ const BatalkanPesananModal = ({
               "w-[338px] max-w-[510px] flex-none self-stretch"
             )}
           >
-            Batalkan Pesanan
+            {t("BatalkanPesananModal.title", {}, "Batalkan Pesanan")}
           </h2>
 
           {/* Description */}
@@ -80,7 +84,11 @@ const BatalkanPesananModal = ({
               "w-[338px] max-w-[510px] flex-none self-stretch"
             )}
           >
-            Apakah kamu yakin ingin membatalkan pesanan{" "}
+            {t(
+              "BatalkanPesananModal.confirmMessagePrefix",
+              {},
+              "Apakah kamu yakin ingin membatalkan pesanan"
+            )}{" "}
             <span className="font-bold">
               {order?.orderCode || order?.orderNumber || "MT25A010A"}
             </span>
@@ -107,14 +115,18 @@ const BatalkanPesananModal = ({
               className="gap-2"
             >
               <span className="text-xs font-medium text-black">
-                Saya menyetujui{" "}
+                {t("BatalkanPesananModal.agreeToTerms", {}, "Saya menyetujui")}{" "}
                 <a
                   href="/syarat-ketentuan"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-primary-700 hover:font-semibold hover:text-primary-800"
                 >
-                  Syarat dan Ketentuan Muatrans
+                  {t(
+                    "BatalkanPesananModal.termsAndConditions",
+                    {},
+                    "Syarat dan Ketentuan Muatrans"
+                  )}
                 </a>
               </span>
             </Checkbox>
@@ -125,7 +137,11 @@ const BatalkanPesananModal = ({
                 className="mt-2 text-center text-xs font-medium leading-tight"
                 style={{ color: "#EE4343" }}
               >
-                Setujui syarat dan ketentuan untuk membatalkan pesanan
+                {t(
+                  "BatalkanPesananModal.termsError",
+                  {},
+                  "Setujui syarat dan ketentuan untuk membatalkan pesanan"
+                )}
               </p>
             )}
           </div>
@@ -141,7 +157,7 @@ const BatalkanPesananModal = ({
                 "w-[102px] flex-none"
               )}
             >
-              Kembali
+              {t("BatalkanPesananModal.back", {}, "Kembali")}
             </Button>
             <Button
               variant="muattrans-primary-secondary"
@@ -153,7 +169,7 @@ const BatalkanPesananModal = ({
                 "w-[127px] flex-none"
               )}
             >
-              Ya, Batalkan
+              {t("BatalkanPesananModal.yesCancel", {}, "Ya, Batalkan")}
             </Button>
           </div>
         </div>

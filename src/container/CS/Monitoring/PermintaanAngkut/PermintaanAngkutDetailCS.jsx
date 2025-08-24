@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
@@ -10,6 +11,7 @@ import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-
 import DetailContent from "./components/DetailContent";
 
 const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
+  const { t } = useTranslation();
   // Use the CS mock API for all data
   const { data, isLoading } = useGetTransportRequestList();
   // Find the request by id, fallback to first
@@ -30,14 +32,24 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
   // Accept handler - CS assigns transporter instead of accepting directly
   const handleAssignTransporter = () => {
     toast.success(
-      `Transporter berhasil di-assign untuk permintaan ${displayData?.orderCode}`
+      t(
+        "PermintaanAngkutDetailCS.toastSuccessAssignTransporter",
+        { orderCode: displayData?.orderCode },
+        `Transporter berhasil di-assign untuk permintaan ${displayData?.orderCode}`
+      )
     );
     onBack();
   };
 
   // Understand handler
   const handleUnderstand = () => {
-    toast.success(`Permintaan ${displayData.orderCode} berhasil ditutup`);
+    toast.success(
+      t(
+        "PermintaanAngkutDetailCS.toastSuccessRequestClosed",
+        { orderCode: displayData.orderCode },
+        `Permintaan ${displayData.orderCode} berhasil ditutup`
+      )
+    );
     if (onUnderstand) onUnderstand(displayData.id);
     onBack();
   };
@@ -91,7 +103,11 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
             displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
           )}
         >
-          Detail Permintaan Jasa Angkut
+          {t(
+            "PermintaanAngkutDetailCS.titleDetailPermintaanJasaAngkut",
+            {},
+            "Detail Permintaan Jasa Angkut"
+          )}
         </h1>
         <button
           onClick={onBack}
@@ -125,7 +141,11 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
             <div className="flex w-full flex-col gap-3">
               <div className="flex w-full rounded-xl bg-error-50 p-2">
                 <span className="text-xs font-semibold text-error-400">
-                  Permintaan sudah diambil transporter lain
+                  {t(
+                    "PermintaanAngkutDetailCS.messageRequestTaken",
+                    {},
+                    "Permintaan sudah diambil transporter lain"
+                  )}
                 </span>
               </div>
               <Button
@@ -133,7 +153,7 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
                 className="w-full py-3 text-[14px] font-semibold"
                 onClick={handleUnderstand}
               >
-                Mengerti
+                {t("PermintaanAngkutDetailCS.buttonUnderstand", {}, "Mengerti")}
                 <NotificationDot
                   position="absolute"
                   positionClasses="right-[1px] top-[-1px]"
@@ -150,14 +170,18 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
                 className="flex-1 py-2 text-[14px] font-semibold"
                 onClick={onBack}
               >
-                Kembali
+                {t("PermintaanAngkutDetailCS.buttonBack", {}, "Kembali")}
               </Button>
               <Button
                 variant="muattrans-primary"
                 className="flex-1 py-2 text-[14px] font-semibold"
                 onClick={handleAssignTransporter}
               >
-                Assign Transporter
+                {t(
+                  "PermintaanAngkutDetailCS.buttonAssignTransporter",
+                  {},
+                  "Assign Transporter"
+                )}
               </Button>
             </>
           )}

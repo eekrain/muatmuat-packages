@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import Button from "../Button/Button";
@@ -55,6 +56,7 @@ const MuatBongkarStepperWithModal = ({
   },
   maxVisibleLocations = 2, // Show only first and last location by default
 }) => {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Build locations array from pickupLocations and dropoffLocations
@@ -114,14 +116,22 @@ const MuatBongkarStepperWithModal = ({
           >
             <ModalTrigger asChild>
               <Button variant="link" className="w-[110px] text-xs">
-                Lihat Lokasi Lainnya
+                {t(
+                  "MuatBongkarStepperWithModal.viewOtherLocations",
+                  {},
+                  "Lihat Lokasi Lainnya"
+                )}
               </Button>
             </ModalTrigger>
 
             <ModalContent type="muatmuat" className="w-[600px] max-w-[90vw]">
               <div className="p-4">
                 <ModalTitle className="mb-4 text-center text-base font-bold">
-                  Lokasi Muat & Bongkar
+                  {t(
+                    "MuatBongkarStepperWithModal.modalTitle",
+                    {},
+                    "Lokasi Muat & Bongkar"
+                  )}
                 </ModalTitle>
 
                 <div className="relative rounded-xl border border-neutral-400 bg-white px-4 pt-4">
@@ -130,7 +140,11 @@ const MuatBongkarStepperWithModal = ({
                     {pickupLocations.length > 0 && (
                       <div className="relative flex flex-col gap-3">
                         <div className="ml-7 text-xs font-medium text-neutral-600">
-                          Lokasi Muat
+                          {t(
+                            "MuatBongkarStepperWithModal.pickupLocation",
+                            {},
+                            "Lokasi Muat"
+                          )}
                         </div>
                         <div className="relative flex flex-col gap-3">
                           {pickupLocations.map((pickup, index) => (
@@ -165,7 +179,11 @@ const MuatBongkarStepperWithModal = ({
                     {dropoffLocations.length > 0 && (
                       <div className="relative flex flex-col gap-3">
                         <div className="ml-7 text-xs font-medium text-neutral-600">
-                          Lokasi Bongkar
+                          {t(
+                            "MuatBongkarStepperWithModal.dropoffLocation",
+                            {},
+                            "Lokasi Bongkar"
+                          )}
                         </div>
                         <div className="relative flex flex-col gap-3">
                           {dropoffLocations.map((dropoff, index) => (

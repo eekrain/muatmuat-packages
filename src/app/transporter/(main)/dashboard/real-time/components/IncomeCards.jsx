@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -113,11 +112,7 @@ const IncomeCards = ({ data }) => {
               </h4>
               <InfoTooltip
                 side={item.side}
-                render={t(
-                  `IncomeCards.tooltip${item.title.replace(/\s+/g, "")}`,
-                  {},
-                  `<p class="w-[312px] text-sm">${item.tooltip}</p>`
-                )}
+                render={<p class="w-[312px] text-sm">${item.tooltip}</p>}
               />
             </div>
             <p className="mt-2 text-base font-bold">

@@ -189,7 +189,7 @@ function CardLacakArmada({
   const handleConfirmAlasanPembatalan = async (data) => {
     // Logika untuk mengirim data pembatalan ke API ada di sini
     console.log("Submitting fleet cancellation with reason:", data);
-    toast.success("Permintaan pembatalan armada berhasil dikirim.");
+    toast.success(`Berhasil membatalkan armada ${plateNumber || "Plat Nomor"}`);
     // Tutup modal setelah konfirmasi
     handleCloseAlasanPembatalanModal();
     // Anda bisa menambahkan logic refresh data di sini jika perlu
@@ -411,7 +411,7 @@ function CardLacakArmada({
           vehicleId={vehicleId}
           vehiclePlate={plateNumber}
           currentDriverId={driverId}
-          title="Ubah Driver"
+          title="Pilih Driver"
         />
       )}
 
@@ -438,7 +438,7 @@ function CardLacakArmada({
           vehicleId={vehicleId}
           vehiclePlate={plateNumber}
           currentDriverId={driverId}
-          title="Ubah Armada"
+          title="Pilih Armada"
         />
       )}
     </>
