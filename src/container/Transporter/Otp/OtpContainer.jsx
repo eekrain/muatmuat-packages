@@ -42,7 +42,7 @@ const OTP_TYPE_CONFIG = {
     buttonSize: "w-[125px] text-sm md:h-8",
     textColor: "text-white",
     labelColor: "text-white",
-    otpInputClass: "!bg-white !text-black !border-white",
+    otpInputClass: "!bg-white !text-black",
     activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
     resendButtonClass:
       "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
@@ -84,7 +84,7 @@ const OTP_TYPE_CONFIG = {
     buttonSize: "w-[125px] text-sm md:h-8",
     textColor: "text-white",
     labelColor: "text-white",
-    otpInputClass: "!bg-white !text-black !border-white",
+    otpInputClass: "!bg-white !text-black",
     activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
     resendButtonClass:
       "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
@@ -102,7 +102,7 @@ const OTP_TYPE_CONFIG = {
     buttonSize: "w-[125px] text-sm md:h-8",
     textColor: "text-white",
     labelColor: "text-white",
-    otpInputClass: "!bg-white !text-black !border-white",
+    otpInputClass: "!bg-white !text-black",
     activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
     resendButtonClass:
       "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
@@ -131,12 +131,19 @@ const OtpContainer = ({
   const [otp, setOtp] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [isChangeNumberModalOpen, setIsChangeNumberModalOpen] = useState(false);
+  const [isChangeEmailModalOpen, setIsChangeEmailModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isSuccessEmailModalOpen, setIsSuccessEmailModalOpen] = useState(false);
   const [notification, setNotification] = useState(null);
 
   const formValues = useRequestOtpStore();
-  const { verifyOtp, resendOtp, sendRequestOtp, updateWhatsAppNumber } =
-    useRequestOtpActions();
+  const {
+    verifyOtp,
+    resendOtp,
+    sendRequestOtp,
+    updateWhatsAppNumber,
+    updateEmailAddress,
+  } = useRequestOtpActions();
 
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -175,41 +182,26 @@ const OtpContainer = ({
   }, [formValues, _dontRedirect]);
 
   const handleRequestOtp = (formValues) => {
-    if (!formValues?.token || !formValues?.target || !formValues?.otpType) {
+    if (!formValues?.token || !formValues?.target) {
       return;
     }
+    console.log(formValues, "otp");
 
     if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
-      resendOtp(formValues.token, formValues.target, formValues.otpType).catch(
-        (error) => {
-          toast.error("Gagal meminta request OTP");
-        }
-      );
+      resendOtp().catch((error) => {
+        toast.error("Gagal meminta request OTP");
+      });
     }
   };
 
   const hasFetchedOtp = useRef(false);
-  const lastFormValuesRef = useRef(null);
 
   useShallowCompareEffect(() => {
     if (!isReady) return;
-    if (!formValues?.token || !formValues?.target || !formValues?.otpType)
-      return;
-
-    // Reset hasFetchedOtp if key form values changed
-    const currentKey = `${formValues.token}-${formValues.target}-${formValues.otpType}`;
-    if (lastFormValuesRef.current !== currentKey) {
-      hasFetchedOtp.current = false;
-      lastFormValuesRef.current = currentKey;
-    }
-
     if (hasFetchedOtp.current) return;
 
-    // Only request OTP if it's expired or doesn't exist
-    if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
-      handleRequestOtp(formValues);
-      hasFetchedOtp.current = true;
-    }
+    handleRequestOtp(formValues);
+    hasFetchedOtp.current = true;
   }, [isReady, formValues?.token, formValues?.target, formValues?.otpType]);
 
   const renderNotification = () => {
@@ -298,10 +290,12 @@ const OtpContainer = ({
             )}
           >
             {type === "change-email"
-              ? searchParams.get("email") || "0872517235"
+              ? formValues?.target || "0872517235"
               : type === "change-email2"
-                ? searchParams.get("email") || "user@example.com"
-                : number || "0893435352125"}
+                ? formValues?.newTarget || "user@example.com"
+                : type === "change-number"
+                  ? formValues?.newTarget || "user@example.com"
+                  : number || formValues?.target}
           </div>
           {type !== "forgot-password" &&
             type !== "whatsapp" &&
@@ -309,7 +303,11 @@ const OtpContainer = ({
               <Button
                 variant="muatparts-primary"
                 name="change"
-                onClick={() => setIsChangeNumberModalOpen(true)}
+                onClick={() =>
+                  type === "change-email2"
+                    ? setIsChangeEmailModalOpen(true)
+                    : setIsChangeNumberModalOpen(true)
+                }
                 className={cn(
                   "ml-3 flex w-[50px] items-center py-0 text-xxs md:h-5",
                   "!bg-[#EBEBEB] !text-[#868686]",
@@ -335,18 +333,16 @@ const OtpContainer = ({
           router.push("/profil?hasVerified=true");
           return;
         }
-        console.log(type);
         // If the type is 'change-email' or 'change-email2', redirect to profile to open the email modal.
         if (type === "change-email") {
           router.push("/profil?hasVerifiedEmail=true");
           return;
         }
         if (type === "change-email2") {
-          router.push("/profil");
+          setIsSuccessEmailModalOpen(true);
           return;
         }
         if (type === "change-number") {
-          updateWhatsAppNumber();
           setIsSuccessModalOpen(true);
         } else {
           setIsVerified(true);
@@ -354,34 +350,13 @@ const OtpContainer = ({
         }
       };
 
-      // Mock OTP "654321" untuk testing atau gunakan logic verifikasi asli
-
       verifyOtp(otp)
         .then(handleSuccess)
         .catch((error) => {
-          console.log(error);
-          if (
-            error?.code === "EXPIRED_OTP" ||
-            error?.message?.includes("expired")
-          ) {
-            setNotification({
-              status: "error",
-              message: t(
-                "OtpContainer.messageOtpExpired",
-                {},
-                "OTP yang kamu masukan telah expired"
-              ),
-            });
-          } else {
-            setNotification({
-              status: "error",
-              message: t(
-                "OtpContainer.messageOtpIncorrect",
-                {},
-                "OTP yang kamu masukan salah"
-              ),
-            });
-          }
+          setNotification({
+            status: "error",
+            message: error?.message,
+          });
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -479,31 +454,56 @@ const OtpContainer = ({
                       value={otp}
                       onChange={(value) => setOtp(value)}
                       pattern={REGEXP_ONLY_DIGITS}
+                      aria-invalid={notification?.status === "error"}
                     >
                       <InputOTPGroup>
                         <InputOTPSlot
                           index={0}
-                          className={config.otpInputClass}
+                          className={cn(
+                            notification?.status === "error" &&
+                              "!border-red-500",
+                            "focus:!border-blue-500 focus:!ring-blue-500/20"
+                          )}
                         />
                         <InputOTPSlot
                           index={1}
-                          className={config.otpInputClass}
+                          className={cn(
+                            notification?.status === "error" &&
+                              "!border-red-500",
+                            "focus:!border-blue-500 focus:!ring-blue-500/20"
+                          )}
                         />
                         <InputOTPSlot
                           index={2}
-                          className={config.otpInputClass}
+                          className={cn(
+                            notification?.status === "error" &&
+                              "!border-red-500",
+                            "focus:!border-blue-500 focus:!ring-blue-500/20"
+                          )}
                         />
                         <InputOTPSlot
                           index={3}
-                          className={config.otpInputClass}
+                          className={cn(
+                            notification?.status === "error" &&
+                              "!border-red-500",
+                            "focus:!border-blue-500 focus:!ring-blue-500/20"
+                          )}
                         />
                         <InputOTPSlot
                           index={4}
-                          className={config.otpInputClass}
+                          className={cn(
+                            notification?.status === "error" &&
+                              "!border-red-500",
+                            "focus:!border-blue-500 focus:!ring-blue-500/20"
+                          )}
                         />
                         <InputOTPSlot
                           index={5}
-                          className={config.otpInputClass}
+                          className={cn(
+                            notification?.status === "error" &&
+                              "!border-red-500",
+                            "focus:!border-blue-500 focus:!ring-blue-500/20"
+                          )}
                         />
                       </InputOTPGroup>
                     </InputOTP>
@@ -601,9 +601,9 @@ const OtpContainer = ({
 
       {type === "change-email2" ? (
         <ChangeEmailModal
-          isOpen={isChangeNumberModalOpen}
+          isOpen={isChangeEmailModalOpen}
           size="big"
-          setIsOpen={setIsChangeNumberModalOpen}
+          setIsOpen={setIsChangeEmailModalOpen}
           title={{
             text: t("OtpContainer.titleChangeEmail", {}, "Ubah Email"),
             className: "text-center",
@@ -612,16 +612,32 @@ const OtpContainer = ({
           confirm={{
             text: "Ubah",
             onClick: (_newEmail) => {
-              setIsChangeNumberModalOpen(false);
-              setNotification({
-                status: "success",
-                message: t(
-                  "OtpContainer.messageChangeEmailSuccess",
-                  {},
-                  "Berhasil mengubah Email Kamu"
-                ),
-              });
-              handleRequestOtp(formValues, true);
+              sendRequestOtp(
+                formValues.target,
+                "EMAIL",
+                "CHANGE_EMAIL",
+                "VERIFY_NEW",
+                _newEmail
+              )
+                .then((response) => {
+                  console.log(response, "tes");
+                  setIsChangeEmailModalOpen(false);
+                  setNotification({
+                    status: "success",
+                    message: t(
+                      "OtpContainer.messageChangeEmailSuccess",
+                      {},
+                      "Berhasil mengubah Email Kamu"
+                    ),
+                  });
+                })
+                .catch((error) => {
+                  console.error("Error sending OTP:", error);
+                  setNotification({
+                    status: "error",
+                    message: error.message || "Gagal mengirim OTP",
+                  });
+                });
             },
           }}
         />
@@ -642,29 +658,62 @@ const OtpContainer = ({
           confirm={{
             text: "Ubah",
             onClick: (_newWhatsappNumber) => {
-              const response = sendRequestOtp(
-                _newWhatsappNumber,
-                "WHATSAPP",
-                "VERIFY_PHONE",
-                "VERIFY_OLD"
-              );
-              if (
-                response?.data?.Message?.Code === 200 ||
-                response?.data?.Message?.Code === 201 ||
-                response?.data?.Message?.Code === "200"
-              ) {
-                setIsChangeNumberModalOpen(false);
-                setNotification({
-                  status: "success",
-                  message:
-                    type === "change-number"
-                      ? "Berhasil mengubah No. Whatsapp"
-                      : t(
-                          "OtpContainer.messageChangeWhatsappSuccess",
-                          {},
-                          "Berhasil mengubah No. Whatsapp Kamu"
-                        ),
-                });
+              // Check if purpose is EMAIL_VERIFICATION to call updateWhatsAppNumber directly
+              if (formValues.purpose === "EMAIL_VERIFICATION") {
+                updateWhatsAppNumber(_newWhatsappNumber)
+                  .then((response) => {
+                    console.log(response, "tes");
+                    setIsChangeNumberModalOpen(false);
+                    setNotification({
+                      status: "success",
+                      message:
+                        type === "change-number"
+                          ? "Berhasil mengubah No. Whatsapp"
+                          : t(
+                              "OtpContainer.messageChangeWhatsappSuccess",
+                              {},
+                              "Berhasil mengubah No. Whatsapp Kamu"
+                            ),
+                    });
+                    handleRequestOtp(formValues);
+                  })
+                  .catch((error) => {
+                    console.error("Error updating WhatsApp number:", error);
+                    setNotification({
+                      status: "error",
+                      message: error.message || "Gagal mengubah nomor WhatsApp",
+                    });
+                  });
+              } else {
+                sendRequestOtp(
+                  formValues.target,
+                  "WHATSAPP",
+                  "CHANGE_PHONE",
+                  "VERIFY_NEW",
+                  _newWhatsappNumber
+                )
+                  .then((response) => {
+                    console.log(response, "tes");
+                    setIsChangeNumberModalOpen(false);
+                    setNotification({
+                      status: "success",
+                      message:
+                        type === "change-number"
+                          ? "Berhasil mengubah No. Whatsapp"
+                          : t(
+                              "OtpContainer.messageChangeWhatsappSuccess",
+                              {},
+                              "Berhasil mengubah No. Whatsapp Kamu"
+                            ),
+                    });
+                  })
+                  .catch((error) => {
+                    console.error("Error sending OTP:", error);
+                    setNotification({
+                      status: "error",
+                      message: error.message || "Gagal mengirim OTP",
+                    });
+                  });
               }
             },
           }}
@@ -724,7 +773,74 @@ const OtpContainer = ({
               className="h-8 w-28"
               onClick={() => {
                 setIsSuccessModalOpen(false);
-                onVerifySuccess();
+                updateWhatsAppNumber().then(() => {
+                  router.push("/login");
+                });
+              }}
+              type="button"
+            >
+              {t("OtpContainer.buttonOk", {}, "OK")}
+            </Button>
+          </div>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        closeOnOutsideClick={false}
+        open={isSuccessEmailModalOpen}
+        onOpenChange={setIsSuccessEmailModalOpen}
+        withCloseButton={false}
+      >
+        <ModalContent className="h-[413px] w-[385px]" type="muattrans">
+          <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
+            <div>
+              <img
+                alt="svg header modal kiri"
+                src="/img/header-modal/header-kiri.svg"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="my-auto">
+              <img
+                alt="logo muatmuat header coklat"
+                src="/img/header-modal/muatmuat-brown.svg"
+              />
+            </div>
+            <div>
+              <img
+                alt="svg header modal kanan "
+                src="/img/header-modal/header-kanan.svg"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+            <div className="flex flex-col items-center gap-y-4">
+              <div>
+                <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                  Selamat!
+                </h1>
+                <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                  Email Berhasil Diubah
+                </h1>
+              </div>
+              <img
+                alt=""
+                src="/img/otp-transporter/success.png"
+                className="h-[110px] w-[110px] object-cover"
+              />
+              <div className="px-4 text-center text-sm font-medium leading-[16.8px] text-neutral-900">
+                Kamu sekarang bisa masuk menggunakan email baru
+              </div>
+            </div>
+            <Button
+              variant="muattrans-primary"
+              className="h-8 w-28"
+              onClick={() => {
+                setIsSuccessEmailModalOpen(false);
+                updateEmailAddress().then(() => {
+                  router.push("/login");
+                });
               }}
               type="button"
             >

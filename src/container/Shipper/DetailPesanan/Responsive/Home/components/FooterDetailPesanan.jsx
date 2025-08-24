@@ -11,6 +11,7 @@ import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpes
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { idrFormat } from "@/lib/utils/formatters";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import { BottomsheetAlasanPembatalan } from "./Popup/BottomsheetAlasanPembatalan";
 import CancelUpdateOrderModal from "./Popup/CancelUpdateOrderModal";
@@ -28,11 +29,21 @@ export const FooterDetailPesanan = ({
   dataRingkasanPesanan,
   isConfirmWaiting,
   onConfirmWaitingChange,
+  paymentMethods,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
   const navigation = useResponsiveNavigation();
   const router = useRouter();
+  const paymentMethodId = useSewaArmadaStore(
+    (state) => state.formValues.paymentMethodId
+  );
+
+  // Find the selected payment method from the paymentMethods data
+  const selectedPaymentMethod = paymentMethods
+    ?.flatMap((category) => category.methods)
+    .find((method) => method.id === paymentMethodId);
+
   const { trigger: confirmWaiting } = useSWRMutateHook(
     `v1/orders/${params.orderId}/waiting-confirmation`
   );
@@ -98,7 +109,7 @@ export const FooterDetailPesanan = ({
       ) {
         // Gunakan repayment-process untuk waiting payment 3
         const result = await repaymentProcess({
-          paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+          paymentMethodId: selectedPaymentMethod.id,
           repaymentType: "CHANGE",
         });
         console.log("Repayment process berhasil:", result);
@@ -235,7 +246,7 @@ export const FooterDetailPesanan = ({
             <Button
               variant={variant}
               className="h-10 w-full p-0"
-              onClick={() => alert("Simpan")}
+              onClick={handleLanjutPembayaran}
               type="button"
             >
               {t(

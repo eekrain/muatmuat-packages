@@ -38,7 +38,7 @@ export const RingkasanPembayaranPerubahanPesanan = ({
 
     try {
       const result = await paymentProcess({
-        paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+        paymentMethodId: selectedPaymentMethodId,
         repaymentType: "CHANGE",
       });
       console.log("Pembayaran berhasil:", result);

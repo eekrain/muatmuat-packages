@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { formatPhoneNumber } from "@/lib/utils/phoneFormatter";
 
@@ -53,6 +54,7 @@ const HubungiModal = ({
   transporterContacts = [],
   driverContacts = [],
 }) => {
+  const { t } = useTranslation();
   const [modalView, setModalView] = useState("initial"); // 'initial', 'options', 'details'
   const [showCopySuccess, setShowCopySuccess] = useState(false);
   const [selectedContactType, setSelectedContactType] = useState(null); // 'transporter' or 'driver'
@@ -85,7 +87,9 @@ const HubungiModal = ({
           setTimeout(() => setShowCopySuccess(false), 3000);
         })
         .catch(() => {
-          toast.error("Gagal menyalin nomor telepon");
+          toast.error(
+            t("HubungiModal.copyError", {}, "Gagal menyalin nomor telepon")
+          );
         });
     }
   };
@@ -114,11 +118,17 @@ const HubungiModal = ({
       if (contacts === generalContacts) {
         // Convert generalContacts object to array format for rendering
         data = [
-          { ...contacts.pic[0], label: "PIC 1" },
-          { ...contacts.pic[1], label: "PIC 2" },
-          { ...contacts.pic[2], label: "PIC 3" },
-          { ...contacts.company, label: "No. Telepon Perusahaan" },
-          { ...contacts.emergency, label: "No. Darurat" },
+          { ...contacts.pic[0], label: t("HubungiModal.pic1", {}, "PIC 1") },
+          { ...contacts.pic[1], label: t("HubungiModal.pic2", {}, "PIC 2") },
+          { ...contacts.pic[2], label: t("HubungiModal.pic3", {}, "PIC 3") },
+          {
+            ...contacts.company,
+            label: t("HubungiModal.companyPhone", {}, "No. Telepon Perusahaan"),
+          },
+          {
+            ...contacts.emergency,
+            label: t("HubungiModal.emergencyPhone", {}, "No. Darurat"),
+          },
         ];
       } else {
         data = contacts;
@@ -147,7 +157,11 @@ const HubungiModal = ({
           <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white pb-9">
             {/* --- Modal Title --- */}
             <div className="w-full pt-9 text-center text-sm font-bold leading-[17px] text-black">
-              No Telepon/WhatsApp Yang Bisa Dihubungi
+              {t(
+                "HubungiModal.contactTitle",
+                {},
+                "No Telepon/WhatsApp Yang Bisa Dihubungi"
+              )}
             </div>
 
             {/* --- Contacts List --- */}
@@ -165,11 +179,11 @@ const HubungiModal = ({
                     {contact.label !== "No. Telepon Perusahaan" && (
                       <>
                         <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
-                          {contact.name || "-"}
+                          {contact.name || t("HubungiModal.emptyName", {}, "-")}
                         </div>
 
                         <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
-                          {contact.role || "-"}
+                          {contact.role || t("HubungiModal.emptyRole", {}, "-")}
                         </div>
                       </>
                     )}
@@ -183,7 +197,8 @@ const HubungiModal = ({
                             : "text-blue-600"
                         }`}
                       >
-                        {formatPhoneNumber(contact.phone) || "-"}
+                        {formatPhoneNumber(contact.phone) ||
+                          t("HubungiModal.emptyPhone", {}, "-")}
                       </div>
 
                       {contact.phone && contact.phone !== "-" && (
@@ -192,7 +207,7 @@ const HubungiModal = ({
                           className="absolute right-0 flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
                         >
                           <span className="text-xs font-medium leading-[14px] text-blue-600">
-                            Salin
+                            {t("HubungiModal.copy", {}, "Salin")}
                           </span>
                         </button>
                       )}
@@ -204,9 +219,13 @@ const HubungiModal = ({
 
             {/* --- Copy Success Notification --- */}
             {showCopySuccess && (
-              <div className="flex flex-row items-center justify-center gap-1 rounded-md bg-blue-50 px-2 py-1">
+              <div className="flex flex-row items-center justify-center gap-1 rounded-md bg-[#E2F2FF] px-2 py-1">
                 <span className="text-xs font-semibold leading-tight text-blue-600">
-                  No. Telepon/Whatsapp berhasil disalin
+                  {t(
+                    "HubungiModal.copySuccess",
+                    {},
+                    "No. Telepon/Whatsapp berhasil disalin"
+                  )}
                 </span>
               </div>
             )}
@@ -234,10 +253,18 @@ const HubungiModal = ({
           <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white px-6 py-9">
             <div className="flex flex-col items-center gap-2">
               <p className="text-center text-sm font-bold text-[#1B1B1B]">
-                Anda Ingin Menghubungi Via
+                {t(
+                  "HubungiModal.contactViaTitle",
+                  {},
+                  "Anda Ingin Menghubungi Via"
+                )}
               </p>
               <p className="text-center text-xs font-semibold text-gray-500">
-                Anda dapat memilih menghubungi melalui pilihan berikut
+                {t(
+                  "HubungiModal.contactViaDesc",
+                  {},
+                  "Anda dapat memilih menghubungi melalui pilihan berikut"
+                )}
               </p>
             </div>
             <div className="flex flex-col items-start gap-4">
@@ -256,10 +283,14 @@ const HubungiModal = ({
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <div className="text-sm font-semibold leading-[17px] text-blue-600">
-                    No. Telepon / WhatsApp
+                    {t("HubungiModal.phoneOrWA", {}, "No. Telepon / WhatsApp")}
                   </div>
                   <div className="text-xs font-medium leading-[14px] text-gray-500">
-                    Anda langsung terhubung dengan Whatsapp
+                    {t(
+                      "HubungiModal.phoneOrWADesc",
+                      {},
+                      "Anda langsung terhubung dengan Whatsapp"
+                    )}
                   </div>
                 </div>
               </button>
@@ -286,7 +317,9 @@ const HubungiModal = ({
         >
           <ModalHeader className="w-full" />
           <div className="flex w-full flex-col items-center gap-6 bg-white px-6 pb-9 pt-9">
-            <h3 className="text-sm font-bold text-[#1B1B1B]">Hubungi</h3>
+            <h3 className="text-sm font-bold text-[#1B1B1B]">
+              {t("HubungiModal.title", {}, "Hubungi")}
+            </h3>
             <div className="flex w-full flex-col items-stretch gap-4">
               <button
                 onClick={handleContactTransporter}
@@ -301,7 +334,11 @@ const HubungiModal = ({
                   />
                 </div>
                 <span className="text-xs font-bold text-neutral-900">
-                  Hubungi Transporter
+                  {t(
+                    "HubungiModal.contactTransporter",
+                    {},
+                    "Hubungi Transporter"
+                  )}
                 </span>
               </button>
 
@@ -318,7 +355,7 @@ const HubungiModal = ({
                   />
                 </div>
                 <span className="text-xs font-bold text-neutral-900">
-                  Hubungi Driver
+                  {t("HubungiModal.contactDriver", {}, "Hubungi Driver")}
                 </span>
               </button>
             </div>
