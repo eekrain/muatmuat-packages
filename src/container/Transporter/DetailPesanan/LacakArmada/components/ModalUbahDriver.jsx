@@ -87,9 +87,7 @@ const ModalUbahDriver = ({
         await updateVehicleDriver(vehicleId, selectedDriverId);
 
         // Success handling
-        toast.success(
-          t("ModalUbahDriver.successMessage", {}, "Berhasil mengubah driver")
-        );
+        // toast.success("Berhasil mengubah driver");
         setShowConfirmation(false);
         resetState();
         onClose();

@@ -1,7 +1,7 @@
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
@@ -41,6 +41,7 @@ function CardLacakArmada({
   replacementFleet = null, // Add replacement fleet prop
   replacementDriver = null, // Add replacement driver prop
   fleetChangeStatus = null, // Add fleet change status prop
+  onNavigateToRiwayat,
 }) {
   const { t } = useTranslation();
   const { isMobile } = useDevice();
@@ -60,6 +61,7 @@ function CardLacakArmada({
 
   const [isAlasanPembatalanModalOpen, setIsAlasanPembatalanModalOpen] =
     useState(false);
+  const [isAksiLainnyaOpen, setIsAksiLainnyaOpen] = useState(false);
 
   // Fungsi untuk menentukan apakah status adalah pembatalan
   const isCancelledStatus = (s) => {
@@ -174,9 +176,14 @@ function CardLacakArmada({
   const handleCloseDriverModal = () => setIsDriverModalOpen(false);
   const handleDriverUpdateSuccess = (updatedVehicleId, newDriverId) => {
     toast.success(
-      t("CardLacakArmada.driverChangeSuccess", {}, "Driver berhasil diubah!")
+      t(
+        "CardLacakArmada.driverChangeSuccess",
+        {},
+        "Perubahan driver berhasil disimpan"
+      )
     );
     handleCloseDriverModal();
+    onNavigateToRiwayat?.();
   };
 
   const handleCancelFleet = () => setIsBatalkanArmadaPopupOpen(true);
@@ -215,10 +222,11 @@ function CardLacakArmada({
       t(
         "CardLacakArmada.fleetChangeRequestSuccess",
         {},
-        "Permintaan ubah armada tersimpan (dummy)."
+        "Perubahan armada berhasil disimpan"
       )
     );
     handleCloseUbahArmadaModal();
+    onNavigateToRiwayat?.();
     // kalau perlu refresh data parent, panggil di sini
   };
 
@@ -292,11 +300,24 @@ function CardLacakArmada({
               !status?.startsWith("CANCELLED_BY_SHIPPER") &&
               !status?.startsWith("CANCELLED_BY_SYSTEM") &&
               !status?.startsWith("WAITING_CONFIRMATION_SHIPPER") && (
-                <SimpleDropdown>
+                <SimpleDropdown
+                  open={isAksiLainnyaOpen}
+                  onOpenChange={setIsAksiLainnyaOpen}
+                >
                   <SimpleDropdownTrigger asChild>
-                    <button className="flex items-center rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
-                      {t("CardLacakArmada.otherActions", {}, "Aksi Lainnya")}
-                      <ChevronDown className="ml-1 h-4 w-4" />
+                    <button
+                      className={`flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold text-gray-700 ${
+                        isAksiLainnyaOpen
+                          ? "border-[#176CF7]"
+                          : "border-gray-600 hover:border-[#176CF7]"
+                      }`}
+                    >
+                      Aksi Lainnya
+                      {isAksiLainnyaOpen ? (
+                        <ChevronUp className="ml-1 h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="ml-1 h-4 w-4" />
+                      )}
                     </button>
                   </SimpleDropdownTrigger>
                   <SimpleDropdownContent align="end">

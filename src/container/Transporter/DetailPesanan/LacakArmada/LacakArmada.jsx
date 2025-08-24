@@ -9,7 +9,7 @@ import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 import CardLacakArmada from "./components/CardLacakArmada";
 import LacakArmadaHeader from "./components/LacakArmadaHeader";
 
-const LacakArmada = ({ dataOrderDetail }) => {
+const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
 
@@ -146,6 +146,7 @@ const LacakArmada = ({ dataOrderDetail }) => {
                 replacementFleet={armada.replacementFleet}
                 replacementDriver={armada.replacementDriver}
                 fleetChangeStatus={armada.fleetChangeStatus}
+                onNavigateToRiwayat={onNavigateToRiwayat}
               />
             ))
           ) : (

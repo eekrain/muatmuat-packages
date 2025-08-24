@@ -9,7 +9,6 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
 import { useTranslation } from "@/hooks/use-translation";
-import { toast } from "@/lib/toast";
 
 // --- Dummy Data (tanpa hint untuk overload) ---
 const dummyDrivers = [
@@ -201,13 +200,7 @@ const ModalUbahArmada = ({
 
   const handleSave = () => {
     if (selectedDriverId) {
-      toast.success(
-        t(
-          "ModalUbahArmada.successMessage",
-          {},
-          "Berhasil mengubah armada (dummy)"
-        )
-      );
+      // toast.success("Berhasil mengubah armada (dummy)");
       onClose?.();
       onSuccess?.(vehicleId, selectedDriverId);
     }
