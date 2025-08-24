@@ -147,7 +147,7 @@ const NavigationMenuItem = ({ item, pathname }) => {
             <ChevronDown className="h-4 w-4" />
           </button>
         </SimpleHoverTrigger>
-        <SimpleHoverContent>
+        <SimpleHoverContent className="w-fit min-w-[194px]">
           {item.dropdownItems.map((dropdownItem) => {
             const isSelected =
               dropdownItem.href && pathname.startsWith(dropdownItem.href);
@@ -159,9 +159,9 @@ const NavigationMenuItem = ({ item, pathname }) => {
                 {dropdownItem.href ? (
                   <Link
                     href={dropdownItem.href}
-                    className="flex w-full items-center justify-between"
+                    className="flex w-full items-center justify-between gap-[10px] text-nowrap"
                   >
-                    <span>
+                    <span className={`${isSelected ? "font-semibold" : ""}`}>
                       {t(
                         `HeaderLayout.navigation.${dropdownItem.id}`,
                         {},
