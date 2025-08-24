@@ -1978,5 +1978,10 @@
   "DetailTransporter.searchOrderPlaceholder": "Cari No. Pesanan / Nama Transporter",
   "DetailTransporter.searchFleetPlaceholder": "Cari Nama Driver / No. Polisi",
   "DetailTransporter.totalOrderLabel": "Order Terlewat",
-  "DetailTransporter.totalFleetLabel": "Armada Nonaktif"
+  "DetailTransporter.totalFleetLabel": "Armada Nonaktif",
+  "DataTable.totalLabel": "Total : {data.length} {totalCountLabel}",
+  "DataTable.filterSearchPlaceholder": "Cari {category}",
+  "DataTable.keywordNotFound": "Keyword Tidak Ditemukan",
+  "DataTable.dataNotFound": "Data Tidak Ditemukan.",
+  "DataTable.tryRemoveSomeFilters": "Mohon coba hapus beberapa filter"
 }

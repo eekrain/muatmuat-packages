@@ -10,6 +10,7 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const DataTable = ({
@@ -44,6 +45,7 @@ const DataTable = ({
   tableTitle = null,
   paginationCounter = false,
 }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
@@ -168,7 +170,11 @@ const DataTable = ({
           {showSearch && (
             <Input
               type="text"
-              placeholder={searchPlaceholder}
+              placeholder={t(
+                "DataTable.searchPlaceholder",
+                {},
+                searchPlaceholder
+              )}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyUp={handleSearchKeyUp}
@@ -203,7 +209,11 @@ const DataTable = ({
               data={filterConfig.data}
               selectedValues={selectedFilters}
               onSelectionChange={handleFilterChange}
-              searchPlaceholder="Cari {category}"
+              searchPlaceholder={t(
+                "DataTable.filterSearchPlaceholder",
+                {},
+                "Cari {category}"
+              )}
               disabled={isFilterDisabled}
             />
           )}
@@ -212,7 +222,11 @@ const DataTable = ({
           {headerActions}
           {showTotalCount && (
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {data.length} {totalCountLabel}
+              {t(
+                "DataTable.totalLabel",
+                { count: data.length, label: totalCountLabel },
+                `Total : ${data.length} ${totalCountLabel}`
+              )}
             </div>
           )}
         </div>
@@ -232,13 +246,21 @@ const DataTable = ({
                 className="gap-y-5"
                 title={
                   searchValue.trim()
-                    ? "Keyword Tidak Ditemukan"
-                    : "Data Tidak Ditemukan."
+                    ? t(
+                        "DataTable.keywordNotFound",
+                        {},
+                        "Keyword Tidak Ditemukan"
+                      )
+                    : t("DataTable.dataNotFound", {}, "Data Tidak Ditemukan.")
                 }
               />
               {activeFilters.length > 0 && (
                 <div className="font-semibold text-neutral-600">
-                  Mohon coba hapus beberapa filter
+                  {t(
+                    "DataTable.tryRemoveSomeFilters",
+                    {},
+                    "Mohon coba hapus beberapa filter"
+                  )}
                 </div>
               )}
             </>

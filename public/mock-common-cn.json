@@ -1978,5 +1978,10 @@
   "DetailTransporter.searchOrderPlaceholder": "搜索订单号/承运人名称",
   "DetailTransporter.searchFleetPlaceholder": "搜索司机姓名/车牌号",
   "DetailTransporter.totalOrderLabel": "错过的订单",
-  "DetailTransporter.totalFleetLabel": "未激活车队"
+  "DetailTransporter.totalFleetLabel": "未激活车队",
+  "DataTable.totalLabel": "总计：{count} {label}",
+  "DataTable.filterSearchPlaceholder": "搜索{category}",
+  "DataTable.keywordNotFound": "未找到关键词",
+  "DataTable.dataNotFound": "未找到数据。",
+  "DataTable.tryRemoveSomeFilters": "请尝试删除一些筛选条件"
 }

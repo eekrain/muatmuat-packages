@@ -1978,5 +1978,10 @@
   "DetailTransporter.searchOrderPlaceholder": "Search Order Number / Transporter Name",
   "DetailTransporter.searchFleetPlaceholder": "Search Driver Name / License Plate",
   "DetailTransporter.totalOrderLabel": "Missed Orders",
-  "DetailTransporter.totalFleetLabel": "Inactive Fleet"
+  "DetailTransporter.totalFleetLabel": "Inactive Fleet",
+  "DataTable.totalLabel": "Total : {count} {label}",
+  "DataTable.filterSearchPlaceholder": "Search {category}",
+  "DataTable.keywordNotFound": "Keyword Not Found",
+  "DataTable.dataNotFound": "Data Not Found.",
+  "DataTable.tryRemoveSomeFilters": "Please try removing some filters"
 }
