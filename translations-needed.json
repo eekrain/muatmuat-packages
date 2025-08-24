@@ -1,0 +1,102 @@
+{
+  "DetailTransporter.photoAlt": {
+    "id": "Foto Penyelesaian {idx + 1}",
+    "en": "Resolution Photo {idx}",
+    "cn": "解决照片 {idx}"
+  },
+  "DetailTransporter.licensePlate": {
+    "id": "No. Polisi",
+    "en": "License Plate",
+    "cn": "车牌号"
+  },
+  "DetailTransporter.driverName": {
+    "id": "Nama Driver",
+    "en": "Driver Name",
+    "cn": "司机姓名"
+  },
+  "DetailTransporter.tanggalNonaktif": {
+    "id": "Tanggal Nonaktif",
+    "en": "Inactive Date",
+    "cn": "未激活日期"
+  },
+  "DetailTransporter.lamaArmadaNonaktif": {
+    "id": "Lama Armada Nonaktif",
+    "en": "Inactive Fleet Duration",
+    "cn": "车队未激活时长"
+  },
+  "DetailTransporter.orderNumber": {
+    "id": "No. Pesanan",
+    "en": "Order Number",
+    "cn": "订单号"
+  },
+  "DetailTransporter.receivingTransporter": {
+    "id": "Transporter Penerima",
+    "en": "Receiving Transporter",
+    "cn": "接收承运人"
+  },
+  "DetailTransporter.orderCreationTime": {
+    "id": "Waktu Pesanan Diblast",
+    "en": "Order Blast Time",
+    "cn": "订单分发时间"
+  },
+  "DetailTransporter.pickupTime": {
+    "id": "Waktu Pengambilan",
+    "en": "Pickup Time",
+    "cn": "提货时间"
+  },
+  "DetailTransporter.contactButton": {
+    "id": "Hubungi",
+    "en": "Contact",
+    "cn": "联系"
+  },
+  "DetailTransporter.resolutionDetailTitle": {
+    "id": "Detail Penyelesaian",
+    "en": "Resolution Details",
+    "cn": "解决详情"
+  },
+  "DetailTransporter.resolvedDateLabel": {
+    "id": "Tanggal Diselesaikan",
+    "en": "Resolved Date",
+    "cn": "解决日期"
+  },
+  "DetailTransporter.noteLabel": {
+    "id": "Catatan",
+    "en": "Note",
+    "cn": "备注"
+  },
+  "DetailTransporter.supportingPhotosLabel": {
+    "id": "Foto Pendukung",
+    "en": "Supporting Photos",
+    "cn": "支持照片"
+  },
+  "DetailTransporter.photoTitle": {
+    "id": "Foto Penyelesaian",
+    "en": "Resolution Photo",
+    "cn": "解决照片"
+  },
+  "DetailTransporter.noPhoto": {
+    "id": "Tidak ada foto",
+    "en": "No photos available",
+    "cn": "没有照片"
+  },
+  "DetailTransporter.searchOrderPlaceholder": {
+    "id": "Cari No. Pesanan / Nama Transporter",
+    "en": "Search Order Number / Transporter Name",
+    "cn": "搜索订单号/承运人名称"
+  },
+  "DetailTransporter.searchFleetPlaceholder": {
+    "id": "Cari Nama Driver / No. Polisi",
+    "en": "Search Driver Name / License Plate",
+    "cn": "搜索司机姓名/车牌号"
+  },
+  "DetailTransporter.totalOrderLabel": {
+    "id": "Order Terlewat",
+    "en": "Missed Orders",
+    "cn": "错过的订单"
+  },
+  "DetailTransporter.totalFleetLabel": {
+    "id": "Armada Nonaktif",
+    "en": "Inactive Fleet",
+    "cn": "未激活车队"
+  }
+}

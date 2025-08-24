@@ -8,6 +8,8 @@ import {
   LightboxProvider,
   useLightbox,
 } from "@/components/Lightbox/Lightbox";
+import { useTranslation } from "@/hooks/use-translation";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 const LightboxStateBridge = ({ onChange }) => {
   const { open } = useLightbox();
@@ -18,6 +20,7 @@ const LightboxStateBridge = ({ onChange }) => {
 };
 
 const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
+  const { t } = useTranslation();
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
@@ -27,15 +30,22 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
   const formatDuration = (minutes) => {
     if (!minutes) return "-";
     const jam = Math.floor(minutes / 60);
-    return `${jam} Jam`;
+    return t(
+      "ModalDetailTransporterTidakAktif.durationHours",
+      { jam },
+      `${jam} Jam`
+    );
   };
 
   // Mock data for fleet notes
   const fleetNoteData = {
     history: {
       reportedAt: "2025-01-15T10:00:00Z",
-      notes:
-        "Kondisi armada memang sedang maintenance, sehingga aplikasi driver juga tidak diaktifkan karena belum bisa bertugas juga",
+      notes: t(
+        "ModalDetailTransporterTidakAktif.fleetNote",
+        {},
+        "Kondisi armada memang sedang maintenance, sehingga aplikasi driver juga tidak diaktifkan karena belum bisa bertugas juga"
+      ),
       photos: [
         {
           url: "https://cdn.example.com/photos/maintenance_photo_1.jpg",
@@ -56,7 +66,11 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
           {/* Header */}
           <div className="relative mb-2 flex items-center justify-center">
             <h2 className="text-[16px] font-bold text-neutral-900">
-              Detail Transporter Tidak Aktif
+              {t(
+                "ModalDetailTransporterTidakAktif.title",
+                {},
+                "Detail Transporter Tidak Aktif"
+              )}
             </h2>
             <button
               onClick={onClose}
@@ -77,37 +91,38 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
                 {transporter.transporterName}
               </div>
               <div className="mb-1 text-xs font-medium text-error-400">
-                Transporter Tidak Aktif
+                {t(
+                  "ModalDetailTransporterTidakAktif.statusLabel",
+                  {},
+                  "Transporter Tidak Aktif"
+                )}
               </div>
               <div className="mb-3 text-xs text-neutral-600">
                 {fleetNoteData?.content}
               </div>
               <hr className="my-2 border-neutral-400" />
-              <div className="flex gap-12">
-                <div>
+              <div className="flex w-full">
+                <div className="w-1/2">
                   <div className="mb-1 text-xs text-neutral-600">
-                    Tanggal Terakhir Aktif
+                    {t(
+                      "ModalDetailTransporterTidakAktif.lastActiveDateLabel",
+                      {},
+                      "Tanggal Terakhir Aktif"
+                    )}
                   </div>
                   <div className="text-xs font-medium text-neutral-900">
                     {detail.lastActiveAt
-                      ? `${new Date(detail.lastActiveAt).toLocaleString(
-                          "id-ID",
-                          {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                            timeZone: "Asia/Jakarta",
-                          }
-                        )} WIB`
+                      ? `${formatDate(detail.lastActiveAt)}`
                       : "-"}
                   </div>
                 </div>
-                <div>
+                <div className="w-1/2">
                   <div className="mb-1 text-xs text-neutral-600">
-                    Lama Tidak Aktif
+                    {t(
+                      "ModalDetailTransporterTidakAktif.inactiveDurationLabel",
+                      {},
+                      "Lama Tidak Aktif"
+                    )}
                   </div>
                   <div className="text-xs font-medium text-neutral-900">
                     {formatDuration(detail.inactiveDuration)}
@@ -121,12 +136,20 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
             <div className="mb-4 flex h-[165px] flex-col overflow-y-auto">
               <div className="mb-3 flex items-center">
                 <p className="text-xs font-bold text-neutral-900">
-                  Detail Penyelesaian
+                  {t(
+                    "ModalDetailTransporterTidakAktif.resolutionDetailTitle",
+                    {},
+                    "Detail Penyelesaian"
+                  )}
                 </p>
               </div>
               <div className="mb-2 flex flex-col gap-2">
                 <p className="text-xs font-medium text-neutral-600">
-                  Tanggal Diselesaikan
+                  {t(
+                    "ModalDetailTransporterTidakAktif.resolvedDateLabel",
+                    {},
+                    "Tanggal Diselesaikan"
+                  )}
                 </p>
                 <p className="text-xs font-medium text-neutral-900">
                   {fleetNoteData?.history?.reportedAt
@@ -141,21 +164,35 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
                 </p>
               </div>
               <div className="mb-2 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">Catatan</p>
+                <p className="text-xs font-medium text-neutral-600">
+                  {t(
+                    "ModalDetailTransporterTidakAktif.noteLabel",
+                    {},
+                    "Catatan"
+                  )}
+                </p>
                 <p className="text-xs font-medium text-neutral-900">
                   {fleetNoteData?.history?.notes || "-"}
                 </p>
               </div>
               <div className="flex flex-col gap-2">
                 <p className="text-xs font-medium text-neutral-600">
-                  Foto Pendukung
+                  {t(
+                    "ModalDetailTransporterTidakAktif.supportingPhotosLabel",
+                    {},
+                    "Foto Pendukung"
+                  )}
                 </p>
                 <LightboxProvider
                   images={
                     fleetNoteData?.history?.photos?.map((photo) => photo.url) ||
                     []
                   }
-                  title="Foto Penyelesaian"
+                  title={t(
+                    "ModalDetailTransporterTidakAktif.photoTitle",
+                    {},
+                    "Foto Penyelesaian"
+                  )}
                 >
                   <div className="flex flex-row gap-2">
                     {fleetNoteData?.history?.photos?.length > 0 ? (
@@ -165,12 +202,20 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
                           image={photo.url}
                           index={idx}
                           className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
-                          alt={`Foto Penyelesaian ${idx + 1}`}
+                          alt={t(
+                            "ModalDetailTransporterTidakAktif.photoAlt",
+                            { idx: idx + 1 },
+                            `Foto Penyelesaian ${idx + 1}`
+                          )}
                         />
                       ))
                     ) : (
                       <span className="text-xs text-neutral-500">
-                        Tidak ada foto
+                        {t(
+                          "ModalDetailTransporterTidakAktif.noPhoto",
+                          {},
+                          "Tidak ada foto"
+                        )}
                       </span>
                     )}
                   </div>
@@ -187,7 +232,11 @@ const ModalDetailTransporterTidakAktif = ({ transporter, detail, onClose }) => {
               className="h-8 w-[105px] rounded-full text-sm font-semibold"
               onClick={() => setShowHubungiModal(true)}
             >
-              Hubungi
+              {t(
+                "ModalDetailTransporterTidakAktif.contactButton",
+                {},
+                "Hubungi"
+              )}
             </Button>
           </div>
         </div>

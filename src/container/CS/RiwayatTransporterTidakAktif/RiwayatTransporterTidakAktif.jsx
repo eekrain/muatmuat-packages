@@ -175,25 +175,25 @@ const RiwayatTransporterTidakAktif = () => {
         {
           id: "INACTIVE_FLEET_TOO_MANY",
           label: t(
-            "RiwayatTransporterTidakAktif.inactiveFleetTooMany",
+            TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY,
             {},
-            TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY
+            "Armada Nonaktif Terlalu Banyak"
           ),
         },
         {
           id: "ADMIN_IDLE_DETECTED",
           label: t(
-            "RiwayatTransporterTidakAktif.adminIdleDetected",
+            TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED,
             {},
-            TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED
+            "Admin Terdeteksi Sering Idle"
           ),
         },
         {
           id: "TRANSPORTER_INACTIVE",
           label: t(
-            "RiwayatTransporterTidakAktif.transporterInactive",
+            TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE,
             {},
-            TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE
+            "Transporter Tidak Aktif"
           ),
         },
       ],
@@ -260,7 +260,7 @@ const RiwayatTransporterTidakAktif = () => {
       headerClassName: "px-2.5",
       render: (row, _index) => (
         <span className="flex w-[430px] text-xs font-semibold text-error-400">
-          {row.conditionText}
+          {t(row.condition)}
         </span>
       ),
     },
@@ -276,7 +276,8 @@ const RiwayatTransporterTidakAktif = () => {
           variant="muattrans-primary"
           onClick={() => {
             if (
-              row.condition === TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE
+              t(row.condition) ===
+              t(TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE)
             ) {
               setSelectedTransporter(row);
               setShowDetailModal(true);
