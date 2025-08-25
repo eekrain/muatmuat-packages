@@ -9,65 +9,9 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
 import { useTranslation } from "@/hooks/use-translation";
-
-// --- Dummy Data (tanpa hint untuk overload) ---
-const dummyDrivers = [
-  {
-    id: "drv-1",
-    fullName: "Ahmad Maulana",
-    driverPhotoUrl: "/img/truck.png",
-    plateNumber: "AE 6666 LBA",
-    vehicleType: "Colt Diesel Double - Bak Terbuka",
-    isRecommended: true,
-    recommendationHint: "jenis armada sesuai, jarak terdekat",
-    isPotentialOverload: false,
-    currentVehicle: null,
-  },
-  {
-    id: "drv-2",
-    fullName: "Budi Santoso",
-    driverPhotoUrl: "/img/truck.png",
-    plateNumber: "L 8312 L",
-    vehicleType: "Fuso - Bak Tertutup",
-    isRecommended: false,
-    recommendationHint: "", // tidak ada hint
-    isPotentialOverload: true, // hanya badge, tanpa hint
-    currentVehicle: "B 1234 XYZ",
-  },
-  {
-    id: "drv-3",
-    fullName: "Siti Aminah",
-    driverPhotoUrl: "/img/truck.png",
-    plateNumber: "B 9021 KCD",
-    vehicleType: "CDD - Box",
-    isRecommended: false,
-    recommendationHint: "",
-    isPotentialOverload: false,
-    currentVehicle: null,
-  },
-  {
-    id: "drv-4",
-    fullName: "Siti Aminah",
-    driverPhotoUrl: "/img/truck.png",
-    plateNumber: "B 9021 KCD",
-    vehicleType: "CDD - Box",
-    isRecommended: false,
-    recommendationHint: "",
-    isPotentialOverload: false,
-    currentVehicle: null,
-  },
-  {
-    id: "drv-5",
-    fullName: "Siti Aminah",
-    driverPhotoUrl: "/img/truck.png",
-    plateNumber: "B 9021 KCD",
-    vehicleType: "CDD - Box",
-    isRecommended: false,
-    recommendationHint: "",
-    isPotentialOverload: false,
-    currentVehicle: null,
-  },
-];
+import { toast } from "@/lib/toast";
+import { useAssignFleet } from "@/services/Transporter/daftar-pesanan/detail-pesanan/assignFleet";
+import { useGetAvailableFleetVehicles } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getFleetsList";
 
 // --- Item Layout ---
 function ArmadaOptionItem({
@@ -80,6 +24,9 @@ function ArmadaOptionItem({
   isRecommended,
   recommendationHint,
   isPotentialOverload,
+  distanceFromPickup,
+  estimatedArrival,
+  compatibilityScore,
 }) {
   const { t } = useTranslation();
   // tampilkan kanan hanya jika ada badge
@@ -93,7 +40,11 @@ function ArmadaOptionItem({
       {/* LEFT */}
       <div className="flex min-w-0 items-center gap-3">
         <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-neutral-100 ring-1 ring-neutral-300">
-          <img src={photoUrl} alt="Armada" className="h-14 w-14 object-cover" />
+          <img
+            src={photoUrl || "/img/truck.png"}
+            alt="Armada"
+            className="h-14 w-14 object-cover"
+          />
         </div>
 
         <div className="min-w-0">
@@ -118,6 +69,14 @@ function ArmadaOptionItem({
                 className="h-3.5 w-3.5 flex-shrink-0"
               />
               <span className="truncate leading-[14px]">{vehicleDesc}</span>
+            </div>
+
+            {/* Additional info: distance and compatibility */}
+            <div className="mt-2 text-[10px] text-neutral-600">
+              <span>
+                {distanceFromPickup} km • {estimatedArrival} •{" "}
+                {compatibilityScore}% kompatibel
+              </span>
             </div>
           </div>
         </div>
@@ -177,32 +136,112 @@ const ModalUbahArmada = ({
   vehiclePlate = "L 8312 L",
   currentDriverId,
   title = "Ubah Armada",
+  orderId, // Add orderId prop to fetch available fleets
 }) => {
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
-  const [selectedDriverId, setSelectedDriverId] = useState(
-    currentDriverId || null
-  );
+  const [selectedFleetId, setSelectedFleetId] = useState(null);
+  const [assignRequest, setAssignRequest] = useState(null);
 
-  const drivers = dummyDrivers.filter((d) => {
+  // Fetch available fleet vehicles
+  const {
+    data: fleetData,
+    error,
+    isLoading,
+  } = useGetAvailableFleetVehicles(orderId);
+
+  // Assign fleet mutation
+  const {
+    data: assignResult,
+    error: assignError,
+    isLoading: isAssigning,
+  } = useAssignFleet(orderId, vehicleId, assignRequest);
+
+  // Debug logging
+  console.log("ModalUbahArmada - orderId:", orderId);
+  console.log("ModalUbahArmada - vehicleId (oldVehicleId):", vehicleId);
+  console.log("ModalUbahArmada - fleetData:", fleetData);
+
+  // Transform fleet data to match component expectations
+  const availableFleets =
+    fleetData?.vehicles?.map((fleet) => ({
+      id: fleet.id,
+      plateNumber: fleet.licensePlate,
+      driverName: fleet.driver?.name || "Driver tidak tersedia",
+      vehicleDesc: `${fleet.truckTypeName} - ${fleet.carrierName}`,
+      photoUrl: fleet.driver?.profileImage || "/img/truck.png",
+      isRecommended: fleet.isRecommended,
+      recommendationHint: fleet.isRecommended
+        ? "jenis armada sesuai, jarak terdekat"
+        : "",
+      isPotentialOverload: fleet.compatibilityScore < 80, // Consider low compatibility as potential overload
+      distanceFromPickup: fleet.distanceFromPickup,
+      estimatedArrival: fleet.estimatedArrival,
+      compatibilityScore: fleet.compatibilityScore,
+      driver: fleet.driver, // Keep the full driver object
+    })) || [];
+
+  // Handle assign fleet result
+  useEffect(() => {
+    if (assignResult) {
+      console.log("Assign fleet result:", assignResult);
+
+      // Show success toast
+      toast.success(
+        t("ModalUbahArmada.assignSuccess", {}, "Berhasil mengubah armada")
+      );
+
+      onClose?.();
+      onSuccess?.(
+        selectedFleetId,
+        availableFleets.find((f) => f.id === selectedFleetId)?.driver?.id
+      );
+      setAssignRequest(null); // Reset request
+    }
+  }, [assignResult, onClose, onSuccess, selectedFleetId, availableFleets, t]);
+
+  // Handle assign fleet error
+  useEffect(() => {
+    if (assignError) {
+      console.error("Assign fleet error:", assignError);
+
+      // Show error toast
+      toast.error(
+        t("ModalUbahArmada.assignError", {}, "Gagal mengubah armada")
+      );
+
+      setAssignRequest(null); // Reset request
+    }
+  }, [assignError, t]);
+
+  // Filter fleets based on search
+  const filteredFleets = availableFleets.filter((fleet) => {
     const q = searchValue.trim().toLowerCase();
     if (!q) return true;
     return (
-      d.fullName.toLowerCase().includes(q) ||
-      (d.plateNumber || "").toLowerCase().includes(q) ||
-      (d.vehicleType || "").toLowerCase().includes(q)
+      fleet.driverName.toLowerCase().includes(q) ||
+      (fleet.plateNumber || "").toLowerCase().includes(q) ||
+      (fleet.vehicleDesc || "").toLowerCase().includes(q)
     );
   });
 
-  useEffect(() => {
-    setSelectedDriverId(currentDriverId || null);
-  }, [currentDriverId]);
+  const handleSave = async () => {
+    if (selectedFleetId) {
+      const selectedFleet = availableFleets.find(
+        (fleet) => fleet.id === selectedFleetId
+      );
+      if (selectedFleet) {
+        // Prepare request body - only newVehicleId and newDriverId
+        const requestBody = {
+          newVehicleId: selectedFleet.id,
+          newDriverId: selectedFleet.driver?.id,
+        };
 
-  const handleSave = () => {
-    if (selectedDriverId) {
-      // toast.success("Berhasil mengubah armada (dummy)");
-      onClose?.();
-      onSuccess?.(vehicleId, selectedDriverId);
+        console.log("Assign fleet request body:", requestBody);
+
+        // Set assign request to trigger the mutation
+        setAssignRequest(requestBody);
+      }
     }
   };
 
@@ -231,24 +270,43 @@ const ModalUbahArmada = ({
 
           {/* List dengan fixed height */}
           <div className="mt-3 h-[291px] space-y-2 overflow-y-auto rounded-lg border border-neutral-400 p-3 pr-2">
-            {drivers.length === 0 ? (
+            {isLoading ? (
+              <div className="flex h-[291px] items-center justify-center">
+                <div className="text-center">
+                  <div className="text-sm text-neutral-600">
+                    Memuat data armada...
+                  </div>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="flex h-[291px] items-center justify-center">
+                <div className="text-center">
+                  <div className="text-sm text-error-600">
+                    Gagal memuat data armada
+                  </div>
+                </div>
+              </div>
+            ) : filteredFleets.length === 0 ? (
               <DataNotFound
                 className="h-[291px] gap-y-5"
                 title="Keyword Tidak Ditemukan"
               />
             ) : (
-              drivers.map((d) => (
+              filteredFleets.map((fleet) => (
                 <ArmadaOptionItem
-                  key={d.id}
-                  selected={selectedDriverId === d.id}
-                  onSelect={() => setSelectedDriverId(d.id)}
-                  plateNumber={d.plateNumber}
-                  driverName={d.fullName}
-                  vehicleDesc={d.vehicleType}
-                  photoUrl={d.driverPhotoUrl}
-                  isRecommended={d.isRecommended}
-                  recommendationHint={d.recommendationHint}
-                  isPotentialOverload={d.isPotentialOverload}
+                  key={fleet.id}
+                  selected={selectedFleetId === fleet.id}
+                  onSelect={() => setSelectedFleetId(fleet.id)}
+                  plateNumber={fleet.plateNumber}
+                  driverName={fleet.driverName}
+                  vehicleDesc={fleet.vehicleDesc}
+                  photoUrl={fleet.photoUrl}
+                  isRecommended={fleet.isRecommended}
+                  recommendationHint={fleet.recommendationHint}
+                  isPotentialOverload={fleet.isPotentialOverload}
+                  distanceFromPickup={fleet.distanceFromPickup}
+                  estimatedArrival={fleet.estimatedArrival}
+                  compatibilityScore={fleet.compatibilityScore}
                 />
               ))
             )}
@@ -259,8 +317,14 @@ const ModalUbahArmada = ({
             <Button variant="muattrans-primary-secondary" onClick={onClose}>
               {t("ModalUbahArmada.cancelButton", {}, "Batal")}
             </Button>
-            <Button variant="muattrans-primary" onClick={handleSave}>
-              {t("ModalUbahArmada.saveButton", {}, "Simpan")}
+            <Button
+              variant="muattrans-primary"
+              onClick={handleSave}
+              disabled={!selectedFleetId || isAssigning}
+            >
+              {isAssigning
+                ? t("ModalUbahArmada.savingButton", {}, "Menyimpan...")
+                : t("ModalUbahArmada.saveButton", {}, "Simpan")}
             </Button>
           </div>
         </div>

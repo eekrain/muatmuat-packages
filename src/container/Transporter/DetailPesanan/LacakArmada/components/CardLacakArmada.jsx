@@ -478,6 +478,7 @@ function CardLacakArmada({
           vehiclePlate={plateNumber}
           currentDriverId={driverId}
           title={t("CardLacakArmada.selectDriverTitle", {}, "Pilih Driver")}
+          orderId={order?.orderId}
         />
       )}
 
@@ -505,6 +506,7 @@ function CardLacakArmada({
           vehiclePlate={plateNumber}
           currentDriverId={driverId}
           title={t("CardLacakArmada.selectFleetTitle", {}, "Pilih Armada")}
+          orderId={order?.orderId}
         />
       )}
     </>
