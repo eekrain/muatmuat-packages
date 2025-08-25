@@ -258,7 +258,6 @@ const PilihArmadaBatalkan = ({
               variant="muattrans-primary"
               onClick={handleConfirm}
               disabled={isSubmitting || isLoading}
-              {...((isSubmitting || isLoading) && { loading: true })}
               className=""
             >
               {t("PilihArmadaBatalkan.cancelFleet", {}, "Batalkan Armada")}

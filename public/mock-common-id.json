@@ -1094,8 +1094,8 @@
   "pesananActionBar.urgentStatus": "Status Urgent",
   "pesananActionBar.filter": "Filter",
   "daftarPesanan.orders": "Pesanan",
-  "pesananActionBar.filterByTransporter": "Transporter",
-  "pesananActionBar.filterByShipper": "Shipper",
+  "pesananActionBar.filterByTransporter": "Cari Transporter",
+  "pesananActionBar.filterByShipper": "Cari Shipper",
   "pesananActionBar.filterByStatus": "Status",
   "pesananActionBar.urgent.all": "Semua Status (Default)",
   "pesananActionBar.urgent.response": "Perlu Respon Perubahan",
@@ -2253,5 +2253,6 @@
   "AgendaAutocomplete.labelMencari": "Mencari...",
   "AgendaAutocomplete.labelTidakAdaHasil": "Tidak ada hasil ditemukan",
   "AgendaAutocomplete.labelNomorPolisi": "Nomor Polisi",
-  "AgendaAutocomplete.labelDriver": "Driver"
+  "AgendaAutocomplete.labelDriver": "Driver",
+  "SearchNotFound.keywordNotFound": "Keyword Tidak Ditemukan"
 }

@@ -397,7 +397,6 @@ const AlasanPembatalanModal = ({
             variant="muattrans-primary"
             onClick={handleConfirm}
             disabled={isSubmitting || isLoading}
-            {...((isSubmitting || isLoading) && { loading: true })}
             className="px-8"
           >
             {t("AlasanPembatalanModal.save", {}, "Simpan")}
