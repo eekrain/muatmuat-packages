@@ -1,12 +1,33 @@
 "use client";
 
 import DetailPesanan from "@/container/CS/DetailPesanan/DetailPesanan";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Page = () => {
+  const { t } = useTranslation();
   const breadcrumbData = [
-    { name: "Monitoring", href: "/monitoring" },
-    { name: "Riwayat SOS" },
-    { name: "Detail Pesanan" },
+    {
+      name: t(
+        "RiwayatSOSDetailPesananPage.breadcrumbMonitoring",
+        {},
+        "Monitoring"
+      ),
+      href: "/monitoring",
+    },
+    {
+      name: t(
+        "RiwayatSOSDetailPesananPage.breadcrumbRiwayatSOS",
+        {},
+        "Riwayat SOS"
+      ),
+    },
+    {
+      name: t(
+        "RiwayatSOSDetailPesananPage.breadcrumbDetailPesanan",
+        {},
+        "Detail Pesanan"
+      ),
+    },
   ];
   return <DetailPesanan breadcrumbData={breadcrumbData} />;
 };
