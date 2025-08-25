@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority";
 import PropTypes from "prop-types";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const imageArmadaVariants = cva(
@@ -35,12 +36,16 @@ const ImageArmada = ({
   fallbackIcon = "/icons/monitoring/daftar-pesanan-aktif/truck.svg",
   fallbackIconColor = "text-gray-600",
 }) => {
+  const { t } = useTranslation();
   return (
     <div className={cn(imageArmadaVariants({ size }), className)}>
       {src ? (
         <img
           src={src}
-          alt={alt || `Truck ${plateNumber}`}
+          alt={
+            alt ||
+            t("ImageArmada.truckAlt", { plateNumber }, `Truck ${plateNumber}`)
+          }
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : (

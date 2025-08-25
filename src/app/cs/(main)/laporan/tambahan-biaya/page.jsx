@@ -107,14 +107,6 @@ const Page = () => {
       return { ...prevState, [field]: value };
     });
     setLastFilterField(field);
-    // if (defaultPage) {
-    //   setCurrentPeriodValue((prevState) =>
-    //     field === "search"
-    //       ? { name: "Semua Periode (Default)", value: "", format: "day" }
-    //       : prevState
-    //   );
-    //   setLastFilterField(field);
-    // }
   };
 
   if (!mounted) return null;

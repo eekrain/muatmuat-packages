@@ -2,6 +2,7 @@
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Select } from "@/components/Select/Select";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const SelectResponPerubahan = ({
@@ -14,6 +15,7 @@ const SelectResponPerubahan = ({
   error,
   contentWidth,
 }) => {
+  const { t } = useTranslation();
   const selectedOption = options.find((opt) => opt.value === value);
 
   // Map option values to their corresponding icons
@@ -58,7 +60,9 @@ const SelectResponPerubahan = ({
             </Select.Item>
           ))
         ) : (
-          <Select.Empty>Tidak ada pilihan</Select.Empty>
+          <Select.Empty>
+            {t("SelectResponPerubahan.noOptions", {}, "Tidak ada pilihan")}
+          </Select.Empty>
         )}
       </Select.Content>
     </Select.Root>

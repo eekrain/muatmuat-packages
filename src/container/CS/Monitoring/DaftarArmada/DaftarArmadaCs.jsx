@@ -74,7 +74,7 @@ const DaftarArmadaCs = ({
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
-  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'sos'
+  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'ready' | 'sos'
   const [truckStatusFilter, setTruckStatusFilter] = useState([]);
   const [orderStatusFilter, setOrderStatusFilter] = useState([]);
   const [showSosNotification, setShowSosNotification] = useState(false);
@@ -94,6 +94,8 @@ const DaftarArmadaCs = ({
     mutate: refetchFleets,
   } = useGetFleetList({
     search: searchTerm,
+    // This hook call correctly sends the param for 'ready' and 'undefined' for 'all' and 'sos',
+    // which fetches the necessary data for client-side filtering.
     has_fleet_status: activeTab === "ready" ? "READY_FOR_ORDER" : undefined,
     truckStatus: truckStatusFilter,
     orderStatus: orderStatusFilter,
@@ -106,15 +108,15 @@ const DaftarArmadaCs = ({
     orderStatus: orderStatusFilter,
   });
 
-  // Extract transporters and calculate totals from the new data structure
   const transporters = fleetData?.transporters || [];
   const allTransporters = allFleetData?.transporters || [];
 
-  // Calculate total fleets from all data (without status filtering)
+  // Calculate total fleets from all data
   const totalFleets = useMemo(() => {
-    return allTransporters.reduce((total, transporter) => {
-      return total + (transporter.fleets?.length || 0);
-    }, 0);
+    return allTransporters.reduce(
+      (total, t) => total + (t.fleets?.length || 0),
+      0
+    );
   }, [allTransporters]);
 
   const readyCount = useMemo(() => {
@@ -127,17 +129,25 @@ const DaftarArmadaCs = ({
     }, 0);
   }, [allTransporters]);
 
-  // Get filter counts from the new structure
-  const filterCounts = fleetData?.filterOptions || {};
+  // **NEW**: Calculate SOS count from all transporters data
+  const sosCount = useMemo(() => {
+    return allTransporters.reduce((total, transporter) => {
+      const sosFleets =
+        transporter.fleets?.filter((fleet) => fleet.hasSOSAlert) || [];
+      return total + sosFleets.length;
+    }, 0);
+  }, [allTransporters]);
+
+  const filterCounts = allFleetData?.filterOptions || {};
 
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
 
-  // Process transporters and their fleets with filtering
+  // **UPDATED**: Process transporters and apply client-side filtering for the active tab
   const processedTransporters = useMemo(() => {
     return transporters
       .map((transporter) => {
         const filteredFleets = (transporter.fleets || []).filter((fleet) => {
-          // Search filter
+          // Search filter applies to all tabs
           const searchMatch =
             fleet.licensePlate
               ?.toLowerCase()
@@ -149,12 +159,18 @@ const DaftarArmadaCs = ({
               ?.toLowerCase()
               .includes(searchTerm.toLowerCase());
 
-          // Ready tab filter
+          if (!searchMatch) return false;
+
+          // Tab-specific filters
+          if (activeTab === "sos") {
+            return fleet.hasSOSAlert;
+          }
           if (activeTab === "ready") {
-            return fleet.status === "READY_FOR_ORDER" && searchMatch;
+            return fleet.status === "READY_FOR_ORDER";
           }
 
-          return searchMatch;
+          // 'all' tab doesn't need extra filtering
+          return true;
         });
 
         return {
@@ -162,7 +178,7 @@ const DaftarArmadaCs = ({
           fleets: filteredFleets,
         };
       })
-      .filter((transporter) => transporter.fleets.length > 0); // Only show transporters with fleets
+      .filter((transporter) => transporter.fleets.length > 0); // Only show transporters with matching fleets
   }, [transporters, searchTerm, activeTab]);
 
   const handleAcknowledge = async (fleet) => {
@@ -179,6 +195,13 @@ const DaftarArmadaCs = ({
   useEffect(() => {
     if (latestSosAlert) setShowSosNotification(true);
   }, [latestSosAlert]);
+
+  // **NEW**: Auto-switch to 'all' tab if SOS count becomes zero
+  useEffect(() => {
+    if (sosCount === 0 && activeTab === "sos") {
+      setActiveTab("all");
+    }
+  }, [sosCount, activeTab]);
 
   useEffect(() => {
     if (selectedFleetId) setExpandedId(selectedFleetId);
@@ -274,9 +297,27 @@ const DaftarArmadaCs = ({
         </div>
       </div>
 
-      {/* filter tabs */}
-      {readyCount > 0 && (
-        <div className="flex gap-2 px-4 pb-3">
+      {/* **NEW & UPDATED**: filter tabs */}
+      <div className="flex flex-wrap gap-2 px-4 pb-3">
+        {sosCount > 0 && (
+          <button
+            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              activeTab === "sos"
+                ? "border-primary-700 bg-primary-50 text-primary-700"
+                : "border-neutral-200 bg-neutral-200 text-black"
+            }`}
+            onClick={() => setActiveTab("sos")}
+          >
+            SOS ({sosCount})
+            <NotificationDot
+              size="sm"
+              color="red"
+              position="absolute"
+              positionClasses="top-0 right-0"
+            />
+          </button>
+        )}
+        {readyCount > 0 && (
           <button
             className={`relative rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "ready"
@@ -286,25 +327,19 @@ const DaftarArmadaCs = ({
             onClick={() => setActiveTab("ready")}
           >
             Siap Menerima Order ({readyCount})
-            <NotificationDot
-              size="sm"
-              color="red"
-              position="absolute"
-              positionClasses="top-0 right-0"
-            />
           </button>
-          <button
-            className={`rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-              activeTab === "all"
-                ? "border-primary-700 bg-primary-50 text-primary-700"
-                : "border-neutral-200 bg-neutral-200 text-black"
-            }`}
-            onClick={() => setActiveTab("all")}
-          >
-            Semua ({totalFleets})
-          </button>
-        </div>
-      )}
+        )}
+        <button
+          className={`rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+            activeTab === "all"
+              ? "border-primary-700 bg-primary-50 text-primary-700"
+              : "border-neutral-200 bg-neutral-200 text-black"
+          }`}
+          onClick={() => setActiveTab("all")}
+        >
+          Semua ({totalFleets})
+        </button>
+      </div>
 
       {/* Fleet List */}
       <div className="flex-1 overflow-y-auto px-3 pb-3">
@@ -321,6 +356,7 @@ const DaftarArmadaCs = ({
           <div className="flex h-full items-center justify-center">
             {searchTerm ||
             activeTab === "ready" ||
+            activeTab === "sos" ||
             selectedTruckStatuses.length > 0 ||
             selectedOrderStatuses.length > 0 ? (
               // Search/filter results empty
@@ -369,9 +405,10 @@ const DaftarArmadaCs = ({
                             src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
                             width={16}
                             height={16}
+                            alt="truck icon"
                           />
                           <span>{transporter.fleets.length} Armada</span>
-                          <li className="flex items-center gap-1 pl-[26px]">
+                          <li className="flex list-none items-center gap-1 pl-[26px]">
                             <IconComponent
                               src="/icons/ellipse-7.svg"
                               height={3}
@@ -388,6 +425,7 @@ const DaftarArmadaCs = ({
                                 src="/icons/call-blue.svg"
                                 width={16}
                                 height={16}
+                                alt="call icon"
                               />
                               <span>Hubungi</span>
                             </button>
@@ -453,13 +491,13 @@ const DaftarArmadaCs = ({
       )}
       <SosPopupNotification
         isOpen={showSosNotification}
-        sosCount={readyCount}
+        sosCount={sosCount} // **UPDATED**: Pass correct sosCount
         onClose={() => {
           setShowSosNotification(false);
           acknowledgeSosAlert();
         }}
         onConfirm={() => {
-          setActiveTab("ready");
+          setActiveTab("sos"); // **UPDATED**: Go to 'sos' tab
           setShowSosNotification(false);
           acknowledgeSosAlert();
         }}

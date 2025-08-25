@@ -20,15 +20,27 @@ import AturResponMassalModal from "@/container/Shared/OrderModal/AturResponMassa
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import TerimaDanUbahArmadaModal from "@/container/Shared/OrderModal/TerimaDanUbahArmadaModal";
 import ImageArmada from "@/container/Shared/OrderModal/components/ImageArmada";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+import {
+  TRACKING_STATUS,
+  getTrackingStatusBadgeWithTranslation,
+} from "@/utils/Transporter/trackingStatus";
 
 // Create validation schema for all armada responses
-const createFormSchema = (armadaList) => {
+const createFormSchema = (armadaList, t) => {
   const responseSchema = {};
   armadaList.forEach((armada) => {
     responseSchema[`armada_${armada.id}`] = v.pipe(
       v.string(),
-      v.minLength(1, `Respon untuk ${armada.plateNumber} wajib dipilih`)
+      v.minLength(
+        1,
+        t(
+          "ResponPerubahanPage.responseRequired",
+          { plateNumber: armada.plateNumber },
+          `Respon untuk ${armada.plateNumber} wajib dipilih`
+        )
+      )
     );
   });
 
@@ -36,6 +48,7 @@ const createFormSchema = (armadaList) => {
 };
 
 const ResponPerubahanPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,7 +62,7 @@ const ResponPerubahanPage = () => {
   );
   const [isMassalModalOpen, setIsMassalModalOpen] = useState(false);
   const [massalModalConfig, setMassalModalConfig] = useState({
-    title: "Terima Perubahan",
+    title: t("ResponPerubahanPage.acceptChange", {}, "Terima Perubahan"),
     responseType: "accept",
   });
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -61,7 +74,7 @@ const ResponPerubahanPage = () => {
       id: 1,
       plateNumber: "AE 1111 LBA",
       driverName: "Noel Gallagher",
-      status: "Armada Dijadwalkan",
+      status: TRACKING_STATUS.SCHEDULED_FLEET,
       response: "",
       truckImage: "/img/mock-armada/one.png",
     },
@@ -69,7 +82,7 @@ const ResponPerubahanPage = () => {
       id: 2,
       plateNumber: "AE 2222 LBA",
       driverName: "Yoel Gallagher",
-      status: "Menuju ke Lokasi Muat",
+      status: TRACKING_STATUS.MENUJU_KE_LOKASI_MUAT,
       response: "",
       truckImage: "/img/mock-armada/two.png",
     },
@@ -77,7 +90,7 @@ const ResponPerubahanPage = () => {
       id: 3,
       plateNumber: "AE 3333 LBA",
       driverName: "Gamma Gallagher",
-      status: "Menuju ke Lokasi Muat",
+      status: TRACKING_STATUS.MENUJU_KE_LOKASI_MUAT,
       response: "",
       truckImage: "/img/mock-armada/three.png",
     },
@@ -85,7 +98,7 @@ const ResponPerubahanPage = () => {
       id: 4,
       plateNumber: "AE 4444 LBA",
       driverName: "Sam Gallagher",
-      status: "Tiba di Lokasi Muat",
+      status: TRACKING_STATUS.TIBA_DI_LOKASI_MUAT,
       response: "",
       truckImage: "/img/mock-armada/one.png",
     },
@@ -93,7 +106,7 @@ const ResponPerubahanPage = () => {
       id: 5,
       plateNumber: "AE 5555 LBA",
       driverName: "Muklason",
-      status: "Antri di Lokasi Muat",
+      status: TRACKING_STATUS.ANTRI_DI_LOKASI_MUAT,
       response: "",
       truckImage: "/img/mock-armada/two.png",
     },
@@ -101,20 +114,37 @@ const ResponPerubahanPage = () => {
       id: 6,
       plateNumber: "AE 6666 LBA",
       driverName: "Hadi Agus James",
-      status: "Antri di Lokasi Muat",
+      status: TRACKING_STATUS.ANTRI_DI_LOKASI_MUAT,
       response: "",
       truckImage: "/img/mock-armada/three.png",
     },
   ];
 
   const responseOptions = [
-    { value: "accept", label: "Terima Perubahan" },
-    { value: "change", label: "Terima Perubahan & Ubah Armada" },
-    { value: "reject", label: "Tolak Perubahan & Batalkan Armada" },
+    {
+      value: "accept",
+      label: t("ResponPerubahanPage.acceptChange", {}, "Terima Perubahan"),
+    },
+    {
+      value: "change",
+      label: t(
+        "ResponPerubahanPage.acceptChangeAndReplace",
+        {},
+        "Terima Perubahan & Ubah Armada"
+      ),
+    },
+    {
+      value: "reject",
+      label: t(
+        "ResponPerubahanPage.rejectChangeAndCancel",
+        {},
+        "Tolak Perubahan & Batalkan Armada"
+      ),
+    },
   ];
 
   // Initialize form with validation
-  const formSchema = createFormSchema(armadaList);
+  const formSchema = createFormSchema(armadaList, t);
   const {
     setValue,
     watch,
@@ -154,21 +184,29 @@ const ResponPerubahanPage = () => {
     if (value === "change") {
       // Open modal for bulk change armada selection
       setMassalModalConfig({
-        title: "Terima Perubahan & Ubah Armada",
+        title: t(
+          "ResponPerubahanPage.acceptChangeAndReplace",
+          {},
+          "Terima Perubahan & Ubah Armada"
+        ),
         responseType: "change",
       });
       setIsMassalModalOpen(true);
     } else if (value === "accept") {
       // Open modal for bulk accept
       setMassalModalConfig({
-        title: "Terima Perubahan",
+        title: t("ResponPerubahanPage.acceptChange", {}, "Terima Perubahan"),
         responseType: "accept",
       });
       setIsMassalModalOpen(true);
     } else if (value === "reject") {
       // Open modal for bulk reject
       setMassalModalConfig({
-        title: "Tolak Perubahan & Batalkan Armada",
+        title: t(
+          "ResponPerubahanPage.rejectChangeAndCancel",
+          {},
+          "Tolak Perubahan & Batalkan Armada"
+        ),
         responseType: "reject",
       });
       setIsMassalModalOpen(true);
@@ -188,9 +226,21 @@ const ResponPerubahanPage = () => {
       console.log("Saving as draft", responses);
       // TODO: Implement save as draft API call
 
-      toast.success("Respon berhasil disimpan sebagai draf");
+      toast.success(
+        t(
+          "ResponPerubahanPage.draftSavedSuccess",
+          {},
+          "Respon berhasil disimpan sebagai draf"
+        )
+      );
     } catch (error) {
-      toast.error("Gagal menyimpan draf. Silakan coba lagi.");
+      toast.error(
+        t(
+          "ResponPerubahanPage.draftSaveError",
+          {},
+          "Gagal menyimpan draf. Silakan coba lagi."
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -293,10 +343,22 @@ const ResponPerubahanPage = () => {
       console.log("Submitting responses", responses);
       // TODO: Implement submit response API call
 
-      toast.success("Respon perubahan berhasil dikirim");
+      toast.success(
+        t(
+          "ResponPerubahanPage.responseSubmitSuccess",
+          {},
+          "Respon perubahan berhasil dikirim"
+        )
+      );
       // Optionally navigate back or reset form
     } catch (error) {
-      toast.error("Gagal mengirim respon. Silakan coba lagi.");
+      toast.error(
+        t(
+          "ResponPerubahanPage.responseSubmitError",
+          {},
+          "Gagal mengirim respon. Silakan coba lagi."
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -309,29 +371,41 @@ const ResponPerubahanPage = () => {
 
     if (errorCount === totalArmada) {
       // All responses are missing
-      toast.error("Respon perubahan wajib diisi");
+      toast.error(
+        t(
+          "ResponPerubahanPage.allResponsesRequired",
+          {},
+          "Respon perubahan wajib diisi"
+        )
+      );
     } else {
       // Some responses are missing
-      toast.error("Respon perubahan wajib terisi semua");
+      toast.error(
+        t(
+          "ResponPerubahanPage.allResponsesRequiredComplete",
+          {},
+          "Respon perubahan wajib terisi semua"
+        )
+      );
     }
 
     console.log("Validation errors:", errors);
   });
 
-  const getStatusBadgeVariant = (status) => {
-    const statusVariants = {
-      "Armada Dijadwalkan": "primary",
-      "Menuju ke Lokasi Muat": "warning",
-      "Tiba di Lokasi Muat": "success",
-      "Antri di Lokasi Muat": "warning",
-    };
-    return statusVariants[status] || "neutral";
-  };
-
   const breadcrumbData = [
-    { name: "Monitoring", href: "/monitoring" },
-    { name: "Daftar Pesanan Aktif", href: "/monitoring" },
-    { name: "Respon Perubahan" },
+    {
+      name: t("ResponPerubahanPage.monitoring", {}, "Monitoring"),
+      href: "/monitoring",
+    },
+    {
+      name: t(
+        "ResponPerubahanPage.activeOrderList",
+        {},
+        "Daftar Pesanan Aktif"
+      ),
+      href: "/monitoring",
+    },
+    { name: t("ResponPerubahanPage.responseChange", {}, "Respon Perubahan") },
   ];
 
   return (
@@ -343,7 +417,7 @@ const ResponPerubahanPage = () => {
 
           <div className="flex items-center justify-between">
             <PageTitle withBack className="mb-0">
-              Respon Perubahan
+              {t("ResponPerubahanPage.responseChange", {}, "Respon Perubahan")}
             </PageTitle>
 
             <div className="flex items-center gap-3">
@@ -352,7 +426,7 @@ const ResponPerubahanPage = () => {
                 onClick={() => setIsChangeModalOpen(true)}
                 className="h-10 px-4"
               >
-                Lihat Perubahan
+                {t("ResponPerubahanPage.viewChanges", {}, "Lihat Perubahan")}
               </Button>
               <Button
                 variant="muattrans-primary-secondary"
@@ -363,7 +437,7 @@ const ResponPerubahanPage = () => {
                 }
                 className="h-10 px-4"
               >
-                Detail Pesanan
+                {t("ResponPerubahanPage.orderDetails", {}, "Detail Pesanan")}
               </Button>
             </div>
           </div>
@@ -378,15 +452,23 @@ const ResponPerubahanPage = () => {
             className="h-5 w-5 shrink-0 text-warning-900"
           />
           <div className="flex-1">
-            <p className="mb-3 pt-0.5">Pemberitahuan:</p>
+            <p className="mb-3 pt-0.5">
+              {t("ResponPerubahanPage.notification", {}, "Pemberitahuan")}:
+            </p>
             <ul className="mt-1 list-disc pl-5">
               <li>
-                Terdapat perubahan pesanan dari shipper, mohon pelajari
-                perubahannya dan segera beri respon.
+                {t(
+                  "ResponPerubahanPage.notificationMessage1",
+                  {},
+                  "Terdapat perubahan pesanan dari shipper, mohon pelajari perubahannya dan segera beri respon."
+                )}
               </li>
               <li>
-                Jika kamu melakukan penolakan pada satu armada atau lebih, maka
-                akan ada penyesuaian pendapatan.
+                {t(
+                  "ResponPerubahanPage.notificationMessage2",
+                  {},
+                  "Jika kamu melakukan penolakan pada satu armada atau lebih, maka akan ada penyesuaian pendapatan."
+                )}
               </li>
             </ul>
           </div>
@@ -400,7 +482,11 @@ const ResponPerubahanPage = () => {
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <Search
-                placeholder="Cari No. Polisi / Nama Driver"
+                placeholder={t(
+                  "ResponPerubahanPage.searchPlaceholder",
+                  {},
+                  "Cari No. Polisi / Nama Driver"
+                )}
                 onSearch={(value) => setSearchTerm(value)}
                 containerClassName="w-80"
                 inputClassName="text-sm"
@@ -414,7 +500,11 @@ const ResponPerubahanPage = () => {
                     value={bulkResponse}
                     onChange={handleBulkResponse}
                     options={responseOptions}
-                    placeholder="Atur Respon Massal"
+                    placeholder={t(
+                      "ResponPerubahanPage.setBulkResponse",
+                      {},
+                      "Atur Respon Massal"
+                    )}
                     contentWidth="242px"
                     className="text-neutral-900"
                   />
@@ -425,7 +515,13 @@ const ResponPerubahanPage = () => {
                   disabled={isLoading || !hasAnyResponse}
                   className="h-10 px-6"
                 >
-                  {isLoading ? "Menyimpan..." : "Simpan sebagai Draf"}
+                  {isLoading
+                    ? t("ResponPerubahanPage.saving", {}, "Menyimpan...")
+                    : t(
+                        "ResponPerubahanPage.saveAsDraft",
+                        {},
+                        "Simpan sebagai Draf"
+                      )}
                 </Button>
                 <Button
                   variant="muattrans-primary"
@@ -433,7 +529,9 @@ const ResponPerubahanPage = () => {
                   disabled={isLoading}
                   className="h-10 px-6"
                 >
-                  {isLoading ? "Mengirim..." : "Kirim Respon"}
+                  {isLoading
+                    ? t("ResponPerubahanPage.sending", {}, "Mengirim...")
+                    : t("ResponPerubahanPage.sendResponse", {}, "Kirim Respon")}
                 </Button>
               </div>
             </div>
@@ -441,9 +539,25 @@ const ResponPerubahanPage = () => {
 
           {/* Armada List Header */}
           <div className="grid grid-cols-3 items-center gap-9 px-6 text-xs font-bold text-neutral-600">
-            <div>Daftar Armada ({filteredArmada.length} Armada)</div>
-            <div className="">Armada Pengganti</div>
-            <div className="">Pilih Respon Perubahan</div>
+            <div>
+              {t("ResponPerubahanPage.fleetList", {}, "Daftar Armada")} (
+              {filteredArmada.length}{" "}
+              {t("ResponPerubahanPage.fleet", {}, "Armada")})
+            </div>
+            <div className="">
+              {t(
+                "ResponPerubahanPage.replacementFleet",
+                {},
+                "Armada Pengganti"
+              )}
+            </div>
+            <div className="">
+              {t(
+                "ResponPerubahanPage.selectResponseChange",
+                {},
+                "Pilih Respon Perubahan"
+              )}
+            </div>
           </div>
 
           {/* Armada List */}
@@ -477,10 +591,20 @@ const ResponPerubahanPage = () => {
                         </span>
                       </div>
                       <BadgeStatus
-                        variant={getStatusBadgeVariant(armada.status)}
+                        variant={
+                          getTrackingStatusBadgeWithTranslation(
+                            armada.status,
+                            t
+                          ).variant
+                        }
                         className="w-auto"
                       >
-                        {armada.status}
+                        {
+                          getTrackingStatusBadgeWithTranslation(
+                            armada.status,
+                            t
+                          ).label
+                        }
                       </BadgeStatus>
                     </div>
                   </div>
@@ -493,8 +617,11 @@ const ResponPerubahanPage = () => {
                         className="h-6 w-6 text-success-600"
                       />
                       <span className="w-[340px] text-xs font-semibold text-success-400">
-                        Tidak ada perubahan armada dan akan ada penyesuaian
-                        pendapatan
+                        {t(
+                          "ResponPerubahanPage.noFleetChangeMessage",
+                          {},
+                          "Tidak ada perubahan armada dan akan ada penyesuaian pendapatan"
+                        )}
                       </span>
                     </div>
                   )}
@@ -541,7 +668,11 @@ const ResponPerubahanPage = () => {
                             }}
                             className="ml-auto text-xs font-medium text-primary-700"
                           >
-                            Ubah Armada
+                            {t(
+                              "ResponPerubahanPage.changeFleet",
+                              {},
+                              "Ubah Armada"
+                            )}
                           </button>
                         </div>
                       </div>
@@ -555,8 +686,11 @@ const ResponPerubahanPage = () => {
                         className="h-6 w-6 text-error-400"
                       />
                       <span className="w-[340px] text-xs font-semibold text-error-400">
-                        Armada akan dibatalkan, akan ada penyesuaian pendapatan,
-                        dan tidak ada kompensasi
+                        {t(
+                          "ResponPerubahanPage.fleetCancelMessage",
+                          {},
+                          "Armada akan dibatalkan, akan ada penyesuaian pendapatan, dan tidak ada kompensasi"
+                        )}
                       </span>
                     </div>
                   )}
@@ -569,7 +703,11 @@ const ResponPerubahanPage = () => {
                         handleIndividualResponse(armada.id, value)
                       }
                       options={responseOptions}
-                      placeholder="Pilih Respon Perubahan"
+                      placeholder={t(
+                        "ResponPerubahanPage.selectResponseChange",
+                        {},
+                        "Pilih Respon Perubahan"
+                      )}
                       error={!!errors[`armada_${armada.id}`]}
                     />
                   </div>
