@@ -27,6 +27,7 @@ export const FilterSelect = forwardRef(
       renderItem = null,
       contentClassName = "",
       onFocus,
+      isActive,
       ...props
     },
     ref
@@ -49,6 +50,8 @@ export const FilterSelect = forwardRef(
                 icon && "pl-9",
                 className
               )}
+              iconClassName={isActive && "!text-primary-700"}
+              textClassName={isActive && "!text-primary-700"}
             >
               <Select.Value placeholder={placeholder}>
                 {displayValueOverride !== null

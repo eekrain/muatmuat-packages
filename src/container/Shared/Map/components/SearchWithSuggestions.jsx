@@ -14,6 +14,7 @@ export const SearchWithSuggestions = ({
   onSearch,
   containerClassName,
   inputClassName,
+  fleetLocationsData,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -93,6 +94,7 @@ export const SearchWithSuggestions = ({
         isOpen={showSuggestions}
         searchValue={searchValue}
         onSelect={handleSuggestionSelect}
+        fleetLocationsData={fleetLocationsData}
       />
     </div>
   );

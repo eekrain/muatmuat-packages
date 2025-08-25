@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
+// import { toast } from "@/lib/toast";
 import { useTranslation } from "@/hooks/use-translation";
 import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 
@@ -46,6 +47,13 @@ const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
       setActiveTab(getInitialActiveTab());
     }
   }, [dataOrderDetail?.orderStatus, getInitialActiveTab]);
+
+  // LDN-381
+  // useEffect(() => {
+  //   if (activeTab === "riwayat") {
+  //     toast.success("Berhasil membatalkan armada AE 1111 LBA");
+  //   }
+  // }, [activeTab]);
 
   // Ambil data armada dari dataOrderDetail.fleets
   const armadaList = useMemo(() => {
@@ -121,9 +129,8 @@ const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
   }, [armadaList]);
 
   // Cek apakah hanya ada satu data untuk menyembunyikan search
-  const shouldShowSearch = useMemo(() => {
-    return (armadaByTab?.length || 0) > 1;
-  }, [armadaByTab]);
+  // kata babang krisna kalo total semua nya lebih dari 1 dimunculin di semua tab
+  const shouldShowSearch = armadaList.length > 1;
 
   // Cek apakah button "Lihat Posisi Armada" harus disembunyikan
   const shouldHidePositionButton = useMemo(() => {
@@ -184,7 +191,9 @@ const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
                 replacementFleet={armada.replacementFleet}
                 replacementDriver={armada.replacementDriver}
                 fleetChangeStatus={armada.fleetChangeStatus}
+                setActiveTab={setActiveTab}
                 onNavigateToRiwayat={onNavigateToRiwayat}
+                totalSosCount={sosCount}
               />
             ))
           ) : (

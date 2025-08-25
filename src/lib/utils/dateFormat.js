@@ -245,3 +245,23 @@ export function formatLoadTime(
     );
   }
 }
+
+// Helper function to format DD-MM-YYYY to YYYY-MM-DD without timezone issues
+export const formatToYYYYMMDD = (dateStr) => {
+  if (!dateStr) return "";
+
+  // Handle DD-MM-YYYY format (with dashes)
+  const dashParts = dateStr.split("-");
+  if (dashParts.length === 3 && dashParts[0].length <= 2) {
+    return `${dashParts[2]}-${dashParts[1]}-${dashParts[0]}`;
+  }
+
+  // Handle DD/MM/YYYY format (with slashes)
+  const slashParts = dateStr.split("/");
+  if (slashParts.length === 3 && slashParts[0].length <= 2) {
+    return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
+  }
+
+  // If already in YYYY-MM-DD format, return as is
+  return dateStr;
+};

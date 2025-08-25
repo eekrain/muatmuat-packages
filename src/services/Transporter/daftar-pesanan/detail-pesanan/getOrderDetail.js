@@ -476,7 +476,7 @@ const mockApiResult = {
           phoneNumber: "081234567897",
           profileImage: "https://example.com/driver8.jpg",
         },
-        hasSOSAlert: false,
+        hasSOSAlert: true,
         currentStatus: TRACKING_STATUS.COMPLETED,
         milestones: [
           {
@@ -515,7 +515,7 @@ const mockApiResult = {
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
         // Status perubahan armada
-        fleetChangeStatus: "COMPLETED",
+        fleetChangeStatus: "APPROVED", // "PENDING", "APPROVED" default null
       },
       {
         id: "fleet-009",

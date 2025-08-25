@@ -34,7 +34,7 @@ const MenuItem = ({ imgUrl, title, variant, onClick }) => {
       onClick={onClick}
     >
       <IconComponent src={imgUrl} width={16} height={16} alt="profile" />
-      <span className="pt-1 text-xs">
+      <span className="w-fit pt-1 text-xs">
         {t(`HeaderLayout.userMenu.${title.replace(/\s+/g, "")}`, {}, title)}
       </span>
     </button>
@@ -147,7 +147,7 @@ const NavigationMenuItem = ({ item, pathname }) => {
             <ChevronDown className="h-4 w-4" />
           </button>
         </SimpleHoverTrigger>
-        <SimpleHoverContent className="w-fit min-w-[194px]">
+        <SimpleHoverContent className="w-full max-w-full">
           {item.dropdownItems.map((dropdownItem) => {
             const isSelected =
               dropdownItem.href && pathname.startsWith(dropdownItem.href);
@@ -159,7 +159,12 @@ const NavigationMenuItem = ({ item, pathname }) => {
                 {dropdownItem.href ? (
                   <Link
                     href={dropdownItem.href}
-                    className="flex w-full items-center justify-between gap-[10px] text-nowrap"
+                    className={cn(
+                      "flex items-center justify-between gap-x-2.5",
+                      pathname.includes(dropdownItem.href)
+                        ? "font-semibold"
+                        : ""
+                    )}
                   >
                     <span className={`${isSelected ? "font-semibold" : ""}`}>
                       {t(
@@ -168,13 +173,14 @@ const NavigationMenuItem = ({ item, pathname }) => {
                         dropdownItem.label
                       )}
                     </span>
-                    {isSelected && (
-                      <ImageComponent
-                        src="/img/checkedblue.png"
-                        className="h-4 w-4"
-                        alt="Selected Icon"
-                      />
-                    )}
+                    <div className="size-4">
+                      {isSelected && (
+                        <IconComponent
+                          className="text-primary-700"
+                          src="/icons/check16.svg"
+                        />
+                      )}
+                    </div>
                   </Link>
                 ) : (
                   <span className="flex w-full items-center justify-between">

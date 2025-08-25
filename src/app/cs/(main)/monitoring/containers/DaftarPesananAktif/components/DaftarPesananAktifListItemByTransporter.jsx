@@ -25,7 +25,7 @@ const DetailedOrderItem = ({
   return (
     <div
       className={cn(
-        "flex w-full flex-row items-start gap-3 px-3 py-4",
+        "flex w-full flex-row items-start gap-3 py-4",
         !isLast && "border-b border-neutral-300"
       )}
     >
@@ -52,7 +52,7 @@ const ShipperGroupItem = ({
   const [isOpen, setIsOpen] = useState(true); // Default to open
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-neutral-400">
       {/* Shipper Header */}
       <div className="">
         <div
@@ -103,7 +103,7 @@ const ShipperGroupItem = ({
 
       {/* Expanded Content: List of Orders */}
       {isOpen && (
-        <div className="border-t border-neutral-400">
+        <div className="border-t border-neutral-400 px-3">
           {shipperData.orders.map((order, index) => (
             <DetailedOrderItem
               key={order.orderId || order.id}
@@ -178,7 +178,7 @@ const DaftarPesananAktifListItemByTransporter = ({
       {/* Expanded Content: List of Shippers */}
       {isOpen && (
         <div className="p-4 pt-4">
-          <div className="flex flex-col gap-3 overflow-hidden rounded-xl border border-neutral-400">
+          <div className="flex flex-col gap-3">
             {transporterData.shippers.map((shipper) => (
               <ShipperGroupItem
                 key={shipper.id}

@@ -42,6 +42,7 @@ function CardLacakArmada({
   replacementDriver = null, // Add replacement driver prop
   fleetChangeStatus = null, // Add fleet change status prop
   onNavigateToRiwayat,
+  totalSosCount = 0, // Add total SOS count prop
 }) {
   const { t } = useTranslation();
   const { isMobile } = useDevice();
@@ -233,8 +234,11 @@ function CardLacakArmada({
     // kalau perlu refresh data parent, panggil di sini
   };
 
-  // Use hasSOSAlert prop directly
+  // Show SOS badge when fleet has SOS alert
   const isSOS = hasSOSAlert;
+
+  // Show "Lihat SOS" button only when there's exactly 1 fleet with SOS alert
+  const showViewSOSButton = hasSOSAlert && totalSosCount === 1;
 
   // Get status badge using tracking status
   const statusBadge = getTrackingStatusBadge(status);
@@ -280,13 +284,15 @@ function CardLacakArmada({
                 <div className="mb-2 flex h-[24px] items-center rounded-md bg-error-400 px-3 text-xs font-semibold text-error-50">
                   {t("CardLacakArmada.sosLabel", {}, "SOS")}
                 </div>
-                <Button
-                  className="text-xs"
-                  onClick={onViewSosClick}
-                  variant="link"
-                >
-                  {t("CardLacakArmada.viewSOS", {}, "Lihat SOS")}
-                </Button>
+                {showViewSOSButton && (
+                  <Button
+                    className="text-xs"
+                    onClick={onViewSosClick}
+                    variant="link"
+                  >
+                    {t("CardLacakArmada.viewSOS", {}, "Lihat SOS")}
+                  </Button>
+                )}
               </>
             )}
           </div>

@@ -1,7 +1,14 @@
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
-const SearchNotFound = ({ label = "Keyword Tidak Ditemukan", className }) => {
+const SearchNotFound = ({ label, className }) => {
+  const { t } = useTranslation();
+  const defaultLabel = t(
+    "SearchNotFound.keywordNotFound",
+    {},
+    "Keyword Tidak Ditemukan"
+  );
   return (
     <div
       className={cn(
@@ -17,7 +24,7 @@ const SearchNotFound = ({ label = "Keyword Tidak Ditemukan", className }) => {
       />
       <div className="flex flex-col items-center gap-2">
         <p className="text-center text-base font-[600] text-neutral-600">
-          {label}
+          {label || defaultLabel}
         </p>
       </div>
     </div>

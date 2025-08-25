@@ -418,6 +418,7 @@ const Page = () => {
                   order: filters.selectedOrderFilters,
                 }}
                 showPilihArmada={panels.showPilihArmada}
+                fleetLocationsData={fleetLocationsData}
               />
             )}
 

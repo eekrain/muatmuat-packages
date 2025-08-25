@@ -7,6 +7,8 @@ import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Pagination from "@/components/Pagination/Pagination";
 import PesananTable from "@/components/Table/PesananTable";
 import { useTranslation } from "@/hooks/use-translation";
+import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
+import { formatToYYYYMMDD } from "@/lib/utils/dateFormat";
 
 const DaftarPesananWeb = ({
   queryParams,
@@ -55,26 +57,6 @@ const DaftarPesananWeb = ({
   }, [settlementAlertInfo]);
 
   const hasFilteredOrders = orders.length > 0;
-
-  // Helper function to format DD-MM-YYYY to YYYY-MM-DD without timezone issues
-  const formatToYYYYMMDD = (dateStr) => {
-    if (!dateStr) return "";
-
-    // Handle DD-MM-YYYY format (with dashes)
-    const dashParts = dateStr.split("-");
-    if (dashParts.length === 3 && dashParts[0].length <= 2) {
-      return `${dashParts[2]}-${dashParts[1]}-${dashParts[0]}`;
-    }
-
-    // Handle DD/MM/YYYY format (with slashes)
-    const slashParts = dateStr.split("/");
-    if (slashParts.length === 3 && slashParts[0].length <= 2) {
-      return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
-    }
-
-    // If already in YYYY-MM-DD format, return as is
-    return dateStr;
-  };
 
   const handleSelectPeriod = (selectedOption) => {
     // For custom date range option
@@ -148,38 +130,7 @@ const DaftarPesananWeb = ({
     onChangeQueryParams("endDate", null);
   };
 
-  const periodOptions = [
-    {
-      name: `${t("EksekusiTenderIndexSemuaPeriode")} (Default)`,
-      value: "",
-      format: "day",
-    },
-    {
-      name: t("AppMuatpartsAnalisaProdukHariIni"),
-      value: 0,
-      format: "day",
-    },
-    {
-      name: t("AppMuatpartsAnalisaProduk1MingguTerakhir"),
-      value: 7,
-      format: "day",
-    },
-    {
-      name: t("AppMuatpartsAnalisaProduk30HariTerakhir"),
-      value: 30,
-      format: "month",
-    },
-    {
-      name: t("AppMuatpartsAnalisaProduk90HariTerakhir"),
-      value: 90,
-      format: "month",
-    },
-    {
-      name: t("AppMuatpartsAnalisaProduk1TahunTerakhir"),
-      value: 365,
-      format: "year",
-    },
-  ];
+  const periodOptions = translatedPeriodOptions(t);
 
   return (
     <main className="flex justify-center">

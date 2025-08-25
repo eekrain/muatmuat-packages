@@ -6,7 +6,6 @@ import { TagBubble } from "@/components/Badge/TagBubble";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import DataTable from "@/components/DataTable/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Filter from "@/components/Filter/Filter";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
@@ -21,8 +20,9 @@ import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
 // Assuming path, adjust if necessary
 import RespondChangeFormModal from "@/container/Shared/OrderModal/RespondChangeFormModal";
 import { useTranslation } from "@/hooks/use-translation";
+import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
-import { formatLoadTime } from "@/lib/utils/dateFormat";
+import { formatLoadTime, formatToYYYYMMDD } from "@/lib/utils/dateFormat";
 import {
   ORDER_STATUS,
   ORDER_STATUS_CONFIG,
@@ -33,28 +33,22 @@ const DaftarPesanan = ({
   isFirstTimer,
   orders,
   pagination,
+  tabOptions,
+  statusRadioOptions,
+  recentSelections,
   queryParams,
   lastFilterField,
+  currentPeriodValue,
+  setCurrentPeriodValue,
+  filterType,
+  setFilterType,
   onChangeQueryParams,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
   const [tempSearch, setTempSearch] = useState("");
-  const [selectedTab, setSelectedTab] = useState("semua");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const [searchValue, setSearchValue] = useState("");
-  const [filters, setFilters] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
-  const [currentPeriodValue, setCurrentPeriodValue] = useState({
-    name: "Semua Periode (Default)",
-    value: "",
-    format: "day",
-  });
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+
   const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
   const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
@@ -66,13 +60,6 @@ const DaftarPesanan = ({
   // State for Confirm Ready Modal
   const [isConfirmReadyModalOpen, setIsConfirmReadyModalOpen] = useState(false);
   const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
-  console.log("🚓 orderData :", orders);
-
-  // Handle tab click
-  const handleTabClick = (tabValue) => {
-    setSelectedTab(tabValue);
-    console.log("Selected tab:", tabValue);
-  };
 
   // Handle search
   const handleSearch = (e) => {
@@ -84,7 +71,6 @@ const DaftarPesanan = ({
   // Handle clear search
   const handleClearSearch = () => {
     setTempSearch("");
-    setSearchValue("");
   };
 
   // Handle opening the response change modal
@@ -159,18 +145,19 @@ const DaftarPesanan = ({
           height={122}
         />
       );
+    } else {
+      return (
+        <DataNotFound
+          type="data"
+          className="gap-3"
+          title="Tidak ada data"
+          width={96}
+          height={77}
+        />
+      );
     }
   };
-
   const DataEmptyComponent = memo(DataEmptyComponentBase);
-
-  // Tab options sesuai design
-  const tabOptions = [
-    { label: "Semua", value: "semua" },
-    { label: "Perlu Respon Perubahan (2)", value: "perlu-respon" },
-    { label: "Perlu Konfirmasi Siap (2)", value: "perlu-konfirmasi" },
-    { label: "Perlu Assign Armada (3)", value: "perlu-assign" },
-  ];
 
   // Define columns sesuai LDG-2 design
   // DIBACA: SEMENTARA PAKEK ROW INDEX CUMAN BUAT KLUARIN VARIASI DESIGN!!!
@@ -418,78 +405,8 @@ const DaftarPesanan = ({
     },
   ];
 
-  // Status radio options untuk hierarchical filter
-  const statusRadioOptions = [
-    {
-      key: "status",
-      label: "Status",
-      children: [
-        ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER,
-        ORDER_STATUS.NEED_CHANGE_RESPONSE,
-        ORDER_STATUS.NEED_CONFIRMATION_READY,
-        ORDER_STATUS.LOADING,
-        ORDER_STATUS.UNLOADING,
-        ORDER_STATUS.PREPARE_DOCUMENT,
-        ORDER_STATUS.DOCUMENT_DELIVERY,
-        ORDER_STATUS.COMPLETED,
-      ].map((item) => ({
-        value: item,
-        label: ORDER_STATUS_CONFIG[item].label,
-      })),
-    },
-  ];
-
-  // Handle filter change
-  const handleFilterChange = ({ name, value }) => {
-    setSelectedStatus(value);
-    console.log("Filter changed:", name, value);
-  };
-
-  // Get selected filter for display
-  const getSelectedFilter = () => {
-    if (!selectedStatus) return null;
-
-    const allOptions = statusRadioOptions.flatMap(
-      (item) => item.children || []
-    );
-    return allOptions.find((option) => option.value === selectedStatus);
-  };
-
-  const selectedFilter = getSelectedFilter();
-
   // Period options untuk dropdown
-  const periodOptions = [
-    {
-      name: "Semua Periode (Default)",
-      value: "",
-      format: "day",
-    },
-    {
-      name: "Hari Ini",
-      value: 0,
-      format: "day",
-    },
-    {
-      name: "1 Minggu Terakhir",
-      value: 7,
-      format: "day",
-    },
-    {
-      name: "30 Hari Terakhir",
-      value: 30,
-      format: "month",
-    },
-    {
-      name: "90 Hari Terakhir",
-      value: 90,
-      format: "month",
-    },
-    {
-      name: "1 Tahun Terakhir",
-      value: 365,
-      format: "year",
-    },
-  ];
+  const periodOptions = translatedPeriodOptions(t);
 
   // Generic function to handle sorting for any column
   const handleSort = (columnName) => {
@@ -509,53 +426,37 @@ const DaftarPesanan = ({
     }
   };
 
-  // Helper function to format DD-MM-YYYY to YYYY-MM-DD
-  const formatToYYYYMMDD = (dateStr) => {
-    if (!dateStr) return "";
-
-    // Handle DD-MM-YYYY format (with dashes)
-    const dashParts = dateStr.split("-");
-    if (dashParts.length === 3 && dashParts[0].length <= 2) {
-      return `${dashParts[2]}-${dashParts[1]}-${dashParts[0]}`;
-    }
-
-    // Handle DD/MM/YYYY format (with slashes)
-    const slashParts = dateStr.split("/");
-    if (slashParts.length === 3 && slashParts[0].length <= 2) {
-      return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
-    }
-
-    // If already in YYYY-MM-DD format, return as is
-    return dateStr;
-  };
-
-  // Handle select period dari dropdown
   const handleSelectPeriod = (selectedOption) => {
     // For custom date range option
     if (selectedOption?.range) {
+      // Use string manipulation, not Date object with toISOString()
       const formattedStartDate = formatToYYYYMMDD(selectedOption.start_date);
       const formattedEndDate = formatToYYYYMMDD(selectedOption.end_date);
 
-      setStartDate(formattedStartDate);
-      setEndDate(formattedEndDate);
+      onChangeQueryParams("startDate", formattedStartDate);
+      onChangeQueryParams("endDate", formattedEndDate);
 
-      // Update recent selections
-      if (
-        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
-      ) {
-        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
-      }
+      // Update recent selections - only add if not already in the array
+      // if (
+      //   !recentSelections?.some((s) => s?.value === selectedOption?.value)
+      // ) {
+      //   setRecentPeriodOptions((prev) => [...prev, selectedOption]);
+      // }
 
+      // Update the current period value
       setCurrentPeriodValue(selectedOption);
     }
     // For default "Semua Periode" option
     else if (selectedOption?.value === "") {
-      setStartDate(null);
-      setEndDate(null);
+      onChangeQueryParams("startDate", null);
+      onChangeQueryParams("endDate", null);
+
+      // Update the current period value
       setCurrentPeriodValue(selectedOption);
     }
-    // For predefined period options
+    // For predefined period options (today, last 7 days, etc.)
     else if (selectedOption?.value !== undefined) {
+      // Get local dates using direct component extraction, not toISOString()
       const getLocalDateString = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -563,23 +464,28 @@ const DaftarPesanan = ({
         return `${year}-${month}-${day}`;
       };
 
+      // Get today as end date
       const today = new Date();
-      const endDateStr = getLocalDateString(today);
+      const endDate = getLocalDateString(today);
 
-      let startDateStr;
+      // Calculate start date
+      let startDate;
       if (selectedOption.value === 0) {
         // Today
-        startDateStr = endDateStr;
+        startDate = endDate;
       } else {
-        // Other periods
+        // Other periods (7 days, 30 days, etc.)
         const startDateObj = new Date();
+        // Set to noon to avoid any date boundary issues
         startDateObj.setHours(12, 0, 0, 0);
         startDateObj.setDate(today.getDate() - selectedOption.value);
-        startDateStr = getLocalDateString(startDateObj);
+        startDate = getLocalDateString(startDateObj);
       }
 
-      setStartDate(startDateStr);
-      setEndDate(endDateStr);
+      onChangeQueryParams("startDate", startDate);
+      onChangeQueryParams("endDate", endDate);
+
+      // Update the current period value
       setCurrentPeriodValue(selectedOption);
     }
   };
@@ -590,184 +496,55 @@ const DaftarPesanan = ({
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-neutral-900">Daftar Pesanan</h1>
         <DropdownPeriode
-          disable={isFirstTimer}
-          // disable={orders.length === 0}
+          disable={
+            isLoading ||
+            isFirstTimer ||
+            (orders.length === 0 &&
+              !queryParams.startDate &&
+              !queryParams.endDate)
+          }
           options={periodOptions}
           onSelect={handleSelectPeriod}
-          recentSelections={recentPeriodOptions}
+          recentSelections={recentSelections}
           value={currentPeriodValue}
         />
       </div>
 
-      {true ? (
-        <Card className="border-none">
-          {isFirstTimer ? (
-            <div className="flex h-[280px] items-center justify-center">
-              <div className="flex flex-col items-center gap-y-3">
-                <DataNotFound
-                  type="data"
-                  title="Oops, daftar pesananmu masih kosong"
-                  className="gap-3"
-                  textClass="w-full"
-                  width={96}
-                  height={77}
-                />
-                <span className="text-xs font-medium text-neutral-600">
-                  Mulai terima permintaan sekarang untuk menampilkan data
-                  pesanan disini
-                </span>
-                <Button
-                  variant="muattrans-primary"
-                  onClick={() => {}}
-                  className="w-fit md:px-[32.5px]"
-                >
-                  Lihat Permintaan
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              <div className="flex flex-col gap-y-6 p-6 pt-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-x-3">
-                    <Input
-                      className="gap-0"
-                      // disabled
-                      // disabled={
-                      //   hasNoOrders || (!hasFilteredOrders && !queryParams.search)
-                      // }
-                      appearance={{ containerClassName: "w-[262px]" }}
-                      placeholder={t("placeholderCariPesanan")}
-                      icon={{
-                        left: "/icons/search16.svg",
-                        right: tempSearch ? (
-                          <IconComponent
-                            src="/icons/silang16.svg"
-                            onClick={handleClearSearch}
-                          />
-                        ) : null,
-                      }}
-                      value={tempSearch}
-                      onChange={({ target: { value } }) => setTempSearch(value)}
-                      onKeyUp={handleSearch}
-                    />
-                    <Filter
-                      // disabled
-                      // disabled={
-                      //   hasNoOrders ||
-                      //   (!hasFilteredOrders &&
-                      //     !statusRadioOptions
-                      //       .flatMap((item) => item.children)
-                      //       .some((item) => item.value === queryParams.status))
-                      // }
-                      options={statusRadioOptions}
-                      // value={queryParams.status}
-                      // value={queryParams.status}
-                      value={""}
-                      onChange={({ name, value }) =>
-                        onChangeQueryParams(name, value)
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center gap-x-3">
-                    <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
-                      {t("labelTampilkan")}
-                    </span>
-                    {[
-                      { value: "", label: "Semua" },
-                      {
-                        value: ORDER_STATUS.NEED_CHANGE_RESPONSE,
-                        label: `Perlu Respon Perubahan (2)`,
-                      },
-                      {
-                        value: ORDER_STATUS.NEED_CONFIRMATION_READY,
-                        label: `Perlu Konfirmasi Siap (2)`,
-                      },
-                      {
-                        value: ORDER_STATUS.NEED_ASSIGN_FLEET,
-                        label: `Perlu Assign Armada (3)`,
-                      },
-                    ].map((tab, key) => {
-                      // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
-                      // isn't one of the specific tab values
-                      const isActiveAllTab =
-                        tab.value === "" &&
-                        queryParams.status !==
-                          ORDER_STATUS.NEED_CHANGE_RESPONSE &&
-                        queryParams.status !==
-                          ORDER_STATUS.NEED_CONFIRMATION_READY &&
-                        queryParams.status !== ORDER_STATUS.NEED_ASSIGN_FLEET;
-
-                      return (
-                        <div
-                          key={key}
-                          onClick={() =>
-                            onChangeQueryParams("status", tab.value)
-                          }
-                          className={cn(
-                            "relative flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
-                            queryParams.status === tab.value || isActiveAllTab
-                              ? "border border-primary-700 bg-primary-50 text-primary-700"
-                              : "bg-neutral-200 text-neutral-900"
-                          )}
-                        >
-                          <span className="text-xxs leading-[1.3]">
-                            {tab.label}
-                          </span>
-                          {tab.value !== "" &&
-                          queryParams.status !== tab.value ? (
-                            <div className="absolute right-[11px] top-[6.5px] size-1 rounded-full bg-error-700" />
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                {false ? (
-                  <div className="flex items-center gap-x-3">
-                    <Button className="font-bold" variant="link">
-                      Hapus Semua Filter
-                    </Button>
-                    <TagBubble
-                      withRemove={{
-                        onRemove: () => {},
-                      }}
-                    >
-                      Proses Muat
-                    </TagBubble>
-                  </div>
-                ) : null}
-              </div>
-              <Table
-                columns={columns}
-                data={orders}
-                // data={[]}
-                loading={isLoading}
-                onRowClick={undefined}
-                onSort={handleSort}
-                sortConfig={{
-                  sort: queryParams.sort,
-                  order: queryParams.order,
-                }}
-                emptyComponent={<DataEmptyComponent />}
+      <Card className="border-none">
+        {isFirstTimer ? (
+          <div className="flex h-[280px] items-center justify-center">
+            <div className="flex flex-col items-center gap-y-3">
+              <DataNotFound
+                type="data"
+                title="Oops, daftar pesananmu masih kosong"
+                className="gap-3"
+                textClass="w-full"
+                width={96}
+                height={77}
               />
+              <span className="text-xs font-medium text-neutral-600">
+                Mulai terima permintaan sekarang untuk menampilkan data pesanan
+                disini
+              </span>
+              <Button
+                variant="muattrans-primary"
+                onClick={() => {}}
+                className="w-fit md:px-[32.5px]"
+              >
+                Lihat Permintaan
+              </Button>
             </div>
-          )}
-        </Card>
-      ) : (
-        <>
-          {/* Table sesuai LDG-2 design */}
-          <div className="rounded-lg bg-white shadow-[0px_4px_11px_0px_#41414140]">
-            {/* Custom header dengan Search + Filter + Tabs */}
-            <div className="flex-shrink-0 space-y-2 px-6 pb-0 pt-5">
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <div className="flex flex-col gap-y-6 p-6 pt-5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {/* Search Input */}
+                <div className="flex items-center gap-x-3">
                   <Input
                     className="gap-0"
-                    disabled={orders.length === 0}
+                    disabled={orders.length === 0 && !queryParams.search}
                     appearance={{ containerClassName: "w-[262px]" }}
-                    placeholder="Cari pesanan"
+                    placeholder={t("placeholderCariPesanan")}
                     icon={{
                       left: "/icons/search16.svg",
                       right: tempSearch ? (
@@ -781,96 +558,106 @@ const DaftarPesanan = ({
                     onChange={({ target: { value } }) => setTempSearch(value)}
                     onKeyUp={handleSearch}
                   />
-
-                  {/* Filter Component */}
                   <Filter
+                    disabled={orders.length === 0 && filterType !== "dropdown"}
                     options={statusRadioOptions}
-                    value={selectedStatus}
-                    onChange={handleFilterChange}
-                    disabled={orders.length === 0}
+                    value={filterType === "dropdown" ? queryParams.status : ""}
+                    onChange={({ name, value }) => {
+                      setFilterType("dropdown");
+                      onChangeQueryParams(name, value);
+                    }}
                   />
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-medium text-neutral-700">
-                    Tampilkan :
+                <div className="flex items-center gap-x-3">
+                  <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
+                    {t("labelTampilkan")}
                   </span>
-                  <div className="flex items-center gap-2">
-                    {tabOptions.map((tab) => (
-                      <button
-                        key={tab.value}
-                        onClick={() => handleTabClick(tab.value)}
-                        className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                          selectedTab === tab.value
+                  {tabOptions.map((tab, key) => {
+                    // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
+                    // isn't one of the specific tab values
+                    const isActiveAllTab =
+                      tab.value === "" &&
+                      queryParams.status !==
+                        ORDER_STATUS.NEED_CHANGE_RESPONSE &&
+                      queryParams.status !==
+                        ORDER_STATUS.NEED_CONFIRMATION_READY &&
+                      queryParams.status !== ORDER_STATUS.NEED_ASSIGN_FLEET;
+
+                    return (
+                      <div
+                        key={key}
+                        onClick={() => {
+                          setFilterType("tab");
+                          onChangeQueryParams("status", tab.value);
+                        }}
+                        className={cn(
+                          "relative flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
+                          (queryParams.status === tab.value &&
+                            filterType === "tab") ||
+                            isActiveAllTab
                             ? "border border-primary-700 bg-primary-50 text-primary-700"
-                            : "bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
-                        }`}
+                            : "bg-neutral-200 text-neutral-900"
+                        )}
                       >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
+                        <span className="text-xxs leading-[1.3]">
+                          {tab.label}
+                        </span>
+                        {tab.value !== "" &&
+                        queryParams.status !== tab.value &&
+                        tab.count > 0 ? (
+                          <div className="absolute right-[11px] top-[6.5px] size-1 rounded-full bg-error-700" />
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-
-              {/* Active Filter Display */}
-              {selectedFilter && (
-                <div className="flex h-8 items-center gap-x-3">
-                  <button
-                    className="text-xs font-bold leading-[14.4px] text-primary-700"
-                    onClick={() => setSelectedStatus("")}
+              {filterType === "dropdown" ? (
+                <div className="flex items-center gap-x-3">
+                  <Button
+                    className="font-bold"
+                    onClick={() => {
+                      setFilterType("tab");
+                      onChangeQueryParams("status", "");
+                    }}
+                    variant="link"
                   >
                     Hapus Semua Filter
-                  </button>
+                  </Button>
                   <TagBubble
                     withRemove={{
-                      onRemove: () => setSelectedStatus(""),
+                      onRemove: () => {
+                        setFilterType("tab");
+                        onChangeQueryParams("status", "");
+                      },
                     }}
                   >
-                    {selectedFilter.label}
+                    {ORDER_STATUS_CONFIG[queryParams.status].label}
                   </TagBubble>
                 </div>
-              )}
+              ) : null}
             </div>
-
-            <DataTable
-              data={orders}
+            <Table
               columns={columns}
-              currentPage={currentPage}
-              totalPages={Math.ceil(orders.length / perPage)}
-              totalItems={orders.length}
-              perPage={perPage}
-              onPageChange={setCurrentPage}
-              onPerPageChange={setPerPage}
-              className="!rounded-lg !border-transparent"
-              showFilter={false}
-              showSearch={false}
-              tableTitle={null}
-              showTotalCount={false}
-              showPagination={false}
-              headerActions={null}
+              data={orders}
+              loading={isLoading}
+              onRowClick={undefined}
+              onSort={handleSort}
+              sortConfig={{
+                sort: queryParams.sort,
+                order: queryParams.order,
+              }}
+              emptyComponent={<DataEmptyComponent />}
             />
           </div>
+        )}
+      </Card>
 
-          {/* Pagination di luar container putih */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(orders.length / perPage)}
-            perPage={perPage}
-            onPageChange={setCurrentPage}
-            onPerPageChange={setPerPage}
-            variants="muatrans"
-          />
-        </>
-      )}
-      {isFirstTimer ? null : (
+      {isFirstTimer || orders.length === 0 ? null : (
         <Pagination
-          currentPage={1}
-          totalPages={1}
-          perPage={10}
-          // currentPage={pagination.currentPage}
-          //     totalPages={pagination.totalPages}
-          //     perPage={pagination.itemsPerPage}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          perPage={pagination.itemsPerPage}
           onPageChange={(value) => onChangeQueryParams("page", value)}
           onPerPageChange={(value) => onChangeQueryParams("limit", value)}
           className="py-0"
