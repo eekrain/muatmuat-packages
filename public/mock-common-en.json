@@ -2576,5 +2576,18 @@
   "PermintaanAngkutDetail.buttonReject": "Reject",
   "PermintaanAngkutDetail.buttonAccept": "Accept",
   "PermintaanAngkutDetail.toastSuccessRequestAccepted": "Request {orderCode} has been successfully accepted with {truckCount} units",
-  "PermintaanAngkutDetail.toastSuccessRequestClosed": "Request {orderCode} has been successfully closed"
+  "PermintaanAngkutDetail.toastSuccessRequestClosed": "Request {orderCode} has been successfully closed",
+  "DetailContent.titleAccountSuspended": "Your Account is Suspended",
+  "DetailContent.messageContactSupport": "Contact customer support for reactivation",
+  "DetailContent.linkHere": "here",
+  "DetailContent.messageHalalRequired": "Requires shipping with halal logistics certification",
+  "DetailContent.tagInstant": "Instant",
+  "DetailContent.tagScheduled": "Scheduled",
+  "DetailContent.tagLoadToday": "Load Today",
+  "DetailContent.tagLoadTomorrow": "Load Tomorrow",
+  "DetailContent.tagLoadInDays": "Load in {diffDays} Days",
+  "DetailContent.tagPotentialOverload": "Potential Overload",
+  "DetailContent.titlePotentialRevenue": "Potential Revenue",
+  "DetailContent.labelRequirementUnit": "Requirement: {truckCount} Units",
+  "DetailContent.titleRoute": "Loading & Unloading Route"
 }

@@ -2576,5 +2576,18 @@
   "PermintaanAngkutDetail.buttonReject": "Tolak",
   "PermintaanAngkutDetail.buttonAccept": "Terima",
   "PermintaanAngkutDetail.toastSuccessRequestAccepted": "Permintaan {orderCode} berhasil diterima dengan {truckCount} unit",
-  "PermintaanAngkutDetail.toastSuccessRequestClosed": "Permintaan {orderCode} berhasil ditutup"
+  "PermintaanAngkutDetail.toastSuccessRequestClosed": "Permintaan {orderCode} berhasil ditutup",
+  "DetailContent.titleAccountSuspended": "Akun Kamu Ditangguhkan",
+  "DetailContent.messageContactSupport": "Hubungi dukungan pelanggan untuk aktivasi kembali",
+  "DetailContent.linkHere": "disini",
+  "DetailContent.messageHalalRequired": "Memerlukan pengiriman dengan sertifikasi halal logistik",
+  "DetailContent.tagInstant": "Instan",
+  "DetailContent.tagScheduled": "Terjadwal",
+  "DetailContent.tagLoadToday": "Muat Hari Ini",
+  "DetailContent.tagLoadTomorrow": "Muat Besok",
+  "DetailContent.tagLoadInDays": "Muat {diffDays} Hari",
+  "DetailContent.tagPotentialOverload": "Potensi Overload",
+  "DetailContent.titlePotentialRevenue": "Potensi Pendapatan",
+  "DetailContent.labelRequirementUnit": "Kebutuhan : {truckCount} Unit",
+  "DetailContent.titleRoute": "Rute Muat & Bongkar"
 }

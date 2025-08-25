@@ -2576,5 +2576,18 @@
   "PermintaanAngkutDetail.buttonReject": "拒绝",
   "PermintaanAngkutDetail.buttonAccept": "接受",
   "PermintaanAngkutDetail.toastSuccessRequestAccepted": "请求 {orderCode} 已成功接受，共 {truckCount} 个单位",
-  "PermintaanAngkutDetail.toastSuccessRequestClosed": "请求 {orderCode} 已成功关闭"
+  "PermintaanAngkutDetail.toastSuccessRequestClosed": "请求 {orderCode} 已成功关闭",
+  "DetailContent.titleAccountSuspended": "您的帐户已被暂停",
+  "DetailContent.messageContactSupport": "请联系客户支持以重新激活",
+  "DetailContent.linkHere": "此处",
+  "DetailContent.messageHalalRequired": "需要具有清真物流认证的运输",
+  "DetailContent.tagInstant": "即时",
+  "DetailContent.tagScheduled": "预定",
+  "DetailContent.tagLoadToday": "今日装货",
+  "DetailContent.tagLoadTomorrow": "明日装货",
+  "DetailContent.tagLoadInDays": "{diffDays}天内装货",
+  "DetailContent.tagPotentialOverload": "潜在超载",
+  "DetailContent.titlePotentialRevenue": "潜在收入",
+  "DetailContent.labelRequirementUnit": "需求：{truckCount}辆",
+  "DetailContent.titleRoute": "装卸货路线"
 }
