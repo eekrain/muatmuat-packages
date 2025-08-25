@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
 import CropperWebNew from "../Cropper/CropperWebNew";
@@ -14,8 +15,8 @@ export default function ImageUploaderWeb({
   className,
   isNull = false,
   isMain = false,
-  uploadText = "Unggah Gambar",
-  errorText = "Unggah Ulang",
+  uploadText,
+  errorText,
   maxSize = 10,
   isCircle = false,
   onUpload = () => {},
@@ -27,6 +28,7 @@ export default function ImageUploaderWeb({
   isLoading,
   isError,
 }) {
+  const { t } = useTranslation();
   const imageRef = useRef(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
@@ -63,17 +65,41 @@ export default function ImageUploaderWeb({
 
     const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
     if (!acceptedFormats.includes(fileExtension)) {
-      toast.error("Format file tidak sesuai ketentuan");
+      toast.error(
+        t(
+          "ImageUploaderWeb.invalidFormat",
+          {},
+          "Format file tidak sesuai ketentuan"
+        )
+      );
       setError(true);
-      onError("Format file tidak sesuai.");
+      onError(
+        t(
+          "ImageUploaderWeb.invalidFormatShort",
+          {},
+          "Format file tidak sesuai."
+        )
+      );
       imageRef.current.value = null;
       return;
     }
 
     if (file.size > maxSize * 1024 * 1024) {
-      toast.error(`Ukuran file melebihi ${maxSize}MB`);
+      toast.error(
+        t(
+          "ImageUploaderWeb.fileSizeExceeded",
+          { maxSize },
+          `Ukuran file melebihi ${maxSize}MB`
+        )
+      );
       setError(true);
-      onError(`Ukuran file melebihi ${maxSize}MB`);
+      onError(
+        t(
+          "ImageUploaderWeb.fileSizeExceeded",
+          { maxSize },
+          `Ukuran file melebihi ${maxSize}MB`
+        )
+      );
       imageRef.current.value = null;
       return;
     }
@@ -160,7 +186,7 @@ export default function ImageUploaderWeb({
               </button>
               {isBig && isMain && (
                 <div className="absolute bottom-[8px] left-[8px] flex h-[24px] items-center justify-center rounded-md bg-success-50 p-[7px] px-2 text-xs font-semibold text-success-400">
-                  Gambar Utama
+                  {t("ImageUploaderWeb.mainImage", {}, "Gambar Utama")}
                 </div>
               )}
             </>
@@ -176,7 +202,8 @@ export default function ImageUploaderWeb({
               />
               {isBig && (
                 <span className="text-xs font-semibold leading-[14.4px] text-error-400 group-hover:text-primary-700">
-                  {errorText}
+                  {errorText ||
+                    t("ImageUploaderWeb.reupload", {}, "Unggah Ulang")}
                 </span>
               )}
             </>
@@ -190,7 +217,8 @@ export default function ImageUploaderWeb({
                 <IconComponent size="small" src="/icons/add_image.svg" />
                 {isBig && (
                   <span className="text-xs font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
-                    {uploadText}
+                    {uploadText ||
+                      t("ImageUploaderWeb.uploadImage", {}, "Unggah Gambar")}
                   </span>
                 )}
               </>
@@ -199,7 +227,7 @@ export default function ImageUploaderWeb({
                 <Loader2 className="animate-spin text-primary-700" />
                 {isBig && (
                   <span className="text-xs font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
-                    Mengunggah...
+                    {t("ImageUploaderWeb.uploading", {}, "Mengunggah...")}
                   </span>
                 )}
               </>

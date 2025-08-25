@@ -7,6 +7,7 @@ import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 import IconComponent from "../IconComponent/IconComponent";
 import styles from "./CropperWeb.module.scss";
@@ -20,8 +21,9 @@ export default function CropperWebNew({
   setIsOpen,
   onClose,
   isCircle = false,
-  title = "Unggah Gambar",
+  title,
 }) {
+  const { t } = useTranslation();
   const cropperRef = useRef(null);
   const defaultRatioRef = useRef(null);
 
@@ -97,11 +99,13 @@ export default function CropperWebNew({
         className={`w-[424px] ${isCircle ? "modal-cropper-circle" : ""}`}
         type="muattrans"
       >
-        <ModalTitle className="sr-only">{title}</ModalTitle>
+        <ModalTitle className="sr-only">
+          {title || t("CropperWebNew.uploadImage", {}, "Unggah Gambar")}
+        </ModalTitle>
         <div className="px-6 py-9">
           <div className="mb-6 flex flex-col items-center gap-[18px]">
             <span className="text-base font-bold leading-[19.2px] text-neutral-900">
-              {title}
+              {title || t("CropperWebNew.uploadImage", {}, "Unggah Gambar")}
             </span>
             <div className="relative h-[386px] w-[386px]">
               <div className="absolute bottom-2 right-2 z-50 flex h-20 w-10 flex-col rounded-lg border border-[#E2E2E2] bg-white">
@@ -156,7 +160,7 @@ export default function CropperWebNew({
               className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-muat-trans-secondary-900 bg-white px-3 outline-none"
             >
               <span className="text-sm font-semibold leading-[16.8px] text-muat-trans-secondary-900">
-                Batal
+                {t("CropperWebNew.cancel", {}, "Batal")}
               </span>
             </button>
             <button
@@ -169,7 +173,7 @@ export default function CropperWebNew({
               autoFocus
             >
               <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                Simpan
+                {t("CropperWebNew.save", {}, "Simpan")}
               </span>
             </button>
           </div>
