@@ -62,7 +62,7 @@ const apiResultAvailableFleet = {
         },
         schedule: {
           hasSchedule: true,
-          nextLoadTime: null,
+          nextLoadTime: "2025-01-15T15:30:00+07:00",
           estimatedFinish: "12 Jun 2025",
           scheduleNotes: null,
         },
@@ -127,7 +127,7 @@ const apiResultAvailableFleet = {
         },
         schedule: {
           hasSchedule: true,
-          nextLoadTime: "",
+          nextLoadTime: "2025-01-15T14:00:00+07:00",
           estimatedFinish: "12 Jun 2025",
           scheduleNotes: "Sedang dalam perjalanan menuju lokasi muat",
         },
@@ -256,8 +256,8 @@ const apiResultAvailableFleet = {
           ],
         },
         schedule: {
-          hasSchedule: false,
-          nextLoadTime: null,
+          hasSchedule: true,
+          nextLoadTime: "2025-01-15T15:30:00+07:00",
           estimatedFinish: null,
           scheduleNotes: null,
         },
@@ -321,7 +321,7 @@ const apiResultAvailableFleet = {
           ],
         },
         schedule: {
-          hasSchedule: false,
+          hasSchedule: true,
           nextLoadTime: "2025-01-15T15:30:00+07:00",
           estimatedFinish: "2025-01-15T18:00:00+07:00",
           scheduleNotes: "Menyelesaikan pengiriman saat ini",

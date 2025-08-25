@@ -8,12 +8,14 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetAvailableFleet } from "@/services/Transporter/monitoring/getAvailableFleet";
 
 import ModalTerimaPermintaanInstan from "./components/ModalTerimaPermintaanInstan";
 
 const PilihArmada = ({ onToggleExpand, isExpanded }) => {
+  const { t } = useTranslation();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(null);
@@ -31,7 +33,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
 
   const columns = [
     {
-      header: "Jenis Armada",
+      header: t("PilihArmada.tableHeaderJenisArmada", {}, "Jenis Armada"),
       key: "truckType",
       sortable: false,
       headerClassName: "px-5 py-3",
@@ -41,14 +43,20 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
           <div className="absolute left-0 top-0">
             {row.isRecommended && (
               <span className="inline-block rounded-r-[6px] bg-success-400 p-2 text-xs font-semibold text-success-50">
-                Rekomendasi Armada
+                {t(
+                  "PilihArmada.badgeRekomendasiArmada",
+                  {},
+                  "Rekomendasi Armada"
+                )}
               </span>
             )}
           </div>
           <div className="flex flex-col gap-1">
             <span className="w-[188px] text-sm font-medium text-gray-900">
               {(() => {
-                const text = `${row.truckTypeName || ""} - ${row.carrierName || ""}`;
+                const text = `${row.truckTypeName || ""} - ${
+                  row.carrierName || ""
+                }`;
                 return text.length > 56 ? (
                   <InfoTooltip
                     side="top"
@@ -76,7 +84,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
       ),
     },
     {
-      header: "No. Polisi",
+      header: t("PilihArmada.tableHeaderNoPolisi", {}, "No. Polisi"),
       key: "licensePlate",
       sortable: true,
       headerClassName: "px-5 py-6",
@@ -88,14 +96,14 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
           </span>
           {row.operationalStatus === "ON_DUTY" && !row.isRecommended && (
             <span className="text-xs font-medium text-orange-600">
-              Potensi Overload
+              {t("PilihArmada.textPotensiOverload", {}, "Potensi Overload")}
             </span>
           )}
         </div>
       ),
     },
     {
-      header: "Driver",
+      header: t("PilihArmada.tableHeaderDriver", {}, "Driver"),
       key: "driver",
       sortable: true,
       headerClassName: "px-5 py-3",
@@ -130,7 +138,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
       ),
     },
     {
-      header: "Lokasi",
+      header: t("PilihArmada.tableHeaderLokasi", {}, "Lokasi"),
       key: "location",
       sortable: true,
       headerClassName: "px-5 py-3",
@@ -169,13 +177,17 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
                 !isExpanded && "rotate-180"
               )}
             />
-            {row.distanceFromPickup} km dari lokasi muat
+            {t(
+              "PilihArmada.textKmDariLokasiMuat",
+              { distance: row.distanceFromPickup },
+              "{distance} km dari lokasi muat"
+            )}
           </span>
         </div>
       ),
     },
     {
-      header: "Jadwal Terdekat",
+      header: t("PilihArmada.tableHeaderJadwalTerdekat", {}, "Jadwal Terdekat"),
       key: "schedule",
       sortable: true,
       headerClassName: "px-5 py-3",
@@ -183,18 +195,25 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
       render: (row) => (
         <div className="flex flex-col">
           <span className="mb-3 text-sm font-medium text-gray-900">
-            {row.schedule?.hasSchedule
-              ? row.schedule?.estimatedFinish || "-"
+            {row.schedule?.hasSchedule && row.schedule?.nextLoadTime
+              ? new Date(row.schedule.nextLoadTime).toLocaleDateString(
+                  "id-ID",
+                  {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }
+                )
               : "-"}
           </span>
           <span className="cursor-pointer text-sm font-medium text-[#2574EA]">
-            Cek Jadwal
+            {t("PilihArmada.buttonCekJadwal", {}, "Cek Jadwal")}
           </span>
         </div>
       ),
     },
     {
-      header: "Status Armada",
+      header: t("PilihArmada.tableHeaderStatusArmada", {}, "Status Armada"),
       key: "operationalStatus",
       sortable: true,
       headerClassName: "px-5 py-3",
@@ -206,12 +225,20 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
               if (row.isRecommended) {
                 return {
                   className: "bg-success-400 text-success-50",
-                  text: "Siap Menerima Order",
+                  text: t(
+                    "PilihArmada.statusSiapMenerimaOrder",
+                    {},
+                    "Siap Menerima Order"
+                  ),
                 };
               }
               return {
                 variant: "success",
-                text: "Siap Menerima Order",
+                text: t(
+                  "PilihArmada.statusSiapMenerimaOrder",
+                  {},
+                  "Siap Menerima Order"
+                ),
                 className:
                   "bg-success-50 text-success-400 group-hover:bg-success-400 group-hover:text-success-50",
               };
@@ -220,12 +247,12 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
               if (row.isRecommended) {
                 return {
                   className: "bg-primary-700 text-primary-50",
-                  text: "Bertugas",
+                  text: t("PilihArmada.statusBertugas", {}, "Bertugas"),
                 };
               }
               return {
                 variant: "primary",
-                text: "Bertugas",
+                text: t("PilihArmada.statusBertugas", {}, "Bertugas"),
                 className:
                   "bg-primary-50 text-primary-700 group-hover:bg-primary-700 group-hover:text-primary-50",
               };
@@ -233,12 +260,20 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
               if (row.isRecommended) {
                 return {
                   className: "bg-warning-100 text-warning-700",
-                  text: "Akan Muat Hari Ini",
+                  text: t(
+                    "PilihArmada.statusAkanMuatHariIni",
+                    {},
+                    "Akan Muat Hari Ini"
+                  ),
                 };
               }
               return {
                 variant: "warning",
-                text: "Akan Muat Hari Ini",
+                text: t(
+                  "PilihArmada.statusAkanMuatHariIni",
+                  {},
+                  "Akan Muat Hari Ini"
+                ),
                 className:
                   "bg-warning-100 text-warning-700 group-hover:bg-warning-700 group-hover:text-warning-100",
               };
@@ -286,7 +321,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
                 setIsModalOpen(true);
               }}
             >
-              Pilih
+              {t("PilihArmada.buttonPilih", {}, "Pilih")}
             </Button>
           </div>
         );
@@ -320,10 +355,18 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              Belum ada armada tersedia
+              {t(
+                "PilihArmada.messageEmptyBelumAdaArmadaTersedia",
+                {},
+                "Belum ada armada tersedia"
+              )}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              Armada tersedia akan muncul di sini
+              {t(
+                "PilihArmada.descriptionArmadaTersediaAkanMuncul",
+                {},
+                "Armada tersedia akan muncul di sini"
+              )}
             </p>
           </div>
         </div>
@@ -353,7 +396,11 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
         </div>
         <div className="flex items-center gap-2">
           <h3 className="whitespace-nowrap text-xs font-bold">
-            Pilih armada yang ditugaskan
+            {t(
+              "PilihArmada.titlePilihArmadaYangDitugaskan",
+              {},
+              "Pilih armada yang ditugaskan"
+            )}
           </h3>
         </div>
         <div className="flex w-full items-center justify-end gap-3">
@@ -381,10 +428,18 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
               <DataNotFound className="h-full gap-y-5 pb-10" type="data">
                 <div className="flex flex-col items-center gap-2">
                   <p className="text-center text-base font-semibold leading-tight text-neutral-600">
-                    Oops, belum ada armada tersedia
+                    {t(
+                      "PilihArmada.titleOopsBelumAdaArmadaTersedia",
+                      {},
+                      "Oops, belum ada armada tersedia"
+                    )}
                   </p>
                   <p className="text-center text-xs font-medium leading-tight text-neutral-600">
-                    Armada tersedia akan muncul di sini
+                    {t(
+                      "PilihArmada.descriptionArmadaTersediaAkanMuncul",
+                      {},
+                      "Armada tersedia akan muncul di sini"
+                    )}
                   </p>
                 </div>
               </DataNotFound>
