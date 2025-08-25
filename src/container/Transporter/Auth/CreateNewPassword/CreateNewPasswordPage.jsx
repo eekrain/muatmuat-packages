@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // HAPUS import valibot
@@ -14,14 +14,19 @@ import Card from "@/components/Card/Card";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { toast } from "@/lib/toast";
+import { useChangePasswordForgotPassword } from "@/services/Transporter/auth/changePasswordForgotPassword";
 
 const CreateNewPasswordPage = () => {
   const { t } = useTranslation();
   const route = useRouter();
+  const searchParams = useSearchParams();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { trigger: changePassword, isMutating: isSubmitting } =
+    useChangePasswordForgotPassword();
 
   const {
     register,
@@ -59,32 +64,43 @@ const CreateNewPasswordPage = () => {
     setIsConfirmPasswordVisible((prev) => !prev);
   };
 
-  const onSubmit = (data) => {
-    setIsSubmitting(true);
+  const onSubmit = async (data) => {
+    const token = searchParams.get("token");
 
-    // Simulate checking if password is the same as previous one
-    // This check is ONLY performed when the form is submitted
-    if (data.password === "Password123") {
-      setError("password", {
-        type: "manual",
-        message: t(
-          "CreateNewPasswordPage.messageErrorPasswordSameAsBefore",
-          {},
-          "Password tidak boleh sama dengan sebelumnya"
-        ),
-      });
-      setIsSubmitting(false);
+    if (!token) {
+      toast.error("Token verifikasi tidak valid atau telah kedaluwarsa.");
+      route.push("/lupa-password");
       return;
     }
 
-    // Simulate API call with delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      //   alert("Password berhasil diubah!");
-      console.log("halo");
-
+    try {
+      await changePassword({
+        token,
+        password: data.password,
+        passwordConfirmation: data.confirmPassword,
+      });
       route.push("/password-success");
-    }, 1000);
+    } catch (error) {
+      const apiMessage = error?.response?.data?.Message?.Text || "";
+      let displayMessage;
+
+      // Cek apakah error dari API adalah karena password sama dengan sebelumnya
+      if (apiMessage.includes("sama dengan sebelumnya")) {
+        displayMessage = t(
+          "CreateNewPasswordPage.messageErrorPasswordSameAsBefore",
+          {},
+          "Password tidak boleh sama dengan sebelumnya"
+        );
+      } else {
+        // Fallback untuk error lainnya
+        displayMessage = apiMessage || "Terjadi kesalahan. Silakan coba lagi.";
+      }
+
+      setError("password", {
+        type: "manual",
+        message: displayMessage,
+      });
+    }
   };
 
   return (

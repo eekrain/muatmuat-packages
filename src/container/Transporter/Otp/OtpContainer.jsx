@@ -19,6 +19,8 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useCancelEmailVerification } from "@/services/auth/cancelEmailVerification";
+import { useVerifyOtp } from "@/services/auth/verifyOtp";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useRequestOtpActions,
@@ -28,7 +30,6 @@ import {
 import ChangeEmailModal from "./ChangeEmailModal";
 import ChangeWhatsappModal from "./ChangeWhatsappModal";
 
-// Configuration object for different OTP types
 const OTP_TYPE_CONFIG = {
   whatsapp: {
     showEmailMessage: false,
@@ -134,22 +135,28 @@ const OtpContainer = ({
   const [isChangeEmailModalOpen, setIsChangeEmailModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isSuccessEmailModalOpen, setIsSuccessEmailModalOpen] = useState(false);
+  const [isCancelSuccessModalOpen, setIsCancelSuccessModalOpen] =
+    useState(false);
   const [notification, setNotification] = useState(null);
+  const [isResending, setIsResending] = useState(false);
 
   const formValues = useRequestOtpStore();
   const {
-    verifyOtp,
     resendOtp,
     sendRequestOtp,
     updateWhatsAppNumber,
     updateEmailAddress,
+    initializeFromUrlParams,
   } = useRequestOtpActions();
+
+  const { trigger: triggerVerifyOtp, isMutating: isVerifying } = useVerifyOtp();
+  const { trigger: triggerCancelVerification, isMutating: isCancelling } =
+    useCancelEmailVerification();
 
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const number = searchParams.get("whatsapp");
 
-  // Get configuration based on type, fallback to default
   const config = OTP_TYPE_CONFIG[type] || OTP_TYPE_CONFIG.default;
   const { countdown, isCountdownFinished } = useCountdown({
     endingDate: formValues?.expiresIn,
@@ -160,19 +167,23 @@ const OtpContainer = ({
   const { setIsGlobalLoading } = useLoadingAction();
 
   useEffect(() => {
+    if (searchParams.get("type") === "forgot-password") {
+      initializeFromUrlParams(searchParams);
+    }
+  }, [initializeFromUrlParams, searchParams]);
+
+  useEffect(() => {
     if (isTranslationsReady) setIsGlobalLoading(false);
   }, [isTranslationsReady, setIsGlobalLoading]);
 
   const [isReady, setIsReady] = useState(false);
 
-  // Initialize isReady state similar to RequestOtpWeb pattern
   useShallowCompareEffect(() => {
     const timer = setTimeout(() => {
       if (
         (!formValues?.token || !formValues?.target || !formValues?.otpType) &&
         !_dontRedirect
       ) {
-        // Could redirect or handle missing data here if needed
         return;
       }
       setIsReady(true);
@@ -181,16 +192,45 @@ const OtpContainer = ({
     return () => clearTimeout(timer);
   }, [formValues, _dontRedirect]);
 
-  const handleRequestOtp = (formValues) => {
-    if (!formValues?.token || !formValues?.target) {
+  const handleResendOtp = async () => {
+    setIsResending(true);
+    try {
+      await resendOtp();
+      toast.success(
+        t(
+          "messageResendOtpSuccess",
+          {},
+          "Kode OTP baru telah berhasil dikirim."
+        )
+      );
+    } catch (error) {
+      toast.error(error.message || "Gagal mengirim ulang OTP");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const handleCancelVerification = async () => {
+    try {
+      await triggerCancelVerification({ token: formValues.token });
+      setIsCancelSuccessModalOpen(true);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.Message?.Text || "Gagal membatalkan verifikasi."
+      );
+    }
+  };
+
+  const handleInitialRequestOtp = (currentFormValues) => {
+    if (!currentFormValues?.token || !currentFormValues?.target) {
       return;
     }
-    console.log(formValues, "otp");
 
-    if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
-      resendOtp().catch((error) => {
-        toast.error("Gagal meminta request OTP");
-      });
+    if (
+      !currentFormValues?.expiresIn ||
+      isAfter(Date.now(), currentFormValues?.expiresIn)
+    ) {
+      handleResendOtp();
     }
   };
 
@@ -200,9 +240,9 @@ const OtpContainer = ({
     if (!isReady) return;
     if (hasFetchedOtp.current) return;
 
-    handleRequestOtp(formValues);
+    handleInitialRequestOtp(formValues);
     hasFetchedOtp.current = true;
-  }, [isReady, formValues?.token, formValues?.target, formValues?.otpType]);
+  }, [isReady, formValues]);
 
   const renderNotification = () => {
     if (!notification) return null;
@@ -238,7 +278,6 @@ const OtpContainer = ({
           type === "forgot-password" || type === "whatsapp"
             ? ""
             : "max-w-[452px]",
-
           config.textColor || "text-neutral-50"
         )}
       >
@@ -252,7 +291,7 @@ const OtpContainer = ({
           type === "change-number"
             ? "OtpContainer.textCheckWhatsappChangeNumber"
             : type === "whatsapp"
-              ? "OtpContainer.textCheckWhatsappForWhatsapp" // Key baru untuk tipe whatsapp
+              ? "OtpContainer.textCheckWhatsappForWhatsapp"
               : type === "change-email2"
                 ? "OtpContainer.textCheckEmailChangeEmail2"
                 : "OtpContainer.textCheckWhatsapp",
@@ -324,43 +363,58 @@ const OtpContainer = ({
   };
 
   useEffect(() => {
-    if (otp.length === 6) {
-      setNotification(null);
+    const verify = async () => {
+      if (otp.length === 6) {
+        setNotification(null);
+        try {
+          const requestBody = {
+            token: formValues.token,
+            otpCode: otp,
+            target: formValues.target,
+            otpType: formValues.otpType,
+          };
+          await triggerVerifyOtp(requestBody);
 
-      const handleSuccess = () => {
-        // If the type is 'whatsapp', redirect to profile to open the change number modal.
-        if (type === "whatsapp") {
-          router.push("/profil?hasVerified=true");
-          return;
-        }
-        // If the type is 'change-email' or 'change-email2', redirect to profile to open the email modal.
-        if (type === "change-email") {
-          router.push("/profil?hasVerifiedEmail=true");
-          return;
-        }
-        if (type === "change-email2") {
-          setIsSuccessEmailModalOpen(true);
-          return;
-        }
-        if (type === "change-number") {
-          setIsSuccessModalOpen(true);
-        } else {
-          setIsVerified(true);
-          onVerifySuccess();
-        }
-      };
+          if (type === "whatsapp") {
+            router.push("/profil?hasVerified=true");
+            return;
+          }
+          if (type === "change-email") {
+            router.push("/profil?hasVerifiedEmail=true");
+            return;
+          }
+          if (type === "change-email2") {
+            setIsSuccessEmailModalOpen(true);
+            return;
+          }
+          if (type === "change-number") {
+            setIsSuccessModalOpen(true);
+          } else {
+            setIsVerified(true);
+            onVerifySuccess();
+          }
+        } catch (error) {
+          const apiError =
+            error?.response?.data?.Message?.Text || error.message;
+          let displayMessage = "Gagal melakukan verifikasi OTP";
 
-      verifyOtp(otp)
-        .then(handleSuccess)
-        .catch((error) => {
+          if (apiError?.toLowerCase().includes("salah")) {
+            displayMessage = "messageIncorrectOtp";
+          } else if (apiError?.toLowerCase().includes("expired")) {
+            displayMessage = "messageOtpCodeExpired";
+          } else if (apiError?.toLowerCase().includes("berakhir")) {
+            displayMessage = "messageOtpVerifEndedNeedResend";
+          }
+
           setNotification({
             status: "error",
-            message: error?.message,
+            message: displayMessage,
           });
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otp]);
+        }
+      }
+    };
+    verify();
+  }, [otp, triggerVerifyOtp, formValues, type, router, onVerifySuccess]);
 
   return (
     <div
@@ -455,6 +509,7 @@ const OtpContainer = ({
                       onChange={(value) => setOtp(value)}
                       pattern={REGEXP_ONLY_DIGITS}
                       aria-invalid={notification?.status === "error"}
+                      disabled={isVerifying}
                     >
                       <InputOTPGroup>
                         <InputOTPSlot
@@ -528,8 +583,14 @@ const OtpContainer = ({
                     config.textColor || "text-neutral-50"
                   )}
                 >
-                  {`${t("labelOtpCodeExpiredIn")} `}
-                  <span className="font-bold">{countdown}</span>
+                  {isVerifying ? (
+                    "Memverifikasi..."
+                  ) : (
+                    <>
+                      {`${t("labelOtpCodeExpiredIn")} `}
+                      <span className="font-bold">{countdown}</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -537,10 +598,10 @@ const OtpContainer = ({
                 name="resend"
                 onClick={() => {
                   if (isCountdownFinished) {
-                    handleRequestOtp(formValues);
+                    handleResendOtp();
                   }
                 }}
-                disabled={!isCountdownFinished}
+                disabled={!isCountdownFinished || isResending}
                 className={cn(
                   `mt-[10px] flex h-10 max-w-[319px] items-center justify-center text-nowrap text-[14px] font-bold transition-colors duration-300`,
                   config.buttonSize,
@@ -551,12 +612,14 @@ const OtpContainer = ({
                         "!bg-[#EBEBEB] !text-[#868686]"
                 )}
               >
-                {type === "change-number" ||
-                type === "whatsapp" ||
-                type === "change-email" ||
-                type === "change-email2"
-                  ? config.buttonText
-                  : t("OtpContainer.buttonResendOtp", {}, config.buttonText)}
+                {isResending
+                  ? "Mengirim..."
+                  : type === "change-number" ||
+                      type === "whatsapp" ||
+                      type === "change-email" ||
+                      type === "change-email2"
+                    ? config.buttonText
+                    : t("OtpContainer.buttonResendOtp", {}, config.buttonText)}
               </Button>
             </>
           ) : (
@@ -620,7 +683,6 @@ const OtpContainer = ({
                 _newEmail
               )
                 .then((response) => {
-                  console.log(response, "tes");
                   setIsChangeEmailModalOpen(false);
                   setNotification({
                     status: "success",
@@ -632,7 +694,6 @@ const OtpContainer = ({
                   });
                 })
                 .catch((error) => {
-                  console.error("Error sending OTP:", error);
                   setNotification({
                     status: "error",
                     message: error.message || "Gagal mengirim OTP",
@@ -658,11 +719,9 @@ const OtpContainer = ({
           confirm={{
             text: "Ubah",
             onClick: (_newWhatsappNumber) => {
-              // Check if purpose is EMAIL_VERIFICATION to call updateWhatsAppNumber directly
               if (formValues.purpose === "EMAIL_VERIFICATION") {
                 updateWhatsAppNumber(_newWhatsappNumber)
                   .then((response) => {
-                    console.log(response, "tes");
                     setIsChangeNumberModalOpen(false);
                     setNotification({
                       status: "success",
@@ -675,10 +734,9 @@ const OtpContainer = ({
                               "Berhasil mengubah No. Whatsapp Kamu"
                             ),
                     });
-                    handleRequestOtp(formValues);
+                    handleInitialRequestOtp(formValues);
                   })
                   .catch((error) => {
-                    console.error("Error updating WhatsApp number:", error);
                     setNotification({
                       status: "error",
                       message: error.message || "Gagal mengubah nomor WhatsApp",
@@ -693,7 +751,6 @@ const OtpContainer = ({
                   _newWhatsappNumber
                 )
                   .then((response) => {
-                    console.log(response, "tes");
                     setIsChangeNumberModalOpen(false);
                     setNotification({
                       status: "success",
@@ -708,7 +765,6 @@ const OtpContainer = ({
                     });
                   })
                   .catch((error) => {
-                    console.error("Error sending OTP:", error);
                     setNotification({
                       status: "error",
                       message: error.message || "Gagal mengirim OTP",
@@ -841,6 +897,64 @@ const OtpContainer = ({
                 updateEmailAddress().then(() => {
                   router.push("/login");
                 });
+              }}
+              type="button"
+            >
+              {t("OtpContainer.buttonOk", {}, "OK")}
+            </Button>
+          </div>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        closeOnOutsideClick={false}
+        open={isCancelSuccessModalOpen}
+        onOpenChange={setIsCancelSuccessModalOpen}
+        withCloseButton={false}
+      >
+        <ModalContent className="h-[413px] w-[385px]" type="muattrans">
+          <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
+            <div>
+              <img
+                alt="svg header modal kiri"
+                src="/img/header-modal/header-kiri.svg"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="my-auto">
+              <img
+                alt="logo muatmuat header coklat"
+                src="/img/header-modal/muatmuat-brown.svg"
+              />
+            </div>
+            <div>
+              <img
+                alt="svg header modal kanan "
+                src="/img/header-modal/header-kanan.svg"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+            <div className="flex flex-col items-center gap-y-4">
+              <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                Verifikasi Dibatalkan
+              </h1>
+              <img
+                alt="cancel success"
+                src="/img/otp-transporter/success.png"
+                className="h-[110px] w-[110px] object-cover"
+              />
+              <div className="px-4 text-center text-sm font-medium leading-[16.8px] text-neutral-900">
+                Proses verifikasi email kamu telah berhasil dibatalkan.
+              </div>
+            </div>
+            <Button
+              variant="muattrans-primary"
+              className="h-8 w-28"
+              onClick={() => {
+                setIsCancelSuccessModalOpen(false);
+                router.push("/profil");
               }}
               type="button"
             >
