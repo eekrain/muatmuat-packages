@@ -295,7 +295,13 @@ const DaftarPesanan = ({
                 <div className="flex h-3.5 items-center rounded bg-error-400 px-1 text-[8px] font-bold leading-[1.3] text-neutral-50">
                   <span>{rowIndex === 0 ? "SOS" : "SOS : 1 Unit"}</span>
                 </div>
-                <Button className="text-xs font-medium" variant="link">
+                <Button
+                  className="text-xs font-medium"
+                  variant="link"
+                  onClick={() => {
+                    router.push("/monitoring?leftPanel=sos");
+                  }}
+                >
                   Lihat SOS
                 </Button>
               </div>
