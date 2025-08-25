@@ -9,6 +9,7 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   formatCurrency,
   formatDistance,
@@ -20,7 +21,14 @@ import RespondChangeFormModal from "./RespondChangeFormModal";
 // ===================================================================
 // KOMPONEN BARU: Diimplementasikan berdasarkan gaya LocationChangeRow
 // ===================================================================
-const LocationComparisonRow = ({ oldLoc, newLoc, index, isLast, type }) => {
+const LocationComparisonRow = ({
+  oldLoc,
+  newLoc,
+  index,
+  isLast,
+  type,
+  routeChangedText,
+}) => {
   const isChanged = oldLoc?.fullAddress !== newLoc?.fullAddress;
 
   // Warna untuk dot dan teks di dalamnya
@@ -83,7 +91,7 @@ const LocationComparisonRow = ({ oldLoc, newLoc, index, isLast, type }) => {
           </p>
           {isChanged && (
             <span className="flex h-[14px] w-[54px] flex-shrink-0 items-center justify-center rounded bg-black text-[8px] font-semibold leading-[130%] text-white">
-              Rute Diubah
+              {routeChangedText}
             </span>
           )}
         </div>
@@ -98,6 +106,7 @@ const RespondChangeModal = ({
   orderData,
   hideActionButton = false,
 }) => {
+  const { t } = useTranslation();
   const [showFormModal, setShowFormModal] = useState(false);
 
   // Fetch order change details
@@ -155,6 +164,13 @@ const RespondChangeModal = ({
       (l) => l.locationType === "DROPOFF"
     ) || [];
 
+  // Get translated text for route changed
+  const routeChangedText = t(
+    "RespondChangeModal.routeChanged",
+    {},
+    "Rute Diubah"
+  );
+
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent
@@ -177,7 +193,11 @@ const RespondChangeModal = ({
           {/* Header */}
           <div className="flex items-center justify-center px-6 pt-6">
             <ModalTitle className="text-base font-bold leading-[120%] text-black">
-              Informasi Perubahan Pesanan
+              {t(
+                "RespondChangeModal.orderChangeInfo",
+                {},
+                "Informasi Perubahan Pesanan"
+              )}
             </ModalTitle>
           </div>
 
@@ -190,8 +210,11 @@ const RespondChangeModal = ({
                 className="h-6 w-6 flex-shrink-0 text-[#FF7A00]"
               />
               <p className="text-xs font-medium leading-[120%] text-black">
-                Terdapat perubahan pesanan dari shipper, mohon pelajari
-                perubahannya dan segera beri respon
+                {t(
+                  "RespondChangeModal.changeNotification",
+                  {},
+                  "Terdapat perubahan pesanan dari shipper, mohon pelajari perubahannya dan segera beri respon"
+                )}
               </p>
             </div>
 
@@ -200,7 +223,11 @@ const RespondChangeModal = ({
                 <div className="text-center">
                   <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary-700"></div>
                   <p className="text-sm text-gray-500">
-                    Memuat detail perubahan...
+                    {t(
+                      "RespondChangeModal.loadingDetails",
+                      {},
+                      "Memuat detail perubahan..."
+                    )}
                   </p>
                 </div>
               </div>
@@ -217,7 +244,11 @@ const RespondChangeModal = ({
                           <IconComponent src="/icons/monitoring/daftar-pesanan-aktif/change-time.svg" />
                         </div>
                         <h3 className="text-xs font-bold leading-[120%] text-black">
-                          Perubahan Waktu Muat
+                          {t(
+                            "RespondChangeModal.loadTimeChange",
+                            {},
+                            "Perubahan Waktu Muat"
+                          )}
                         </h3>
                       </div>
 
@@ -225,7 +256,11 @@ const RespondChangeModal = ({
                         <div className="absolute bottom-0 left-1/2 top-0 z-[3] w-0 -translate-x-1/2 border-l border-solid border-neutral-400" />
                         <div className="relative z-10 ml-12 flex flex-col gap-2">
                           <p className="text-xs font-bold leading-[120%] text-[#0FBB81]">
-                            Waktu Muat Awal
+                            {t(
+                              "RespondChangeModal.originalLoadTime",
+                              {},
+                              "Waktu Muat Awal"
+                            )}
                           </p>
                           <p className="text-xs font-medium leading-[120%] text-black">
                             {formatDateTimeRange(
@@ -236,7 +271,11 @@ const RespondChangeModal = ({
                         </div>
                         <div className="relative z-10 flex flex-col gap-2">
                           <p className="text-xs font-bold leading-[120%] text-[#7A360D]">
-                            Waktu Muat Baru
+                            {t(
+                              "RespondChangeModal.newLoadTime",
+                              {},
+                              "Waktu Muat Baru"
+                            )}
                           </p>
                           <p className="text-xs font-medium leading-[120%] text-black">
                             {formatDateTimeRange(
@@ -266,7 +305,11 @@ const RespondChangeModal = ({
                           />
                         </div>
                         <h3 className="text-xs font-bold leading-[120%] text-black">
-                          Perubahan Rute Muat & Bongkar
+                          {t(
+                            "RespondChangeModal.routeChange",
+                            {},
+                            "Perubahan Rute Muat & Bongkar"
+                          )}
                         </h3>
                       </div>
 
@@ -277,9 +320,18 @@ const RespondChangeModal = ({
                         {/* Header Rute Awal vs Rute Baru */}
                         <div className="grid grid-cols-2 gap-0">
                           <p className="text-xs font-bold leading-[120%] text-[#0FBB81]">
-                            Rute Awal :{" "}
+                            {t(
+                              "RespondChangeModal.originalRoute",
+                              {},
+                              "Rute Awal"
+                            )}{" "}
+                            :{" "}
                             <span className="font-medium text-neutral-900">
-                              Estimasi{" "}
+                              {t(
+                                "RespondChangeModal.estimated",
+                                {},
+                                "Estimasi"
+                              )}{" "}
                               {formatDistance(
                                 changeDetails.originalData?.estimatedDistance ||
                                   0
@@ -287,9 +339,14 @@ const RespondChangeModal = ({
                             </span>
                           </p>
                           <p className="text-xs font-bold leading-[120%] text-[#7A360D]">
-                            Rute Baru :{" "}
+                            {t("RespondChangeModal.newRoute", {}, "Rute Baru")}{" "}
+                            :{" "}
                             <span className="font-medium text-neutral-900">
-                              Estimasi{" "}
+                              {t(
+                                "RespondChangeModal.estimated",
+                                {},
+                                "Estimasi"
+                              )}{" "}
                               {formatDistance(
                                 changeDetails.requestedChanges
                                   ?.estimatedDistance || 0
@@ -303,10 +360,18 @@ const RespondChangeModal = ({
                           {/* Judul Lokasi Muat */}
                           <div className="grid grid-cols-2">
                             <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
-                              Lokasi Muat
+                              {t(
+                                "RespondChangeModal.loadLocation",
+                                {},
+                                "Lokasi Muat"
+                              )}
                             </p>
                             <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
-                              Lokasi Muat
+                              {t(
+                                "RespondChangeModal.loadLocation",
+                                {},
+                                "Lokasi Muat"
+                              )}
                             </p>
                           </div>
                           {/* Render baris perbandingan untuk setiap lokasi muat */}
@@ -321,6 +386,7 @@ const RespondChangeModal = ({
                                 newDropoffs.length === 0
                               }
                               type="pickup"
+                              routeChangedText={routeChangedText}
                             />
                           ))}
 
@@ -328,10 +394,18 @@ const RespondChangeModal = ({
                           {newDropoffs.length > 0 && (
                             <div className="grid grid-cols-2 pt-2">
                               <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
-                                Lokasi Bongkar
+                                {t(
+                                  "RespondChangeModal.unloadLocation",
+                                  {},
+                                  "Lokasi Bongkar"
+                                )}
                               </p>
                               <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
-                                Lokasi Bongkar
+                                {t(
+                                  "RespondChangeModal.unloadLocation",
+                                  {},
+                                  "Lokasi Bongkar"
+                                )}
                               </p>
                             </div>
                           )}
@@ -344,6 +418,7 @@ const RespondChangeModal = ({
                               index={idx}
                               isLast={idx === newDropoffs.length - 1}
                               type="dropoff"
+                              routeChangedText={routeChangedText}
                             />
                           ))}
                         </div>
@@ -357,13 +432,19 @@ const RespondChangeModal = ({
                   <div className="flex items-center gap-12 rounded-lg border border-neutral-400 px-16 py-4">
                     <div className="flex flex-1 items-center gap-2">
                       <h3 className="text-sm font-bold leading-[120%] text-black">
-                        Penyesuaian Pendapatan
+                        {t(
+                          "RespondChangeModal.incomeAdjustment",
+                          {},
+                          "Penyesuaian Pendapatan"
+                        )}
                       </h3>
                       <InfoTooltip side="top">
                         <p>
-                          Penyesuaian pendapatan hanya estimasi.
-                          <br /> Pendapatan yang kamu terima menyesuaikan <br />{" "}
-                          respon perubahan yang kamu kirimkan.
+                          {t(
+                            "RespondChangeModal.incomeAdjustmentTooltip",
+                            {},
+                            "Penyesuaian pendapatan hanya estimasi.\nPendapatan yang kamu terima menyesuaikan\nrespon perubahan yang kamu kirimkan."
+                          )}
                         </p>
                       </InfoTooltip>
                     </div>
@@ -389,7 +470,11 @@ const RespondChangeModal = ({
             ) : (
               <div className="flex h-[200px] items-center justify-center">
                 <p className="text-center text-gray-500">
-                  Tidak dapat memuat detail perubahan
+                  {t(
+                    "RespondChangeModal.errorLoadingDetails",
+                    {},
+                    "Tidak dapat memuat detail perubahan"
+                  )}
                 </p>
               </div>
             )}
@@ -406,7 +491,7 @@ const RespondChangeModal = ({
                   disabled={false}
                   className="w-[112px] text-sm md:h-[34px]"
                 >
-                  Batal
+                  {t("RespondChangeModal.cancel", {}, "Batal")}
                 </Button>
                 <Button
                   variant="muattrans-primary"
@@ -414,7 +499,11 @@ const RespondChangeModal = ({
                   disabled={isLoadingDetails}
                   className="w-[180px] text-sm md:h-[34px]"
                 >
-                  Respon Perubahan
+                  {t(
+                    "RespondChangeModal.respondToChange",
+                    {},
+                    "Respon Perubahan"
+                  )}
                 </Button>
               </div>
             )}

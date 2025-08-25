@@ -11,35 +11,12 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { isFleetChangeAllowed } from "@/utils/Transporter/trackingStatus";
 
 import FleetSelector from "./components/FleetSelector";
 import ImageArmada from "./components/ImageArmada";
-
-// Valibot validation schema
-const FormSchema = v.pipe(
-  v.object({
-    selectedResponse: v.pipe(
-      v.string(),
-      v.minLength(1, "Respon perubahan wajib diisi")
-    ),
-    selectedFleet: v.string(),
-  }),
-  v.forward(
-    v.partialCheck(
-      [["selectedResponse"], ["selectedFleet"]],
-      (input) => {
-        if (input.selectedResponse === "accept_change_fleet") {
-          return input.selectedFleet && input.selectedFleet.trim().length > 0;
-        }
-        return true;
-      },
-      "Armada wajib dipilih"
-    ),
-    ["selectedFleet"]
-  )
-);
 
 const RespondChangeFormModal = ({
   isOpen,
@@ -48,7 +25,39 @@ const RespondChangeFormModal = ({
   onBackClick,
   formDaftarPesanan,
 }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Create validation schema with translated messages
+  const FormSchema = v.pipe(
+    v.object({
+      selectedResponse: v.pipe(
+        v.string(),
+        v.minLength(
+          1,
+          t(
+            "RespondChangeFormModal.responseRequired",
+            {},
+            "Respon perubahan wajib diisi"
+          )
+        )
+      ),
+      selectedFleet: v.string(),
+    }),
+    v.forward(
+      v.partialCheck(
+        [["selectedResponse"], ["selectedFleet"]],
+        (input) => {
+          if (input.selectedResponse === "accept_change_fleet") {
+            return input.selectedFleet && input.selectedFleet.trim().length > 0;
+          }
+          return true;
+        },
+        t("RespondChangeFormModal.fleetRequired", {}, "Armada wajib dipilih")
+      ),
+      ["selectedFleet"]
+    )
+  );
 
   const {
     handleSubmit,
@@ -76,7 +85,11 @@ const RespondChangeFormModal = ({
       driverName: "Muklason",
       vehicleType: "Colt Diesel Engkel - Box",
       isRecommended: true,
-      recommendationText: "jenis armada sesuai, jarak terdekat",
+      recommendationText: t(
+        "RespondChangeFormModal.fleetRecommendationText",
+        {},
+        "jenis armada sesuai, jarak terdekat"
+      ),
     },
     {
       id: "fleet2",
@@ -114,17 +127,42 @@ const RespondChangeFormModal = ({
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const responseLabels = {
-        accept: "Terima Perubahan",
-        accept_change_fleet: "Terima Perubahan & Ubah Armada",
-        reject_cancel: "Tolak Perubahan & Batalkan Armada",
+        accept: t(
+          "RespondChangeFormModal.acceptChange",
+          {},
+          "Terima Perubahan"
+        ),
+        accept_change_fleet: t(
+          "RespondChangeFormModal.acceptChangeFleet",
+          {},
+          "Terima Perubahan & Ubah Armada"
+        ),
+        reject_cancel: t(
+          "RespondChangeFormModal.rejectCancel",
+          {},
+          "Tolak Perubahan & Batalkan Armada"
+        ),
       };
 
       toast.success(
-        `Berhasil ${responseLabels[data.selectedResponse]} untuk pesanan ${orderData?.orderCode || "MT001234"}`
+        t(
+          "RespondChangeFormModal.successMessage",
+          {
+            response: responseLabels[data.selectedResponse],
+            orderCode: orderData?.orderCode || "MT001234",
+          },
+          `Berhasil ${responseLabels[data.selectedResponse]} untuk pesanan ${orderData?.orderCode || "MT001234"}`
+        )
       );
       handleClose();
     } catch (error) {
-      toast.error("Gagal mengirim respon. Silakan coba lagi.");
+      toast.error(
+        t(
+          "RespondChangeFormModal.errorMessage",
+          {},
+          "Gagal mengirim respon. Silakan coba lagi."
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -152,20 +190,28 @@ const RespondChangeFormModal = ({
   const responseOptions = [
     {
       id: "accept",
-      label: "Terima Perubahan",
+      label: t("RespondChangeFormModal.acceptChange", {}, "Terima Perubahan"),
     },
     // Only show accept_change_fleet option if there are fleets with eligible status
     ...(hasFleetChangeEligibleStatus
       ? [
           {
             id: "accept_change_fleet",
-            label: "Terima Perubahan & Ubah Armada",
+            label: t(
+              "RespondChangeFormModal.acceptChangeFleet",
+              {},
+              "Terima Perubahan & Ubah Armada"
+            ),
           },
         ]
       : []),
     {
       id: "reject_cancel",
-      label: "Tolak Perubahan & Batalkan Armada",
+      label: t(
+        "RespondChangeFormModal.rejectCancel",
+        {},
+        "Tolak Perubahan & Batalkan Armada"
+      ),
     },
   ];
 
@@ -193,7 +239,11 @@ const RespondChangeFormModal = ({
           {/* Header */}
           <div className="flex items-center justify-center px-6 pt-6">
             <ModalTitle className="text-base font-bold leading-[120%] text-black">
-              Respon Perubahan
+              {t(
+                "RespondChangeFormModal.responseToChange",
+                {},
+                "Respon Perubahan"
+              )}
             </ModalTitle>
           </div>
 
@@ -202,7 +252,7 @@ const RespondChangeFormModal = ({
             {/* Vehicle Info Section */}
             <div className="rounded-lg border border-neutral-400 bg-neutral-50 p-4">
               <h3 className="mb-3 text-xs font-medium leading-[120%] text-neutral-600">
-                Informasi Armada
+                {t("RespondChangeFormModal.fleetInfo", {}, "Informasi Armada")}
               </h3>
 
               <div className="flex items-center gap-3">
@@ -222,7 +272,11 @@ const RespondChangeFormModal = ({
                     </span>
                   </div>
                   <BadgeStatus variant="primary" className="w-auto">
-                    Armada Dijadwalkan
+                    {t(
+                      "RespondChangeFormModal.fleetScheduled",
+                      {},
+                      "Armada Dijadwalkan"
+                    )}
                   </BadgeStatus>
                 </div>
               </div>
@@ -231,7 +285,12 @@ const RespondChangeFormModal = ({
             {/* Response Options */}
             <div className="flex flex-col gap-4">
               <h3 className="font-bold text-black">
-                Pilih Respon Perubahan<span className="">*</span>
+                {t(
+                  "RespondChangeFormModal.selectResponse",
+                  {},
+                  "Pilih Respon Perubahan"
+                )}
+                <span className="">*</span>
               </h3>
 
               <div className="space-y-4">
@@ -258,8 +317,11 @@ const RespondChangeFormModal = ({
                         //terdapat case dimana tidak ada penyesuaian pendapatan dan text LDZ-17.3
                         <div className="pl-5">
                           <div className="flex h-6 flex-none items-center self-stretch rounded-md bg-success-50 px-2 py-1 text-xs font-semibold text-success-400">
-                            Tidak ada perubahan armada dan akan ada penyesuaian
-                            pendapatan
+                            {t(
+                              "RespondChangeFormModal.acceptDescription",
+                              {},
+                              "Tidak ada perubahan armada dan akan ada penyesuaian pendapatan"
+                            )}
                           </div>
                         </div>
                       )}
@@ -267,7 +329,11 @@ const RespondChangeFormModal = ({
                       selectedResponse === "accept_change_fleet" && (
                         <div className="pl-6">
                           <p className="mb-2 text-xs text-neutral-600">
-                            Pilih Armada Pengganti
+                            {t(
+                              "RespondChangeFormModal.selectReplacementFleet",
+                              {},
+                              "Pilih Armada Pengganti"
+                            )}
                           </p>
                           <FleetSelector
                             value={selectedFleet}
@@ -281,7 +347,11 @@ const RespondChangeFormModal = ({
                               selectedResponse === "accept_change_fleet"
                             }
                             fleetOptions={fleetOptions}
-                            placeholder="Pilih Armada"
+                            placeholder={t(
+                              "RespondChangeFormModal.selectFleetPlaceholder",
+                              {},
+                              "Pilih Armada"
+                            )}
                           />
                           {errors.selectedFleet &&
                             selectedResponse === "accept_change_fleet" && (
@@ -300,8 +370,11 @@ const RespondChangeFormModal = ({
                           {/* terdapat case dimana ada perbedaan wording LDZ-17.4 17.5 */}
                           {/* Armada akan dibatalkan, akan ada pergantian armada di lokasi bongkar 1, dan akan ada penyesuaian pendapatan. */}
                           <div className="flex h-6 flex-none items-center self-stretch rounded-md bg-error-50 px-2 py-1 text-xs font-semibold text-error-400">
-                            Armada akan dibatalkan, akan ada penyesuaian
-                            pendapatan, dan tidak ada kompensasi
+                            {t(
+                              "RespondChangeFormModal.rejectDescription",
+                              {},
+                              "Armada akan dibatalkan, akan ada penyesuaian pendapatan, dan tidak ada kompensasi"
+                            )}
                           </div>
                         </div>
                       )}
@@ -331,7 +404,7 @@ const RespondChangeFormModal = ({
               disabled={isLoading}
               className="w-[112px]"
             >
-              Kembali
+              {t("RespondChangeFormModal.back", {}, "Kembali")}
             </Button>
             <Button
               variant="muattrans-primary"
@@ -339,7 +412,9 @@ const RespondChangeFormModal = ({
               disabled={isLoading}
               className="w-[112px]"
             >
-              {isLoading ? "Memproses..." : "Simpan"}
+              {isLoading
+                ? t("RespondChangeFormModal.processing", {}, "Memproses...")
+                : t("RespondChangeFormModal.save", {}, "Simpan")}
             </Button>
           </div>
         </div>

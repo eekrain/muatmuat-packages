@@ -1,10 +1,12 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 function AlertProsesCariArmada({
   fleetFound,
   fleetsNeedingReplacement = 1,
   foundCount = 0,
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className={
@@ -27,20 +29,20 @@ function AlertProsesCariArmada({
       </div>
       <div className="flex flex-col gap-y-3">
         <h3 className="text-lg font-semibold leading-[21.6px] text-neutral-900">
-          Proses pencarian armada pengganti memerlukan waktu untuk beberapa
-          saat.
+          {t("AlertProsesCariArmada.titleFleetSearchProcess")}
         </h3>
         <div className="">
           {fleetFound && fleetsNeedingReplacement > 1 && (
             <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
-              Armada pengganti telah berhasil ditemukan{" "}
+              {t("AlertProsesCariArmada.messageFleetFound")}{" "}
               <span className="font-bold">
-                {foundCount}/{fleetsNeedingReplacement} armada
+                {foundCount}/{fleetsNeedingReplacement}{" "}
+                {t("AlertProsesCariArmada.unitFleet")}
               </span>
             </p>
           )}
           <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
-            Terima kasih atas kesabaran kamu.
+            {t("AlertProsesCariArmada.messageThankYou")}
           </p>
         </div>
       </div>
