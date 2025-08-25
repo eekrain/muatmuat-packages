@@ -8,33 +8,6 @@ import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { formatPhoneNumber } from "@/lib/utils/phoneFormatter";
 
-const generalContacts = {
-  pic: [
-    {
-      name: "Alexander",
-      role: "Staf Admin Operasional",
-      phone: "082123456869",
-    },
-    {
-      name: "Alexander krisna indra candra",
-      role: "Staf Admin Operasional",
-      phone: "082123458686",
-    },
-    {
-      name: "",
-      role: "",
-      phone: "",
-    },
-  ],
-  company: {
-    phone: "02155501234",
-  },
-  emergency: {
-    name: "Candra Ariansyah",
-    role: "Koordinator Staf Admin Operasional",
-    phone: "081298765432",
-  },
-};
 /**
  * HubungiModal Component - A reusable modal for displaying contact information
  *
@@ -42,12 +15,12 @@ const generalContacts = {
  * @param {boolean} props.isOpen - Whether the modal is open
  * @param {Function} props.onClose - Function to close the modal
  * @param {boolean} [props.showInitialChoice=true] - If true, shows the Transporter/Driver selection. If false, shows the contact options screen directly.
- * @param {Object} [props.contacts] - Array of contact objects to display when `showInitialChoice` is false.
+ * @param {Contacts} [props.contacts] - Object containing contact information.
  */
+
 const HubungiModal = ({
   isOpen,
   onClose,
-  showInitialChoice = false,
   contacts = {
     pics: [
       {
