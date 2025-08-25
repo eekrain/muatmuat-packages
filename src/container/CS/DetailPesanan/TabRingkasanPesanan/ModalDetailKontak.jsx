@@ -7,9 +7,10 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetOrderContacts } from "@/services/CS/monitoring/detail-pesanan-cs/getOrderContactsCS";
 
-const ContactRow = ({ contact, onCopy, isLoading = false }) => {
+const ContactRow = ({ contact, onCopy, isLoading = false, t }) => {
   const { label, name, role, phone, address, hasWhatsApp } = contact;
   const isCopyable = phone && phone !== "-" && !isLoading;
 
@@ -63,7 +64,7 @@ const ContactRow = ({ contact, onCopy, isLoading = false }) => {
               onClick={() => onCopy(phone)}
               className="rounded-full border border-primary-700 bg-white px-2 py-0.5 text-xs font-medium text-primary-700 hover:bg-primary-50"
             >
-              Salin
+              {t("ModalDetailKontak.buttonSalin", {}, "Salin")}
             </button>
           )}
         </div>
@@ -78,6 +79,7 @@ const ContactRow = ({ contact, onCopy, isLoading = false }) => {
  * @param {React.ReactNode} props.children - Trigger element
  */
 export const ModalDetailKontak = ({ mode = "shipper", children }) => {
+  const { t } = useTranslation();
   const [showToast, setShowToast] = useState(false);
   const params = useParams();
   const { data, error, isLoading } = useGetOrderContacts(params.orderId);
@@ -108,14 +110,18 @@ export const ModalDetailKontak = ({ mode = "shipper", children }) => {
 
       if (shipperContact?.companyPhoneNumber) {
         contacts.push({
-          label: "No. Telepon Perusahaan",
+          label: t(
+            "ModalDetailKontak.labelNoTeleponPerusahaan",
+            {},
+            "No. Telepon Perusahaan"
+          ),
           phone: shipperContact.companyPhoneNumber || "-",
         });
       }
       // Add shipper main contact if available
       if (shipperContact?.isContactAvailable && shipperContact?.phoneNumber) {
         contacts.push({
-          label: "No. Darurat",
+          label: t("ModalDetailKontak.labelNoDarurat", {}, "No. Darurat"),
           name: shipperContact.fullName || "-",
           phone: shipperContact.phoneNumber || "-",
           role: "-",
@@ -137,7 +143,11 @@ export const ModalDetailKontak = ({ mode = "shipper", children }) => {
             transporter.mainContact?.phoneNumber
           ) {
             contacts.push({
-              label: `Kontak ${transporterLabel}`,
+              label: t(
+                "ModalDetailKontak.labelKontakTransporter",
+                { transporter: transporterLabel },
+                "Kontak {transporter}"
+              ),
               name: transporter.mainContact.fullName || "-",
               phone: transporter.mainContact.phoneNumber || "-",
               type: "transporter",
@@ -181,7 +191,7 @@ export const ModalDetailKontak = ({ mode = "shipper", children }) => {
     }
 
     return contacts;
-  }, [data, mode]);
+  }, [data, mode, t]);
 
   const handleCopy = async (text) => {
     if (text && text !== "-") {
@@ -204,40 +214,65 @@ export const ModalDetailKontak = ({ mode = "shipper", children }) => {
         <ModalHeader />
         <div className="flex flex-col items-center gap-6 bg-white px-6 pb-9 pt-9">
           <h2 className="text-center text-sm font-bold text-neutral-900">
-            No Telepon/WhatsApp Yang Bisa Dihubungi
+            {t(
+              "ModalDetailKontak.titleNoTeleponWhatsApp",
+              {},
+              "No Telepon/WhatsApp Yang Bisa Dihubungi"
+            )}
           </h2>
           <div className="flex flex-col items-start gap-4 self-stretch">
             {isLoading ? (
               // Loading state with skeleton
               Array.from({ length: 3 }).map((_, index) => (
-                <ContactRow key={index} contact={{}} isLoading={true} />
+                <ContactRow key={index} contact={{}} isLoading={true} t={t} />
               ))
             ) : error ? (
               // Error state
               <div className="flex w-full items-center justify-center py-4">
                 <p className="text-sm text-red-500">
-                  Gagal memuat informasi kontak. Silakan coba lagi.
+                  {t(
+                    "ModalDetailKontak.messageErrorLoadKontak",
+                    {},
+                    "Gagal memuat informasi kontak. Silakan coba lagi."
+                  )}
                 </p>
               </div>
             ) : contactData.length > 0 ? (
               // Success state with contacts
               contactData.map((contact, index) => (
-                <ContactRow key={index} contact={contact} onCopy={handleCopy} />
+                <ContactRow
+                  key={index}
+                  contact={contact}
+                  onCopy={handleCopy}
+                  t={t}
+                />
               ))
             ) : (
               // Empty state
               <div className="flex w-full items-center justify-center py-4">
                 <p className="text-sm text-gray-500">
                   {mode === "shipper"
-                    ? "Tidak ada informasi kontak shipper tersedia"
-                    : "Tidak ada informasi kontak transporter tersedia"}
+                    ? t(
+                        "ModalDetailKontak.messageNoContactShipper",
+                        {},
+                        "Tidak ada informasi kontak shipper tersedia"
+                      )
+                    : t(
+                        "ModalDetailKontak.messageNoContactTransporter",
+                        {},
+                        "Tidak ada informasi kontak transporter tersedia"
+                      )}
                 </p>
               </div>
             )}
           </div>
           {showToast && (
             <div className="mx-auto mt-2 w-[286px] self-stretch rounded-md bg-primary-50 px-2 py-2 text-center text-xs font-semibold text-primary-700">
-              No. Telepon/WhatsApp berhasil disalin
+              {t(
+                "ModalDetailKontak.messageNoTeleponSalinBerhasil",
+                {},
+                "No. Telepon/WhatsApp berhasil disalin"
+              )}
             </div>
           )}
         </div>

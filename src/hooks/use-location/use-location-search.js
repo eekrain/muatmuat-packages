@@ -5,7 +5,6 @@ import LocationApiAdapter from "./location-api-adapter";
 import { useAutoComplete } from "./use-auto-complete";
 import { useGetCurrentLocation } from "./use-get-current-location";
 import { usePostalCode } from "./use-postal-code";
-import { useSavedLocation } from "./use-saved-location";
 
 export const DEFAULT_COORDINATES = {
   latitude: -7.250445,
@@ -24,15 +23,6 @@ export const useLocationSearch = () => {
   const [dontTriggerPostalCodeModal, setDontTriggerPostalCodeModal] =
     useState(false);
 
-  const savedLocation = useSavedLocation({
-    apiAdapter: LocationApiAdapter,
-    historyLocationType: "PICKUP",
-    setCoordinates,
-    setAutoCompleteSearchPhrase,
-    setIsDropdownSearchOpen,
-    setDontTriggerPostalCodeModal,
-  });
-
   const autoComplete = useAutoComplete({
     apiAdapter: LocationApiAdapter,
     autoCompleteSearchPhrase,
@@ -43,7 +33,6 @@ export const useLocationSearch = () => {
     setTempLocation,
     setDontTriggerPostalCodeModal,
     setIsDropdownSearchOpen,
-    refetchHistoryResult: savedLocation.refetchHistoryResult,
   });
 
   const getCurrentLocation = useGetCurrentLocation({
@@ -80,7 +69,6 @@ export const useLocationSearch = () => {
     ...autoComplete,
     ...getCurrentLocation,
     ...postalCode,
-    ...savedLocation,
     ...LocationApiAdapter,
     isMobile,
     coordinates,

@@ -22,6 +22,7 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { cancelFleet } from "@/services/CS/cancel-fleet";
 
+import HubungiModal from "../../user/components/HubungiModal";
 import {
   ORDER_STATUS,
   statusDisplayMap,
@@ -32,7 +33,6 @@ import BadgeOrderType from "./BadgeOrderType";
 import CancelFleetModal from "./CancelFleetModal";
 import CancelReasonModal from "./CancelReasonModal";
 import CargoInfo from "./CargoInfo";
-import ContactModal from "./ContactModal";
 import DetailArchieveModal from "./DetailArchieveModal";
 import FleetListModal from "./FleetListModal";
 import MuatBongkarStepperWithModal from "./MuatBongkarStepperWithModal";
@@ -580,11 +580,9 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
         order={order}
         isLoading={isLoading}
       />
-      <ContactModal
+      <HubungiModal
         isOpen={modalState.contact}
         onClose={() => closeModal("contact")}
-        contactId={modalData.contactId}
-        useMockData={true}
       />
       <OrderChangeInfoModal
         isOpen={modalState.changeInfo}

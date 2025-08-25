@@ -1,4 +1,5 @@
 import RadioButton from "@/components/Radio/RadioButton";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import { CustomTransporterSelect } from "./CustomTransporterSelect";
@@ -12,6 +13,8 @@ const ChangeAssignmentCard = ({
   uniqueGroupName,
   className,
 }) => {
+  const { t } = useTranslation();
+
   const handleTypeChange = (newType) => {
     const newTransporterId =
       newType === "CHOOSE_TRANSPORTER" ? value.transporterId : null;
@@ -44,19 +47,25 @@ const ChangeAssignmentCard = ({
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="text-xs font-medium text-neutral-600">Ubah Ke</span>
+        <span className="text-xs font-medium text-neutral-600">
+          {t("ChangeAssignmentCard.labelUbahKe", {}, "Ubah Ke")}
+        </span>
         <div className="flex items-center gap-4">
           <RadioButton
             name={uniqueGroupName}
             checked={value.type === "SAME_TRANSPORTER"}
             onClick={() => handleTypeChange("SAME_TRANSPORTER")}
-            label="Tidak Diubah (Transporter yang sama)"
+            label={t(
+              "ChangeAssignmentCard.radioTidakDiubah",
+              {},
+              "Tidak Diubah (Transporter yang sama)"
+            )}
           />
           <RadioButton
             name={uniqueGroupName}
             checked={value.type === "REBLAST"}
             onClick={() => handleTypeChange("REBLAST")}
-            label="Blast Ulang"
+            label={t("ChangeAssignmentCard.radioBlastUlang", {}, "Blast Ulang")}
           />
           <div className="flex items-center gap-2">
             <RadioButton
@@ -66,7 +75,11 @@ const ChangeAssignmentCard = ({
             />
             <CustomTransporterSelect
               options={transporterOptions}
-              placeholder="Pilih Transporter"
+              placeholder={t(
+                "ChangeAssignmentCard.placeholderPilihTransporter",
+                {},
+                "Pilih Transporter"
+              )}
               value={value.transporterId}
               onChange={handleTransporterChange}
               disabled={value.type !== "CHOOSE_TRANSPORTER"}

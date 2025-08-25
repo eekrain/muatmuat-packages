@@ -1,6 +1,7 @@
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import { Alert } from "./Alert";
@@ -19,6 +20,7 @@ export const TabLacakArmada = (props) => {
 };
 
 export const Inner = () => {
+  const { t } = useTranslation();
   const {
     data,
     totalArmada,
@@ -54,15 +56,21 @@ export const Inner = () => {
         >
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold text-neutral-900">
-              Lacak Armada
+              {t("TabLacakArmada.titleLacakArmada", {}, "Lacak Armada")}
             </h1>
             {totalSos > 0 && (
               <>
                 <span className="flex h-6 items-center rounded-md bg-error-400 px-2 py-1 text-xs font-semibold text-error-50">
-                  SOS{totalSos > 1 ? `: ${totalSos} Unit` : ""}
+                  {totalSos > 1
+                    ? t(
+                        "TabLacakArmada.badgeSosMultiple",
+                        { count: totalSos },
+                        "SOS: {count} Unit"
+                      )
+                    : t("TabLacakArmada.badgeSos", {}, "SOS")}
                 </span>
                 <a href="#" className="text-xs font-medium text-primary-700">
-                  Lihat SOS
+                  {t("TabLacakArmada.linkLihatSos", {}, "Lihat SOS")}
                 </a>
               </>
             )}
@@ -79,7 +87,11 @@ export const Inner = () => {
                   icon={{ left: "/icons/search.svg" }}
                   appearance={{ iconClassName: "text-neutral-700" }}
                   className="w-[278px]"
-                  placeholder="Cari No. Polisi / Nama Driver / Transporter"
+                  placeholder={t(
+                    "TabLacakArmada.placeholderCariArmada",
+                    {},
+                    "Cari No. Polisi / Nama Driver / Transporter"
+                  )}
                   value={searchInputValue}
                   onChange={(e) => setSearchInputValue(e.target.value)}
                   onKeyPress={handleSearchKeyPress}
@@ -94,13 +106,21 @@ export const Inner = () => {
                   className="h-8 min-w-[160px] !rounded-full !text-sm"
                   onClick={() => setIsEdit(true)}
                 >
-                  Ubah Transporter
+                  {t(
+                    "TabLacakArmada.buttonUbahTransporter",
+                    {},
+                    "Ubah Transporter"
+                  )}
                 </Button>
                 <Button
                   variant="muattrans-primary"
                   className="h-8 min-w-[174px] !rounded-full !text-sm"
                 >
-                  Lihat Posisi Armada
+                  {t(
+                    "TabLacakArmada.buttonLihatPosisiArmada",
+                    {},
+                    "Lihat Posisi Armada"
+                  )}
                 </Button>
               </div>
             ) : data?.length > 0 && isEdit ? (
@@ -110,14 +130,14 @@ export const Inner = () => {
                   className="h-8 w-[105px] !rounded-full !text-sm"
                   onClick={() => setIsEdit(false)}
                 >
-                  Batalkan
+                  {t("TabLacakArmada.buttonBatalkan", {}, "Batalkan")}
                 </Button>
                 <Button
                   variant="muattrans-primary"
                   className="h-8 w-[112px] !rounded-full !text-sm"
                   onClick={handleSaveChanges}
                 >
-                  Simpan
+                  {t("TabLacakArmada.buttonSimpan", {}, "Simpan")}
                 </Button>
               </div>
             ) : null}

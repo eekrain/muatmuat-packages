@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusTitle } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useGetAvailableTransportersCS } from "@/services/CS/monitoring/detail-pesanan-cs/getAvailableTransportersCS";
 import { useGetFleetTrackingCS } from "@/services/CS/monitoring/detail-pesanan-cs/getFleetTrackingCS";
@@ -16,6 +17,7 @@ const Context = createContext(null);
 
 export const LacakArmadaProvider = ({ children }) => {
   const params = useParams();
+  const { t } = useTranslation();
 
   // --- API CALLS ---
   const { data: fleetTrackingData } = useGetFleetTrackingCS(params.orderId);
@@ -128,7 +130,13 @@ export const LacakArmadaProvider = ({ children }) => {
       "CONFIRMED: Saving changes for unassigned fleets:",
       assignments
     );
-    alert("Perubahan telah dikirim! (Lihat console untuk detail)");
+    alert(
+      t(
+        "useLacakArmada.alertPerubahanTelahDikirim",
+        {},
+        "Perubahan telah dikirim! (Lihat console untuk detail)"
+      )
+    );
     setIsConfirmModalOpen(false);
     setIsEdit(false);
     setChangeSummary(null);
