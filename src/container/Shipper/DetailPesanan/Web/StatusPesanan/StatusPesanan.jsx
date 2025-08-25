@@ -1,6 +1,5 @@
+import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
-import { sub } from "date-fns";
 
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -21,6 +20,7 @@ import {
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import { toast } from "@/lib/toast";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 import { ModalPerubahanData } from "./ModalPerubahanData";
 
@@ -41,10 +41,11 @@ const StatusPesanan = ({
     useState(false);
   const [isModalDetailWaktuTungguOpen, setIsModalDetailWaktuTungguOpen] =
     useState(false);
-
+  const params = useParams();
   // State simulasi status order dan driverStatus
   const [orderStatusSimulasi, setOrderStatusSimulasi] = useState(null);
   const [isLoadingKonfirmasi, setIsLoadingKonfirmasi] = useState(false);
+  const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
 
   // State untuk tracking toast yang sudah ditampilkan
   const [toastShown, setToastShown] = useState(false);
@@ -186,31 +187,13 @@ const StatusPesanan = ({
           orderChangeHistory={orderChangeHistory}
         />
       )}
-
-      <ModalDetailWaktuTunggu
-        open={isModalDetailWaktuTungguOpen}
-        onOpenChange={setIsModalDetailWaktuTungguOpen}
-        drivers={[
-          {
-            name: "Daffa Toldo",
-            durasiTotal: "1 Jam 14 Menit",
-            data: [
-              {
-                detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-                startDate: sub(new Date(), { hours: 2 }).toISOString(),
-                endDate: sub(new Date(), { hours: 1 }).toISOString(),
-                totalPrice: 100000,
-              },
-              {
-                detail: "Lokasi Bongkar 1 : 1 Jam 59 Menit",
-                startDate: sub(new Date(), { hours: 2 }).toISOString(),
-                endDate: sub(new Date(), { hours: 1 }).toISOString(),
-                totalPrice: 200000,
-              },
-            ],
-          },
-        ]}
-      />
+      {waitingTimeData && waitingTimeData.length > 0 && (
+        <ModalDetailWaktuTunggu
+          open={isModalDetailWaktuTungguOpen}
+          onOpenChange={setIsModalDetailWaktuTungguOpen}
+          drivers={waitingTimeData}
+        />
+      )}
     </>
   );
 };

@@ -1,5 +1,6 @@
 import useSWRMutation from "swr/mutation";
-import xior from "xior";
+
+import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
 
 // Mock API result for development/testing
 export const mockAPIResult = {
@@ -26,19 +27,9 @@ export const mockAPIResult = {
  * @returns {Promise} API response
  */
 export const verifyEmailVerification = async (data) => {
-  // Create Basic Auth header using environment variables
-  const basicAuth = btoa(
-    `${process.env.NEXT_PUBLIC_BASIC_AUTH_USERNAME}:${process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD}`
-  );
-
-  const response = await xior.post(
-    "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/email-verification/verify",
-    data,
-    {
-      headers: {
-        Authorization: `Basic ${basicAuth}`,
-      },
-    }
+  const response = await fetcherMuatransCS.post(
+    "/v1/transporter/auth/email-verification/verify",
+    data
   );
   return response;
 };
@@ -49,17 +40,8 @@ export const verifyEmailVerification = async (data) => {
  */
 export const useVerifyEmailVerification = () =>
   useSWRMutation(
-    "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/email-verification/verify",
+    "/v1/transporter/auth/email-verification/verify",
     (url, { arg }) => {
-      // Create Basic Auth header using environment variables
-      const basicAuth = btoa(
-        `${process.env.NEXT_PUBLIC_BASIC_AUTH_USERNAME}:${process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD}`
-      );
-
-      return xior.post(url, arg, {
-        headers: {
-          Authorization: `Basic ${basicAuth}`,
-        },
-      });
+      return fetcherMuatransCS.post(url, arg);
     }
   );

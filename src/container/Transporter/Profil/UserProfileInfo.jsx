@@ -142,7 +142,6 @@ const UserProfileInfo = ({ userProfile }) => {
 
   const [hasVerified, setHasVerified] = useState(false);
   const [hasVerifiedEmail, setHasVerifiedEmail] = useState(false);
-  const [hasProcessedShowModal, setHasProcessedShowModal] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("hasVerified") === "true") {
@@ -256,13 +255,15 @@ const UserProfileInfo = ({ userProfile }) => {
     try {
       console.log("New WhatsApp number submitted:", newNumber);
       setChangeWhatsappModalOpen(false);
-
-      // Store the new phone number for later use
-
       // Generate OTP for new number
-      await sendRequestOtp(newNumber, "WHATSAPP", "VERIFY_PHONE", "VERIFY_OLD");
+      await sendRequestOtp(
+        userData.whatsapp,
+        "WHATSAPP",
+        "CHANGE_PHONE",
+        "VERIFY_NEW",
+        newNumber
+      );
 
-      // Navigate to OTP page for new number verification
       router.push(`/otp?type=change-number&whatsapp=${newNumber}`);
     } catch (error) {
       console.error("Error generating OTP for new number:", error);
@@ -275,11 +276,14 @@ const UserProfileInfo = ({ userProfile }) => {
       console.log("New email submitted:", newEmail);
       setEmailModalOpen(false);
 
-      // Store the new email for later use
-      setField("newTarget", newEmail);
-
       // Generate OTP for new email
-      await sendRequestOtp(newEmail, "EMAIL", "CHANGE_EMAIL", "VERIFY_NEW");
+      await sendRequestOtp(
+        userData.email,
+        "EMAIL",
+        "CHANGE_EMAIL",
+        "VERIFY_NEW",
+        newEmail
+      );
 
       // Navigate to OTP page for new email verification
       router.push(`/otp?type=change-email2&email=${newEmail}`);
@@ -300,26 +304,10 @@ const UserProfileInfo = ({ userProfile }) => {
       if (response?.data?.Message?.Code === 200) {
         toast.success("Password berhasil diubah");
         setChangePasswordModalOpen(false);
-
-        // Handle session invalidation if required
-        if (response.data.Data?.sessionInvalidated) {
-          toast.info("Sesi Anda telah berakhir. Silakan login kembali.");
-          // Redirect to login or handle session invalidation
-          if (response.data.Data?.redirectUrl) {
-            router.push(response.data.Data.redirectUrl);
-          }
-        }
+        router.push("/password-success");
       }
     } catch (error) {
       console.error("Password update error:", error);
-
-      // // Handle API error responses
-      // if (error?.response?.data?.Message) {
-      //   const errorMessage = error.response.data.Message.Text;
-      //   toast.error(errorMessage);
-      // } else {
-      //   toast.error("Gagal mengubah password");
-      // }
     }
   };
 
@@ -360,7 +348,7 @@ const UserProfileInfo = ({ userProfile }) => {
               onClick={async () => {
                 try {
                   // Reset any previous OTP state
-                  // reset();
+                  reset();
 
                   // Generate OTP for current number verification
                   await sendRequestOtp(

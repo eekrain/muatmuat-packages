@@ -281,6 +281,9 @@ const LoginPage = () => {
                     label={t("LoginPage.labelStayLoggedIn", {}, "Tetap Masuk")}
                     checked={field.value}
                     onChange={(event) => field.onChange(event.checked)}
+                    appearance={{
+                      labelClassName: "text-neutral-700",
+                    }}
                   />
                 )}
               />

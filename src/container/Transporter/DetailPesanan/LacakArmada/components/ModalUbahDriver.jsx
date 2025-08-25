@@ -10,6 +10,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
 import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
@@ -22,6 +23,7 @@ const ModalUbahDriver = ({
   currentDriverId,
   title = "Ubah Driver",
 }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [selectedDriverId, setSelectedDriverId] = useState(
     currentDriverId || null
@@ -85,7 +87,7 @@ const ModalUbahDriver = ({
         await updateVehicleDriver(vehicleId, selectedDriverId);
 
         // Success handling
-        toast.success("Berhasil mengubah driver");
+        // toast.success("Berhasil mengubah driver");
         setShowConfirmation(false);
         resetState();
         onClose();
@@ -97,7 +99,13 @@ const ModalUbahDriver = ({
         refetchDrivers();
       } catch (error) {
         console.error("Failed to update driver:", error);
-        toast.error("Gagal mengubah driver. Silakan coba lagi.");
+        toast.error(
+          t(
+            "ModalUbahDriver.errorMessage",
+            {},
+            "Gagal mengubah driver. Silakan coba lagi."
+          )
+        );
       } finally {
         setIsUpdating(false);
       }
@@ -138,7 +146,9 @@ const ModalUbahDriver = ({
         <ModalContent size="small" type="muattrans" className="w-[600px]">
           <div className="p-6">
             <h2 className="mb-4 text-center text-base font-bold">
-              {viewingPhoto ? "Foto Driver" : title}
+              {viewingPhoto
+                ? t("ModalUbahDriver.photoTitle", {}, "Foto Driver")
+                : title}
             </h2>
 
             {viewingPhoto ? (
@@ -153,7 +163,11 @@ const ModalUbahDriver = ({
               <>
                 {/* Search Input */}
                 <Search
-                  placeholder="Cari No. Polisi / Nama Driver"
+                  placeholder={t(
+                    "ModalUbahDriver.searchPlaceholder",
+                    {},
+                    "Cari No. Polisi / Nama Driver"
+                  )}
                   onSearch={setSearchValue}
                   autoSearch={true}
                   debounceTime={300}
@@ -169,7 +183,11 @@ const ModalUbahDriver = ({
                   ) : driversError ? (
                     <div className="flex h-[200px] items-center justify-center">
                       <p className="text-sm text-error-400">
-                        Gagal memuat data driver
+                        {t(
+                          "ModalUbahDriver.loadError",
+                          {},
+                          "Gagal memuat data driver"
+                        )}
                       </p>
                     </div>
                   ) : drivers.length === 0 ? (
@@ -216,7 +234,11 @@ const ModalUbahDriver = ({
                           </div>
                           <div className="flex h-3 cursor-pointer items-center text-xxs">
                             <a className="text-blue-500 hover:text-blue-800">
-                              Cek Jadwal Driver
+                              {t(
+                                "ModalUbahDriver.checkSchedule",
+                                {},
+                                "Cek Jadwal Driver"
+                              )}
                             </a>
                           </div>
                         </div>
@@ -228,12 +250,20 @@ const ModalUbahDriver = ({
                             <InfoTooltip
                               side="top"
                               className="w-[278px]"
-                              render={`Jadwal driver tidak tersedia untuk bertugas pada pesanan ini, kamu bisa memilih driver lain yang tersedia`}
+                              render={t(
+                                "ModalUbahDriver.scheduleTooltip",
+                                {},
+                                "Jadwal driver tidak tersedia untuk bertugas pada pesanan ini, kamu bisa memilih driver lain yang tersedia"
+                              )}
                             >
                               <Info className="h-3 w-3 text-neutral-700" />
                             </InfoTooltip>
                             <span className="text-xs font-semibold text-neutral-600">
-                              Jadwal Tidak Tersedia
+                              {t(
+                                "ModalUbahDriver.scheduleUnavailable",
+                                {},
+                                "Jadwal Tidak Tersedia"
+                              )}
                             </span>
                           </div>
                         ) : (
@@ -257,10 +287,10 @@ const ModalUbahDriver = ({
                     variant="muattrans-primary-secondary"
                     onClick={onClose} // Make the cancel button work
                   >
-                    Batal
+                    {t("ModalUbahDriver.cancelButton", {}, "Batal")}
                   </Button>
                   <Button variant="muattrans-primary" onClick={handleSave}>
-                    Simpan
+                    {t("ModalUbahDriver.saveButton", {}, "Simpan")}
                   </Button>
                 </div>
               </>
@@ -279,11 +309,20 @@ const ModalUbahDriver = ({
           <ModalHeader type="muattrans" size="small" />
           <div className="flex flex-col items-center px-6 py-8 font-medium">
             <div className="mb-1 h-[14px] text-center text-sm">
-              Apakah Anda yakin ingin memasangkan
+              {t(
+                "ModalUbahDriver.confirmationText1",
+                {},
+                "Apakah Anda yakin ingin memasangkan"
+              )}
             </div>
             <div className="h-[14px] text-center text-sm">
-              <span className="font-bold">{selectedDriver?.fullName}</span> ke{" "}
-              <span className="font-bold">No. Polisi : {vehiclePlate}</span> ?
+              <span className="font-bold">{selectedDriver?.fullName}</span>{" "}
+              {t("ModalUbahDriver.confirmationText2", {}, "ke")}{" "}
+              <span className="font-bold">
+                {t("ModalUbahDriver.licenseNumber", {}, "No. Polisi")} :{" "}
+                {vehiclePlate}
+              </span>{" "}
+              ?
             </div>
             <div className="mt-6 flex items-center gap-2">
               <Button
@@ -293,7 +332,7 @@ const ModalUbahDriver = ({
                 type="button"
                 disabled={isUpdating}
               >
-                Batal
+                {t("ModalUbahDriver.cancelButton", {}, "Batal")}
               </Button>
               <Button
                 variant="muattrans-primary"
@@ -305,7 +344,7 @@ const ModalUbahDriver = ({
                 {isUpdating ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 ) : (
-                  "Ya"
+                  t("ModalUbahDriver.confirmYes", {}, "Ya")
                 )}
               </Button>
             </div>
@@ -325,26 +364,46 @@ const ModalUbahDriver = ({
             <div className="text-center">
               <div className="mb-6 text-sm font-medium">
                 <span className="font-bold">{driverWithVehicle?.fullName}</span>{" "}
-                saat ini sedang terpasang dengan{" "}
+                {t(
+                  "ModalUbahDriver.vehicleWarningText1",
+                  {},
+                  "saat ini sedang terpasang dengan"
+                )}{" "}
                 <span className="font-bold">
                   {" "}
-                  No. Polisi : {driverWithVehicle?.currentVehicle}
+                  {t("ModalUbahDriver.licenseNumber", {}, "No. Polisi")} :{" "}
+                  {driverWithVehicle?.currentVehicle}
                 </span>
               </div>
 
               <div className="mb-8 text-sm font-medium">
-                Jika kamu melanjutkan perubahan,{" "}
+                {t(
+                  "ModalUbahDriver.vehicleWarningText2",
+                  {},
+                  "Jika kamu melanjutkan perubahan,"
+                )}{" "}
                 <span className="font-bold">
-                  No. Polisi : {driverWithVehicle?.currentVehicle}
+                  {t("ModalUbahDriver.licenseNumber", {}, "No. Polisi")} :{" "}
+                  {driverWithVehicle?.currentVehicle}
                 </span>{" "}
-                akan terlepas dari driver tersebut.
+                {t(
+                  "ModalUbahDriver.vehicleWarningText3",
+                  {},
+                  "akan terlepas dari driver tersebut."
+                )}
                 <br />
-                Apakah Anda yakin ingin memasangkan{" "}
+                {t(
+                  "ModalUbahDriver.vehicleWarningText4",
+                  {},
+                  "Apakah Anda yakin ingin memasangkan"
+                )}{" "}
+                <span className="font-bold">{driverWithVehicle?.fullName}</span>{" "}
+                {t("ModalUbahDriver.confirmationText2", {}, "ke")}{" "}
                 <span className="font-bold">
-                  {driverWithVehicle?.fullName}
+                  {t("ModalUbahDriver.licenseNumber", {}, "No. Polisi")} :{" "}
+                  {vehiclePlate}
                 </span>{" "}
-                ke{" "}
-                <span className="font-bold">No. Polisi : {vehiclePlate}</span> ?
+                ?
               </div>
             </div>
 
@@ -356,7 +415,7 @@ const ModalUbahDriver = ({
                 type="button"
                 disabled={isUpdating}
               >
-                Batal
+                {t("ModalUbahDriver.cancelButton", {}, "Batal")}
               </Button>
               <Button
                 variant="muattrans-primary"
@@ -365,7 +424,7 @@ const ModalUbahDriver = ({
                 type="button"
                 disabled={isUpdating}
               >
-                Ya
+                {t("ModalUbahDriver.confirmYes", {}, "Ya")}
               </Button>
             </div>
           </div>

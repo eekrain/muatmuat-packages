@@ -13,6 +13,8 @@ import {
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
+import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";
+import { useGetRefundInfo } from "@/services/Shipper/detailpesanan/getRefundInfo";
 import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
@@ -57,24 +59,38 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
   //   navigation.replace("/CariSemuaDriver");
   // }, []);
   const params = useParams();
-  console.log(params, "params");
   const { setIsGlobalLoading } = useLoadingAction();
 
-  const { data } = useGetDetailPesananData(params.orderId);
+  const { data, mutate } = useGetDetailPesananData(params.orderId);
   const { data: waitingTimeRawData } = useGetWaitingTime(params.orderId);
+  const { data: overloadDataRaw } = useGetOverloadData(params.orderId);
 
   const waitingTimeRaw = useShallowMemo(
     () => waitingTimeRawData || [],
     [waitingTimeRawData]
   );
 
+  const overloadData = useShallowMemo(
+    () => overloadDataRaw || {},
+    [overloadDataRaw]
+  );
+
   const dataStatusPesanan = data?.dataStatusPesanan;
+
+  const isCancelled =
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.CANCELED_BY_SYSTEM ||
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.CANCELED_BY_SHIPPER ||
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.CANCELED_BY_TRANSPORTER;
+
+  const { data: refundInfo } = useGetRefundInfo(
+    isCancelled ? params.orderId : null
+  );
+
   const dataRingkasanPesanan = data?.dataRingkasanPesanan;
   const dataDetailPIC = data?.dataDetailPIC;
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
     data?.dataRingkasanPembayaran?.documentShippingDetail;
-  console.log(dataRingkasanPembayaran, "dataRingkasanPembayaran");
   useEffect(() => {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,8 +117,11 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            overloadData={overloadData}
             oldDriverData={oldDriverData}
             paymentMethods={paymentMethods}
+            mutate={mutate}
+            refundInfo={refundInfo}
           />
         }
       />

@@ -65,8 +65,11 @@ const DetailPesananScreen = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  overloadData,
   oldDriverData,
   paymentMethods,
+  mutate,
+  refundInfo,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -74,7 +77,7 @@ const DetailPesananScreen = ({
     isOpen: isVolumePesananTinggiOpen,
     isShow: isShowWaitFleetAlert,
     setIsOpen: setIsVolumePesananTinggiOpen,
-    setIsShow: setIsShowWaitFleetAlert,
+    setIsShow: _setIsShowWaitFleetAlert,
   } = useGetFleetSearchStatus(
     params.orderId,
     dataStatusPesanan?.orderStatus === OrderStatusEnum.PREPARE_FLEET
@@ -145,9 +148,6 @@ const DetailPesananScreen = ({
     );
 
     if (hasConfirmationWaitingAlert && isConfirmWaiting) {
-      console.log(
-        "🍌 PendingPrepareFleetAlert hidden due to CONFIRMATION_WAITING_PREPARE_FLEET alert and user confirmed waiting"
-      );
       return false;
     }
 
@@ -224,6 +224,7 @@ const DetailPesananScreen = ({
         <OrderInfo
           dataStatusPesanan={dataStatusPesanan}
           documentShippingDetail={documentShippingDetail}
+          refundInfo={refundInfo}
         />
 
         {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
@@ -258,6 +259,7 @@ const DetailPesananScreen = ({
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            overloadData={overloadData}
             paymentMethods={paymentMethods}
           />
 
@@ -289,6 +291,8 @@ const DetailPesananScreen = ({
           dataRingkasanPesanan={dataRingkasanPesanan}
           isConfirmWaiting={isConfirmWaiting}
           onConfirmWaitingChange={setIsConfirmWaiting}
+          paymentMethods={paymentMethods}
+          mutate={mutate}
         />
       ) : null}
 

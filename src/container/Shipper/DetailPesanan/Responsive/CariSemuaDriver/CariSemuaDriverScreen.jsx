@@ -13,7 +13,6 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
   const params = useParams();
   const navigation = useResponsiveNavigation();
   const searchValue = useResponsiveSearchStore((state) => state.searchValue);
-
   const filteredDriver = useMemo(() => {
     const drivers = dataStatusPesanan?.driverStatus;
     if (!drivers) return [];
@@ -61,7 +60,17 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
                   withMenu={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
-                <DriverInfo.Actions driver={driver} />
+                <DriverInfo.Actions
+                  driver={driver}
+                  orderId={params.orderId}
+                  onLacakArmadaClicked={() => {
+                    // implementasi navigasi ke LacakArmada
+                    navigation.push("/LacakArmada", {
+                      orderId: params.orderId,
+                      driverId: driver.driverId,
+                    });
+                  }}
+                />
               </div>
             </div>
           ))
