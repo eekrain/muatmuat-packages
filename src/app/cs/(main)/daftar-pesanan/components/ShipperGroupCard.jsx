@@ -14,7 +14,7 @@ import {
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 
-import ContactModal from "./ContactModal";
+import HubungiModal from "../../user/components/HubungiModal";
 import PesananCard from "./PesananCard";
 
 const ShipperGroupCard = ({ group, userRole }) => {
@@ -83,11 +83,9 @@ const ShipperGroupCard = ({ group, userRole }) => {
           </div>
         </CollapsibleContent>
       </Collapsible>
-      <ContactModal
+      <HubungiModal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
-        contactId={group.shipper.id}
-        useMockData={true}
       />
     </>
   );
