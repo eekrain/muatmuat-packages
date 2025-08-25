@@ -230,7 +230,6 @@ const UbahJumlahUnitModal = ({
                 variant="muattrans-primary"
                 onClick={handleConfirm}
                 disabled={isSubmitting || isLoading}
-                {...((isSubmitting || isLoading) && { loading: true })}
                 className={cn(
                   "h-10 text-sm font-semibold",
                   "w-[112px] flex-none"
