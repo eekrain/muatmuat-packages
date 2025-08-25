@@ -119,8 +119,8 @@ export const Content = () => {
         <div className="flex items-center gap-4 bg-neutral-100 p-4">
           <div className="flex flex-1 items-center gap-4">
             <img
-              src={transporter.companyPicture || "/img/default-logo.png"}
-              alt={`Logo ${transporter.companyName}`}
+              src={transporter.companyPicture || "/img/default-picture.png"}
+              alt={`picture ${transporter.companyName}`}
               className="size-10 rounded-full border border-neutral-500 object-cover"
             />
             <div className="flex flex-col gap-3">
