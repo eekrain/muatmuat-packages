@@ -126,10 +126,8 @@ export const LacakArmadaProvider = ({ children }) => {
   };
 
   const executeSaveChanges = () => {
-    console.log(
-      "CONFIRMED: Saving changes for unassigned fleets:",
-      assignments
-    );
+    // TODO: Implement API call to save changes for unassigned fleets
+    // console.log("CONFIRMED: Saving changes for unassigned fleets:", assignments);
     alert(
       t(
         "useLacakArmada.alertPerubahanTelahDikirim",
@@ -343,6 +341,7 @@ export const LacakArmadaProvider = ({ children }) => {
   // --- CONTEXT VALUE ---
   const value = {
     data: fleetTrackingData,
+    finalData,
     isEdit,
     setIsEdit,
     assignments,
