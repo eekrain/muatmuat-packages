@@ -6,6 +6,7 @@ import LaporanPermintaanDibatalkan from "@/container/CS/LaporanPermintaanDibatal
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useGetCancelledOrders } from "@/services/CS/laporan/permintaan-dibatalkan/getCancelledOrders";
 import { useGetPeriodHistory } from "@/services/CS/laporan/permintaan-dibatalkan/getPeriodHistory";
 
@@ -59,6 +60,20 @@ const Page = () => {
     useGetCancelledOrders(queryString);
   const { data: { periodHistory = [] } = {}, mutate: refetchPeriodHistory } =
     useGetPeriodHistory();
+  const { trigger: savePeriodHistory, isMutating: isUploadingLogo } =
+    useSWRMutateHook(
+      "v1/cs/canceled-orders/period-history",
+      "POST",
+      undefined,
+      undefined,
+      {
+        onSuccess: (data) => {
+          if (data.Data) {
+            refetchPeriodHistory();
+          }
+        },
+      }
+    );
 
   useShallowCompareEffect(() => {
     if (
@@ -81,6 +96,10 @@ const Page = () => {
     setLastFilterField(field);
   };
 
+  const handleSavePeriodHistory = (startDate, endDate) => {
+    savePeriodHistory({ startDate, endDate });
+  };
+
   if (!mounted) return null;
 
   return (
@@ -95,6 +114,7 @@ const Page = () => {
       currentPeriodValue={currentPeriodValue}
       setCurrentPeriodValue={setCurrentPeriodValue}
       onChangeQueryParams={handleChangeQueryParams}
+      onSavePeriodHistory={handleSavePeriodHistory}
     />
   );
 };
