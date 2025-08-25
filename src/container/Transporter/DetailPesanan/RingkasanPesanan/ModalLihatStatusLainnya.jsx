@@ -1,8 +1,11 @@
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import { ORDER_STATUS_CONFIG } from "@/utils/Transporter/orderStatus";
+import { useTranslation } from "@/hooks/use-translation";
+import { getOrderStatusBadgeWithTranslation } from "@/utils/Transporter/orderStatus";
 
 export const ModalLihatStatusLainnya = ({ otherStatus }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal closeOnOutsideClick>
       <ModalTrigger>
@@ -16,7 +19,10 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
         </h2>
         <div className="flex flex-col gap-2">
           {otherStatus?.map((status, index) => {
-            const statusConfig = ORDER_STATUS_CONFIG[status.orderStatus];
+            const statusConfig = getOrderStatusBadgeWithTranslation(
+              status.orderStatus,
+              t
+            );
             return (
               <BadgeStatusPesanan
                 key={index}

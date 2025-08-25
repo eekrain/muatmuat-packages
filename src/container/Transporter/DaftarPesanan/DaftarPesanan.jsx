@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 import { formatLoadTime, formatToYYYYMMDD } from "@/lib/utils/dateFormat";
 import {
   ORDER_STATUS,
-  ORDER_STATUS_CONFIG,
+  getOrderStatusConfig,
 } from "@/utils/Transporter/orderStatus";
 
 const DaftarPesanan = ({
@@ -639,7 +639,7 @@ const DaftarPesanan = ({
                       },
                     }}
                   >
-                    {ORDER_STATUS_CONFIG[queryParams.status].label}
+                    {getOrderStatusConfig(t)[queryParams.status].label}
                   </TagBubble>
                 </div>
               ) : null}

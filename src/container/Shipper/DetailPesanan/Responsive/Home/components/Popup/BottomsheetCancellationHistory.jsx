@@ -22,7 +22,10 @@ const BottomsheetCancellationHistory = ({ cancellationHistory }) => {
           {},
           "Dibatalkan Oleh"
         ),
-        value: cancellationHistory.cancelledBy,
+        value:
+          cancellationHistory.cancelledBy === "CUSTOMER"
+            ? "SHIPPER"
+            : cancellationHistory.cancelledBy,
       },
       {
         title: t(

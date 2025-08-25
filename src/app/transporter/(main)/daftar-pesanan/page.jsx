@@ -5,16 +5,18 @@ import { useState } from "react";
 import DaftarPesanan from "@/container/Transporter/DaftarPesanan/DaftarPesanan";
 import useDevice from "@/hooks/use-device";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
 import { useGetOrderList } from "@/services/Transporter/daftar-pesanan/getOrderList";
 import { useGetOrdersCountByStatus } from "@/services/Transporter/daftar-pesanan/getOrdersCountByStatus";
 import {
   ORDER_STATUS,
-  ORDER_STATUS_CONFIG,
+  getOrderStatusConfig,
 } from "@/utils/Transporter/orderStatus";
 
 const DaftarPesananPage = () => {
   const { mounted } = useDevice();
+  const { t } = useTranslation();
 
   const defaultQueryParams = {
     page: 1,
@@ -132,7 +134,7 @@ const DaftarPesananPage = () => {
         ORDER_STATUS.COMPLETED,
       ].map((item) => ({
         value: item,
-        label: ORDER_STATUS_CONFIG[item].label,
+        label: getOrderStatusConfig(t)[item].label,
       })),
     },
   ];

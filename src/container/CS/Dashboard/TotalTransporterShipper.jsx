@@ -5,10 +5,10 @@ import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import DonutChart from "@/components/Chart/DonutChart";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetDashboardAnalyticsTotalDriver } from "@/services/CS/dashboard/getTotalDriver";
-import { useGetDashboardAnalyticsTotalArmada } from "@/services/CS/dashboard/getTotalFleet";
+import { useGetDashboardAnalyticsTotalDriver } from "@/services/CS/dashboard/analytics/getTotalDriver";
+import { useGetDashboardAnalyticsTotalArmada } from "@/services/CS/dashboard/analytics/getTotalFleet";
 // 1. Import all necessary data fetching hooks
-import { useGetDashboardAnalyticsTotalTransporter } from "@/services/CS/dashboard/getTotalTransporter";
+import { useGetDashboardAnalyticsTotalTransporter } from "@/services/CS/dashboard/analytics/getTotalTransporter";
 
 const TotalTransporterShipper = () => {
   // 2. Fetch data for all three categories

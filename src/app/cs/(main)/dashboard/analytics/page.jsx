@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useMemo } from "react";
 
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import LeaderboardCombo from "@/container/CS/Dashboard/LeaderboardCombo";
@@ -10,18 +10,34 @@ import TotalAdditionalCost from "@/container/CS/Dashboard/TotalAdditionalCost";
 import TotalIncome from "@/container/CS/Dashboard/TotalIncome";
 import TotalShipper from "@/container/CS/Dashboard/TotalShipper";
 import TotalTransporterShipper from "@/container/CS/Dashboard/TotalTransporterShipper";
+import { generateDynamicPeriodOptions } from "@/lib/utils/generateDynamicPeriodOptions";
+import { useGetDashboardAnalyticsTop10 } from "@/services/CS/dashboard/analytics/getTop10Leaderboard";
 import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
-
-const basePeriodOptions = [
-  { name: "Bulan Ini", value: "month" },
-  { name: "Hari Ini", value: "today" },
-  { name: "1 Minggu Terakhir", value: "week" },
-  { name: "30 Hari Terakhir", value: "30days" },
-  { name: "1 Tahun Terakhir", value: "365days" },
-];
 
 function Page() {
   const { period, setPeriod } = useAnalyticsStore();
+
+  // Generate period options dynamically and memoize the result
+  const basePeriodOptions = useMemo(() => generateDynamicPeriodOptions(), []);
+
+  // Fetch data for each leaderboard category
+  const { data: transportersData, isLoading: isTransportersLoading } =
+    useGetDashboardAnalyticsTop10({
+      category: "transporters",
+      period,
+    });
+
+  const { data: loadingAreasData, isLoading: isLoadingAreasLoading } =
+    useGetDashboardAnalyticsTop10({
+      category: "loading-areas",
+      period,
+    });
+
+  const { data: unloadingAreasData, isLoading: isUnloadingAreasLoading } =
+    useGetDashboardAnalyticsTop10({
+      category: "unloading-areas",
+      period,
+    });
 
   const handlePeriodSelect = (selectedOption) => {
     console.log(
@@ -31,20 +47,17 @@ function Page() {
     setPeriod(selectedOption.value);
   };
 
-  // 2. Try to find the selected period in the default list.
   let selectedOption = basePeriodOptions.find(
     (option) => option.value === period
   );
   const finalOptions = [...basePeriodOptions];
 
   if (!selectedOption && period) {
-    // Create a new option object for the custom period.
     const customOption = { name: period, value: period };
     selectedOption = customOption;
-    // Add the custom option to the top of the list so it's visible.
     finalOptions.unshift(customOption);
   }
-
+  console.log("selected date:", selectedOption);
   return (
     <div className="mx-auto max-w-[1280px] p-6">
       <h1 className="text-xl font-bold">
@@ -68,17 +81,29 @@ function Page() {
         <TotalAdditionalCost />
       </div>
       <div className="flex flex-row gap-4 pb-4 pt-4">
+        {/* Leaderboard for Transporters */}
         <LeaderboardTop10
           title="Transporter"
           tooltipText="10 nama transporter yang paling banyak menyelesaikan pesanan"
+          category="transporters"
+          data={transportersData?.items}
+          isLoading={isTransportersLoading}
         />
+        {/* Leaderboard for Loading Areas */}
         <LeaderboardTop10
-          title="Transporter"
+          title="Area Muat"
           tooltipText="10 Kota/Kabupaten yang paling banyak menjadi tujuan muat"
+          category="loading-areas"
+          data={loadingAreasData?.items}
+          isLoading={isLoadingAreasLoading}
         />
+        {/* Leaderboard for Unloading Areas */}
         <LeaderboardTop10
-          title="Transporter"
+          title="Area Bongkar"
           tooltipText="10 Kota/Kabupaten yang paling banyak menjadi tujuan bongkar"
+          category="unloading-areas"
+          data={unloadingAreasData?.items}
+          isLoading={isUnloadingAreasLoading}
         />
       </div>
       <LeaderboardCombo />

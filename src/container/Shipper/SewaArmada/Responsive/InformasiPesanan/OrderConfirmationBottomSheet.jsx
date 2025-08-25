@@ -28,6 +28,8 @@ const OrderConfirmationBottomSheet = ({
   setOpen,
   onValidateInformasiPesanan,
   onCreateOrder,
+  selectedCarrier = null,
+  selectedTruck = null,
 }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
@@ -51,13 +53,41 @@ const OrderConfirmationBottomSheet = ({
     paymentMethodId,
     // deliveryOrder,
   } = formValues;
+
   const [isLocationBottomsheetOpen, setIsLocationBottomsheetOpen] =
     useState(false);
   const [
     isInformasiMuatanBottomsheetOpen,
     setIsInformasiMuatanBottomsheetOpen,
-  ] = useState(false); // Bottomsheet informasi muatan periksa pesanan kamu
+  ] = useState(false);
   const [locationType, setLocationType] = useState("");
+
+  console.log("MENCARI DATA TRUK :", selectedCarrier, selectedTruck);
+
+  // Get truck display information
+  const getTruckDisplayInfo = () => {
+    if (selectedCarrier && selectedTruck) {
+      return {
+        name: `${selectedTruck.name}`,
+        carrierName: selectedCarrier.name,
+        image:
+          selectedTruck.image ||
+          selectedCarrier.image ||
+          "/img/recommended1.png",
+        fullName: `${selectedCarrier.name} - ${selectedTruck.name}`,
+      };
+    }
+
+    // Fallback to default values if no truck selected
+    return {
+      name: "Box - Colt Diesel Engkel",
+      carrierName: "Default Carrier",
+      image: "/img/recommended1.png",
+      fullName: "Box - Colt Diesel Engkel",
+    };
+  };
+
+  const truckInfo = getTruckDisplayInfo();
 
   return (
     <>
@@ -98,7 +128,9 @@ const OrderConfirmationBottomSheet = ({
                   {t("labelRute")}
                 </h4>
                 <span className="text-xs font-medium leading-[13.2px]">
-                  {"Estimasi 178 km"}
+                  {distance && distanceUnit
+                    ? `Estimasi ${distance} ${distanceUnit}`
+                    : "Estimasi 178 km"}
                 </span>
               </div>
               <TimelineContainer>
@@ -143,6 +175,7 @@ const OrderConfirmationBottomSheet = ({
                 />
               </TimelineContainer>
             </OrderSummarySection>
+            {/* Updated Informasi Armada Section */}
             <OrderSummarySection className="gap-y-3 text-neutral-900">
               <h4 className="text-sm font-semibold leading-[15.4px]">
                 {t("titleInformasiArmada")}
@@ -150,22 +183,30 @@ const OrderConfirmationBottomSheet = ({
               <div className="flex items-center gap-x-3">
                 <div className="size-[68px] overflow-hidden rounded-xl border border-neutral-400">
                   <ImageComponent
-                    className="w-full"
-                    src="/img/recommended1.png"
+                    className="w-full object-cover"
+                    src={truckInfo.image}
                     width={68}
                     height={68}
+                    alt={truckInfo.fullName}
                   />
                 </div>
                 <div className="flex flex-col gap-y-3">
                   <span className="text-sm font-semibold leading-[15.4px]">
-                    Box - Colt Diesel Engkel
+                    {truckInfo.fullName}
                   </span>
                   <span className="text-sm font-medium leading-[15.4px]">
                     {`Kebutuhan : ${truckCount} Unit`}
                   </span>
+                  {/* Display additional truck info if available */}
+                  {selectedTruck?.capacity && (
+                    <span className="text-xs font-medium leading-[13.2px] text-neutral-600">
+                      Kapasitas: {selectedTruck.capacity}
+                    </span>
+                  )}
                 </div>
               </div>
             </OrderSummarySection>
+
             <OrderSummarySection className="gap-y-4 text-neutral-900">
               <h4 className="text-sm font-semibold leading-[15.4px]">
                 {t("titleInformasiMuatan")}
@@ -220,6 +261,7 @@ const OrderConfirmationBottomSheet = ({
                 ) : null}
               </div>
             </OrderSummarySection>
+
             <div className="text-xs font-medium leading-[13.2px] text-neutral-900">
               {t("messageSyaratKetentuan")}
               <span className="font-semibold text-primary-700">

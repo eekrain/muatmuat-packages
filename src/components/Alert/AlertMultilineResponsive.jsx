@@ -84,6 +84,19 @@ const Item = ({ item }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
 
+  // Special handling for warning banner items
+  if (item?.isWarningBanner) {
+    return (
+      <div className="-mx-3 mt-2 flex items-center gap-2.5 bg-warning-100 p-3">
+        <div className="flex flex-1 items-center gap-1">
+          <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
+            {t(item.label)}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (item?.onClick) {
     return (
       <button

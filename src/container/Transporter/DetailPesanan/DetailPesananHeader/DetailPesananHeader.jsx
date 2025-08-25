@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cancelOrder } from "@/services/Transporter/daftar-pesanan/detail-pesanan/cancelOrder";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
@@ -17,6 +18,7 @@ import AlertResponPerubahan from "./components/AlertResponPerubahan";
 const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   // Nanti disesuaikan Lagi
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [isCancelling, setIsCancelling] = useState(false);
   // const [showCancelModal, setShowCancelModal] = useState(false);
 
@@ -64,6 +66,35 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   // const closeCancelModal = () => {
   //   setShowCancelModal(false);
   // };
+
+  // Calculate fleet replacement data
+  const calculateFleetReplacementData = () => {
+    const fleets = dataOrderDetail?.fleets || [];
+    const totalFleets = fleets.length;
+
+    // Count fleets that need replacement (those with fleetChangeStatus of PENDING, APPROVED, or COMPLETED)
+    const fleetsNeedingReplacement = fleets.filter(
+      (fleet) =>
+        fleet.fleetChangeStatus &&
+        ["PENDING", "APPROVED", "COMPLETED"].includes(fleet.fleetChangeStatus)
+    ).length;
+
+    // Count fleets with replacement found (those with APPROVED or COMPLETED status)
+    const fleetsWithReplacementFound = fleets.filter(
+      (fleet) =>
+        fleet.fleetChangeStatus &&
+        ["APPROVED", "COMPLETED"].includes(fleet.fleetChangeStatus)
+    ).length;
+
+    return {
+      totalFleets,
+      fleetsNeedingReplacement:
+        fleetsNeedingReplacement > 0 ? fleetsNeedingReplacement : totalFleets,
+      foundCount: fleetsWithReplacementFound,
+    };
+  };
+
+  const fleetReplacementData = calculateFleetReplacementData();
 
   return (
     <div>
@@ -125,15 +156,16 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
       )}
 
       {/* Referensi: LDN-12.2 */}
-      {/* kondisi muncul masih perlu disesuaikan */}
-      {dataOrderDetail?.orderStatus === ORDER_STATUS.CHANGE_FLEET && (
-        <AlertProsesCariArmada />
-      )}
-
       {/* Referensi: LDN-29.1 */}
       {/* kondisi muncul masih perlu disesuaikan */}
-      {dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING && (
-        <AlertProsesCariArmada fleetFound={true} />
+      {dataOrderDetail?.orderStatus === ORDER_STATUS.CHANGE_FLEET && (
+        <AlertProsesCariArmada
+          fleetFound={true}
+          fleetsNeedingReplacement={
+            fleetReplacementData.fleetsNeedingReplacement
+          }
+          foundCount={fleetReplacementData.foundCount}
+        />
       )}
 
       {/* Cancel Order Confirmation Modal */}

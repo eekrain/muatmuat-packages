@@ -33,7 +33,7 @@ const OTP_TYPE_CONFIG = {
   whatsapp: {
     showEmailMessage: false,
     mainMessage:
-      "Mohon masukkan OTP yang dikirim melalui pesan Whatsapp diperangkat kamu untuk melanjutkan perubahan",
+      "Mohon masukkan OTP yang dikirim melalui pesan\nWhatsapp diperangkat kamu untuk melanjutkan perubahan",
     labelMessage: "Kode OTP dikirim ke nomor",
     inputLabel: "Masukkan OTP",
     imageSrc: "/img/otp-transporter/security-amico.png",
@@ -45,7 +45,7 @@ const OTP_TYPE_CONFIG = {
     otpInputClass: "!bg-white !text-black",
     activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
     resendButtonClass:
-      "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
+      "bg-[#F0F0F0] text-[#868686] hover:bg-[#F0F0F0] cursor-not-allowed",
     showMeteors: true,
   },
   "change-number": {
@@ -234,7 +234,7 @@ const OtpContainer = ({
     return (
       <div
         className={cn(
-          "text-center text-base font-medium leading-[19.2px]",
+          "whitespace-pre-line text-center text-base font-medium leading-[19.2px]",
           type === "forgot-password" || type === "whatsapp"
             ? ""
             : "max-w-[452px]",
@@ -274,7 +274,7 @@ const OtpContainer = ({
             )}
           >
             {t(
-              type === "change-number"
+              type === "change-number" || type === "whatsapp"
                 ? "OtpContainer.textOtpSentToNumber"
                 : type === "change-email" || type === "change-email2"
                   ? "OtpContainer.labelEmailAddress"
@@ -380,7 +380,7 @@ const OtpContainer = ({
             />
           </div>
           <div
-            className={`absolute ${isVerified ? "bottom-[80px]" : "bottom-[118px]"} right-[7px]`}
+            className={`absolute ${isVerified ? "bottom-[80px]" : "bottom-[10px]"} right-[7px]`}
           >
             <img
               src="/img/meteor2.png"
@@ -397,8 +397,8 @@ const OtpContainer = ({
           className={`flex w-full ${
             isVerified
               ? "max-w-[441px]"
-              : type !== "forgot-password"
-                ? "max-w-[452px]"
+              : type !== "forgot-password" && type === "whatsapp"
+                ? "mb-72 max-w-[452px]"
                 : ""
           } flex-col items-center gap-y-5`}
         >
@@ -444,7 +444,7 @@ const OtpContainer = ({
                       className={cn(
                         "text-sm font-bold leading-[16.8px]",
                         config.textColor || "text-neutral-50",
-                        type === "whatsapp" ? "w-auto" : "w-[102px]"
+                        type === "whatsapp" ? "mt-1 w-auto" : "w-[102px]"
                       )}
                     >
                       {config.inputLabel || t("labelEnterOTP")}

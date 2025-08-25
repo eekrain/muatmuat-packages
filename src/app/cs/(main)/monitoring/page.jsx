@@ -41,6 +41,7 @@ import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArm
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/CS/getFleetCount";
 import { useGetCsFleetLocations } from "@/services/CS/monitoring/getCsFleetLocation";
+import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { MapInterfaceOverlay } from "./components/Map/MapInterfaceOverlay";
@@ -53,6 +54,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
   const { data: fleetLocationsData } = useGetCsFleetLocations();
+  const { data: urgentIssueData } = useGetUrgentIssueCount();
   const { addToast } = useToastActions();
 
   // Use multiple reducers for domain separation
@@ -142,8 +144,8 @@ const Page = () => {
 
   // Mock notification counts - replace with actual API data
   const requestCount = 100; // Replace with actual count from API
-  const urgentCount = 2; // Replace with actual count from API
-
+  const urgentCount = urgentIssueData?.total_active || 0;
+  console.log(urgentIssueData, "urgentCount");
   // handleTruckClick is now imported from useMonitoringHandlers hook
 
   // Handle fleet click from list - focus map on selected fleet

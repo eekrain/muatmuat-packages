@@ -27,6 +27,7 @@ import IconComponent from "../IconComponent/IconComponent";
  * @property {string} [name] - Input name attribute
  * @property {"text"|"password"|"email"|"number"|"tel"|"url"} [type="text"] - Input type
  * @property {string} [placeholder="Placeholder"] - Input placeholder text
+ * @property {string} [value] - Input value for controlled components
  * @property {boolean} [disabled=false] - Whether the input is disabled
  * @property {InputIcon} [icon] - Left and right icon configuration
  * @property {InputText} [text] - Left and right text configuration
@@ -36,6 +37,7 @@ import IconComponent from "../IconComponent/IconComponent";
  * @property {boolean} [hideErrorMessage=false] - Whether to hide error message
  * @property {(value: string) => void} [onChange] - Change event handler
  * @property {boolean} [positiveOnly=false] - For number inputs, whether to allow only positive values
+ * @property {boolean} [withReset=false] - Whether to show a reset (X) button when input has value
  *
  * @param {InputProps} props
  * @param {import('react').Ref<HTMLInputElement>} ref
@@ -123,7 +125,7 @@ const Input = forwardRef(
               appearance.inputClassName
             )}
           />
-          {withReset ? (
+          {withReset && (props.value || ref?.current?.value) ? (
             <div className="ml-2 flex items-center">
               <X
                 onClick={() => {

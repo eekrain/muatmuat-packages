@@ -12,6 +12,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import { toast } from "@/lib/toast";
+import { isFleetChangeAllowed } from "@/utils/Transporter/trackingStatus";
 
 import FleetSelector from "./components/FleetSelector";
 import ImageArmada from "./components/ImageArmada";
@@ -143,15 +144,25 @@ const RespondChangeFormModal = ({
     }
   };
 
+  // Check if any fleet has a status that allows fleet change
+  const hasFleetChangeEligibleStatus = orderData?.fleets?.some((fleet) =>
+    isFleetChangeAllowed(fleet?.currentStatus)
+  );
+
   const responseOptions = [
     {
       id: "accept",
       label: "Terima Perubahan",
     },
-    {
-      id: "accept_change_fleet",
-      label: "Terima Perubahan & Ubah Armada",
-    },
+    // Only show accept_change_fleet option if there are fleets with eligible status
+    ...(hasFleetChangeEligibleStatus
+      ? [
+          {
+            id: "accept_change_fleet",
+            label: "Terima Perubahan & Ubah Armada",
+          },
+        ]
+      : []),
     {
       id: "reject_cancel",
       label: "Tolak Perubahan & Batalkan Armada",
@@ -244,6 +255,7 @@ const RespondChangeFormModal = ({
                     />
                     {option.id === "accept" &&
                       selectedResponse === "accept" && (
+                        //terdapat case dimana tidak ada penyesuaian pendapatan dan text LDZ-17.3
                         <div className="pl-5">
                           <div className="flex h-6 flex-none items-center self-stretch rounded-md bg-success-50 px-2 py-1 text-xs font-semibold text-success-400">
                             Tidak ada perubahan armada dan akan ada penyesuaian
@@ -253,7 +265,10 @@ const RespondChangeFormModal = ({
                       )}
                     {option.id === "accept_change_fleet" &&
                       selectedResponse === "accept_change_fleet" && (
-                        <div className="space-y-3 pl-5">
+                        <div className="pl-6">
+                          <p className="mb-2 text-xs text-neutral-600">
+                            Pilih Armada Pengganti
+                          </p>
                           <FleetSelector
                             value={selectedFleet}
                             onValueChange={(value) => {
@@ -282,6 +297,7 @@ const RespondChangeFormModal = ({
                     {option.id === "reject_cancel" &&
                       selectedResponse === "reject_cancel" && (
                         <div className="pl-5">
+                          {/* terdapat case dimana ada perbedaan wording LDZ-17.4 17.5 */}
                           <div className="flex h-6 flex-none items-center self-stretch rounded-md bg-error-50 px-2 py-1 text-xs font-semibold text-error-400">
                             Armada akan dibatalkan, akan ada penyesuaian
                             pendapatan, dan tidak ada kompensasi

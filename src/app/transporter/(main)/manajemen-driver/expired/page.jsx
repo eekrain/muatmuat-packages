@@ -16,11 +16,13 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
+import { useTranslation } from "@/hooks/use-translation";
+import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
 import { useGetDriversSimExpiry } from "@/services/Transporter/manajemen-driver/getDriversSimExpiry";
 
 const Page = () => {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,7 +66,7 @@ const Page = () => {
   };
 
   const getStatusBadge = (status) => {
-    const statusConfig = getDriverStatusBadge(status);
+    const statusConfig = getDriverStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

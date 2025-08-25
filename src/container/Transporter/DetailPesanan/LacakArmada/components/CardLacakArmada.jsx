@@ -19,7 +19,7 @@ import { toast } from "@/lib/toast";
 import { useCancelFleet } from "@/services/Transporter/daftar-pesanan/detail-pesanan/cancelFleet";
 import {
   TRACKING_STATUS,
-  getTrackingStatusBadge,
+  getTrackingStatusBadgeWithTranslation,
 } from "@/utils/Transporter/trackingStatus";
 
 import AlasanPembatalanModal from "./AlasanPembatalanModal";
@@ -303,7 +303,7 @@ function CardLacakArmada({
   const showViewSOSButton = hasSOSAlert && totalSosCount === 1;
 
   // Get status badge using tracking status
-  const statusBadge = getTrackingStatusBadge(status);
+  const statusBadge = getTrackingStatusBadgeWithTranslation(status, t);
 
   // --- Render Utama ---
   return (
@@ -446,7 +446,8 @@ function CardLacakArmada({
               </div>
             </div>
 
-            {replacementFleet && replacementDriver && (
+            {((replacementFleet && replacementDriver) ||
+              fleetChangeStatus === "PENDING") && (
               <IconComponent
                 src="/icons/arrow-right.svg"
                 className="text-neutral-700"
@@ -454,6 +455,7 @@ function CardLacakArmada({
                 height={24}
               />
             )}
+
             {/* Armada Pengganti */}
             <div className="flex items-center gap-3">
               {fleetChangeStatus === "PENDING" && (

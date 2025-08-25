@@ -19,8 +19,9 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { FleetSelectionModal } from "@/container/Transporter/Armada/FleetSelectionModal";
 import { ExpiredDocumentWarningModal } from "@/container/Transporter/Driver/DriverSelectionModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
+import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
 import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
 import { useGetNonActiveDriversData } from "@/services/Transporter/manajemen-driver/getNonActiveDriversData";
@@ -33,6 +34,7 @@ const DriverNonaktif = ({
   count,
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState();
@@ -62,7 +64,7 @@ const DriverNonaktif = ({
   const { data: simExpiryData } = useGetSimExpiryNotification();
 
   const getStatusBadge = (status) => {
-    const statusConfig = getDriverStatusBadge(status);
+    const statusConfig = getDriverStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

@@ -4,32 +4,34 @@ import { useMemo } from "react";
 
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import DonutChart from "@/components/Chart/DonutChart";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import { useGetDashboardAnalyticsMissedOrders } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsMissedOrder";
+import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const TotalMissedOrders = () => {
-  // Define the color palette for the donut chart
+  const { startDate, endDate, label } = useAnalyticsStore();
   const colorsDonutChart = ["#E9C46A", "#F4A261", "#E76F51"];
 
-  // Fetch analytics data using the custom SWR hook
-  const { data, isLoading } = useGetDashboardAnalyticsMissedOrders();
+  const { data, isLoading, isError } = useGetDashboardAnalyticsMissedOrders({
+    startDate,
+    endDate,
+  });
 
-  // Memoize and transform the donut chart data from the API response
+  // ✅ Adjusted to map from doughnutChartData
   const donutChartData = useMemo(() => {
-    if (!data?.donutChartData?.segments) return [];
-    return data.donutChartData.segments.map((segment, index) => ({
+    if (!data?.doughnutChartData?.segments) return [];
+    return data.doughnutChartData.segments.map((segment, index) => ({
       name: segment.label,
       value: segment.count,
-      price: segment.price, // ✅ Pass the price from the API data
+      // The 'price' property was removed as it's not in the new JSON structure
       unit: "Pesanan",
       percentage: segment.percentage,
       color: colorsDonutChart[index % colorsDonutChart.length],
     }));
   }, [data]);
 
-  // Display a loading indicator while data is being fetched
   if (isLoading) {
     return (
       <Card className="flex h-[322px] w-[399px] items-center justify-center !border-none">
@@ -38,8 +40,22 @@ const TotalMissedOrders = () => {
     );
   }
 
-  // Determine if there is data to display
-  const hasData = data && data.totalMissedOrders > 0;
+  if (isError) {
+    return (
+      <Card className="flex h-[322px] w-[399px] flex-col items-center justify-center !border-none">
+        <p className="text-base font-semibold text-neutral-600">
+          Gagal memuat data
+        </p>
+        <p className="pt-[2px] text-xs font-medium text-neutral-600">
+          Silakan coba lagi nanti
+        </p>
+      </Card>
+    );
+  }
+
+  // ✅ Adjusted to check for totalMissedOrders within doughnutChartData
+  const hasData = data && data?.doughnutChartData?.totalMissedOrders > 0;
+  const totalOrders = data?.doughnutChartData?.totalMissedOrders || 0;
 
   return (
     <Card className="h-[322px] w-[399px] !border-none">
@@ -57,11 +73,12 @@ const TotalMissedOrders = () => {
           </InfoTooltip>
         </div>
         <div>
+          {/* ✅ Display total orders since totalMissedAmount is no longer available */}
           <p className="text-lg font-bold text-neutral-900">
-            {`Rp${data.totalMissedAmount.toLocaleString("id-ID")}`}
+            {`${totalOrders.toLocaleString("id-ID")} Pesanan`}
           </p>
           <p className="text-xs font-medium text-neutral-600">
-            {data?.periodLabel || "Tidak ada data"}
+            {label || "Tidak ada data"}
           </p>
         </div>
       </CardHeader>
@@ -70,23 +87,18 @@ const TotalMissedOrders = () => {
           <DonutChart
             className="h-full w-full"
             data={donutChartData}
-            showThirdRow={true} // ✅ Enable the third row display
+            // showThirdRow is set to false because there is no price data anymore
+            showThirdRow={false}
           />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3">
-            <ImageComponent
-              src="/img/dashboard/missed-order.png"
-              alt="Total Orders"
-              width={95}
-              height={95}
-            />
-            <p className="text-base font-semibold text-neutral-600">
-              Belum Ada Pesanan Terlewat
-            </p>
-            <p className="pt-[2px] text-xs font-medium text-neutral-600">
-              Pastikan tidak ada pesanan yang terlewat
-            </p>
-          </div>
+          <DataEmpty
+            isResponsive={false}
+            titleClassname="pb-0"
+            className="-mt-8 bg-transparent"
+            src="/icons/dashboard/blue-box.svg"
+            title="Belum Ada Pesanan Terlewat"
+            subtitle="Pastikan tidak ada pesanan yang terlewat"
+          />
         )}
       </CardContent>
     </Card>

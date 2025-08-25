@@ -49,7 +49,7 @@ const UploadArchieveModal = ({ isOpen, onClose, order, isLoading }) => {
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent className="w-[600px] max-w-[90vw]" type="muattrans">
-        <ModalHeader />
+        {/* <ModalHeader /> */}
 
         <div className="p-6">
           <ModalTitle className="mb-6 text-center">
@@ -68,7 +68,7 @@ const UploadArchieveModal = ({ isOpen, onClose, order, isLoading }) => {
               <div className="flex-shrink-0">
                 <FileUpload
                   onSuccess={handleFileUpload}
-                  onError={(error) => console.error("Upload error:", error)}
+                  onError={(_error) => null}
                   maxSize={10}
                   acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
                   className="w-full"

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import { useGetDashboardAnalyticsSummary } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsSummary";
+// This utility already provides dates in the correct 'yyyy-mm-dd' format
+import { generateDynamicPeriodOptions } from "@/lib/utils/generateDynamicPeriodOptions";
 import { useGetDashboardAnalyticsTop5 } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsTop5";
 import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
@@ -13,66 +14,54 @@ import TotalMissedOrders from "./Statistics/TotalMissedOrders";
 import TotalOrders from "./Statistics/TotalOrders";
 import TotalRevenue from "./Statistics/TotalRevenue";
 
-const basePeriodOptions = [
-  { name: "Bulan Ini", value: "month" },
-  { name: "Hari Ini", value: "today" },
-  { name: "1 Minggu Terakhir", value: "week" },
-  { name: "30 Hari Terakhir", value: "30days" },
-  { name: "1 Tahun Terakhir", value: "365days" },
-];
+// Generate the period options dynamically
+const periodOptions = generateDynamicPeriodOptions();
 
 function Analytics() {
-  const { period, setPeriod } = useAnalyticsStore();
-
-  console.log(`[Analytics.jsx] Component is rendering with period:`, period);
+  // Use the state with `period` (as key) and `label` (as display text)
+  const { period, label, startDate, endDate, setPeriodOption } =
+    useAnalyticsStore();
 
   const handlePeriodSelect = (selectedOption) => {
-    console.log(
-      `[Analytics.jsx] handlePeriodSelect triggered with:`,
-      selectedOption
-    );
-    setPeriod(selectedOption.value);
+    // The DropdownPeriode component adds `range: true` for custom date selections.
+    if (selectedOption.range) {
+      // This is a custom date range. Format it for the store.
+      const newOption = {
+        name: selectedOption.value, // The unique key is the date range string (e.g., "01/01/2025 - 10/01/2025")
+        value: `Dalam Periode ${selectedOption.value}`, // The display label
+        startDate: selectedOption.iso_start_date,
+        endDate: selectedOption.iso_end_date,
+      };
+      setPeriodOption(newOption);
+    } else {
+      // This is a predefined option. Save it directly.
+      setPeriodOption(selectedOption);
+    }
   };
 
-  // 2. Try to find the selected period in the default list.
-  let selectedOption = basePeriodOptions.find(
-    (option) => option.value === period
-  );
-  const finalOptions = [...basePeriodOptions];
+  // Correctly find the selected option from the predefined list using 'name' as the unique key.
+  let selectedOption = periodOptions.find((option) => option.name === period);
+  const finalOptions = [...periodOptions];
 
+  // This block now correctly handles only custom periods that are not in the predefined list.
   if (!selectedOption && period) {
-    // Create a new option object for the custom period.
-    const customOption = { name: period, value: period };
+    const customOption = {
+      name: period, // The unique key (e.g., "01/01/2025 - 10/01/2025")
+      value: label, // The display label (e.g., "Dalam Periode 01/01/2025 - 10/01/2025")
+    };
     selectedOption = customOption;
-    // Add the custom option to the top of the list so it's visible.
+    // Add the custom option to the top of the list so it can be displayed.
     finalOptions.unshift(customOption);
   }
 
-  // Fetch summary data for the top cards
-  const {
-    data: summaryData,
-    isLoading: isLoadingSummary,
-    isError: isErrorSummary,
-  } = useGetDashboardAnalyticsSummary({ period });
-
-  // Fetch data for each leaderboard category
   const { data: driversData, isLoading: isLoadingDrivers } =
-    useGetDashboardAnalyticsTop5({ category: "drivers", period });
+    useGetDashboardAnalyticsTop5({ category: "drivers", startDate, endDate });
   const { data: truckTypesData, isLoading: isLoadingTrucks } =
-    useGetDashboardAnalyticsTop5({ category: "truck-types", period });
+    useGetDashboardAnalyticsTop5({ category: "fleets", startDate, endDate });
   const { data: loadingAreasData, isLoading: isLoadingLoading } =
-    useGetDashboardAnalyticsTop5({ category: "loading-areas", period });
+    useGetDashboardAnalyticsTop5({ category: "loads", startDate, endDate });
   const { data: unloadingAreasData, isLoading: isLoadingUnloading } =
-    useGetDashboardAnalyticsTop5({ category: "unloading-areas", period });
-
-  // Handle error case for summary data
-  if (isErrorSummary) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-error-500">Gagal memuat data ringkasan.</p>
-      </div>
-    );
-  }
+    useGetDashboardAnalyticsTop5({ category: "unloads", startDate, endDate });
 
   return (
     <>
@@ -90,26 +79,14 @@ function Analytics() {
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left and Center Columns */}
         <div className="grid content-start gap-6 lg:col-span-2">
-          <TotalOrders
-            data={summaryData?.summary}
-            isLoading={isLoadingSummary}
-          />
-          <TotalRevenue
-            data={summaryData?.summary}
-            isLoading={isLoadingSummary}
-          />
+          <TotalOrders />
+          <TotalRevenue />
         </div>
 
         {/* Right Column */}
         <div className="grid content-start gap-6 lg:col-span-1">
-          <TotalMissedOrders
-            data={summaryData?.summary}
-            isLoading={isLoadingSummary}
-          />
-          <SummaryShipment
-            data={summaryData?.shipmentSummary}
-            isLoading={isLoadingSummary}
-          />
+          <TotalMissedOrders />
+          <SummaryShipment />
         </div>
 
         {/* Bottom Full-Width Row */}
@@ -118,31 +95,31 @@ function Analytics() {
             title="Driver"
             variant="default"
             category="drivers"
-            data={driversData?.items}
+            data={driversData}
             isLoading={isLoadingDrivers}
             tooltipText="5 Nama driver yang paling sering ditugaskan untuk pengiriman."
           />
           <Leaderboard
             title="Jenis Armada"
             variant="alternate"
-            category="truck-types"
-            data={truckTypesData?.items}
+            category="fleets"
+            data={truckTypesData}
             isLoading={isLoadingTrucks}
             tooltipText="5 Jenis armada yang paling banyak ditugaskan untuk pengiriman."
           />
           <Leaderboard
             title="Area Muat"
             variant="alternate"
-            category="loading-areas"
-            data={loadingAreasData?.items}
+            category="loads"
+            data={loadingAreasData}
             isLoading={isLoadingLoading}
             tooltipText="5 Kota/Kabupaten yang paling banyak menjadi tujuan muat."
           />
           <Leaderboard
             title="Area Bongkar"
             variant="alternate"
-            category="unloading-areas"
-            data={unloadingAreasData?.items}
+            category="unloads"
+            data={unloadingAreasData}
             isLoading={isLoadingUnloading}
             tooltipText="5 Kota/Kabupaten yang paling banyak menjadi tujuan bongkar."
           />

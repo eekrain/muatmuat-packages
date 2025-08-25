@@ -15,10 +15,12 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { useTranslation } from "@/hooks/use-translation";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { useGetExpiredVehicles } from "@/services/Transporter/manajemen-armada/getExpiredVehicles";
 
 const Page = () => {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,7 +59,7 @@ const Page = () => {
   };
 
   const getStatusBadge = (vehicle) => {
-    const statusConfig = getArmadaStatusBadge(vehicle.status);
+    const statusConfig = getArmadaStatusBadgeWithTranslation(vehicle.status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

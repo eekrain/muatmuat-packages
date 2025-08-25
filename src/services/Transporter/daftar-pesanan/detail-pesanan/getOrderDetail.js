@@ -18,7 +18,7 @@ const mockApiResult = {
     // orderStatus: ORDER_STATUS.NEED_CHANGE_RESPONSE,
     // orderStatus: "CONFIRMED_ORDER",
     // orderStatus: "CANCELLED_BY_TRANSPORTER_2",
-    orderStatus: "SCHEDULED_FLEET",
+    // orderStatus: "SCHEDULED_FLEET",
     // orderStatus: "WAITING_PAYMENT_2",
     // orderStatus: ORDER_STATUS.DOCUMENT_PREPARATION,
     // orderStatus: ORDER_STATUS.COMPLETED,
@@ -28,7 +28,7 @@ const mockApiResult = {
     // orderStatus: "UNKNOWN_STATUS_3", // Status yang tidak ada di enum untuk testing
     // orderStatus: "CUSTOM_LOADING_1", // Status custom untuk testing
     // orderStatus: ORDER_STATUS.NEED_ASSIGN_FLEET, // Status untuk trigger Assign Armada button
-    // orderStatus : ORDER_STATUS.CHANGE_FLEET,
+    orderStatus: ORDER_STATUS.CHANGE_FLEET,
     orderStatusUnit: 1, // Unit untuk testing
     orderType: "SCHEDULED",
     loadTimeStart: "2024-10-03T18:00:00.000Z",
@@ -187,8 +187,8 @@ const mockApiResult = {
         replacementFleet: null,
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
-        // Status perubahan armada
-        fleetChangeStatus: null, // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+        // Status perubahan armada - Fleet 1 needs replacement but pending
+        fleetChangeStatus: "PENDING", // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
       },
       {
         id: "fleet-002",
@@ -255,7 +255,7 @@ const mockApiResult = {
           profileImage: "https://example.com/driver3.jpg",
         },
         // Status perubahan armada
-        fleetChangeStatus: "APPROVED", // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+        fleetChangeStatus: "APPROVED", // "PENDING", "APPROVED" - Fleet 2 replacement found
       },
       {
         id: "fleet-003",
@@ -306,8 +306,8 @@ const mockApiResult = {
         replacementFleet: null,
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
-        // Status perubahan armada
-        fleetChangeStatus: null,
+        // Status perubahan armada - Fleet 3 replacement found
+        fleetChangeStatus: "APPROVED",
       },
       {
         id: "fleet-004",

@@ -1,11 +1,110 @@
-import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
+import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
+import { ModalInformasiKenaBiayaWaktuTunggu } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/ModalInformasiKenaBiayaWaktuTunggu";
 import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
 import { ORDER_STATUS } from "@/utils/CS/orderStatus";
 
 const AdditionalCostDetail = ({ costBreakdown, order }) => {
+  console.log({ costBreakdown });
+
+  // Mock data for ModalDetailWaktuTunggu component
+  const waitingTimeDriversData = [
+    {
+      name: "Bagus Dharmawan",
+      plateNumber: "B 1234 ABC",
+      transporter: "PT Transport Sejahtera",
+      durasiTotal: "15 jam 30 menit",
+      data: [
+        {
+          detail: "Lokasi Muat 1",
+          totalPrice: 75000,
+          startDate: "2024-10-01T08:00:00Z",
+          endDate: "2024-10-01T15:30:00Z",
+        },
+        {
+          detail: "Lokasi Muat 2",
+          totalPrice: 75000,
+          startDate: "2024-10-01T08:00:00Z",
+          endDate: "2024-10-01T15:30:00Z",
+        },
+        {
+          detail: "Lokasi Bongkar 1",
+          totalPrice: 50000,
+          startDate: "2024-10-02T09:00:00Z",
+          endDate: "2024-10-02T14:00:00Z",
+        },
+        {
+          detail: "Lokasi Bongkar 2",
+          totalPrice: 50000,
+          startDate: "2024-10-02T09:00:00Z",
+          endDate: "2024-10-02T14:00:00Z",
+        },
+      ],
+    },
+    {
+      name: "Ragil Poetra",
+      plateNumber: "B 5678 DEF",
+      transporter: "CV Logistik Mandiri",
+      durasiTotal: "18 jam 45 menit",
+      data: [
+        {
+          detail: "Lokasi Muat - Pabrik Tekstil Bandung",
+          totalPrice: 90000,
+          startDate: "2024-10-01T07:30:00Z",
+          endDate: "2024-10-01T16:15:00Z",
+        },
+        {
+          detail: "Lokasi Bongkar - Mall Central Bekasi",
+          totalPrice: 60000,
+          startDate: "2024-10-02T10:30:00Z",
+          endDate: "2024-10-02T18:30:00Z",
+        },
+      ],
+    },
+    {
+      name: "Ahmad Susanto",
+      plateNumber: "B 9012 GHI",
+      transporter: "UD Angkutan Nusantara",
+      durasiTotal: "12 jam 15 menit",
+      data: [
+        {
+          detail: "Lokasi Muat - Pelabuhan Tanjung Priok",
+          totalPrice: 45000,
+          startDate: "2024-10-01T06:00:00Z",
+          endDate: "2024-10-01T13:15:00Z",
+        },
+        {
+          detail: "Lokasi Bongkar - Terminal Cargo Cengkareng",
+          totalPrice: 35000,
+          startDate: "2024-10-02T08:00:00Z",
+          endDate: "2024-10-02T12:00:00Z",
+        },
+      ],
+    },
+  ];
+
+  // Dummy data for overload modal
+  const overloadDriversData = [
+    {
+      driverName: "Bagus Dharmawan",
+      amount: 150000,
+      overloadWeight: "1.500 kg",
+    },
+    {
+      driverName: "Ragil Poetra",
+      amount: 200000,
+      overloadWeight: "2.000 kg",
+    },
+    {
+      driverName: "Ahmad Susanto",
+      amount: 100000,
+      overloadWeight: "1.000 kg",
+    },
+  ];
+
   return (
     <>
       <CardPayment.Section title="Biaya Waktu Tunggu">
@@ -15,10 +114,9 @@ const AdditionalCostDetail = ({ costBreakdown, order }) => {
             labelClassName="max-w-[190px]"
             value={idrFormat(costBreakdown?.waiting_time_cost)}
           />
-          {/* Sementara */}
-          <Button className="self-start text-xs" variant="link">
-            Lihat Detail Waktu Tunggu
-          </Button>
+          <div className="flex items-start">
+            <ModalDetailWaktuTunggu drivers={waitingTimeDriversData} />
+          </div>
         </div>
       </CardPayment.Section>
       <CardPayment.Section title="Biaya Overload Muatan">
@@ -29,9 +127,9 @@ const AdditionalCostDetail = ({ costBreakdown, order }) => {
             value={idrFormat(costBreakdown?.overload_cost)}
           />
           {/* Sementara */}
-          <Button className="self-start text-xs" variant="link">
-            Lihat Detail Overload Muatan
-          </Button>
+          <div className="flex items-start">
+            <ModalDetailOverloadMuatan drivers={overloadDriversData} />
+          </div>
         </div>
       </CardPayment.Section>
       <CardPayment.Section title="Biaya Lainnya">
