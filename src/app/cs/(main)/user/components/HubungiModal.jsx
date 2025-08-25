@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
@@ -42,41 +42,44 @@ const generalContacts = {
  * @param {boolean} props.isOpen - Whether the modal is open
  * @param {Function} props.onClose - Function to close the modal
  * @param {boolean} [props.showInitialChoice=true] - If true, shows the Transporter/Driver selection. If false, shows the contact options screen directly.
- * @param {Array} [props.contacts] - Array of contact objects to display when `showInitialChoice` is false.
- * @param {Array} [props.transporterContacts] - Array of transporter contact objects.
- * @param {Array} [props.driverContacts] - Array of driver contact objects.
+ * @param {Object} [props.contacts] - Array of contact objects to display when `showInitialChoice` is false.
  */
 const HubungiModal = ({
   isOpen,
   onClose,
   showInitialChoice = false,
-  contacts = generalContacts, //for dev purpose change to [] for production
-  transporterContacts = [],
-  driverContacts = [],
+  contacts = {
+    pics: [
+      {
+        name: "John Doe", // [dbm_mt_transporter.picName] (PIC 1 - existing)
+        position: "Manager", // [dbm_mt_transporter.picPosition] (PIC 1 - existing)
+        phoneNumber: "+628123456789", // [dbm_mt_transporter.picPhone] (PIC 1 - existing),
+        Level: 1,
+      },
+      {
+        name: "Jane Smith", // [dbm_mt_transporter.picName2]
+        position: "Supervisor", // [dbm_mt_transporter.picPosition2]
+        phoneNumber: "+628234567890", // [dbm_mt_transporter.picPhone2],
+        Level: 2,
+      },
+      {
+        name: "Bob Wilson", // [dbm_mt_transporter.picName3]
+        position: "Coordinator", // [dbm_mt_transporter.picPosition3]
+        phoneNumber: "+628345678901", // [dbm_mt_transporter.picPhone3],
+        Level: 3,
+      },
+    ],
+    emergencyContact: {
+      name: "John Doe", // [dbm_mt_user.fullName]
+      position: "Registrant", // Default value
+      phoneNumber: "+628123456789", // [dbm_mt_user.phoneNumber]
+    },
+    companyContact: "081234567890",
+  }, //for dev purpose change to [] for production
 }) => {
   const { t } = useTranslation();
-  const [modalView, setModalView] = useState("initial"); // 'initial', 'options', 'details'
+  const [modalView, setModalView] = useState("details"); // 'initial', 'options', 'details'
   const [showCopySuccess, setShowCopySuccess] = useState(false);
-  const [selectedContactType, setSelectedContactType] = useState(null); // 'transporter' or 'driver'
-  const [dataToDisplay, setDataToDisplay] = useState([]);
-
-  // Effect to reset state and handle different initial views
-  useEffect(() => {
-    if (isOpen) {
-      setShowCopySuccess(false);
-      setSelectedContactType(null);
-
-      if (!showInitialChoice) {
-        // If initial choice is disabled, go directly to the options view
-        setModalView("options");
-      } else {
-        // Otherwise, start at the initial selection view
-        setModalView("initial");
-      }
-    }
-  }, [isOpen, showInitialChoice]);
-
-  if (!isOpen) return null;
 
   const handleCopyPhone = (phoneNumber) => {
     if (phoneNumber && phoneNumber !== "-") {
@@ -94,49 +97,7 @@ const HubungiModal = ({
     }
   };
 
-  const handleContactTransporter = () => {
-    setSelectedContactType("transporter");
-    setModalView("options");
-  };
-
-  const handleContactDriver = () => {
-    setSelectedContactType("driver");
-    setModalView("options");
-  };
-
-  const handleShowDetails = () => {
-    let data = [];
-    if (showInitialChoice) {
-      // If user started from the initial choice screen
-      if (selectedContactType === "transporter") {
-        data = transporterContacts;
-      } else if (selectedContactType === "driver") {
-        data = driverContacts;
-      }
-    } else {
-      // If the initial choice screen was skipped, use generalContacts structure
-      if (contacts === generalContacts) {
-        // Convert generalContacts object to array format for rendering
-        data = [
-          { ...contacts.pic[0], label: t("HubungiModal.pic1", {}, "PIC 1") },
-          { ...contacts.pic[1], label: t("HubungiModal.pic2", {}, "PIC 2") },
-          { ...contacts.pic[2], label: t("HubungiModal.pic3", {}, "PIC 3") },
-          {
-            ...contacts.company,
-            label: t("HubungiModal.companyPhone", {}, "No. Telepon Perusahaan"),
-          },
-          {
-            ...contacts.emergency,
-            label: t("HubungiModal.emergencyPhone", {}, "No. Darurat"),
-          },
-        ];
-      } else {
-        data = contacts;
-      }
-    }
-    setDataToDisplay(data);
-    setModalView("details");
-  };
+  if (!isOpen) return null;
 
   // View 3: Contact Details
   if (modalView === "details") {
@@ -165,62 +126,153 @@ const HubungiModal = ({
             </div>
 
             {/* --- Contacts List --- */}
-            <div className="flex w-[286px] flex-col gap-6">
-              {dataToDisplay.map((contact, index) => (
-                <div key={index} className="flex flex-row items-start gap-x-4">
-                  {/* Label Column */}
-                  <div className="w-[100px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
-                    {contact.label || "-"}
-                  </div>
+            <div className="flex w-full flex-col gap-6 px-12">
+              {[0, 1, 2].map((index) => {
+                const contact = contacts.pics[index] || {
+                  name: "-",
+                  position: "-",
+                  phoneNumber: "",
+                  Level: index + 1,
+                };
+                return (
+                  <div
+                    key={index}
+                    className="flex max-w-[286px] flex-row items-start gap-x-4"
+                  >
+                    {/* Label Column */}
+                    <div className="w-[78px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
+                      PIC {index + 1}
+                    </div>
 
-                  {/* Details Column */}
-                  <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-                    {/* Name & Role - show for all contacts except company */}
-                    {contact.label !== "No. Telepon Perusahaan" && (
-                      <>
-                        <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
-                          {contact.name || t("HubungiModal.emptyName", {}, "-")}
-                        </div>
-
-                        <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
-                          {contact.role || t("HubungiModal.emptyRole", {}, "-")}
-                        </div>
-                      </>
-                    )}
-
-                    {/* Phone & Copy Button */}
-                    <div className="relative flex w-full flex-row items-center justify-between gap-2 pt-1">
-                      <div
-                        className={`text-sm font-medium leading-none ${
-                          contact.phone
-                            ? "cursor-pointer text-blue-600 underline"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {formatPhoneNumber(contact.phone) ||
-                          t("HubungiModal.emptyPhone", {}, "-")}
+                    {/* Details Column */}
+                    <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                      <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
+                        {contact.name || t("HubungiModal.emptyName", {}, "-")}
                       </div>
 
-                      {contact.phone && contact.phone !== "-" && (
-                        <button
-                          onClick={() => handleCopyPhone(contact.phone)}
-                          className="absolute right-0 flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                      <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
+                        {contact.position ||
+                          t("HubungiModal.emptyRole", {}, "-")}
+                      </div>
+
+                      {/* Phone & Copy Button */}
+                      <div className="relative flex w-full flex-grow flex-row items-center justify-between gap-2 pt-1">
+                        <div
+                          className={`text-nowrap text-sm font-medium leading-none ${
+                            contact.phoneNumber
+                              ? "cursor-pointer text-primary-700 underline"
+                              : "text-primary-700"
+                          }`}
                         >
-                          <span className="text-xs font-medium leading-[14px] text-blue-600">
+                          {formatPhoneNumber(contact.phoneNumber) ||
+                            t("HubungiModal.emptyPhone", {}, "-")}
+                        </div>
+
+                        {contact.phoneNumber && contact.phoneNumber !== "-" && (
+                          <button
+                            onClick={() => handleCopyPhone(contact.phoneNumber)}
+                            className="flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                          >
+                            <span className="text-xs font-medium leading-[14px] text-primary-700">
+                              {t("HubungiModal.copy", {}, "Salin")}
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex max-w-[286px] flex-row items-start gap-x-4">
+                {/* Label Column */}
+                <div className="w-[78px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
+                  No Telepon Perusahaan
+                </div>
+
+                {/* Details Column */}
+                <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                  {/* Name & Role - show for all contacts except company */}
+
+                  {/* Phone & Copy Button */}
+                  <div className="relative flex w-full flex-row items-center justify-between gap-2 pt-1">
+                    <div
+                      className={`? "cursor-pointer underline" text-sm font-medium leading-none ${contacts.companyContact ? "text-primary-700 underline" : "text-primary-700"}`}
+                    >
+                      {formatPhoneNumber(contacts.companyContact) ||
+                        t("HubungiModal.emptyPhone", {}, "-")}
+                    </div>
+
+                    {contacts.companyContact && (
+                      <button
+                        onClick={() => handleCopyPhone(contacts.companyContact)}
+                        className="absolute right-0 flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                      >
+                        <span className="text-xs font-medium leading-[14px] text-primary-700">
+                          {t("HubungiModal.copy", {}, "Salin")}
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex max-w-[286px] flex-row items-start gap-x-4">
+                {/* Label Column */}
+                <div className="w-[78px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
+                  No. Darurat
+                </div>
+
+                {/* Details Column */}
+                <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                  {/* Name & Role - show for all contacts except company */}
+
+                  <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
+                    {contacts.emergencyContact?.name ||
+                      t("HubungiModal.emptyName", {}, "-")}
+                  </div>
+
+                  <div className="w-full truncate text-xs font-medium leading-[14px] text-gray-500">
+                    {contacts.emergencyContact?.position ||
+                      t("HubungiModal.emptyRole", {}, "-")}
+                  </div>
+
+                  {/* Phone & Copy Button */}
+                  <div className="relative flex w-full flex-row items-center justify-between gap-2 pt-1">
+                    <div
+                      className={`text-sm font-medium leading-none ${
+                        contacts.emergencyContact?.phoneNumber
+                          ? "cursor-pointer text-primary-700 underline"
+                          : "text-primary-700"
+                      }`}
+                    >
+                      {formatPhoneNumber(
+                        contacts.emergencyContact?.phoneNumber
+                      ) || t("HubungiModal.emptyPhone", {}, "-")}
+                    </div>
+
+                    {contacts.emergencyContact?.phoneNumber &&
+                      contacts.emergencyContact?.phoneNumber !== "-" && (
+                        <button
+                          onClick={() =>
+                            handleCopyPhone(
+                              contacts.emergencyContact?.phoneNumber
+                            )
+                          }
+                          className="flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                        >
+                          <span className="text-xs font-medium leading-[14px] text-primary-700">
                             {t("HubungiModal.copy", {}, "Salin")}
                           </span>
                         </button>
                       )}
-                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
 
             {/* --- Copy Success Notification --- */}
             {showCopySuccess && (
               <div className="flex flex-row items-center justify-center gap-1 rounded-md bg-[#E2F2FF] px-2 py-1">
-                <span className="text-xs font-semibold leading-tight text-blue-600">
+                <span className="text-xs font-semibold leading-tight text-primary-700">
                   {t(
                     "HubungiModal.copySuccess",
                     {},
@@ -235,137 +287,70 @@ const HubungiModal = ({
     );
   }
 
-  // View 2: Contact Method Options
-  if (modalView === "options") {
-    return (
-      <Modal
-        open={isOpen}
-        onOpenChange={onClose}
-        withCloseButton={true}
-        closeOnOutsideClick={true}
+  return (
+    <Modal
+      open={isOpen}
+      onOpenChange={onClose}
+      withCloseButton={true}
+      closeOnOutsideClick={true}
+    >
+      <ModalContent
+        type="muattrans"
+        size="medium"
+        className="flex flex-col items-start overflow-hidden rounded-xl p-0 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]"
       >
-        <ModalContent
-          type="muattrans"
-          size="medium"
-          className="flex flex-col items-start overflow-hidden rounded-xl p-0 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]"
-        >
-          <ModalHeader className="w-full" />
-          <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white px-6 py-9">
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-center text-sm font-bold text-[#1B1B1B]">
-                {t(
-                  "HubungiModal.contactViaTitle",
-                  {},
-                  "Anda Ingin Menghubungi Via"
-                )}
-              </p>
-              <p className="text-center text-xs font-semibold text-gray-500">
-                {t(
-                  "HubungiModal.contactViaDesc",
-                  {},
-                  "Anda dapat memilih menghubungi melalui pilihan berikut"
-                )}
-              </p>
-            </div>
-            <div className="flex flex-col items-start gap-4">
-              <button
-                onClick={handleShowDetails}
-                className="box-border flex w-full flex-row items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-6 py-4 transition-colors hover:bg-gray-50"
-              >
-                <div className="h-6 w-6">
-                  <IconComponent
-                    src="/icons/call-blue.svg"
-                    className="text-blue-700"
-                    width={24}
-                    height={24}
-                    alt="Phone Icon"
-                  />
-                </div>
-                <div className="flex flex-col items-start gap-1">
-                  <div className="text-sm font-semibold leading-[17px] text-blue-600">
-                    {t("HubungiModal.phoneOrWA", {}, "No. Telepon / WhatsApp")}
-                  </div>
-                  <div className="text-xs font-medium leading-[14px] text-gray-500">
-                    {t(
-                      "HubungiModal.phoneOrWADesc",
-                      {},
-                      "Anda langsung terhubung dengan Whatsapp"
-                    )}
-                  </div>
-                </div>
-              </button>
-            </div>
+        <ModalHeader className="w-full" />
+        <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white px-6 py-9">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-center text-sm font-bold text-[#1B1B1B]">
+              {t(
+                "HubungiModal.contactViaTitle",
+                {},
+                "Anda Ingin Menghubungi Via"
+              )}
+            </p>
+            <p className="text-center text-xs font-semibold text-gray-500">
+              {t(
+                "HubungiModal.contactViaDesc",
+                {},
+                "Anda dapat memilih menghubungi melalui pilihan berikut"
+              )}
+            </p>
           </div>
-        </ModalContent>
-      </Modal>
-    );
-  }
-
-  // View 1: Initial Choice (Transporter or Driver)
-  if (modalView === "initial") {
-    return (
-      <Modal
-        open={isOpen}
-        onOpenChange={onClose}
-        withCloseButton={true}
-        closeOnOutsideClick={true}
-      >
-        <ModalContent
-          type="muattrans"
-          size="medium"
-          className="flex flex-col items-center overflow-hidden rounded-xl p-0 shadow-lg"
-        >
-          <ModalHeader className="w-full" />
-          <div className="flex w-full flex-col items-center gap-6 bg-white px-6 pb-9 pt-9">
-            <h3 className="text-sm font-bold text-[#1B1B1B]">
-              {t("HubungiModal.title", {}, "Hubungi")}
-            </h3>
-            <div className="flex w-full flex-col items-stretch gap-4">
-              <button
-                onClick={handleContactTransporter}
-                className="group flex h-[72px] w-[w-390px] items-center gap-4 overflow-hidden rounded-lg border border-neutral-400 bg-white shadow-sm transition-colors hover:border-muat-trans-primary-400"
-              >
-                <div className="flex h-full w-[72px] flex-shrink-0 items-center justify-center bg-neutral-100 transition-colors group-hover:bg-muat-trans-primary-400">
-                  <IconComponent
-                    src="/icons/transporter-call.svg"
-                    alt="Hubungi Transporter"
-                    width={40}
-                    height={40}
-                  />
+          <div className="flex flex-col items-start gap-4">
+            <button
+              onClick={() => {
+                setModalView("details");
+              }}
+              className="box-border flex w-full flex-row items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-6 py-4 transition-colors hover:bg-gray-50"
+            >
+              <div className="h-6 w-6">
+                <IconComponent
+                  src="/icons/call-blue.svg"
+                  className="text-blue-700"
+                  width={24}
+                  height={24}
+                  alt="Phone Icon"
+                />
+              </div>
+              <div className="flex flex-col items-start gap-1">
+                <div className="text-sm font-semibold leading-[17px] text-primary-700">
+                  {t("HubungiModal.phoneOrWA", {}, "No. Telepon / WhatsApp")}
                 </div>
-                <span className="text-xs font-bold text-neutral-900">
+                <div className="text-xs font-medium leading-[14px] text-gray-500">
                   {t(
-                    "HubungiModal.contactTransporter",
+                    "HubungiModal.phoneOrWADesc",
                     {},
-                    "Hubungi Transporter"
+                    "Anda langsung terhubung dengan Whatsapp"
                   )}
-                </span>
-              </button>
-
-              <button
-                onClick={handleContactDriver}
-                className="group flex h-[72px] w-[390px] items-center gap-4 overflow-hidden rounded-lg border border-neutral-400 bg-white shadow-sm transition-colors hover:border-muat-trans-primary-400"
-              >
-                <div className="flex h-full w-[72px] flex-shrink-0 items-center justify-center bg-neutral-100 transition-colors group-hover:bg-muat-trans-primary-400">
-                  <IconComponent
-                    src="/icons/driver-call.svg"
-                    alt="Hubungi Driver"
-                    width={40}
-                    height={40}
-                  />
                 </div>
-                <span className="text-xs font-bold text-neutral-900">
-                  {t("HubungiModal.contactDriver", {}, "Hubungi Driver")}
-                </span>
-              </button>
-            </div>
+              </div>
+            </button>
           </div>
-        </ModalContent>
-      </Modal>
-    );
-  }
-
-  return null;
+        </div>
+      </ModalContent>
+    </Modal>
+  );
 };
 
 export default HubungiModal;
