@@ -71,7 +71,7 @@ const CustomLegend = ({
           style={{ backgroundColor: entry.color }}
         />
         <div className="flex flex-col">
-          <p className="text-xxs font-medium text-neutral-900">{`${entry.name} (${entry.percentage}%)`}</p>
+          <p className="text-xxs font-medium text-neutral-900">{`${entry.name} (${entry.percentage})`}</p>
           <p className="text-xxs font-bold text-neutral-900">{`${sufixValueLegend}${entry.value.toLocaleString(
             "id-ID"
           )}${secondRowSufix ? ` ${entry.unit}` : ""}`}</p>

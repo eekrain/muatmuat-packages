@@ -15,47 +15,28 @@ import {
 
 import { formatNumberShorthand } from "@/lib/utils/formatNumberShorthand";
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
-    // Create a unique payload by filtering out duplicates based on the dataKey.
-    const uniquePayload = Array.from(
-      new Map(payload.map((item) => [item.dataKey, item])).values()
-    );
-
-    // Get the full date from the payload and format it for display
-    const fullDate = payload[0].payload.date;
-    const formattedDate = new Date(fullDate).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    // Get the tooltip label directly from the payload
+    const tooltipLabel = payload[0].payload.tooltipDateLabel;
 
     return (
       <div className="min-w-[150px] rounded-md bg-white p-3 shadow-muat">
-        {/* Date Section - Now shows the full formatted date */}
+        {/* Date Section - Now shows the tooltipDateLabel */}
         <div className="pb-2">
           <p className="text-xxs font-semibold text-neutral-900">
-            {formattedDate}
+            {tooltipLabel}
           </p>
         </div>
         <hr className="absolute -ml-3 w-full" />
         {/* Content Section */}
         <div className="pt-2">
-          {uniquePayload.map((entry, index) => {
-            const formattedValue = `Rp${new Intl.NumberFormat("id-ID").format(entry.value)}`;
-
-            return (
-              <div
-                key={`item-${index}`}
-                className="flex items-center justify-between gap-x-2"
-              >
-                <p className="text-xxs text-neutral-600">Pendapatan:</p>
-                <p className="text-xxs font-semibold text-neutral-900">
-                  {formattedValue}
-                </p>
-              </div>
-            );
-          })}
+          <div className="flex items-center justify-between gap-x-2">
+            <p className="text-xxs text-neutral-600">Pendapatan:</p>
+            <p className="text-xxs font-semibold text-neutral-900">
+              {`Rp${new Intl.NumberFormat("id-ID").format(payload[0].value)}`}
+            </p>
+          </div>
         </div>
       </div>
     );

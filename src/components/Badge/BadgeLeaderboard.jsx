@@ -1,19 +1,27 @@
-// src/components/Badge/BadgeLeaderboard.jsx
 import PropTypes from "prop-types";
 
 import { cn } from "@/lib/utils";
 
 /**
  * A badge component to display a driver's rank in the leaderboard.
- * It features a two-toned circular design with CSS gradients for the background and border.
+ * It features a two-toned circular design and dynamically adjusts its width
+ * for ranks with two or more characters.
  */
 const BadgeLeaderboard = ({ rank, className }) => {
+  // Convert rank to string to safely check its length.
+  const rankStr = String(rank);
+
   return (
     // The outer container creates the gradient border.
     // Flexbox properties are used to center the inner circle.
     <div
       className={cn(
-        "flex h-4 w-4 items-center justify-center rounded-full p-[1.5px]",
+        "flex h-4 items-center justify-center rounded-full p-[1.5px]",
+        // Dynamically set the width based on the rank's character count.
+        {
+          "w-4": rankStr.length < 2, // Default width for single-digit ranks.
+          "w-6": rankStr.length >= 2, // Wider for two-digit or more ranks.
+        },
         // Gold Gradient for the border
         "bg-[linear-gradient(to_bottom,#D29A00,#FFD664,#D09C0C,#FFDA71)]",
         className
