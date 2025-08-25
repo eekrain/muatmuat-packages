@@ -2569,5 +2569,12 @@
   "TransportRequestCard.labelPotentialEarnings": "潜在收入",
   "TransportRequestCard.buttonReject": "拒绝",
   "TransportRequestCard.buttonAccept": "接受",
-  "TransportRequestCard.messageErrorRequestTaken": "请求已被其他运输商接取"
+  "TransportRequestCard.messageErrorRequestTaken": "请求已被其他运输商接取",
+  "PermintaanAngkutDetail.titleDetailPermintaanJasaAngkut": "货运服务请求详情",
+  "PermintaanAngkutDetail.messageErrorRequestTaken": "请求已被另一家运输公司接管",
+  "PermintaanAngkutDetail.buttonUnderstand": "明白了",
+  "PermintaanAngkutDetail.buttonReject": "拒绝",
+  "PermintaanAngkutDetail.buttonAccept": "接受",
+  "PermintaanAngkutDetail.toastSuccessRequestAccepted": "请求 {orderCode} 已成功接受，共 {truckCount} 个单位",
+  "PermintaanAngkutDetail.toastSuccessRequestClosed": "请求 {orderCode} 已成功关闭"
 }

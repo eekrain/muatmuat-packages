@@ -2569,5 +2569,12 @@
   "TransportRequestCard.labelPotentialEarnings": "Potential Earnings",
   "TransportRequestCard.buttonReject": "Reject",
   "TransportRequestCard.buttonAccept": "Accept",
-  "TransportRequestCard.messageErrorRequestTaken": "Request has been taken by another transporter"
+  "TransportRequestCard.messageErrorRequestTaken": "Request has been taken by another transporter",
+  "PermintaanAngkutDetail.titleDetailPermintaanJasaAngkut": "Freight Service Request Details",
+  "PermintaanAngkutDetail.messageErrorRequestTaken": "Request has been taken by another transporter",
+  "PermintaanAngkutDetail.buttonUnderstand": "Got It",
+  "PermintaanAngkutDetail.buttonReject": "Reject",
+  "PermintaanAngkutDetail.buttonAccept": "Accept",
+  "PermintaanAngkutDetail.toastSuccessRequestAccepted": "Request {orderCode} has been successfully accepted with {truckCount} units",
+  "PermintaanAngkutDetail.toastSuccessRequestClosed": "Request {orderCode} has been successfully closed"
 }

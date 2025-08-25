@@ -2569,5 +2569,12 @@
   "TransportRequestCard.labelPotentialEarnings": "Potensi Pendapatan",
   "TransportRequestCard.buttonReject": "Tolak",
   "TransportRequestCard.buttonAccept": "Terima",
-  "TransportRequestCard.messageErrorRequestTaken": "Permintaan sudah diambil transporter lain"
+  "TransportRequestCard.messageErrorRequestTaken": "Permintaan sudah diambil transporter lain",
+  "PermintaanAngkutDetail.titleDetailPermintaanJasaAngkut": "Detail Permintaan Jasa Angkut",
+  "PermintaanAngkutDetail.messageErrorRequestTaken": "Permintaan sudah diambil transporter lain",
+  "PermintaanAngkutDetail.buttonUnderstand": "Mengerti",
+  "PermintaanAngkutDetail.buttonReject": "Tolak",
+  "PermintaanAngkutDetail.buttonAccept": "Terima",
+  "PermintaanAngkutDetail.toastSuccessRequestAccepted": "Permintaan {orderCode} berhasil diterima dengan {truckCount} unit",
+  "PermintaanAngkutDetail.toastSuccessRequestClosed": "Permintaan {orderCode} berhasil ditutup"
 }
