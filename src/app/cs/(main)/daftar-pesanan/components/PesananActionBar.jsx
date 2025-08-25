@@ -115,7 +115,9 @@ const PesananActionBar = ({
 
   // consider sort active when user chooses a non-default option
   const isSortActive = !!(
-    sortConfig?.value && sortConfig.value !== "waktu_muat_terdekat"
+    sortConfig?.value &&
+    sortConfig.value !== "waktu_muat_terdekat" &&
+    !disableSort
   );
 
   const urgentStatusOptions = useMemo(
