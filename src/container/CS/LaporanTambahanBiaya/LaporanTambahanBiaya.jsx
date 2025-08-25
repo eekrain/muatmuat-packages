@@ -125,7 +125,7 @@ const LaporanTambahanBiaya = ({
             <div className="flex items-center gap-x-3">
               <DropdownPeriode
                 // disable
-                disable={reports.length === 0}
+                // disable={orders.length === 0}
                 options={periodOptions(t)}
                 onSelect={() => {}}
                 recentSelections={recentSelections}

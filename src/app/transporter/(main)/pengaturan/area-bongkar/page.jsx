@@ -56,8 +56,6 @@ export default function Page() {
     unloadingAreas: searchResults,
     found: searchFound,
     isLoading: isSearchLoading,
-    keyword: searchResponseKeyword,
-    pagination: searchPagination,
   } = useSearchAreaBongkar(searchParams);
 
   // Fetch area bongkar management data
@@ -70,16 +68,15 @@ export default function Page() {
   );
 
   // Fetch master provinsi data for reference (only when needed for province selection popup)
-  const { provinsi: masterProvinsi, isLoading: isLoadingMasterProvinsi } =
-    useGetMasterProvinsi(
-      {
-        search: "", // Can be used for province search in popup
-        page: 1,
-        limit: 50,
-        excludeSelected: false,
-      },
-      { enabled: false } // Disabled by default, enable when province selection modal is needed
-    );
+  const { provinsi: masterProvinsi } = useGetMasterProvinsi(
+    {
+      search: "", // Can be used for province search in popup
+      page: 1,
+      limit: 50,
+      excludeSelected: false,
+    },
+    { enabled: false } // Disabled by default, enable when province selection modal is needed
+  );
 
   // Get selected province IDs for fetching kota/kabupaten
   // Use stable reference to prevent unnecessary recalculations
@@ -183,8 +180,6 @@ export default function Page() {
         console.error("Failed to delete province");
       }
     } catch (error) {
-      console.error("Delete province error:", error);
-
       // Parse error message if it's a JSON string
       try {
         const errorData = JSON.parse(error.message);
@@ -394,8 +389,6 @@ export default function Page() {
         console.error("Failed to save area bongkar");
       }
     } catch (error) {
-      console.error("Save error:", error);
-
       // Parse error message if it's a JSON string
       try {
         const errorData = JSON.parse(error.message);
