@@ -187,7 +187,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
               ? row.schedule?.estimatedFinish || "-"
               : "-"}
           </span>
-          <span className="cursor-pointer text-sm font-medium text-[#2574EA] hover:font-semibold hover:text-primary-800">
+          <span className="cursor-pointer text-sm font-medium text-[#2574EA]">
             Cek Jadwal
           </span>
         </div>
