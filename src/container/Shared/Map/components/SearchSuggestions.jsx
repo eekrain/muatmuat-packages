@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
-import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 
 import "./SearchSuggestions.css";
 
@@ -10,12 +9,13 @@ export const SearchSuggestions = ({
   searchValue,
   onSelect,
   className,
+  fleetLocationsData,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const suggestionsRef = useRef(null);
 
   // Get real fleet data from API
-  const { data: fleetLocationsData } = useGetFleetLocations();
+  // const { data: fleetLocationsData } = useGetFleetLocations();
 
   // Use real fleet data or empty array if data is not loaded yet
   const vehiclesAndDrivers = fleetLocationsData?.fleets || [];
@@ -28,7 +28,7 @@ export const SearchSuggestions = ({
     const suggestions = [];
 
     // Add all matching license plates
-    vehiclesAndDrivers.forEach((item) => {
+    vehiclesAndDrivers?.forEach((item) => {
       if (item.licensePlate.toLowerCase().includes(searchLower)) {
         suggestions.push({
           id: `plate-${item.id}`,
@@ -46,8 +46,8 @@ export const SearchSuggestions = ({
     });
 
     // Add all matching driver names
-    vehiclesAndDrivers.forEach((item) => {
-      if (item.driverName.toLowerCase().includes(searchLower)) {
+    vehiclesAndDrivers?.forEach((item) => {
+      if (item.driverName?.toLowerCase().includes(searchLower)) {
         suggestions.push({
           id: `driver-${item.id}`,
           type: "driverName",
