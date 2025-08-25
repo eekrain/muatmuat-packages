@@ -1,16 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Plus } from "lucide-react";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Input from "@/components/Input/Input";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import { formatDateInput } from "@/lib/utils/dateFormat";
+
+import ModalPilihPeriode from "./ModalPilihPeriode";
 
 // Helper function to convert various date formats to YYYY-MM-DD
 const formatToISODate = (dateStr) => {
@@ -63,7 +60,6 @@ const formatToISODate = (dateStr) => {
     return dateStr;
   }
 
-  console.warn("Unrecognized date format:", dateStr);
   return dateStr; // Return as is if unrecognized
 };
 
@@ -96,7 +92,7 @@ const DropdownPeriode = ({
   // Initial setup of selected option
   useEffect(() => {
     setSelected(options[0]);
-  }, [JSON.stringify(options)]);
+  }, [options]);
 
   // Effect to handle external value changes
   useEffect(() => {
@@ -141,7 +137,6 @@ const DropdownPeriode = ({
     } else {
       setSelected(option);
       setIsOpen(false);
-      console.log("Selected option without range:", option);
       if (onSelect) onSelect(option); // Callback for parent
     }
   };
@@ -237,7 +232,7 @@ const DropdownPeriode = ({
           </li>
           {recentSelections.length > 0 && (
             <>
-              <hr className="border-gray-200" />
+              {/* <hr className="border-gray-200" /> */}
               <li className="medium-xs px-[10px] py-2 text-neutral-600">
                 Terakhir Dicari
               </li>
@@ -263,111 +258,18 @@ const DropdownPeriode = ({
         </ul>
       )}
 
-      <Modal open={isPeriode} onOpenChange={setIsPeriode} closeOnOutsideClick>
-        <ModalContent type="muattrans" className="w-modal-small">
-          <ModalHeader size="small" />
-          <div className="flex flex-col items-center gap-6 px-4 py-7">
-            <h3 className="bold-base text-center">
-              {t("AppMuatpartsAnalisaProdukPilihPeriode")}
-            </h3>
-
-            <div className="flex flex-col gap-y-2">
-              <div className="relative flex max-w-[306px] flex-wrap items-center gap-2">
-                <Input
-                  value={inputDateCustom?.start_date}
-                  onClick={() =>
-                    setInputDateCustom((a) => ({ ...a, status: "start_date" }))
-                  }
-                  onChange={() => {}}
-                  classInput={"w-full"}
-                  status={validate?.start_date && "error"}
-                  className={"!w-[136px] max-w-none"}
-                  placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
-                  icon={{
-                    right: <IconComponent src={"/icons/calendar16.svg"} />,
-                  }}
-                />
-                <span className="semi-xs text-neutral-600">s/d</span>
-                <Input
-                  value={inputDateCustom?.end_date}
-                  status={validate?.end_date && "error"}
-                  onClick={() =>
-                    setInputDateCustom((a) => ({ ...a, status: "end_date" }))
-                  }
-                  onChange={() => {}}
-                  classInput={"w-full"}
-                  className={"!w-[136px] max-w-none"}
-                  placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
-                  icon={{
-                    right: <IconComponent src={"/icons/calendar16.svg"} />,
-                  }}
-                />
-                {inputDateCustom?.status && (
-                  <Calendar
-                    className={"absolute top-2 rounded-md"}
-                    onChange={(date) => {
-                      setValidate((a) => ({
-                        ...a,
-                        [inputDateCustom.status]: false,
-                      }));
-                      setInputDateCustom((a) => ({
-                        ...a,
-                        [a.status]: formatDateInput(
-                          date,
-                          ["day", "month", "year"],
-                          false
-                        ),
-                        status: "",
-                      }));
-                    }}
-                  />
-                )}
-                <div className="min-w-[136px] text-xs font-medium text-error-400">
-                  {validate?.start_date && "Periode awal harus diisi"}
-                </div>
-                <div className="min-w-[18px]" />
-                <div className="min-w-[136px] text-xs font-medium text-error-400">
-                  {validate?.end_date && "Periode akhir harus diisi"}
-                </div>
-              </div>
-            </div>
-
-            <Button
-              variant={buttonVariant}
-              className="!h-8 w-[112px]"
-              onClick={() => {
-                let next = true;
-                if (inputDateCustom.start_date === "") {
-                  setValidate((a) => ({ ...a, start_date: true }));
-                  next = false;
-                }
-                if (inputDateCustom.end_date === "") {
-                  setValidate((a) => ({ ...a, end_date: true }));
-                  next = false;
-                }
-                if (!next) return;
-
-                // Create the option object with both display and ISO formats
-                const customOption = {
-                  name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-                  value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-                  start_date: inputDateCustom.start_date,
-                  end_date: inputDateCustom.end_date,
-                  // Add ISO formatted dates
-                  iso_start_date: formatToISODate(inputDateCustom.start_date),
-                  iso_end_date: formatToISODate(inputDateCustom.end_date),
-                  range: true,
-                };
-
-                handleSelect(customOption, true);
-                setIsPeriode(false);
-              }}
-            >
-              {t("AppMuatpartsAnalisaProdukTerapkan")}
-            </Button>
-          </div>
-        </ModalContent>
-      </Modal>
+      <ModalPilihPeriode
+        open={isPeriode}
+        onOpenChange={setIsPeriode}
+        inputDateCustom={inputDateCustom}
+        setInputDateCustom={setInputDateCustom}
+        validate={validate}
+        setValidate={setValidate}
+        onApply={(opt) => handleSelect(opt, true)}
+        buttonVariant={buttonVariant}
+        t={t}
+        formatToISODate={formatToISODate}
+      />
     </div>
   );
 };

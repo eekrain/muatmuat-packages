@@ -56,7 +56,7 @@ const Leaderboard = ({
             rating={item.rating}
           />
         ));
-      case "truck-types":
+      case "fleets":
         return data.map((item) => (
           <CardLeaderboard
             key={item.rank}
@@ -71,7 +71,7 @@ const Leaderboard = ({
             value={item.carrierTypeName}
           />
         ));
-      case "loading-areas":
+      case "loads":
         return data.map((item) => (
           <CardLeaderboard
             key={item.rank}
@@ -86,7 +86,7 @@ const Leaderboard = ({
             value={`${item.province}`}
           />
         ));
-      case "unloading-areas":
+      case "unloads":
         return data.map((item) => (
           <CardLeaderboard
             key={item.rank}

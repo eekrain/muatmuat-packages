@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -44,13 +45,15 @@ export const BottomsheetAlasanPembatalan = ({
   const { data: cancellationReasons } = useGetCancellationReasons();
   const { data: bankAccounts } = useGetBankAccounts();
   const navigation = useResponsiveNavigation();
+  const params = useParams();
   const { params: otpParams, formValues: otpValues } = useRequestOtpStore();
   const { setParams, reset: resetOtp } = useRequestOtpActions();
   const [selectedReason, setSelectedReason] = useState(null);
   const [customReason, setCustomReason] = useState("");
   const [customReasonError, setCustomReasonError] = useState(null);
   const [globalError, setGlobalError] = useState(null);
-  const { mutate } = useGetDetailPesananData(orderId);
+  const { mutate } = useGetDetailPesananData(params.orderId);
+  console.log(params.orderId, "tes");
   const handleConfirm = async () => {
     setCustomReasonError(null);
     setGlobalError(null);

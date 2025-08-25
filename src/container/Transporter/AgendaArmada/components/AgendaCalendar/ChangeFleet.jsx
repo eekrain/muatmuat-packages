@@ -8,6 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Select } from "@/components/Select";
 import { useTranslation } from "@/hooks/use-translation";
 import { ChangeFleetTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
+import { useGetAlternativeFleet } from "@/services/Transporter/agenda-armada-driver/getAlternativeFleet";
 
 import CardDetail from "./CardDetail";
 import { getDynamicDates } from "./getDynamicDates";
@@ -20,83 +21,89 @@ const statusStyles = {
   MENUNGGU: "bg-warning-100 text-warning-900",
 };
 
-const availableFleets = [
-  {
-    id: "1",
-    licensePlate: "L 9812 AX",
-    truckType: "Tractor Head 6 x 4",
-    status: "Tersedia",
-    statusKey: "TERSEDIA",
-  },
-  {
-    id: "2",
-    licensePlate: "L 2431 AX",
-    truckType: "Tractor Head 6 x 4",
-    status: "Tersedia",
-    statusKey: "TERSEDIA",
-  },
-  {
-    id: "3",
-    licensePlate: "L 1239 CAM",
-    truckType: "Tractor Head 6 x 4",
-    status: "Non Aktif",
-    statusKey: "NON_AKTIF",
-  },
-  {
-    id: "4",
-    licensePlate: "L 1211 SA",
-    truckType: "Tractor Head 6 x 4",
-    status: "Bertugas",
-    statusKey: "BERTUGAS",
-  },
-  {
-    id: "5",
-    licensePlate: "P 3134 GM",
-    truckType: "Tractor Head 6 x 4",
-    status: "Menunggu",
-    statusKey: "MENUNGGU",
-  },
-];
-
-const conflictingSchedules = [
-  {
-    // First schedule: starts at day 1, ends at day 3 (middle)
-    id: 1,
-    agendaStatus: "BERTUGAS",
-    firstDestinationName: "Jakarta Pusat",
-    lastDestinationName: "Bandung",
-    scheduled: 2, // 3 days duration
-    additional: 1,
-    position: 0, // starts at first column
-    estimatedTotalDistanceKm: 150,
-    hasSosIssue: false,
-    driverName: "John Doe",
-    licensePlate: "B 1234 ABC",
-  },
-  {
-    // Second schedule: starts at day 3 (middle), ends at day 5
-    id: 2,
-    agendaStatus: "MENUNGGU_JAM_MUAT",
-    firstDestinationName: "Surabaya",
-    lastDestinationName: "Malang",
-    scheduled: 2, // 3 days duration
-    additional: 1,
-    position: 2, // starts at third column (middle)
-    estimatedTotalDistanceKm: 90,
-    hasSosIssue: false,
-    driverName: "Jane Smith",
-    licensePlate: "L 9812 AX",
-  },
-];
-const ChangeFleet = ({ cardData }) => {
+const ChangeFleet = ({
+  cardData,
+  conflictingSchedules = [
+    {
+      // First schedule: starts at day 1, ends at day 3 (middle)
+      id: 1,
+      fleetID: "f1e2d3c4-b5a6-7890-1234-56789abcdef0",
+      agendaStatus: "BERTUGAS",
+      firstDestinationName: "Jakarta Pusat",
+      lastDestinationName: "Bandung",
+      scheduled: 2, // 3 days duration
+      additional: 1,
+      position: 0, // starts at first column
+      estimatedTotalDistanceKm: 150,
+      hasSosIssue: false,
+      driverName: "John Doe",
+      licensePlate: "B 1234 ABC",
+    },
+    {
+      // Second schedule: starts at day 3 (middle), ends at day 5
+      id: 2,
+      fleetID: "f1e2d3c4-b5a6-7890-1234-56789abcdef0",
+      agendaStatus: "MENUNGGU_JAM_MUAT",
+      firstDestinationName: "Surabaya",
+      lastDestinationName: "Malang",
+      scheduled: 2, // 3 days duration
+      additional: 1,
+      position: 2, // starts at third column (middle)
+      estimatedTotalDistanceKm: 90,
+      hasSosIssue: false,
+      driverName: "Jane Smith",
+      licensePlate: "L 9812 AX",
+    },
+  ],
+}) => {
+  const conflictId = "f1e2d3c4-b5a6-7890-1234-56789abcdef0"; // Use a valid mock id
+  const { data: alternativeFleetData } = useGetAlternativeFleet(conflictId);
+  const availableFleets = (alternativeFleetData?.alternatives || []).map(
+    (item) => {
+      let statusKey = "TERSEDIA";
+      switch (item.availableDriver?.driverStatus) {
+        case "Bertugas":
+          statusKey = "BERTUGAS";
+          break;
+        case "Menunggu":
+          statusKey = "MENUNGGU";
+          break;
+        case "Non Aktif":
+          statusKey = "NON_AKTIF";
+          break;
+        default:
+          statusKey = "TERSEDIA";
+      }
+      return {
+        id: item.fleetID,
+        licensePlate: item.licensePlate,
+        truckType: item.truckTypeName,
+        status: ChangeFleetTypeEnum[statusKey],
+        statusKey,
+        driver: item.availableDriver,
+        availabilityScore: item.availabilityScore,
+        estimatedReadyTime: item.estimatedReadyTime,
+        isCompatible: item.isCompatible,
+      };
+    }
+  );
   const { t } = useTranslation();
   const { dateRange } = useDateNavigator();
+  const [showCompatibleOnly, setShowCompatibleOnly] = useState(false);
 
   // Mock fleet data - replace with actual data from API
 
-  const [selectedFleet, setSelectedFleet] = useState(
-    availableFleets[0]?.id || ""
-  );
+  const [selectedFleet, setSelectedFleet] = useState("");
+
+  // Set default selectedFleet when availableFleets is loaded
+  useEffect(() => {
+    if (!selectedFleet && availableFleets.length > 0) {
+      // Try to match the fleetID from the first conflicting schedule
+      const defaultFleetId = conflictingSchedules[0]?.fleetID;
+      const found = availableFleets.find((f) => f.id === defaultFleetId);
+      setSelectedFleet(found ? found.id : availableFleets[0].id);
+    }
+  }, [availableFleets, selectedFleet]);
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -210,18 +217,19 @@ const ChangeFleet = ({ cardData }) => {
                 )}
                 className="w-[264px]"
               >
-                {availableFleets?.filter((fleet) =>
-                  `${fleet.licensePlate} - ${fleet.truckType}`
-                    .toLowerCase()
-                    .includes(searchValue.toLowerCase())
-                ).length > 0 ? (
-                  availableFleets
-                    ?.filter((fleet) =>
-                      `${fleet.licensePlate} - ${fleet.truckType}`
-                        .toLowerCase()
-                        .includes(searchValue.toLowerCase())
-                    )
-                    .map((fleet) => {
+                {(() => {
+                  let filteredFleets = availableFleets.filter((fleet) =>
+                    `${fleet.licensePlate} - ${fleet.truckType}`
+                      .toLowerCase()
+                      .includes(searchValue.toLowerCase())
+                  );
+                  if (showCompatibleOnly) {
+                    filteredFleets = filteredFleets.filter(
+                      (fleet) => fleet.isCompatible
+                    );
+                  }
+                  return filteredFleets.length > 0 ? (
+                    filteredFleets.map((fleet) => {
                       const isSelected = selectedFleet === fleet.id;
                       return (
                         <Select.Item
@@ -254,11 +262,16 @@ const ChangeFleet = ({ cardData }) => {
                         </Select.Item>
                       );
                     })
-                ) : (
-                  <Select.Empty>
-                    {t("ChangeFleet.dataNotFound", {}, "Data Tidak Ditemukan")}
-                  </Select.Empty>
-                )}
+                  ) : (
+                    <Select.Empty>
+                      {t(
+                        "ChangeFleet.dataNotFound",
+                        {},
+                        "Data Tidak Ditemukan"
+                      )}
+                    </Select.Empty>
+                  );
+                })()}
               </Select.Content>
             </Select.Root>
           </div>
@@ -268,6 +281,8 @@ const ChangeFleet = ({ cardData }) => {
               {},
               "Tampilkan Armada Serupa"
             )}
+            checked={showCompatibleOnly}
+            onChange={({ checked }) => setShowCompatibleOnly(checked)}
           />
         </div>
       </div>

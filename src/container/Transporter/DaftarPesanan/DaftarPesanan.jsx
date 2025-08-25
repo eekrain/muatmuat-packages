@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 import { formatLoadTime, formatToYYYYMMDD } from "@/lib/utils/dateFormat";
 import {
   ORDER_STATUS,
-  ORDER_STATUS_CONFIG,
+  getOrderStatusConfig,
 } from "@/utils/Transporter/orderStatus";
 
 const DaftarPesanan = ({
@@ -295,7 +295,13 @@ const DaftarPesanan = ({
                 <div className="flex h-3.5 items-center rounded bg-error-400 px-1 text-[8px] font-bold leading-[1.3] text-neutral-50">
                   <span>{rowIndex === 0 ? "SOS" : "SOS : 1 Unit"}</span>
                 </div>
-                <Button className="text-xs font-medium" variant="link">
+                <Button
+                  className="text-xs font-medium"
+                  variant="link"
+                  onClick={() => {
+                    router.push("/monitoring?leftPanel=sos");
+                  }}
+                >
                   Lihat SOS
                 </Button>
               </div>
@@ -588,6 +594,7 @@ const DaftarPesanan = ({
                         key={key}
                         onClick={() => {
                           setFilterType("tab");
+                          onChangeQueryParams("seach", "");
                           onChangeQueryParams("status", tab.value);
                         }}
                         className={cn(
@@ -632,7 +639,7 @@ const DaftarPesanan = ({
                       },
                     }}
                   >
-                    {ORDER_STATUS_CONFIG[queryParams.status].label}
+                    {getOrderStatusConfig(t)[queryParams.status].label}
                   </TagBubble>
                 </div>
               ) : null}

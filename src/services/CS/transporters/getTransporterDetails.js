@@ -1,7 +1,6 @@
 import useSWR from "swr";
 
-import { fetcherMock } from "@/lib/axios";
-import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
+import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
 
 const isMockTransporterDetails = false;
 
@@ -10,7 +9,7 @@ export const fetcherTransporterDetails = async (url, { arg }) => {
     const result = await fetcherMock.get(`/api/${url}`, arg ?? null);
     return result.data;
   }
-  const result = await fetcherMuatransCS.get(url, arg);
+  const result = await fetcherMuatrans.get(url, arg);
   return result.data;
 };
 

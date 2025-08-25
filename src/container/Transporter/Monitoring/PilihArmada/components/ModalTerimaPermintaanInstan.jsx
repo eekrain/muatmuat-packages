@@ -100,8 +100,8 @@ const ModalTerimaPermintaanInstant = ({
       return;
     }
 
-    // Show modal sequence for demo
-    showModalSequence();
+    // // Show modal sequence for demo
+    // showModalSequence();
   };
 
   const handleConfirmAccept = () => {
@@ -201,7 +201,11 @@ const ModalTerimaPermintaanInstant = ({
       });
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 ${
+        showConfirmModal ? "hidden" : ""
+      }`}
+    >
       <div className="flex h-auto w-[600px] flex-col rounded-xl bg-white p-6">
         {isLoading && <LoadingStatic />}
         {error && (

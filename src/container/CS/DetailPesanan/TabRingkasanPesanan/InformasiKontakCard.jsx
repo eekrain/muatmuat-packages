@@ -1,6 +1,7 @@
 import React from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { ModalPilihMetodeHubungi } from "./ModalPilihMetodeHubungi";
 
@@ -59,6 +60,7 @@ const ContactDetail = ({ mode, logo, companyName, details }) => (
 );
 
 export const InformasiKontakCard = ({ shipperInfo, transporterInfo }) => {
+  const { t } = useTranslation();
   const shipperDetails = [
     { text: shipperInfo?.phoneNumber, icon: "/icons/contact.svg" },
     { text: shipperInfo?.location, icon: "/icons/marker-outline.svg" },
@@ -77,7 +79,13 @@ export const InformasiKontakCard = ({ shipperInfo, transporterInfo }) => {
     <div className="mt-6 flex w-full flex-col gap-5 rounded-xl border border-[#C4C4C4] bg-white px-4 py-5">
       {/* Shipper Section */}
       <div className="flex w-full flex-col gap-3 self-stretch">
-        <h2 className="text-xs font-bold text-black">Informasi Shipper</h2>
+        <h2 className="text-xs font-bold text-black">
+          {t(
+            "InformasiKontakCard.titleInformasiShipper",
+            {},
+            "Informasi Shipper"
+          )}
+        </h2>
         <ContactDetail
           logo="https://picsum.photos/200/200?random=1"
           companyName="PT. Airmas International (AIRI)"
@@ -91,7 +99,13 @@ export const InformasiKontakCard = ({ shipperInfo, transporterInfo }) => {
 
       {/* Transporter Section */}
       <div className="flex w-full flex-col gap-3 self-stretch">
-        <h2 className="text-xs font-bold text-black">Informasi Transporter</h2>
+        <h2 className="text-xs font-bold text-black">
+          {t(
+            "InformasiKontakCard.titleInformasiTransporter",
+            {},
+            "Informasi Transporter"
+          )}
+        </h2>
         <ContactDetail
           logo="https://picsum.photos/200/200?random=2"
           companyName="PT. Siba Surya"

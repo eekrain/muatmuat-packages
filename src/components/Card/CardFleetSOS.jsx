@@ -21,6 +21,7 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { formatDate } from "@/lib/utils/dateFormat";
@@ -463,6 +464,7 @@ export default function CardFleetSOS({
   onAcknowledge,
   onOpenHubungiModal,
 }) {
+  const { t } = useTranslation();
   const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
 
   const driverName = fleet?.driver?.fullName;

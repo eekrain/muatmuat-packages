@@ -5,21 +5,23 @@
  * A self-contained CLI for i18n scan/export/merge/session-report with session scoping.
  *
  * Commands:
- *   npm run translate:eka -- session:start
- *   npm run translate:eka -- session:end
- *   npm run translate:eka -- scan <path/to/file>
- *   npm run translate:eka -- scan-dir <path/to/dir>
- *   npm run translate:eka -- export
- *   npm run translate:eka -- merge
- *   npm run translate:eka -- validate
- *   npm run translate:eka -- report-session
- *   npm run translate:eka -- cleanup
+ * npm run translate:eka -- session:start
+ * npm run translate:eka -- session:end
+ * npm run translate:eka -- scan <path/to/file>
+ * npm run translate:eka -- scan-dir <path/to/dir>
+ * npm run translate:eka -- analyze-deps <entry-file-or-dir>
+ * npm run translate:eka -- export
+ * npm run translate:eka -- merge
+ * npm run translate:eka -- validate
+ * npm run translate:eka -- report-session
+ * npm run translate:eka -- cleanup
  *
  * NOTES
  * - "scan" extracts keys from t("key", {...}, "Indonesian text") usage.
+ * - "analyze-deps" recursively finds local dependencies for deep translation planning.
  * - "export" creates .translation/translations-needed.json for keys needing work.
  * - "merge" writes into public/mock-common-{id,en,cn}.json AND appends merged keys to
- *   .translation/sessions/<SESSION_ID>/merged-keys.json
+ * .translation/sessions/<SESSION_ID>/merged-keys.json
  * - "report-session" writes translation-report.<SESSION_ID>.csv at project root (NOT in .translation/)
  *
  * Customize LOCALE paths below if your repo differs.
@@ -29,8 +31,8 @@ const fs = require("fs");
 const path = require("path");
 
 /* =========================
-   CONFIGURATION CONSTANTS
-   ========================= */
+ CONFIGURATION CONSTANTS
+ ========================= */
 
 const PROJECT_ROOT = process.cwd();
 
@@ -53,16 +55,32 @@ const EXPORT_PATH = path.join(TRANS_DIR, "translations-needed.json");
 /** Scan cache (inside .translation/): */
 const SCAN_CACHE_PATH = path.join(TRANS_DIR, "i18n-scan.json");
 
+/** Dependency analysis cache (inside .translation/): */
+const DEPS_CACHE_PATH = path.join(TRANS_DIR, "dependency-analysis.json");
+
 /** Plan files are stored beside here (not directly used by this script):
- *   .translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md
+ * .translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md
  */
 
 /** File types to parse when scanning directories: */
 const CODE_EXTS = new Set([".js", ".jsx", ".ts", ".tsx"]);
 
+/** Excluded paths for dependency analysis */
+const EXCLUDED_PATTERNS = [
+  /^src\/components\//, // Shared component library
+  /^node_modules\//, // Node modules
+  /\.test\./, // Test files
+  /\.spec\./, // Spec files
+  /\/stories\//, // Storybook files
+  /^src\/locales\//, // Locale files
+  /\.(css|scss|sass|less)$/, // Stylesheets
+  /\.(png|jpg|jpeg|gif|svg|ico)$/, // Images
+  /\.json$/, // JSON files (except translations-needed.json)
+];
+
 /* =========================
-   UTILS
-   ========================= */
+ UTILS
+ ========================= */
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -133,24 +151,174 @@ function keyToComponentName(key) {
   return i === -1 ? key : key.slice(0, i);
 }
 
+function shouldExcludeFile(filePath) {
+  const relativePath = path.relative(PROJECT_ROOT, filePath);
+  return EXCLUDED_PATTERNS.some((pattern) => pattern.test(relativePath));
+}
+
 /* =========================
-   SCANNING
-   ========================= */
+ DEPENDENCY ANALYSIS
+ ========================= */
+
+/**
+ * Parse import statements from a file and return local imports only
+ * Local imports are those starting with './' or '../'
+ */
+function extractLocalImports(filePath) {
+  try {
+    const content = fs.readFileSync(filePath, "utf8");
+    const imports = []; // Match various import patterns for local files
+    const importRegex = /import\s+(?:[^'"]*\s+from\s+)?['"](\.[^'"]*)['"]/g;
+    let match;
+    while ((match = importRegex.exec(content)) !== null) {
+      const importPath = match[1];
+      if (importPath.startsWith("./") || importPath.startsWith("../")) {
+        imports.push(importPath);
+      }
+    }
+    return imports;
+  } catch (error) {
+    console.warn(
+      `[analyze-deps] Warning: Could not read ${filePath}: ${error.message}`
+    );
+    return [];
+  }
+}
+
+/**
+ * Resolve an import path to an actual file path
+ * Follows the resolution rules from the agent instructions
+ */
+function resolveImportPath(importPath, fromFile) {
+  const fromDir = path.dirname(fromFile);
+  let resolvedPath = path.resolve(fromDir, importPath); // Rule 1: If import has extension among supported types, use as-is
+  const ext = path.extname(importPath);
+  if (CODE_EXTS.has(ext)) {
+    return fs.existsSync(resolvedPath) ? resolvedPath : null;
+  } // Rule 2: Try appending extensions in order
+  for (const extension of [".jsx", ".tsx", ".js", ".ts"]) {
+    const withExt = resolvedPath + extension;
+    if (fs.existsSync(withExt)) {
+      return withExt;
+    }
+  } // Rule 3: If path resolves to directory, look for index files
+  if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isDirectory()) {
+    for (const extension of [".jsx", ".tsx", ".js", ".ts"]) {
+      const indexFile = path.join(resolvedPath, "index" + extension);
+      if (fs.existsSync(indexFile)) {
+        return indexFile;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Recursively analyze dependencies starting from entry point(s)
+ * Returns a Set of absolute file paths that should be translated
+ */
+function analyzeDependencies(entryPoints) {
+  const visited = new Set();
+  const toProcess = [...entryPoints];
+  const dependencies = new Set();
+  while (toProcess.length > 0) {
+    const currentFile = toProcess.shift();
+    const absolutePath = path.resolve(PROJECT_ROOT, currentFile);
+    if (visited.has(absolutePath) || !fs.existsSync(absolutePath)) {
+      continue;
+    }
+    visited.add(absolutePath); // Skip if file should be excluded
+    if (shouldExcludeFile(absolutePath)) {
+      continue;
+    } // Only process supported code files
+    const ext = path.extname(absolutePath);
+    if (!CODE_EXTS.has(ext)) {
+      continue;
+    }
+    dependencies.add(absolutePath); // Extract and resolve local imports
+    const imports = extractLocalImports(absolutePath);
+    for (const importPath of imports) {
+      const resolvedPath = resolveImportPath(importPath, absolutePath);
+      if (resolvedPath && !visited.has(resolvedPath)) {
+        toProcess.push(resolvedPath);
+      }
+    }
+  }
+  return dependencies;
+}
+
+function cmdAnalyzeDeps(entryPath) {
+  const absoluteEntry = path.resolve(PROJECT_ROOT, entryPath);
+  if (!fs.existsSync(absoluteEntry)) {
+    console.error(`[analyze-deps] Entry path does not exist: ${entryPath}`);
+    process.exit(2);
+  }
+  let entryPoints = [];
+  if (fs.statSync(absoluteEntry).isDirectory()) {
+    // If directory, find all code files in it as entry points
+    const files = walkDir(absoluteEntry);
+    entryPoints = files.filter((f) => {
+      const ext = path.extname(f);
+      return CODE_EXTS.has(ext) && !shouldExcludeFile(f);
+    });
+    console.log(
+      `[analyze-deps] Found ${entryPoints.length} entry point(s) in directory: ${entryPath}`
+    );
+  } else {
+    entryPoints = [absoluteEntry];
+    console.log(`[analyze-deps] Analyzing single file: ${entryPath}`);
+  }
+  if (entryPoints.length === 0) {
+    console.error(
+      `[analyze-deps] No valid entry points found in: ${entryPath}`
+    );
+    process.exit(2);
+  }
+  console.log("[analyze-deps] Starting dependency analysis...");
+  const dependencies = analyzeDependencies(entryPoints); // Assume all non-excluded dependencies need translation.
+  const filesToTranslate = Array.from(dependencies); // Convert to relative paths for output
+  const relativePaths = filesToTranslate.map((f) =>
+    path.relative(PROJECT_ROOT, f)
+  ); // Create analysis result
+  const analysis = {
+    entryPath: entryPath,
+    analyzedAt: new Date().toISOString(),
+    filesToTranslate: relativePaths.length,
+    files: relativePaths.sort(),
+  }; // Cache the analysis
+  ensureDir(TRANS_DIR);
+  writeJSON(DEPS_CACHE_PATH, analysis);
+  console.log(`[analyze-deps] Analysis complete:`);
+  console.log(` - Total dependencies found: ${relativePaths.length}`);
+  console.log(` - Results cached to: .translation/dependency-analysis.json`); // Output the files for the AI agent
+  if (relativePaths.length > 0) {
+    console.log(`\n[analyze-deps] Files to translate:`);
+    relativePaths.forEach((file, index) => {
+      console.log(` ${index + 1}. ${file}`);
+    });
+  } else {
+    console.log(`\n[analyze-deps] No files found to translate.`);
+  }
+  return analysis;
+}
+
+/* =========================
+ SCANNING
+ ========================= */
 
 /**
  * Heuristic scanner for:
- *   t("Some.Key", {...}, "Indonesian Fallback")
- *   t('Some.Key', {...}, 'Indonesian Fallback')
+ * t("Some.Key", {...}, "Indonesian Fallback")
+ * t('Some.Key', {...}, 'Indonesian Fallback')
  *
  * Notes:
  * - It expects the second arg to be an object literal and the third to be a quoted string.
- * - It’s intentionally pragmatic and may miss exotic formatting outside the agreed pattern.
+ * - It's intentionally pragmatic and may miss exotic formatting outside the agreed pattern.
  */
 function scanFileForKeys(filePath) {
-  const content = fs.readFileSync(filePath, "utf8");
-
-  // Capture key and fallback text with lenient whitespace.
+  const content = fs.readFileSync(filePath, "utf8"); // Capture key and fallback text with lenient whitespace.
   // Group 1 = key, Group 2 = fallback (double-quoted) or Group 3 (single-quoted)
+
   const regex =
     /t\(\s*["']([^"']+)["']\s*,\s*\{[^)]*?\}\s*,\s*(?:"([^"]*?)"|'([^']*?)')\s*\)/g;
 
@@ -244,14 +412,14 @@ function cmdScanDir(dirPath) {
 }
 
 /* =========================
-   EXPORT
-   ========================= */
+ EXPORT
+ ========================= */
 
 /**
  * Create .translation/translations-needed.json from scan cache.
  * By default, export keys that:
- *  - are missing in ID file, or
- *  - have missing EN or CN
+ * - are missing in ID file, or
+ * - have missing EN or CN
  * This focuses translators on gaps instead of dumping everything.
  */
 function cmdExport() {
@@ -292,13 +460,13 @@ function cmdExport() {
 }
 
 /* =========================
-   MERGE (SESSIONIZED)
-   ========================= */
+ MERGE (SESSIONIZED)
+ ========================= */
 
 /**
  * Merges .translation/translations-needed.json into public/mock-common-{id,en,cn}.json
  * and appends merged keys into the current session manifest:
- *   .translation/sessions/<SESSION_ID>/merged-keys.json
+ * .translation/sessions/<SESSION_ID>/merged-keys.json
  */
 function cmdMerge() {
   if (!fs.existsSync(EXPORT_PATH)) {
@@ -334,9 +502,8 @@ function cmdMerge() {
   writeJSON(ID_PATH, idJSON);
   writeJSON(EN_PATH, enJSON);
   writeJSON(CN_PATH, cnJSON);
-  console.log(`[merge] Merged ${mergedCount} key(s) into mock-common-*.json`);
+  console.log(`[merge] Merged ${mergedCount} key(s) into mock-common-*.json`); // Update session manifest inside .translation/
 
-  // Update session manifest inside .translation/
   const sessionId = getActiveSession();
   const sessDir = path.join(SESS_DIR, sessionId);
   ensureDir(sessDir);
@@ -350,14 +517,14 @@ function cmdMerge() {
 }
 
 /* =========================
-   VALIDATE
-   ========================= */
+ VALIDATE
+ ========================= */
 
 /**
  * Basic validation for the current session:
- *  - For each session key, ensure Indonesian text exists and (optionally) EN/CN exist
- *  - Detect “key collision” where the same key has different Indonesian `id`
- *    compared to what scanner saw in code fallback
+ * - For each session key, ensure Indonesian text exists and (optionally) EN/CN exist
+ * - Detect "key collision" where the same key has different Indonesian `id`
+ *  compared to what scanner saw in code fallback
  */
 function cmdValidate() {
   let problems = 0;
@@ -416,8 +583,8 @@ function cmdValidate() {
 }
 
 /* =========================
-   REPORT (SESSION-ONLY)
-   ========================= */
+ REPORT (SESSION-ONLY)
+ ========================= */
 
 /**
  * Generates translation-report.<SESSION_ID>.csv at project root using ONLY the keys
@@ -462,8 +629,8 @@ function cmdReportSession() {
 }
 
 /* =========================
-   SESSION MANAGEMENT
-   ========================= */
+ SESSION MANAGEMENT
+ ========================= */
 
 function cmdSessionStart() {
   ensureDir(SESS_DIR);
@@ -483,47 +650,55 @@ function cmdSessionEnd() {
 }
 
 /* =========================
-   CLEANUP
-   ========================= */
+ CLEANUP
+ ========================= */
 
 function cmdCleanup() {
-  if (fs.existsSync(SCAN_CACHE_PATH)) {
-    fs.unlinkSync(SCAN_CACHE_PATH);
-    console.log("[cleanup] Removed .translation/i18n-scan.json");
-  } else {
+  const filesToClean = [SCAN_CACHE_PATH, DEPS_CACHE_PATH];
+  let cleaned = 0;
+  for (const file of filesToClean) {
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+      console.log(`[cleanup] Removed ${path.relative(PROJECT_ROOT, file)}`);
+      cleaned++;
+    }
+  }
+  if (cleaned === 0) {
     console.log("[cleanup] Nothing to remove.");
   }
 }
 
 /* =========================
-   CLI DISPATCH
-   ========================= */
+ CLI DISPATCH
+ ========================= */
 
 function usage() {
   console.log(`translate-eka.js
 
 Usage:
-  npm run translate:eka <command> [args]
+ npm run translate:eka <command> [args]
 
 Commands:
-  session:start             Start a new translation session
-  session:end               End the current session
-  scan <file>               Scan a single file for t() keys
-  scan-dir <dir>            Scan a directory (recursively)
-  export                    Write .translation/translations-needed.json
-  merge                     Merge translations into mock-common-*.json and session manifest
-  validate                  Validate merged translations for this session
-  report-session            Generate session-only CSV at project root
-  cleanup                   Remove scan cache (.translation/i18n-scan.json)
+ session:start      Start a new translation session
+ session:end       End the current session
+ scan <file>       Scan a single file for t() keys
+ scan-dir <dir>      Scan a directory (recursively)
+ analyze-deps <entry>   Analyze dependencies starting from entry file/dir
+ export          Write .translation/translations-needed.json
+ merge          Merge translations into mock-common-*.json and session manifest
+ validate         Validate merged translations for this session
+ report-session      Generate session-only CSV at project root
+ cleanup         Remove cache files (.translation/i18n-scan.json, dependency-analysis.json)
 
 Paths:
-  Working dir:              .translation/
-    - Export file:          .translation/translations-needed.json
-    - Scan cache:           .translation/i18n-scan.json
-    - Sessions:             .translation/sessions/<SESSION_ID>/merged-keys.json
-    - Plans (by agent):     .translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md
-  Locale JSONs:             public/mock-common-{id,en,cn}.json
-  CSV report:               translation-report.<SESSION_ID>.csv (project root)
+ Working dir:       .translation/
+  - Export file:     .translation/translations-needed.json
+  - Scan cache:     .translation/i18n-scan.json
+  - Dependency cache:  .translation/dependency-analysis.json
+  - Sessions:      .translation/sessions/<SESSION_ID>/merged-keys.json
+  - Plans (by agent):  .translation/translate-plan-<module>-<YYYYMMDD-HHmm>.md
+ Locale JSONs:      public/mock-common-{id,en,cn}.json
+ CSV report:       translation-report.<SESSION_ID>.csv (project root)
 `);
 }
 
@@ -550,6 +725,10 @@ function main() {
       case "scan-dir":
         if (!args[0]) return usage();
         cmdScanDir(args[0]);
+        break;
+      case "analyze-deps":
+        if (!args[0]) return usage();
+        cmdAnalyzeDeps(args[0]);
         break;
       case "export":
         cmdExport();

@@ -1,3 +1,5 @@
+// Translation function will be passed as parameter
+
 // Tracking Status constants
 export const TRACKING_STATUS = {
   // Initial Status
@@ -43,6 +45,162 @@ export const TRACKING_STATUS = {
   HEADING_TO_UNLOADING: "HEADING_TO_UNLOADING",
 };
 
+export const getTrackingStatusConfig = (t) => ({
+  [TRACKING_STATUS.LOADING]: {
+    label: t("TrackingStatus.loading", {}, "Sedang Muat"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.UNLOADING]: {
+    label: t("TrackingStatus.unloading", {}, "Proses Bongkar"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.IN_TRANSIT]: {
+    label: t("TrackingStatus.inTransit", {}, "Dalam Perjalanan"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.COMPLETED]: {
+    label: t("TrackingStatus.completed", {}, "Selesai"),
+    variant: "success",
+  },
+  [TRACKING_STATUS.CONFIRMED]: {
+    label: t("TrackingStatus.confirmed", {}, "Terkonfirmasi"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.SCHEDULED]: {
+    label: t("TrackingStatus.scheduled", {}, "Dijadwalkan"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.SCHEDULED_FLEET]: {
+    label: t("TrackingStatus.scheduledFleet", {}, "Armada Dijadwalkan"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.WAITING_PICKUP]: {
+    label: t("TrackingStatus.waitingPickup", {}, "Menunggu Muat"),
+    variant: "warning",
+  },
+  [TRACKING_STATUS.WAITING_DROPOFF]: {
+    label: t("TrackingStatus.waitingDropoff", {}, "Menunggu Bongkar"),
+    variant: "warning",
+  },
+  [TRACKING_STATUS.MENUJU_KE_LOKASI_MUAT]: {
+    label: t(
+      "TrackingStatus.headingToLoadingLocation",
+      {},
+      "Menuju ke Lokasi Muat"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.MENUJU_KE_LOKASI_BONGKAR]: {
+    label: t(
+      "TrackingStatus.headingToUnloadingLocation",
+      {},
+      "Menuju ke Lokasi Bongkar"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.SEDANG_BONGKAR]: {
+    label: t("TrackingStatus.currentlyUnloading", {}, "Sedang Bongkar"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.ANTRI_DI_LOKASI_MUAT]: {
+    label: t(
+      "TrackingStatus.queueingAtLoadingLocation",
+      {},
+      "Antri di Lokasi Muat"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.TIBA_DI_LOKASI_MUAT]: {
+    label: t(
+      "TrackingStatus.arrivedAtLoadingLocation",
+      {},
+      "Tiba di Lokasi Muat"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.ANTRI_DI_LOKASI_BONGKAR]: {
+    label: t(
+      "TrackingStatus.queueingAtUnloadingLocation",
+      {},
+      "Antri di Lokasi Bongkar"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.TIBA_DI_LOKASI_BONGKAR]: {
+    label: t(
+      "TrackingStatus.arrivedAtUnloadingLocation",
+      {},
+      "Tiba di Lokasi Bongkar"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.DOCUMENT_PREPARATION]: {
+    label: t(
+      "TrackingStatus.documentPreparation",
+      {},
+      "Dokumen Sedang Disiapkan"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.DOCUMENT_DELIVERY]: {
+    label: t(
+      "TrackingStatus.documentDelivery",
+      {},
+      "Proses Pengiriman Dokumen"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.CANCELLED_BY_TRANSPORTER]: {
+    label: t(
+      "TrackingStatus.cancelledByTransporter",
+      {},
+      "Dibatalkan Transporter"
+    ),
+    variant: "error",
+  },
+  [TRACKING_STATUS.CANCELLED_BY_SHIPPER]: {
+    label: t("TrackingStatus.cancelledByShipper", {}, "Dibatalkan Shipper"),
+    variant: "error",
+  },
+  [TRACKING_STATUS.CANCELLED_BY_SYSTEM]: {
+    label: t("TrackingStatus.cancelledBySystem", {}, "Dibatalkan Sistem"),
+    variant: "error",
+  },
+  [TRACKING_STATUS.WAITING_CONFIRMATION_SHIPPER]: {
+    label: t(
+      "TrackingStatus.waitingConfirmationShipper",
+      {},
+      "Menunggu Konfirmasi Shipper"
+    ),
+    variant: "warning",
+  },
+  [TRACKING_STATUS.HEADING_TO_LOADING]: {
+    label: t("TrackingStatus.headingToLoading", {}, "Menuju ke Lokasi Muat"),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.HEADING_TO_UNLOADING]: {
+    label: t(
+      "TrackingStatus.headingToUnloading",
+      {},
+      "Menuju ke Lokasi Bongkar"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.WAITING_CHANGE_FLEET]: {
+    label: t(
+      "TrackingStatus.waitingChangeFleet",
+      {},
+      "Menunggu Armada Pengganti"
+    ),
+    variant: "primary",
+  },
+  [TRACKING_STATUS.FLEET_FOUND]: {
+    label: t("TrackingStatus.fleetFound", {}, "Muatan Pindah Armada"),
+    variant: "primary",
+  },
+});
+
+// Deprecated: Use getTrackingStatusBadgeWithTranslation instead
 // Tracking Status badge configurations
 export const TRACKING_STATUS_CONFIG = {
   [TRACKING_STATUS.LOADING]: {
@@ -196,6 +354,7 @@ export const TRACKING_STATUS_FLOW = {
   FINAL: [TRACKING_STATUS.COMPLETED],
 };
 
+// Deprecated: Use getTrackingStatusBadgeWithTranslation instead
 // Helper function to get tracking status badge configuration
 export const getTrackingStatusBadge = (status) => {
   // Check if status contains a number (e.g., "MENUJU_KE_LOKASI_BONGKAR_1")
@@ -244,6 +403,64 @@ export const getTrackingStatusBadge = (status) => {
 
   // Fallback to direct lookup
   const config = TRACKING_STATUS_CONFIG[status];
+  if (!config) {
+    return {
+      label: status,
+      variant: "muted",
+    };
+  }
+  return config;
+};
+
+// New function that accepts translation function
+export const getTrackingStatusBadgeWithTranslation = (status, t) => {
+  // Check if status contains a number (e.g., "MENUJU_KE_LOKASI_BONGKAR_1")
+  const statusWithNumber = status?.match(/^(.+)_(\d+)$/);
+
+  if (statusWithNumber) {
+    const [, baseStatus, number] = statusWithNumber;
+    const CONFIG = getTrackingStatusConfig(t);
+
+    // Try to find config for exact status first
+    let config = CONFIG[status];
+
+    // If not found, try to find config for base status
+    if (!config) {
+      config = CONFIG[baseStatus];
+    }
+
+    // If not found, try to find similar status
+    if (!config) {
+      const similarStatus = Object.keys(CONFIG).find(
+        (key) => key.startsWith(baseStatus) && key !== baseStatus
+      );
+
+      if (similarStatus) {
+        config = CONFIG[similarStatus];
+      }
+    }
+
+    // If still not found, try to find any status that contains the base status
+    if (!config) {
+      const containingStatus = Object.keys(CONFIG).find(
+        (key) => key.includes(baseStatus) || baseStatus.includes(key)
+      );
+
+      if (containingStatus) {
+        config = CONFIG[containingStatus];
+      }
+    }
+
+    if (config) {
+      return {
+        ...config,
+        label: `${config.label} ${number}`,
+      };
+    }
+  }
+
+  // Fallback to direct lookup
+  const config = getTrackingStatusConfig(t)[status];
   if (!config) {
     return {
       label: status,

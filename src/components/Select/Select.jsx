@@ -63,6 +63,8 @@ const SelectTrigger = ({
   errorMessage,
   isError = false,
   onFocus,
+  iconClassName,
+  textClassName,
 }) => {
   const { value, disabled, open } = useSelect();
 
@@ -86,14 +88,19 @@ const SelectTrigger = ({
           )}
         >
           <span
-            className={cn("truncate text-left", !value && "text-neutral-600")}
+            className={cn(
+              "truncate text-left",
+              !value && "text-neutral-600",
+              textClassName
+            )}
           >
             {children || placeholder}
           </span>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-neutral-700 transition-transform duration-200",
-              open && "rotate-180"
+              "h-4 w-4 flex-shrink-0 text-neutral-700 transition-transform duration-200",
+              open && "rotate-180",
+              iconClassName
             )}
           />
         </button>
@@ -184,6 +191,7 @@ const SelectContent = ({
                   src="/icons/close24.svg"
                   width={16}
                   height={16}
+                  color="gray"
                   className="fill-neutral-700"
                 />
               </button>

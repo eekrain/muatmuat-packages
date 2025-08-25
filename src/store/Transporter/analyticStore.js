@@ -1,27 +1,49 @@
 import { create } from "zustand";
-// 1. Import the 'persist' middleware from Zustand
 import { persist } from "zustand/middleware";
 
+import { generateDynamicPeriodOptions } from "@/lib/utils/generateDynamicPeriodOptions";
+
+// Get the dynamic period options
+const periodOptions = generateDynamicPeriodOptions();
+// Set the first option ('Bulan Ini') as the default
+const defaultPeriod = periodOptions[0];
+
 export const useAnalyticsStore = create(
-  // 2. Wrap your store's definition with the 'persist' middleware
   persist(
-    (set, get) => ({
-      sharedData: null,
-      setSharedData: (data) => set({ sharedData: data }),
-      period: "month",
-      setPeriod: (newPeriod) => {
-        // The logging can be removed now, but is left here for clarity
-        console.log(`[Zustand Store] Setting period to:`, newPeriod);
-        set({ period: newPeriod });
-        console.log(`[Zustand Store] New state is:`, get());
+    (set) => ({
+      // 'period' now stores the unique identifier from the option's 'name' property
+      period: defaultPeriod.name,
+      // A new 'label' state to store the user-facing display text from the option's 'value'
+      label: defaultPeriod.value,
+      startDate: defaultPeriod.startDate,
+      endDate: defaultPeriod.endDate,
+
+      /**
+       * Sets the selected period option in the store.
+       * @param {object} option - The selected option object.
+       * @param {string} option.name - The unique identifier for the period (e.g., 'Bulan Ini (Default)').
+       * @param {string} option.value - The display label (e.g., 'Dalam Bulan Ini').
+       * @param {string} option.startDate - The start date in 'YYYY-MM-DD' format.
+       * @param {string} option.endDate - The end date in 'YYYY-MM-DD' format.
+       */
+      setPeriodOption: (option) => {
+        set({
+          period: option.name,
+          label: option.value,
+          startDate: option.startDate,
+          endDate: option.endDate,
+        });
       },
     }),
     {
-      // 3. Provide a unique name for the storage key in localStorage
-      name: "analytics-period-storage",
-      // 4. (Recommended) Specify which parts of the store to save.
-      // We only need to save 'period'.
-      partialize: (state) => ({ period: state.period }),
+      name: "analytics-storage",
+      // Ensure all relevant state properties are persisted
+      partialize: (state) => ({
+        period: state.period,
+        label: state.label,
+        startDate: state.startDate,
+        endDate: state.endDate,
+      }),
     }
   )
 );

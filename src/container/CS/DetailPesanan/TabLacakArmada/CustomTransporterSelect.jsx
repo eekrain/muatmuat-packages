@@ -4,6 +4,7 @@ import * as Popover from "@radix-ui/react-popover";
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 export const CustomTransporterSelect = ({
@@ -15,6 +16,7 @@ export const CustomTransporterSelect = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { t } = useTranslation();
 
   const filteredOptions = useMemo(() => {
     if (!searchTerm) return options;
@@ -61,7 +63,11 @@ export const CustomTransporterSelect = ({
       >
         <div className="p-2.5">
           <Input
-            placeholder="Cari Transporter"
+            placeholder={t(
+              "CustomTransporterSelect.placeholderCariTransporter",
+              {},
+              "Cari Transporter"
+            )}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             icon={{ left: "/icons/search.svg" }}
@@ -111,14 +117,24 @@ export const CustomTransporterSelect = ({
                       src="/icons/transporter16.svg"
                       className="h-3 w-3 text-muat-trans-secondary-900"
                     />
-                    <span>{option.availableUnits} Unit Tersedia</span>
+                    <span>
+                      {t(
+                        "CustomTransporterSelect.labelUnitTersedia",
+                        { count: option.availableUnits },
+                        "{count} Unit Tersedia"
+                      )}
+                    </span>
                   </div>
                 </div>
               </label>
             ))
           ) : (
             <div className="flex h-[42px] justify-center pt-3 text-xs font-medium text-neutral-900">
-              Data Tidak Ditemukan
+              {t(
+                "CustomTransporterSelect.messageDataTidakDitemukan",
+                {},
+                "Data Tidak Ditemukan"
+              )}
             </div>
           )}
         </div>

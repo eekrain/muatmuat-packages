@@ -8,7 +8,14 @@ export const StatusArmadaTypeEnum = {
 
 export const ChangeFleetTypeEnum = {
   TERSEDIA: "Tersedia",
-  NON_AKTIF: "Menunggu",
+  NON_AKTIF: "Non Aktif",
   BERTUGAS: "Bertugas",
   MENUNGGU: "Menunggu",
+};
+
+export const DriverStatusEnum = {
+  AVAILABLE: "Tersedia",
+  ON_DUTY: "Bertugas",
+  WAITING: "Menunggu",
+  NON_ACTIVE: "Non Aktif",
 };

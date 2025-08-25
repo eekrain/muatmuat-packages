@@ -44,7 +44,7 @@ const PermintaanAngkutDetail = ({
       if (onAccept) {
         onAccept(request);
       }
-      router.push(`/monitoring?id=${request.id}`);
+      router.push(`/monitoring/pilih-armada?id=${request.id}`);
     }
   };
 

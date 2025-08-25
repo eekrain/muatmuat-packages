@@ -15,6 +15,7 @@ const DaftarPesananAktifListItem = ({
   onToggleDropdown,
   onActionClick,
   onViewFleetStatus: _onViewFleetStatus,
+  onHubungi,
 }) => {
   // Only derive the small fields needed by the header. All other order
   // presentation is delegated to the reusable <OrderInformation /> component.
@@ -50,6 +51,21 @@ const DaftarPesananAktifListItem = ({
                 iconLeft={
                   <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
                 }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onHubungi?.({
+                    showInitialChoice: false,
+                    transporterContacts: [
+                      {
+                        name: row.transporterInfo?.transporterName,
+                        role: "",
+                        phone: row.transporterInfo?.phoneNumber || "",
+                      },
+                    ],
+                    driverContacts: [],
+                    contacts: [],
+                  });
+                }}
                 className="flex items-center gap-1 p-0 text-xs font-medium text-blue-600 hover:text-blue-700"
               >
                 Hubungi
@@ -78,6 +94,22 @@ const DaftarPesananAktifListItem = ({
                 iconLeft={
                   <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
                 }
+                onClick={(e) => {
+                  alert("HELLO");
+                  e.stopPropagation();
+                  onHubungi?.({
+                    showInitialChoice: false,
+                    transporterContacts: [
+                      {
+                        name: row.shipperInfo?.shipperName,
+                        role: "",
+                        phone: row.shipperInfo?.phoneNumber || "",
+                      },
+                    ],
+                    driverContacts: [],
+                    contacts: [],
+                  });
+                }}
                 className="flex items-center gap-1 p-0 text-xs font-medium text-blue-600 hover:text-blue-700"
               >
                 Hubungi
@@ -93,6 +125,7 @@ const DaftarPesananAktifListItem = ({
         onToggleDropdown={onToggleDropdown}
         onActionClick={onActionClick}
         onViewFleetStatus={_onViewFleetStatus}
+        onHubungi={onHubungi}
       />
     </div>
   );

@@ -41,7 +41,9 @@ export const ModalDetailAlasanPembatalan = ({ cancellationHistory }) => {
                     </span>
                   </div>
                   <span className="w-11 text-xs font-medium leading-[14.4px] text-neutral-600">
-                    {cancellationHistory.cancelledBy}
+                    {cancellationHistory.cancelledBy === "CUSTOMER"
+                      ? "SHIPPER"
+                      : cancellationHistory.cancelledBy}
                   </span>
                 </div>
 

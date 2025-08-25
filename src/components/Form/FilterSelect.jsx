@@ -27,6 +27,7 @@ export const FilterSelect = forwardRef(
       renderItem = null,
       contentClassName = "",
       onFocus,
+      isActive,
       ...props
     },
     ref
@@ -48,6 +49,11 @@ export const FilterSelect = forwardRef(
                 "h-8 border-neutral-400 text-xs font-medium hover:border-neutral-500 focus:border-primary-700 data-[state=open]:border-primary-700",
                 icon && "pl-9",
                 className
+              )}
+              iconClassName={isActive && "!text-primary-700"}
+              textClassName={cn(
+                isActive && "!text-primary-700",
+                disabled && "text-neutral-600"
               )}
             >
               <Select.Value placeholder={placeholder}>

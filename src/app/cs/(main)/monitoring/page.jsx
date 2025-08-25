@@ -39,8 +39,9 @@ import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import { cn } from "@/lib/utils";
+import { useGetFleetCount } from "@/services/CS/getFleetCount";
 import { useGetCsFleetLocations } from "@/services/CS/monitoring/getCsFleetLocation";
-import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
+import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { MapInterfaceOverlay } from "./components/Map/MapInterfaceOverlay";
@@ -53,6 +54,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
   const { data: fleetLocationsData } = useGetCsFleetLocations();
+  const { data: urgentIssueData } = useGetUrgentIssueCount();
   const { addToast } = useToastActions();
 
   // Use multiple reducers for domain separation
@@ -72,6 +74,7 @@ const Page = () => {
 
   // Track onboarding state at parent level to prevent reset
   const [hasShownOnboarding, setHasShownOnboarding] = useState(false);
+  const [hasFleet, setHasFleet] = useState(false);
 
   // Create combined state object for easier access
   const state = { panels, map, filters, selections };
@@ -139,12 +142,10 @@ const Page = () => {
     }
   };
 
-  const hasFleet = fleetData?.hasFleet || false;
-
   // Mock notification counts - replace with actual API data
   const requestCount = 100; // Replace with actual count from API
-  const urgentCount = 2; // Replace with actual count from API
-
+  const urgentCount = urgentIssueData?.total_active || 0;
+  console.log(urgentIssueData, "urgentCount");
   // handleTruckClick is now imported from useMonitoringHandlers hook
 
   // Handle fleet click from list - focus map on selected fleet
@@ -330,6 +331,14 @@ const Page = () => {
 
   // PilihArmada handlers are now imported from useMonitoringHandlers hook
 
+  useEffect(() => {
+    console.log("fleetData", fleetData);
+    if (fleetData && fleetData.data.Data) {
+      console.log("fleetData has Data", fleetData);
+      setHasFleet(true);
+    }
+  }, [fleetData]);
+
   return (
     <>
       <div
@@ -395,6 +404,7 @@ const Page = () => {
                   order: filters.selectedOrderFilters,
                 }}
                 showPilihArmada={panels.showPilihArmada}
+                fleetLocationsData={fleetLocationsData}
               />
             )}
 

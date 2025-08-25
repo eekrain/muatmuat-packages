@@ -5,26 +5,29 @@ import { useMemo } from "react";
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CustomBarChart from "@/components/Chart/BarChart";
 import DonutChart from "@/components/Chart/DonutChart";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import { useGetDashboardAnalyticsOrders } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsOrder";
+import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const dataKeys = [
+  { key: "Pesanan Instan", name: "Pesanan Instan", shorthand: "Instan" },
   {
     key: "Pesanan Terjadwal",
     name: "Pesanan Terjadwal",
     shorthand: "Terjadwal",
   },
-  { key: "Pesanan Instan", name: "Pesanan Instan", shorthand: "Instan" },
 ];
 
-// Colors for the charts
-const colorsBarChart = ["#1AA0FF", "#0FBB81"];
+const colorsBarChart = ["#0FBB81", "#1AA0FF"];
 const colorsDonutChart = ["#E9C46A", "#F4A261", "#E76F51"];
 
 const TotalOrders = () => {
-  // Fetch analytics data using the custom SWR hook
-  const { data, isLoading } = useGetDashboardAnalyticsOrders();
+  const { startDate, endDate, label } = useAnalyticsStore();
+  const { data, isLoading } = useGetDashboardAnalyticsOrders({
+    startDate,
+    endDate,
+  });
 
   // Memoize and transform the bar chart data from the API response
   const barChartData = useMemo(() => {
@@ -38,14 +41,12 @@ const TotalOrders = () => {
 
   // Memoize and transform the donut chart data from the API response
   const donutChartData = useMemo(() => {
-    if (!data?.donutChartData?.segments) return [];
-    // ✅ **Use the local colorsDonutChart array**
-    return data.donutChartData.segments.map((segment, index) => ({
+    if (!data?.doughnutChartData?.segments) return [];
+    return data.doughnutChartData.segments.map((segment, index) => ({
       name: segment.label,
       value: segment.count,
       unit: "Pesanan",
       percentage: segment.percentage,
-      // Assign color from the local array based on the segment's index
       color: colorsDonutChart[index % colorsDonutChart.length],
     }));
   }, [data]);
@@ -55,7 +56,7 @@ const TotalOrders = () => {
     const dataLength = barChartData?.length || 0;
     if (dataLength === 12) return 20;
     if (dataLength > 4) return 17;
-    return null; // Let the chart decide the bar size for fewer items
+    return null;
   }, [barChartData]);
 
   // Display a loading indicator while data is being fetched
@@ -67,18 +68,19 @@ const TotalOrders = () => {
     );
   }
 
-  // Determine if there is data to display
-  const hasData = barChartData && barChartData.length > 0;
-
+  // ✅ **FIX: Condition now correctly checks totalOrders to determine if data exists.**
+  const hasData = data && data.totalOrders > 0;
+  console.log("selected period:", label);
   return (
     <Card className="h-[322px] w-[817px] !border-none !p-6">
       <CardHeader className="flex flex-col items-center justify-center border-none !p-0">
         <h1 className="text-2xl font-bold text-neutral-900">
           Total Pesanan:{" "}
-          {hasData ? data.totalOrders.toLocaleString("id-ID") : 0} Pesanan
+          {/* ✅ **FIX: Safely access totalOrders only when data is available.** */}
+          {(data?.totalOrders ?? 0).toLocaleString("id-ID")} Pesanan
         </h1>
         <p className="text-xs font-medium text-neutral-600">
-          {data?.periodLabel || "Tidak ada data"}
+          {label || "Tidak ada data"}
         </p>
       </CardHeader>
       <CardContent className="mt-6 h-full w-full !p-0">
@@ -91,7 +93,7 @@ const TotalOrders = () => {
                 xAxisKey="name"
                 dataKeys={dataKeys}
                 colors={colorsBarChart}
-                barSize={barSize} // Apply the dynamic barSize
+                barSize={barSize}
               />
             </div>
             {/* Donut Chart Section */}
@@ -100,21 +102,14 @@ const TotalOrders = () => {
             </div>
           </div>
         ) : (
-          // Empty State when no data is available
-          <div className="flex h-full flex-col items-center justify-center gap-3">
-            <ImageComponent
-              src="/img/dashboard/empty-order.png"
-              alt="Total Orders"
-              width={95}
-              height={95}
-            />
-            <p className="text-base font-semibold text-neutral-600">
-              Belum ada Pesanan
-            </p>
-            <p className="pt-[2px] text-xs font-medium text-neutral-600">
-              Belum ada transaksi yang tercatat
-            </p>
-          </div>
+          <DataEmpty
+            isResponsive={false}
+            subtitleClassname="max-w-full"
+            titleClassname="pb-2"
+            className="bg-transparent"
+            title="Belum Ada Total Pesanan"
+            subtitle="Total pesanan yang diterima muatrans akan ditampilkan disini"
+          />
         )}
       </CardContent>
     </Card>

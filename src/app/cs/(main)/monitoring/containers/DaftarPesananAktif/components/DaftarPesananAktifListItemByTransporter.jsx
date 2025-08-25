@@ -25,7 +25,7 @@ const DetailedOrderItem = ({
   return (
     <div
       className={cn(
-        "flex w-full flex-row items-start gap-3 px-3 py-4",
+        "flex w-full flex-row items-start gap-3 py-4",
         !isLast && "border-b border-neutral-300"
       )}
     >
@@ -48,11 +48,12 @@ const ShipperGroupItem = ({
   onViewFleetStatus,
   openDropdowns,
   onToggleDropdown,
+  onHubungi,
 }) => {
   const [isOpen, setIsOpen] = useState(true); // Default to open
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-neutral-400">
       {/* Shipper Header */}
       <div className="">
         <div
@@ -83,6 +84,21 @@ const ShipperGroupItem = ({
           <div className="flex flex-shrink-0 items-center gap-4">
             <Button
               variant="link"
+              onClick={(e) => {
+                e.stopPropagation();
+                onHubungi?.({
+                  showInitialChoice: false,
+                  transporterContacts: [],
+                  driverContacts: [],
+                  contacts: [
+                    {
+                      name: shipperData.shipperName,
+                      role: "",
+                      phone: shipperData.phoneNumber || "",
+                    },
+                  ],
+                });
+              }}
               className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
               iconLeft={
                 <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
@@ -103,7 +119,7 @@ const ShipperGroupItem = ({
 
       {/* Expanded Content: List of Orders */}
       {isOpen && (
-        <div className="border-t border-neutral-400">
+        <div className="border-t border-neutral-400 px-3">
           {shipperData.orders.map((order, index) => (
             <DetailedOrderItem
               key={order.orderId || order.id}
@@ -128,6 +144,7 @@ const DaftarPesananAktifListItemByTransporter = ({
   onViewFleetStatus,
   openDropdowns,
   onToggleDropdown,
+  onHubungi,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen((prev) => !prev);
@@ -157,6 +174,21 @@ const DaftarPesananAktifListItemByTransporter = ({
         <div className="flex flex-shrink-0 items-center gap-4">
           <Button
             variant="link"
+            onClick={(e) => {
+              e.stopPropagation();
+              onHubungi?.({
+                showInitialChoice: false,
+                transporterContacts: [
+                  {
+                    name: transporterData.transporterName,
+                    role: "",
+                    phone: transporterData.phoneNumber || "",
+                  },
+                ],
+                driverContacts: [],
+                contacts: [],
+              });
+            }}
             className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
             iconLeft={
               <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
@@ -178,7 +210,7 @@ const DaftarPesananAktifListItemByTransporter = ({
       {/* Expanded Content: List of Shippers */}
       {isOpen && (
         <div className="p-4 pt-4">
-          <div className="flex flex-col gap-3 overflow-hidden rounded-xl border border-neutral-400">
+          <div className="flex flex-col gap-3">
             {transporterData.shippers.map((shipper) => (
               <ShipperGroupItem
                 key={shipper.id}
@@ -187,6 +219,7 @@ const DaftarPesananAktifListItemByTransporter = ({
                 onViewFleetStatus={onViewFleetStatus}
                 openDropdowns={openDropdowns}
                 onToggleDropdown={onToggleDropdown}
+                onHubungi={onHubungi}
               />
             ))}
           </div>

@@ -6,7 +6,7 @@ import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 
-const Leaderboard = ({
+const LeaderboardTop10 = ({
   title,
   tooltipText,
   variant,
@@ -24,6 +24,7 @@ const Leaderboard = ({
   }
 
   // Renders the empty state card if there's no data or the array is empty
+  // Note: The parent component now passes `data.items`, so we check `data` directly.
   if (!data || data.length === 0) {
     return (
       <Card className="h-[126px] w-[400px] !border-none">
@@ -42,17 +43,21 @@ const Leaderboard = ({
 
   // Renders the list of items for the leaderboard
   const renderContent = () => {
-    // Directly map over the data array
     switch (category) {
       case "transporters":
         return data.map((item) => (
           <CardLeaderboard
+            className="h-[62px] w-full gap-1"
+            infoClassname="gap-y-3"
+            ratingClassname="hidden"
             key={item.rank}
-            variant={variant}
+            variant="default" // Assuming 'default' is the correct variant for transporters
+            subVariant="detailedShipment"
             rank={item.rank}
-            avatarSrc={item.profileImage}
-            title={item.driverName}
-            shipmentCount={item.completedDeliveries}
+            avatarSrc={item.logo} // Use 'logo' from mock data
+            title={item.transporterName} // Use 'transporterName'
+            shipmentCount={item.completedOrders} // Use 'completedOrders'
+            profit={item.profit} // Use 'profit'
             rating={item.rating}
           />
         ));
@@ -60,29 +65,35 @@ const Leaderboard = ({
         return data.map((item) => (
           <CardLeaderboard
             key={item.rank}
-            variant={variant}
+            variant="alternate" // Assuming 'alternate' variant
             rank={item.rank}
-            badgeClassname="left-6 top-5"
-            className="gap-x-3"
-            infoClassname="gap-y-1"
+            badgeClassname="left-5 top-5"
+            className="h-[62px] w-full gap-x-3"
+            infoClassname="gap-y-0"
+            subInfoClassname="gap-y-0"
             iconSrc="/icons/marker-lokasi-muat.svg"
             title={`${item.city}`}
             type="Provinsi"
             value={`${item.province}`}
+            additionalType="Jumlah Pesanan"
+            additionalValue={item.usageCount}
           />
         ));
       case "unloading-areas":
         return data.map((item) => (
           <CardLeaderboard
             key={item.rank}
-            variant={variant}
+            variant="alternate" // Assuming 'alternate' variant
             rank={item.rank}
-            badgeClassname="left-6 top-5"
-            infoClassname="gap-y-1"
-            className="gap-x-3"
+            badgeClassname="left-5 top-5"
+            infoClassname="gap-y-0"
+            subInfoClassname="gap-y-0"
+            className="h-[62px] w-full gap-x-3"
             iconSrc="/icons/marker-lokasi-bongkar.svg"
             title={`${item.city}`}
             type="Provinsi"
+            additionalType="Jumlah Pesanan"
+            additionalValue={item.usageCount}
             value={`${item.province}`}
           />
         ));
@@ -107,4 +118,4 @@ const Leaderboard = ({
   );
 };
 
-export default Leaderboard;
+export default LeaderboardTop10;

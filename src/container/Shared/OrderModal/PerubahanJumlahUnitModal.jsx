@@ -511,7 +511,6 @@ const PerubahanJumlahUnitModal = ({
             variant="muattrans-warning"
             onClick={handleConfirm}
             disabled={isSubmitting || isLoading}
-            {...((isSubmitting || isLoading) && { loading: true })}
             className="bg-[#F5C451] px-8 text-black hover:bg-[#F5C451]/90"
           >
             {t("PerubahanJumlahUnitModal.save", {}, "Simpan")}
