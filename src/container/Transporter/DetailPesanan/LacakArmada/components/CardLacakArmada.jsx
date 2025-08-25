@@ -1,5 +1,5 @@
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -13,15 +13,16 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
-import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+import { useCancelFleet } from "@/services/Transporter/daftar-pesanan/detail-pesanan/cancelFleet";
 import {
   TRACKING_STATUS,
   getTrackingStatusBadge,
 } from "@/utils/Transporter/trackingStatus";
 
+import AlasanPembatalanModal from "./AlasanPembatalanModal";
 import ModalUbahArmada from "./ModalUbahArmada";
 import ModalUbahDriver from "./ModalUbahDriver";
 import PopUpBatalkanArmada from "./PopUpBatalkanArmada";
@@ -63,6 +64,40 @@ function CardLacakArmada({
   const [isAlasanPembatalanModalOpen, setIsAlasanPembatalanModalOpen] =
     useState(false);
   const [isAksiLainnyaOpen, setIsAksiLainnyaOpen] = useState(false);
+
+  // State untuk cancelFleet API
+  const [cancelRequest, setCancelRequest] = useState(null);
+
+  // Hook untuk cancelFleet API
+  const { data: cancelResult, error: cancelError } = useCancelFleet(
+    order?.orderId,
+    cancelRequest
+  );
+
+  // Handle cancelFleet API response
+  useEffect(() => {
+    if (cancelResult) {
+      toast.success(
+        t(
+          "CardLacakArmada.fleetCancelSuccess",
+          { plateNumber: plateNumber || "Plat Nomor" },
+          `Berhasil membatalkan armada ${plateNumber || "Plat Nomor"}`
+        )
+      );
+      handleCloseAlasanPembatalanModal();
+      onNavigateToRiwayat?.();
+      setCancelRequest(null);
+    }
+  }, [cancelResult, plateNumber, t, onNavigateToRiwayat]);
+
+  useEffect(() => {
+    if (cancelError) {
+      toast.error(
+        t("CardLacakArmada.fleetCancelError", {}, "Gagal membatalkan armada")
+      );
+      setCancelRequest(null);
+    }
+  }, [cancelError, t]);
 
   // Fungsi untuk menentukan apakah status adalah pembatalan
   const isCancelledStatus = (s) => {
@@ -190,7 +225,10 @@ function CardLacakArmada({
     onNavigateToRiwayat?.();
   };
 
-  const handleCancelFleet = () => setIsBatalkanArmadaPopupOpen(true);
+  const handleCancelFleet = () => {
+    console.log("CardLacakArmada - plateNumber being passed:", plateNumber);
+    setIsBatalkanArmadaPopupOpen(true);
+  };
   const handleConfirmCancelFleet = () => {
     // Tutup popup pertama
     setIsBatalkanArmadaPopupOpen(false);
@@ -204,16 +242,40 @@ function CardLacakArmada({
   const handleConfirmAlasanPembatalan = async (data) => {
     // Logika untuk mengirim data pembatalan ke API ada di sini
     console.log("Submitting fleet cancellation with reason:", data);
-    toast.success(
-      t(
-        "CardLacakArmada.fleetCancelSuccess",
-        { plateNumber: plateNumber || "Plat Nomor" },
-        `Berhasil membatalkan armada ${plateNumber || "Plat Nomor"}`
-      )
-    );
-    // Tutup modal setelah konfirmasi
-    handleCloseAlasanPembatalanModal();
-    // Anda bisa menambahkan logic refresh data di sini jika perlu
+
+    // Data yang diterima dari AlasanPembatalanModal:
+    // {
+    //   order: orderObject,
+    //   reasonId: "150e8400-e29b-41d4-a716-446655440015", // reasonId dari API
+    //   reasonName: "Kendaraan Bermasalah",
+    //   reason: "Kendaraan Bermasalah" atau "Alasan custom dari user",
+    //   reasonType: "TECHNICAL" atau "OTHER",
+    //   supportingFiles: ["url1", "url2", ...], // URLs dari upload API
+    //   notes: "Alasan custom" atau null
+    // }
+
+    try {
+      // Prepare request body for cancelFleet API
+      const requestBody = {
+        fleetId: vehicleId,
+        cancellationReasonId: data.reasonId, // Use dynamic reasonId from API
+        evidencePhotos: data.supportingFiles, // Use uploaded URLs directly
+        notes: data.notes, // Use notes from modal (null if not "Lainnya")
+        termsAndConditionsAccepted: true,
+      };
+
+      console.log("Cancel fleet request body:", requestBody);
+      setCancelRequest(requestBody);
+    } catch (error) {
+      console.error("Error preparing cancellation request:", error);
+      toast.error(
+        t(
+          "CardLacakArmada.fleetCancelError",
+          {},
+          "Gagal menyiapkan permintaan pembatalan"
+        )
+      );
+    }
   };
 
   // --- Handlers Ubah Armada ---
@@ -487,6 +549,7 @@ function CardLacakArmada({
         isOpen={isBatalkanArmadaPopupOpen}
         onClose={() => setIsBatalkanArmadaPopupOpen(false)}
         onConfirm={handleConfirmCancelFleet}
+        plateNumber={plateNumber}
       />
 
       {/* --- (5) RENDER AlasanPembatalanModal --- */}
