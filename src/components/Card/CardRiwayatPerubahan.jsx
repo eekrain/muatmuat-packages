@@ -147,7 +147,7 @@ const ContentPerubahan = ({
       <CollapsibleContent className="p-4">
         <div
           className={cn(
-            "rounded-lg border border-neutral-400 p-4",
+            "rounded-lg border border-neutral-400 px-4 py-3",
             appearance.contentClassName
           )}
         >
@@ -174,8 +174,8 @@ const ChangeSection = ({
     <div>
       <div
         className={cn(
-          "flex items-center gap-4 border-b border-neutral-400 pb-4",
-          !isFirst && "border-t pt-4",
+          "flex items-center gap-4 border-b border-neutral-400 pb-3",
+          !isFirst && "border-t pt-3",
           className
         )}
       >
@@ -194,7 +194,7 @@ const ChangeSection = ({
       </div>
       <div
         className={cn(
-          "flex items-start gap-6 px-12 py-4",
+          "flex items-start gap-6 px-12 py-3",
           appearance.contentClassName
         )}
       >
@@ -509,6 +509,52 @@ const ItemPerubahanRute = ({
     </ChangeSection>
   );
 };
+
+const ItemPerubahanWaktu = ({
+  before,
+  after,
+  isFirst,
+  isLast,
+  className,
+  appearance,
+}) => {
+  before = { label: "Waktu Muat Awal", ...before };
+  after = { label: "Waktu Muat Baru", ...after };
+  const TimeInfo = ({ title, timestamp }) => (
+    <div className="flex flex-1 flex-col gap-3">
+      <p className="text-xs font-medium leading-tight text-neutral-600">
+        {title}
+      </p>
+      <p className="text-xs font-medium leading-tight text-neutral-900">
+        {timestamp}
+      </p>
+    </div>
+  );
+
+  return (
+    <ChangeSection
+      icon="/icons/transporter16.svg"
+      title="Perubahan Rute Muat & Bongkar"
+      isFirst={isFirst}
+      className={className}
+      appearance={{
+        contentClassName: cn(
+          "px-0",
+          appearance?.sectionContentClassName,
+
+          isLast ? "pb-0 pt-3" : ""
+        ),
+      }}
+    >
+      <div className="grid w-[892px] grid-cols-[1fr_1px_1fr] gap-6 px-12">
+        <TimeInfo title={before.label} timestamp={before.timestamp} />
+        <div className="w-px self-stretch bg-neutral-400" />
+        <TimeInfo title={after.label} timestamp={after.timestamp} />
+      </div>
+    </ChangeSection>
+  );
+};
+
 const CardRiwayatPerubahan = {
   Root,
   Item,
@@ -519,6 +565,7 @@ const CardRiwayatPerubahan = {
   ItemPesananDibatalkan,
   ItemPenolakanGM,
   ItemPerubahanRute,
+  ItemPerubahanWaktu,
 };
 
 export default CardRiwayatPerubahan;
