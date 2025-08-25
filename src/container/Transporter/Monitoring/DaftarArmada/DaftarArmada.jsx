@@ -332,7 +332,7 @@ const DaftarArmada = ({
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
             <span className="ml-2 text-gray-600">
-              {t("DaftarArmada.loadingFleet", {}, "Loading fleet data...")}
+              {t("DaftarArmada.loadingFleet", {}, "Memuat data armada...")}
             </span>
           </div>
         ) : error ? (
@@ -343,11 +343,11 @@ const DaftarArmada = ({
                 {t(
                   "DaftarArmada.errorLoadingFleet",
                   {},
-                  "Failed to load fleet data"
+                  "Gagal memuat data armada"
                 )}
               </p>
               <p className="mt-1 text-xs text-gray-500">
-                {t("DaftarArmada.tryAgainLater", {}, "Please try again later")}
+                {t("DaftarArmada.tryAgainLater", {}, "Silakan coba lagi nanti")}
               </p>
             </div>
           </div>

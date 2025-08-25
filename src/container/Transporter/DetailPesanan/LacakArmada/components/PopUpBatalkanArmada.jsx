@@ -10,8 +10,10 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
+  const { t } = useTranslation();
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,7 +26,13 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
 
   const handleConfirm = () => {
     if (!isChecked) {
-      setError("Setujui syarat dan ketentuan untuk membatalkan armada");
+      setError(
+        t(
+          "PopUpBatalkanArmada.agreementRequired",
+          {},
+          "Setujui syarat dan ketentuan untuk membatalkan armada"
+        )
+      );
       return;
     }
     setError("");
@@ -35,15 +43,21 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
     <Modal open={isOpen} onOpenChange={handleClose}>
       <ModalContent className="w-modal-small" type="muattrans">
         <ModalHeader size="small" onClose={handleClose} />
-        <ModalTitle className="sr-only">Batalkan Armada</ModalTitle>
+        <ModalTitle className="sr-only">
+          {t("PopUpBatalkanArmada.title", {}, "Batalkan Armada")}
+        </ModalTitle>
 
         <div className="flex flex-col items-center justify-center gap-6 p-8 text-center">
           <h3 className="text-base font-bold text-neutral-900">
-            Batalkan Armada
+            {t("PopUpBatalkanArmada.title", {}, "Batalkan Armada")}
           </h3>
 
           <p className="text-sm text-neutral-900">
-            Apakah kamu yakin ingin membatalkan armada dari pesanan MT25A010A?
+            {t(
+              "PopUpBatalkanArmada.confirmationMessage",
+              {},
+              "Apakah kamu yakin ingin membatalkan armada dari pesanan MT25A010A?"
+            )}
           </p>
 
           {/* Checkbox + Label */}
@@ -60,9 +74,13 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
                 className="text-xs"
                 onClick={() => setIsChecked(!isChecked)}
               >
-                Saya menyetujui{" "}
+                {t("PopUpBatalkanArmada.agreementText", {}, "Saya menyetujui")}{" "}
                 <span className="cursor-pointer text-primary-700 hover:text-primary-800">
-                  Syarat dan Ketentuan Muatrans
+                  {t(
+                    "PopUpBatalkanArmada.termsConditions",
+                    {},
+                    "Syarat dan Ketentuan Muatrans"
+                  )}
                 </span>
               </label>
             </div>
@@ -78,10 +96,10 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
               onClick={handleClose}
               className="w-full"
             >
-              Kembali
+              {t("PopUpBatalkanArmada.backButton", {}, "Kembali")}
             </Button>
             <Button onClick={handleConfirm} className="w-full">
-              Ya, Batalkan
+              {t("PopUpBatalkanArmada.confirmButton", {}, "Ya, Batalkan")}
             </Button>
           </div>
         </div>

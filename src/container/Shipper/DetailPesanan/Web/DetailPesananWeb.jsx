@@ -10,6 +10,7 @@ import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDet
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
 import { useGetOrderChangeHistory } from "@/services/Shipper/detailpesanan/getOrderChangeHistory";
+import { useGetRefundInfo } from "@/services/Shipper/detailpesanan/getRefundInfo";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useSewaArmadaActions,
@@ -45,17 +46,30 @@ const DetailPesananWeb = () => {
   } = useGetDetailPesananData(params.orderId);
 
   const {
-    isOpen: isWaitFleetModalOpen,
+    isOpen: isFleetSearchPopupOpen,
     isShow: isShowWaitFleetAlert,
-    setIsOpen: setIsWaitFleetModalOpen,
+    setIsOpen: setIsFleetSearchPopupOpen,
     setIsShow: setIsShowWaitFleetAlert,
+    searchStatus,
   } = useGetFleetSearchStatus(
     params.orderId,
     dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
       OrderStatusEnum.PREPARE_FLEET
   );
 
+  const [isWaitFleetModalOpen, setIsWaitFleetModalOpen] = useState(false);
   const [isPesananGagalModalOpen, setIsPesananGagalModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isFleetSearchPopupOpen) {
+      if (searchStatus === "waiting") {
+        setIsWaitFleetModalOpen(true);
+      } else if (searchStatus === "failed") {
+        setIsPesananGagalModalOpen(true);
+      }
+      setIsFleetSearchPopupOpen(false); // Reset the trigger
+    }
+  }, [isFleetSearchPopupOpen, searchStatus, setIsFleetSearchPopupOpen]);
 
   useEffect(() => {
     if (isUpdateOrderSuccess) {
@@ -98,6 +112,18 @@ const DetailPesananWeb = () => {
   );
   const { data: orderChangeHistory } = useGetOrderChangeHistory(params.orderId);
 
+  const isCancelled =
+    dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
+      OrderStatusEnum.CANCELED_BY_SYSTEM ||
+    dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
+      OrderStatusEnum.CANCELED_BY_SHIPPER ||
+    dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
+      OrderStatusEnum.CANCELED_BY_TRANSPORTER;
+
+  const { data: refundInfo } = useGetRefundInfo(
+    isCancelled ? params.orderId : null
+  );
+
   if (isLoadingDetailPesanan) {
     return null;
   }
@@ -112,6 +138,7 @@ const DetailPesananWeb = () => {
           dataRingkasanPembayaran={dataDetailPesanan?.dataRingkasanPembayaran}
           isShowWaitFleetAlert={isShowWaitFleetAlert}
           mutateDetailPesanan={mutate}
+          refundInfo={refundInfo}
         />
         <div className="grid grid-cols-[846px_1fr] gap-4">
           <div className="flex flex-col gap-4">

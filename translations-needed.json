@@ -1,0 +1,32 @@
+{
+  "PilihArmadaBatalkan.totalCancelled": {
+    "id": "Total Unit Dibatalkan : {current}/{total} Unit",
+    "en": "Total Units Cancelled : {current}/{total} Units",
+    "cn": "已取消单位总数 : {current}/{total} 单位"
+  },
+  "PilihArmadaBatalkan.fleetRequired": {
+    "id": "Armada wajib diisi",
+    "en": "Fleet is required",
+    "cn": "车队为必填项"
+  },
+  "PilihArmadaBatalkan.title": {
+    "id": "Pilih Armada Yang Ingin Dibatalkan",
+    "en": "Select Fleet to Cancel",
+    "cn": "选择要取消的车队"
+  },
+  "PilihArmadaBatalkan.selectAll": {
+    "id": "Pilih Semua Armada",
+    "en": "Select All Fleet",
+    "cn": "选择所有车队"
+  },
+  "PilihArmadaBatalkan.fleetScheduled": {
+    "id": "Armada Dijadwalkan",
+    "en": "Fleet Scheduled",
+    "cn": "车队已安排"
+  },
+  "PilihArmadaBatalkan.cancelFleet": {
+    "id": "Batalkan Armada",
+    "en": "Cancel Fleet",
+    "cn": "取消车队"
+  }
+}

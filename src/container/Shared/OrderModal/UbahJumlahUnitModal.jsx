@@ -14,17 +14,13 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import PerubahanJumlahUnitModal from "./PerubahanJumlahUnitModal";
 
-// Valibot validation schema
-const ChangeUnitSchema = v.object({
-  agreeToTerms: v.pipe(
-    v.boolean(),
-    v.literal(true, "Saya menyetujui Syarat dan Ketentuan Muatrans")
-  ),
-});
+// Valibot validation schema will be created inside component
+// to access translation function
 
 const UbahJumlahUnitModal = ({
   isOpen,
@@ -33,8 +29,24 @@ const UbahJumlahUnitModal = ({
   onConfirm,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPerubahanModal, setShowPerubahanModal] = useState(false);
+
+  // Create validation schema with translation
+  const ChangeUnitSchema = v.object({
+    agreeToTerms: v.pipe(
+      v.boolean(),
+      v.literal(
+        true,
+        t(
+          "UbahJumlahUnitModal.termsError",
+          {},
+          "Saya menyetujui Syarat dan Ketentuan Muatrans"
+        )
+      )
+    ),
+  });
 
   const {
     handleSubmit,
@@ -96,7 +108,9 @@ const UbahJumlahUnitModal = ({
           type="muattrans"
         >
           <ModalHeader size="small" />
-          <ModalTitle className="sr-only">Ubah Jumlah Unit</ModalTitle>
+          <ModalTitle className="sr-only">
+            {t("UbahJumlahUnitModal.title", {}, "Ubah Jumlah Unit")}
+          </ModalTitle>
 
           {/* Modal Content */}
           <div
@@ -112,7 +126,7 @@ const UbahJumlahUnitModal = ({
                 "w-[338px] max-w-[338px] flex-none self-stretch"
               )}
             >
-              Ubah Jumlah Unit
+              {t("UbahJumlahUnitModal.title", {}, "Ubah Jumlah Unit")}
             </h2>
 
             {/* Warning Message */}
@@ -122,8 +136,15 @@ const UbahJumlahUnitModal = ({
                 "w-[338px] max-w-[338px] flex-none self-stretch"
               )}
             >
-              Perubahan jumlah unit armada hanya dapat dilakukan{" "}
-              <span className="font-bold">satu kali</span>.
+              {t(
+                "UbahJumlahUnitModal.warningMessage",
+                {},
+                "Perubahan jumlah unit armada hanya dapat dilakukan"
+              )}{" "}
+              <span className="font-bold">
+                {t("UbahJumlahUnitModal.onceOnly", {}, "satu kali")}
+              </span>
+              .
             </p>
 
             {/* Question */}
@@ -133,7 +154,11 @@ const UbahJumlahUnitModal = ({
                 "w-[338px] max-w-[338px] flex-none self-stretch"
               )}
             >
-              Apakah kamu yakin ingin mengubah jumlah unit armada pesanan{" "}
+              {t(
+                "UbahJumlahUnitModal.confirmMessage",
+                {},
+                "Apakah kamu yakin ingin mengubah jumlah unit armada pesanan"
+              )}{" "}
               <span className="font-bold">
                 {orderData?.orderCode || orderData?.orderNumber || "MT25A002A"}
               </span>
@@ -160,7 +185,7 @@ const UbahJumlahUnitModal = ({
                 className="gap-2"
               >
                 <span className="text-xs font-medium text-black">
-                  Saya menyetujui{" "}
+                  {t("UbahJumlahUnitModal.agreeToTerms", {}, "Saya menyetujui")}{" "}
                   <a
                     href="/syarat-ketentuan"
                     target="_blank"
@@ -168,7 +193,11 @@ const UbahJumlahUnitModal = ({
                     className="font-medium text-primary-700 hover:font-semibold hover:text-primary-800"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    Syarat dan Ketentuan Muatrans
+                    {t(
+                      "UbahJumlahUnitModal.termsAndConditions",
+                      {},
+                      "Syarat dan Ketentuan Muatrans"
+                    )}
                   </a>
                 </span>
               </Checkbox>
@@ -195,7 +224,7 @@ const UbahJumlahUnitModal = ({
                   "w-[112px] flex-none"
                 )}
               >
-                Batal
+                {t("UbahJumlahUnitModal.cancel", {}, "Batal")}
               </Button>
               <Button
                 variant="muattrans-primary"
@@ -207,7 +236,7 @@ const UbahJumlahUnitModal = ({
                   "w-[112px] flex-none"
                 )}
               >
-                Ya, Ubah
+                {t("UbahJumlahUnitModal.yesChange", {}, "Ya, Ubah")}
               </Button>
             </div>
           </div>

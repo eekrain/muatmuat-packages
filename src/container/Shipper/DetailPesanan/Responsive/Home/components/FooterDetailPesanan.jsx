@@ -11,8 +11,8 @@ import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpes
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { idrFormat } from "@/lib/utils/formatters";
-import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
+import { usePostDocumentReceived } from "@/services/Shipper/detailpesanan/postDocumentReceived";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import { BottomsheetAlasanPembatalan } from "./Popup/BottomsheetAlasanPembatalan";
@@ -30,8 +30,8 @@ export const FooterDetailPesanan = ({
   dataRingkasanPembayaran,
   dataRingkasanPesanan,
   isConfirmWaiting,
-  onConfirmWaitingChange,
   paymentMethods,
+  mutate,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -40,48 +40,12 @@ export const FooterDetailPesanan = ({
   const paymentMethodId = useSewaArmadaStore(
     (state) => state.formValues.paymentMethodId
   );
-  const { mutate } = useGetDetailPesananData(params.orderId);
 
   const { trigger: confirmDocumentReceived, isMutating: isConfirmingDocument } =
     useSWRMutateHook(
       params.orderId ? `v1/orders/${params.orderId}/document-received` : null,
       "POST"
     );
-
-  const handleReceiveDocument = async () => {
-    try {
-      const result = await confirmDocumentReceived();
-
-      if (
-        result?.data?.Message?.Code === 200 ||
-        result?.Message?.Code === 200 ||
-        result?.data?.Message?.Code === 201 ||
-        result?.Message?.Code === 201
-      ) {
-        toast.success(
-          t(
-            "DetailPesananHeader.toastDokumenBerhasil",
-            {},
-            "Dokumen berhasil dikonfirmasi diterima"
-          )
-        );
-        setReceiveDocumentEvidenceOpen(false);
-        mutate();
-      } else {
-        // toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
-      }
-    } catch (error) {
-      console.error("Error confirming document received:", error);
-      toast.error(
-        t(
-          "DetailPesananHeader.toastErrorKonfirmasi",
-          {},
-          "Terjadi kesalahan saat mengkonfirmasi dokumen"
-        )
-      );
-    }
-  };
-
   // Find the selected payment method from the paymentMethods data
   const selectedPaymentMethod = paymentMethods
     ?.flatMap((category) => category.methods)
@@ -113,6 +77,26 @@ export const FooterDetailPesanan = ({
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
 
+  const {
+    triggerPostDocumentReceived,
+    isMutatingPostDocumentReceived,
+    errorPostDocumentReceived,
+  } = usePostDocumentReceived(params.orderId);
+
+  const handleConfirmDocumentReceived = async () => {
+    try {
+      await triggerPostDocumentReceived();
+      toast.success("Status pesanan berhasil diperbarui menjadi Selesai.");
+      mutate(); // Refresh order data
+      setReceiveDocumentEvidenceOpen(false);
+    } catch (_error) {
+      toast.error(
+        errorPostDocumentReceived?.response?.data?.Message?.Text ||
+          "Gagal mengonfirmasi dokumen."
+      );
+    }
+  };
+
   const [isCancelUpdateOrderModal, setCancelUpdateOrderModal] = useState(false);
 
   // ================================================================================================
@@ -143,22 +127,19 @@ export const FooterDetailPesanan = ({
         dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
       ) {
         // Gunakan payment-process untuk waiting payment 1
-        const result = await paymentProcess({
+        await paymentProcess({
           paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
         });
-        console.log("Payment process berhasil:", result);
       } else if (
         dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
       ) {
         // Gunakan repayment-process untuk waiting payment 3
-        const result = await repaymentProcess({
+        await repaymentProcess({
           paymentMethodId: selectedPaymentMethod.id,
           repaymentType: "CHANGE",
         });
-        console.log("Repayment process berhasil:", result);
       }
     } catch (err) {
-      console.error("Gagal memproses pembayaran:", err);
       // Tambahkan error handling sesuai kebutuhan
     }
   };
@@ -213,6 +194,7 @@ export const FooterDetailPesanan = ({
             className="h-10 w-full p-0"
             onClick={() => setReceiveDocumentEvidenceOpen(true)}
             type="button"
+            disabled={isMutatingPostDocumentReceived}
           >
             {t("FooterDetailPesanan.dokumenDiterima", {}, "Dokumen Diterima")}
           </Button>
@@ -377,9 +359,8 @@ export const FooterDetailPesanan = ({
                       continueWaiting: true,
                     });
                     // Optional: Reset the waiting state after confirmation
-                    // onConfirmWaitingChange(false);
                   } catch (error) {
-                    console.error("Failed to confirm waiting:", error);
+                    // Failed to confirm waiting
                   }
                 }}
                 type="button"
@@ -509,7 +490,8 @@ export const FooterDetailPesanan = ({
       <ModalKonfimasiBuktiDokumenDiterima
         open={isReceiveDocumentEvidenceOpen}
         onOpenChange={setReceiveDocumentEvidenceOpen}
-        onConfirm={handleReceiveDocument}
+        onConfirm={handleConfirmDocumentReceived}
+        isLoading={isMutatingPostDocumentReceived}
       />
 
       <ModalBatalkanPesananResponsive
