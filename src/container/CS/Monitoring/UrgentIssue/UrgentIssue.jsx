@@ -4,10 +4,8 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import {
-  useGetUrgentIssueCount,
-  useGetUrgentIssueList,
-} from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
+import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
+import { useGetUrgentIssueList } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import FilterPopoverUrgentIssue from "./components/FilterPopoverUrgentIssue";
 import { UrgentIssueCard } from "./components/UrgentIssueCard";
@@ -89,9 +87,9 @@ const UrgentIssue = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hubungiModal, setHubungiModal] = useState(false);
   const [data, setData] = useState([]);
-
-  const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
-
+  const { data: urgentIssueData, isLoading: isUrgentIssueLoading } =
+    useGetUrgentIssueCount();
+  console.log(urgentIssueData, "urgentIssueData");
   const { items, isLoading } = useGetUrgentIssueList({
     status: statusMap[activeTab],
     page: currentPage,
@@ -249,11 +247,11 @@ const UrgentIssue = () => {
               }`}
             >
               {t("UrgentIssue.tabNew", {}, "Baru")} (
-              {isCountLoading
+              {isUrgentIssueLoading
                 ? "-"
-                : (count?.new ?? 0) > 99
+                : (urgentIssueData?.new_count ?? 0) > 99
                   ? "99+"
-                  : (count?.new ?? 0)}
+                  : (urgentIssueData?.new_count ?? 0)}
               )
             </button>
             <button
@@ -265,11 +263,11 @@ const UrgentIssue = () => {
               }`}
             >
               {t("UrgentIssue.tabProcessing", {}, "Proses")} (
-              {isCountLoading
+              {isUrgentIssueLoading
                 ? "-"
-                : (count?.processing ?? 0) > 99
+                : (urgentIssueData?.process_count ?? 0) > 99
                   ? "99+"
-                  : (count?.processing ?? 0)}
+                  : (urgentIssueData?.process_count ?? 0)}
               )
             </button>
             <button
@@ -281,11 +279,11 @@ const UrgentIssue = () => {
               }`}
             >
               {t("UrgentIssue.tabCompleted", {}, "Selesai")} (
-              {isCountLoading
+              {isUrgentIssueLoading
                 ? "-"
-                : (count?.completed ?? 0) > 99
+                : (urgentIssueData?.completed_count ?? 0) > 99
                   ? "99+"
-                  : (count?.completed ?? 0)}
+                  : (urgentIssueData?.completed_count ?? 0)}
               )
             </button>
           </div>
