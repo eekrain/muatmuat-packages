@@ -125,8 +125,12 @@ function Page() {
         header: "Transporter",
         sortable: true,
         render: (row) => (
-          <div className="flex flex-row items-center">
-            <AvatarDriver withIcon={false} image={row.transporterLogo} />
+          <div className="flex w-full flex-row items-center gap-2">
+            <AvatarDriver
+              withIcon={false}
+              image={row.transporterLogo}
+              className="flex-shrink-0"
+            />
             <p className="line-clamp-2 w-[124px] text-[14px] font-semibold text-neutral-900">
               {row.transporterName}
             </p>
