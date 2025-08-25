@@ -223,12 +223,17 @@ const PesananActionBar = ({
           }
           options={sortOptions}
           disabled={disableSort}
+          contentClassName="relative overflow-hidden"
+          itemClassName={cn(
+            "bg-white",
+            "hover:!bg-neutral-200",
+            "aria-selected:font-semibold"
+          )}
           className={cn(
             "w-[136px] hover:!border-primary-700",
             isSortActive ? "!border-primary-700" : "!border-neutral-600"
           )}
           isActive={isSortActive}
-          itemClassName="hover:!bg-neutral-200"
         />
       </div>
       <div className="flex items-center gap-3 text-xs text-gray-600">
