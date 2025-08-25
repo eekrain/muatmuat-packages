@@ -344,7 +344,13 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex h-16 items-center gap-3 px-4">
+      <div className="relative flex h-16 items-center gap-3 px-4">
+        <div className="absolute left-1/2 top-4 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+          <IconComponent
+            src="/icons/draggable-button.svg"
+            className={cn("h-4 w-14")}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <h3 className="whitespace-nowrap text-xs font-bold">
             Pilih armada yang ditugaskan
