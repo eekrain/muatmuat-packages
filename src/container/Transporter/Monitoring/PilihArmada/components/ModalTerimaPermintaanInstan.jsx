@@ -7,6 +7,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
@@ -30,6 +31,7 @@ const ModalTerimaPermintaanInstant = ({
   request,
   onAccept,
 }) => {
+  const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState("");
   const [partialCount, setPartialCount] = useState(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -60,13 +62,20 @@ const ModalTerimaPermintaanInstant = ({
     if (detail && detail.isTaken && isOpen) {
       setModalType("taken");
       setModalData({
-        title: "Pesanan Sudah Diambil",
-        message:
-          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
+        title: t(
+          "ModalTerimaPermintaanInstant.titleOrderTaken",
+          {},
+          "Pesanan Sudah Diambil"
+        ),
+        message: t(
+          "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
+          {},
+          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
+        ),
       });
       setShowConfirmModal(true);
     }
-  }, [detail, isOpen]);
+  }, [detail, isOpen, t]);
 
   if (!isOpen) return null;
 
@@ -75,9 +84,16 @@ const ModalTerimaPermintaanInstant = ({
     const modals = [
       {
         type: "taken",
-        title: "Pesanan Sudah Diambil",
-        message:
-          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
+        title: t(
+          "ModalTerimaPermintaanInstant.titleOrderTaken",
+          {},
+          "Pesanan Sudah Diambil"
+        ),
+        message: t(
+          "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
+          {},
+          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
+        ),
       },
     ];
 
@@ -125,7 +141,11 @@ const ModalTerimaPermintaanInstant = ({
         // Show success toast
         const message =
           response.Data?.toast?.message ||
-          `Permintaan ${response.Data?.orderCode || "berhasil"} diterima`;
+          t(
+            "ModalTerimaPermintaanInstant.toastSuccessRequestAccepted",
+            { orderCode: response.Data?.orderCode || "berhasil" },
+            "Permintaan {orderCode} diterima"
+          );
         toast.success(message);
 
         // Close modal
@@ -150,9 +170,16 @@ const ModalTerimaPermintaanInstant = ({
           if (orderStatusError) {
             setModalType("taken");
             setModalData({
-              title: "Pesanan Sudah Diambil",
-              message:
-                "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
+              title: t(
+                "ModalTerimaPermintaanInstant.titleOrderTaken",
+                {},
+                "Pesanan Sudah Diambil"
+              ),
+              message: t(
+                "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
+                {},
+                "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
+              ),
             });
             setShowConfirmModal(true);
             return;
@@ -165,9 +192,16 @@ const ModalTerimaPermintaanInstant = ({
           if (vehicleCountError) {
             setModalType("unit-change");
             setModalData({
-              title: "Perubahan Kebutuhan Unit",
-              message:
-                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan.",
+              title: t(
+                "ModalTerimaPermintaanInstant.titleUnitRequirementChanged",
+                {},
+                "Perubahan Kebutuhan Unit"
+              ),
+              message: t(
+                "ModalTerimaPermintaanInstant.messageErrorUnitRequirementChanged",
+                {},
+                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan."
+              ),
             });
             setShowConfirmModal(true);
             return;
@@ -184,9 +218,16 @@ const ModalTerimaPermintaanInstant = ({
           ) {
             setModalType("suspended");
             setModalData({
-              title: "Akun Ditangguhkan",
-              message:
-                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali.",
+              title: t(
+                "ModalTerimaPermintaanInstant.titleAccountSuspended",
+                {},
+                "Akun Ditangguhkan"
+              ),
+              message: t(
+                "ModalTerimaPermintaanInstant.messageErrorAccountSuspended",
+                {},
+                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali."
+              ),
             });
             setShowConfirmModal(true);
             return;
@@ -196,7 +237,11 @@ const ModalTerimaPermintaanInstant = ({
         // Case untuk error lainnya - show generic error toast
         const errorMessage =
           error.response?.data?.Message?.Text ||
-          "Gagal menerima permintaan. Silakan coba lagi.";
+          t(
+            "ModalTerimaPermintaanInstant.toastErrorFailedToAccept",
+            {},
+            "Gagal menerima permintaan. Silakan coba lagi."
+          );
         toast.error(errorMessage);
       });
   };
@@ -210,7 +255,11 @@ const ModalTerimaPermintaanInstant = ({
         {isLoading && <LoadingStatic />}
         {error && (
           <div className="py-8 text-center text-red-500">
-            Gagal memuat detail
+            {t(
+              "ModalTerimaPermintaanInstant.messageErrorLoadDetails",
+              {},
+              "Gagal memuat detail"
+            )}
           </div>
         )}
         {!isLoading && !error && (
@@ -218,7 +267,11 @@ const ModalTerimaPermintaanInstant = ({
             {/* Header */}
             <div className="relative mb-4 flex flex-shrink-0 items-center justify-center">
               <h3 className="mx-auto text-base font-bold text-gray-900">
-                Terima Permintaan Jasa Angkut
+                {t(
+                  "ModalTerimaPermintaanInstant.titleAcceptTransportRequest",
+                  {},
+                  "Terima Permintaan Jasa Angkut"
+                )}
               </h3>
               <button
                 onClick={onClose}
@@ -230,7 +283,11 @@ const ModalTerimaPermintaanInstant = ({
             {/* Armada Selection */}
             <div className="mb-3 rounded-lg border border-neutral-400 p-4">
               <span className="mb-2 text-xs font-medium text-gray-600">
-                Informasi Armada
+                {t(
+                  "ModalTerimaPermintaanInstant.titleFleetInformation",
+                  {},
+                  "Informasi Armada"
+                )}
               </span>
               <div className="flex items-center justify-between">
                 <div className="w-[351px]">
@@ -244,17 +301,29 @@ const ModalTerimaPermintaanInstant = ({
                 </div>
                 {request?.operationalStatus === "READY_FOR_ORDER" && (
                   <span className="rounded bg-success-50 px-3 py-1 text-xs font-semibold text-success-400">
-                    Siap Menerima Order
+                    {t(
+                      "ModalTerimaPermintaanInstant.statusReadyForOrder",
+                      {},
+                      "Siap Menerima Order"
+                    )}
                   </span>
                 )}
                 {request?.operationalStatus === "ON_DUTY" && (
                   <span className="rounded bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
-                    Sedang Bertugas
+                    {t(
+                      "ModalTerimaPermintaanInstant.statusOnDuty",
+                      {},
+                      "Sedang Bertugas"
+                    )}
                   </span>
                 )}
                 {request?.operationalStatus === "WAITING_LOADING_TIME" && (
                   <span className="rounded bg-warning-100 px-3 py-1 text-xs font-semibold text-warning-900">
-                    Menunggu Waktu Muat
+                    {t(
+                      "ModalTerimaPermintaanInstant.statusWaitingLoadingTime",
+                      {},
+                      "Menunggu Waktu Muat"
+                    )}
                   </span>
                 )}
               </div>
@@ -282,8 +351,16 @@ const ModalTerimaPermintaanInstant = ({
                   ) === "number" && (
                     <span className="ml-1 text-xs font-medium text-neutral-600">
                       (
-                      {request?.distanceFromPickup ?? detail.distanceFromPickup}{" "}
-                      km dari lokasi muat)
+                      {t(
+                        "ModalTerimaPermintaanInstant.labelDistanceFromPickup",
+                        {
+                          distance:
+                            request?.distanceFromPickup ??
+                            detail.distanceFromPickup,
+                        },
+                        "{distance} km dari lokasi muat"
+                      )}
+                      )
                     </span>
                   )}
                 </span>
@@ -295,10 +372,18 @@ const ModalTerimaPermintaanInstant = ({
             <div className="mb-3 h-[175px] overflow-y-auto rounded-lg border border-neutral-400 p-4">
               <div className="mb-4 flex justify-between">
                 <span className="text-xs font-medium text-gray-600">
-                  Informasi Pesanan
+                  {t(
+                    "ModalTerimaPermintaanInstant.titleOrderInformation",
+                    {},
+                    "Informasi Pesanan"
+                  )}
                 </span>
                 <span className="text-xs font-medium text-gray-600">
-                  Potensi Pendapatan
+                  {t(
+                    "ModalTerimaPermintaanInstant.titlePotentialRevenue",
+                    {},
+                    "Potensi Pendapatan"
+                  )}
                 </span>
               </div>
               <div className="mb-4 flex justify-between">
@@ -316,7 +401,17 @@ const ModalTerimaPermintaanInstant = ({
                             : "bg-primary-50 text-primary-700"
                     )}
                   >
-                    {detail.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
+                    {detail.orderType === "INSTANT"
+                      ? t(
+                          "ModalTerimaPermintaanInstant.badgeInstant",
+                          {},
+                          "Instan"
+                        )
+                      : t(
+                          "ModalTerimaPermintaanInstant.badgeScheduled",
+                          {},
+                          "Terjadwal"
+                        )}
                   </span>
 
                   {/* Load Time Label */}
@@ -361,16 +456,32 @@ const ModalTerimaPermintaanInstant = ({
                     let label = "";
                     let colorClass = "";
                     if (diffDays === 0) {
-                      label = "Muat Hari Ini";
+                      label = t(
+                        "ModalTerimaPermintaanInstant.badgeLoadToday",
+                        {},
+                        "Muat Hari Ini"
+                      );
                       colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays === 1) {
-                      label = "Muat Besok";
+                      label = t(
+                        "ModalTerimaPermintaanInstant.badgeLoadTomorrow",
+                        {},
+                        "Muat Besok"
+                      );
                       colorClass = "bg-success-50 text-success-400";
                     } else if (diffDays >= 2 && diffDays <= 5) {
-                      label = `Muat ${diffDays} Hari`;
+                      label = t(
+                        "ModalTerimaPermintaanInstant.badgeLoadInDays",
+                        { count: diffDays },
+                        "Muat {count} Hari"
+                      );
                       colorClass = "bg-warning-100 text-warning-900";
                     } else if (diffDays > 5) {
-                      label = `Muat ${diffDays} Hari`;
+                      label = t(
+                        "ModalTerimaPermintaanInstant.badgeLoadInDays",
+                        { count: diffDays },
+                        "Muat {count} Hari"
+                      );
                       colorClass = "bg-primary-50 text-primary-700";
                     } else {
                       label = "-";
@@ -398,7 +509,11 @@ const ModalTerimaPermintaanInstant = ({
                           : "bg-error-50 text-error-400"
                       )}
                     >
-                      Potensi Overload
+                      {t(
+                        "ModalTerimaPermintaanInstant.badgePotentialOverload",
+                        {},
+                        "Potensi Overload"
+                      )}
                     </span>
                   )}
 
@@ -424,11 +539,12 @@ const ModalTerimaPermintaanInstant = ({
                           />
                         </div>
                       }
-                    >
-                      Memerlukan pengiriman
-                      <br />
-                      dengan sertifikasi halal logistik
-                    </InfoTooltip>
+                      render={t(
+                        "ModalTerimaPermintaanInstant.infoTooltipHalalLogistics",
+                        {},
+                        "Memerlukan pengiriman<br />dengan sertifikasi halal logistik"
+                      )}
+                    />
                   )}
                 </div>
                 <div className="text-right">
@@ -479,7 +595,11 @@ const ModalTerimaPermintaanInstant = ({
                 </div>
                 <div className="text-right">
                   <div className="text-[12px] font-medium text-neutral-600">
-                    Estimasi Jarak
+                    {t(
+                      "ModalTerimaPermintaanInstant.labelEstimatedDistance",
+                      {},
+                      "Estimasi Jarak"
+                    )}
                   </div>
                   <div className="text-[12px] font-semibold text-neutral-900">
                     {detail.estimatedDistance || 121} km
@@ -497,16 +617,21 @@ const ModalTerimaPermintaanInstant = ({
                   />
                   <div className="flex-1">
                     <div className="text-xs font-medium text-neutral-600">
-                      Informasi Muatan (Total :{" "}
-                      {Array.isArray(detail.cargos)
-                        ? detail.cargos
-                            .reduce(
-                              (sum, cargo) => sum + (Number(cargo.weight) || 0),
-                              0
-                            )
-                            .toLocaleString("id-ID")
-                        : "0"}{" "}
-                      kg)
+                      {t(
+                        "ModalTerimaPermintaanInstant.labelCargoInformationTotal",
+                        {
+                          totalWeight: Array.isArray(detail.cargos)
+                            ? detail.cargos
+                                .reduce(
+                                  (sum, cargo) =>
+                                    sum + (Number(cargo.weight) || 0),
+                                  0
+                                )
+                                .toLocaleString("id-ID")
+                            : "0",
+                        },
+                        "Informasi Muatan (Total : {totalWeight} kg)"
+                      )}
                     </div>
                     <div className="text-xs font-semibold text-neutral-900">
                       {detail.cargos?.length > 1 ? (
@@ -523,13 +648,22 @@ const ModalTerimaPermintaanInstant = ({
                                   cursor: "pointer",
                                 }}
                               >
-                                +{detail.cargos.length - 1} lainnya
+                                +
+                                {t(
+                                  "ModalTerimaPermintaanInstant.labelMoreItems",
+                                  { count: detail.cargos.length - 1 },
+                                  "{count} lainnya"
+                                )}
                               </span>
                             }
                           >
                             <div className="text-sm">
                               <div className="mb-2 font-medium">
-                                Informasi Muatan
+                                {t(
+                                  "ModalTerimaPermintaanInstant.titleCargoInformation",
+                                  {},
+                                  "Informasi Muatan"
+                                )}
                               </div>
                               <div className="space-y-1">
                                 {detail.cargos.slice(1).map((cargo, index) => (
@@ -562,14 +696,26 @@ const ModalTerimaPermintaanInstant = ({
                 />
                 <div className="flex-1">
                   <div className="text-xs font-medium text-neutral-600">
-                    Kebutuhan Armada
+                    {t(
+                      "ModalTerimaPermintaanInstant.titleFleetRequirements",
+                      {},
+                      "Kebutuhan Armada"
+                    )}
                   </div>
                   <div className="text-xs font-semibold text-neutral-900">
-                    {detail.truckCount || request?.truckCount || 3} Unit (
-                    {detail.truckTypeName ||
-                      request?.truckTypeName ||
-                      "Colt Diesel Engkel"}{" "}
-                    - {detail.carrierName || request?.carrierName || "Box"})
+                    {t(
+                      "ModalTerimaPermintaanInstant.labelFleetRequirements",
+                      {
+                        count: detail.truckCount || request?.truckCount || 3,
+                        truckType:
+                          detail.truckTypeName ||
+                          request?.truckTypeName ||
+                          "Colt Diesel Engkel",
+                        carrierType:
+                          detail.carrierName || request?.carrierName || "Box",
+                      },
+                      "{count} Unit ({truckType} - {carrierType})"
+                    )}
                   </div>
                 </div>
               </div>
@@ -582,7 +728,11 @@ const ModalTerimaPermintaanInstant = ({
                 />
                 <div className="flex-1">
                   <div className="text-xs font-medium text-neutral-600">
-                    Waktu Muat
+                    {t(
+                      "ModalTerimaPermintaanInstant.labelLoadingTime",
+                      {},
+                      "Waktu Muat"
+                    )}
                   </div>
                   <div className="text-xs font-semibold text-neutral-900">
                     {detail.loadDateTime ||
@@ -622,16 +772,28 @@ const ModalTerimaPermintaanInstant = ({
                   className="h-4 w-4 text-primary-600"
                 />
                 <span className="flex justify-center text-xs font-medium text-neutral-900">
-                  Saya menyetujui{" "}
+                  {t(
+                    "ModalTerimaPermintaanInstant.checkboxAgree",
+                    {},
+                    "Saya menyetujui"
+                  )}{" "}
                   <span className="ml-1 font-medium text-primary-700">
-                    Syarat dan Ketentuan Muatrans
+                    {t(
+                      "ModalTerimaPermintaanInstant.linkTermsAndConditions",
+                      {},
+                      "Syarat dan Ketentuan Muatrans"
+                    )}
                   </span>
                 </span>
               </label>
               {/* Alert for terms validation */}
               {showTermsAlert && (
                 <p className="mt-2 px-7 text-xs font-medium text-error-400">
-                  Setujui syarat dan ketentuan untuk menerima jasa angkut
+                  {t(
+                    "ModalTerimaPermintaanInstant.messageErrorAgreeToTerms",
+                    {},
+                    "Setujui syarat dan ketentuan untuk menerima jasa angkut"
+                  )}
                 </p>
               )}
             </div>
@@ -643,7 +805,7 @@ const ModalTerimaPermintaanInstant = ({
                 className="h-[34] w-[112px] rounded-[24px] py-3 text-[14px] font-semibold"
                 onClick={onClose}
               >
-                Batal
+                {t("ModalTerimaPermintaanInstant.buttonCancel", {}, "Batal")}
               </Button>
               <Button
                 variant="muattrans-primary"
@@ -651,7 +813,7 @@ const ModalTerimaPermintaanInstant = ({
                 onClick={handleAccept}
                 disabled={isMutating}
               >
-                Terima
+                {t("ModalTerimaPermintaanInstant.buttonAccept", {}, "Terima")}
               </Button>
             </div>
           </>
@@ -663,7 +825,13 @@ const ModalTerimaPermintaanInstant = ({
         isOpen={showConfirmModal}
         setIsOpen={setShowConfirmModal}
         title={{
-          text: modalData?.title || "Pemberitahuan",
+          text:
+            modalData?.title ||
+            t(
+              "ModalTerimaPermintaanInstant.titleNotification",
+              {},
+              "Pemberitahuan"
+            ),
           className: "text-base font-bold",
         }}
         description={{
@@ -672,7 +840,14 @@ const ModalTerimaPermintaanInstant = ({
         }}
         withCancel={false}
         confirm={{
-          text: modalType === "suspended" ? "Hubungi Customer Service" : "OK",
+          text:
+            modalType === "suspended"
+              ? t(
+                  "ModalTerimaPermintaanInstant.buttonContactCS",
+                  {},
+                  "Hubungi Customer Service"
+                )
+              : t("ModalTerimaPermintaanInstant.buttonOK", {}, "OK"),
           className:
             "bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700",
           onClick: () => {
