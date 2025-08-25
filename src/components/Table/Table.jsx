@@ -88,7 +88,7 @@ const Table = ({
   const renderEmpty = () => {
     return (
       <tr>
-        <td colSpan={columns.length} className="px-6 py-12">
+        <td colSpan={columns.length} className="px-6 py-9">
           <div className="flex items-center justify-center">
             {emptyComponent ? (
               emptyComponent
