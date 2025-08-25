@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -124,10 +125,16 @@ const ContactRow = ({ picNumber, name, position, phone, isOdd = false }) => {
             className="h-[18px] w-[18px] text-primary-700"
           />
         </button>
-        <IconComponent
-          src="/icons/driver-whatsapp.svg"
-          className="h-[18px] w-[18px] text-primary-700"
-        />
+        <Link
+          href={`https://wa.me/${phone}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IconComponent
+            src="/icons/driver-whatsapp.svg"
+            className="h-[18px] w-[18px] text-primary-700"
+          />
+        </Link>
       </div>
     </div>
   );
