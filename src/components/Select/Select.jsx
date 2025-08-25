@@ -191,6 +191,7 @@ const SelectContent = ({
                   src="/icons/close24.svg"
                   width={16}
                   height={16}
+                  color="gray"
                   className="fill-neutral-700"
                 />
               </button>
