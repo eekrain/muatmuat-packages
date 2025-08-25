@@ -263,6 +263,31 @@ export const getTrackingStatusFlowGroup = (status) => {
   return null;
 };
 
+// Helper function to check if status allows fleet change option
+// Fleet change is NOT allowed from LOADING up to MENUJU_KE_LOKASI_BONGKAR
+export const isFleetChangeAllowed = (status) => {
+  if (!status) return false;
+
+  // Remove number suffix if present (e.g., "LOADING_1" -> "LOADING")
+  // Also handle custom statuses like "CUSTOM_MENUJU_KE_LOKASI_BONGKAR_2"
+  let baseStatus = status.replace(/_\d+$/, "");
+
+  // Handle custom prefixes (e.g., "CUSTOM_MENUJU_KE_LOKASI_BONGKAR" -> "MENUJU_KE_LOKASI_BONGKAR")
+  if (baseStatus.startsWith("CUSTOM_")) {
+    baseStatus = baseStatus.replace(/^CUSTOM_/, "");
+  }
+
+  // Statuses where fleet change is NOT allowed (from LOADING to MENUJU_KE_LOKASI_BONGKAR)
+  const disallowedStatuses = [
+    TRACKING_STATUS.LOADING,
+    TRACKING_STATUS.IN_TRANSIT,
+    TRACKING_STATUS.MENUJU_KE_LOKASI_BONGKAR,
+  ];
+
+  // Return true if status is NOT in the disallowed list
+  return !disallowedStatuses.includes(baseStatus);
+};
+
 // Driver Status to Tracking Status mapping
 export const mapDriverStatusToTracking = (driverStatus) => {
   const mainStatus = driverStatus?.mainStatus;

@@ -43,7 +43,7 @@ function TimelineItem({ isLast, children }) {
 function CardRiwayatPerubahan({ dataOrderDetail }) {
   const [showDriverArmadaHistory, setShowDriverArmadaHistory] = useState(false);
   const [showTerimaUbahHistory, setShowTerimaUbahHistory] = useState(false);
-  const [showBatalPesananHistory, setShowBatalPesananHistory] = useState(true);
+  const [showBatalPesananHistory, setShowBatalPesananHistory] = useState(false);
 
   const steps1 = [
     { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
