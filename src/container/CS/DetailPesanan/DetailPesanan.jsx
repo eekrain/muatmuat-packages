@@ -14,6 +14,7 @@ import { useGetOrderDetailCS } from "@/services/CS/monitoring/detail-pesanan-cs/
 import { TabLacakArmada } from "./TabLacakArmada/TabLacakArmada";
 import { TabRingkasanPesanan } from "./TabRingkasanPesanan/TabRingkasanPesanan";
 import { TabRiwayatAktivitas } from "./TabRiwayatAktivitas/TabRiwayatAktivitas";
+import { TabStatusDokumen } from "./TabStatusDokumen/TabStatusDokumen";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
@@ -44,6 +45,10 @@ const DetailPesanan = ({ breadcrumbData }) => {
           )}
         </div>
       ),
+    },
+    {
+      value: "status-dokumen",
+      label: "Status Dokumen",
     },
     {
       value: "ringkasan-transaksi",
@@ -84,6 +89,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
 
         <TabRingkasanPesanan data={dataDetailPesanan} />
         <TabLacakArmada />
+        <TabStatusDokumen orderId={params.orderId} />
         <TabRiwayatAktivitas />
       </Tabs>
     </div>

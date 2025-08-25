@@ -1,53 +1,6 @@
 import { NextResponse } from "next/server";
 
-const useMockData = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
-
-// Mock data based on api-kontrak.md
-const mockSosReportsData = {
-  reports: [
-    {
-      reportId: "SOS-2025-001",
-      orderId: "ORD-2025-001234",
-      orderNumber: "MTO240122001",
-      driverId: "DRV-001",
-      driverName: "Ahmad Suryanto",
-      customerName: "PT Maju Jaya",
-      reportType: "emergency",
-      reportDescription: "Kecelakaan ringan di Tol Jakarta-Cikampek KM 25",
-      currentLocation: {
-        latitude: -6.2088,
-        longitude: 106.8456,
-        address: "Tol Jakarta-Cikampek KM 25, Bekasi",
-      },
-      reportedAt: "2025-01-22T14:30:00Z",
-      status: "active",
-      priority: "high",
-    },
-    {
-      reportId: "SOS-2025-002",
-      orderId: "ORD-2025-001235",
-      orderNumber: "MTO240122002",
-      driverId: "DRV-002",
-      driverName: "Budi Santoso",
-      customerName: "CV Sejahtera",
-      reportType: "emergency",
-      reportDescription: "Ban bocor di Jalan Raya Bogor",
-      currentLocation: {
-        latitude: -6.3588,
-        longitude: 106.809,
-        address: "Jalan Raya Bogor, Depok",
-      },
-      reportedAt: "2025-01-22T15:45:00Z",
-      status: "resolved",
-      priority: "medium",
-    },
-  ],
-  summary: {
-    activeReports: 1,
-    resolvedReports: 15,
-    averageResponseTime: "7 menit",
-  },
-};
+import { fetcherSosReports } from "@/services/Transporter/alerts/getSosReports";
 
 const successShell = {
   Message: { Code: 200, Text: "Request processed successfully" },
@@ -65,30 +18,71 @@ const serverErrorResponse = {
 
 export async function GET(req) {
   try {
-    if (useMockData) {
-      // Simulate network delay
-      await new Promise((res) => setTimeout(res, 500));
+    // Use the service fetcher to get SOS reports data
+    const sosReportsData = await fetcherSosReports("sos-reports");
 
-      const response = { ...successShell };
-      response.Message.Text = "SOS reports retrieved successfully";
-      response.Data = mockSosReportsData;
-      response.Type = "SOS_REPORTS_LIST";
+    const response = { ...successShell };
+    response.Message.Text = "SOS reports retrieved successfully";
+    response.Data = sosReportsData;
+    response.Type = "SOS_REPORTS_LIST";
 
-      return NextResponse.json(response, { status: 200 });
-    }
-
-    // Production API call would go here
-    return NextResponse.json(
-      {
-        Message: {
-          Code: 501,
-          Text: "Production API not implemented yet",
-        },
-      },
-      { status: 501 }
-    );
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error("API Error:", error);
+
+    // Handle specific error types
+    if (error.message?.includes("Unauthorized")) {
+      return NextResponse.json(
+        {
+          Message: { Code: 401, Text: "Unauthorized - Please login again" },
+          Data: {
+            errors: [{ field: "auth", message: error.message }],
+          },
+          Type: "UNAUTHORIZED",
+        },
+        { status: 401 }
+      );
+    }
+
+    if (error.message?.includes("Forbidden")) {
+      return NextResponse.json(
+        {
+          Message: { Code: 403, Text: "Forbidden - Access denied" },
+          Data: {
+            errors: [{ field: "permission", message: error.message }],
+          },
+          Type: "FORBIDDEN",
+        },
+        { status: 403 }
+      );
+    }
+
+    if (error.message?.includes("not found")) {
+      return NextResponse.json(
+        {
+          Message: { Code: 404, Text: "SOS reports not found" },
+          Data: {
+            errors: [{ field: "data", message: error.message }],
+          },
+          Type: "NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+
+    if (error.message?.includes("Network error")) {
+      return NextResponse.json(
+        {
+          Message: { Code: 503, Text: "Service unavailable" },
+          Data: {
+            errors: [{ field: "network", message: error.message }],
+          },
+          Type: "SERVICE_UNAVAILABLE",
+        },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(serverErrorResponse, { status: 500 });
   }
 }

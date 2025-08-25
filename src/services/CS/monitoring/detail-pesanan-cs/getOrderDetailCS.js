@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { CSOrderStatusEnum } from "@/lib/constants/CS/detailpesanan/detailpesanan-cs.enum";
 
-const useMockData = true; // cs detailpesanan
+const useMockData = false; // cs detailpesanan
 
 const mockApiResult = {
   data: {
@@ -186,9 +186,7 @@ export const useGetOrderDetailCS = (orderId, params = {}, options = {}) => {
   const queryParams = new URLSearchParams(params).toString();
 
   const cacheKey = orderId
-    ? `/v1/transporter/orders/${orderId}/detail-summary${
-        queryParams ? `?${queryParams}` : ""
-      }`
+    ? `/v1/cs/orders/${orderId}/detail${queryParams ? `?${queryParams}` : ""}`
     : null;
 
   return useSWR(cacheKey, getOrderDetailCS, options);
