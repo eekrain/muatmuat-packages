@@ -48,9 +48,15 @@ const TransportRequestCard = ({
     router.push(`/monitoring?id=${request.id}`);
   };
 
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const handleReject = () => {
-    setShowRejectModal(true);
+  const [showTolakModal, setShowTolakModal] = useState(false);
+  const [tolakRequest, setTolakRequest] = useState(null);
+
+  const handleTolakClick = () => {
+    setTolakRequest(request); // simpan request yang akan ditolak
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", `/monitoring?id=${request.id}`);
+    }
+    setShowTolakModal(true);
   };
 
   const handleUnderstand = () => {
@@ -143,9 +149,14 @@ const TransportRequestCard = ({
       />
       {/* Modal for rejecting request */}
       <ModalTolakPermintaan
-        isOpen={showRejectModal}
-        onClose={() => setShowRejectModal(false)}
-        request={request}
+        isOpen={showTolakModal}
+        onClose={() => {
+          setShowTolakModal(false);
+          if (typeof window !== "undefined") {
+            window.history.replaceState(null, "", "/monitoring");
+          }
+        }}
+        request={tolakRequest}
       />
       <div
         className={cn(
@@ -608,7 +619,7 @@ const TransportRequestCard = ({
                     <Button
                       variant="muattrans-error-secondary"
                       className="h-8 w-[83px] rounded-[24px] px-4 text-[14px] font-semibold"
-                      onClick={handleReject}
+                      onClick={handleTolakClick}
                     >
                       {t("TransportRequestCard.buttonReject", {}, "Tolak")}
                     </Button>

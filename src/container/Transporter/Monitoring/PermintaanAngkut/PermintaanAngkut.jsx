@@ -70,7 +70,11 @@ const PermintaanAngkut = ({
   const handleBackToList = () => {
     setSelectedRequest(null);
     setShowDetail(false);
-    // Call the parent handler to expand bottom panel back
+    // Reset URL ke /monitoring agar id hilang
+    if (typeof window !== "undefined") {
+      // Untuk Next.js app router
+      window.history.replaceState(null, "", "/monitoring");
+    }
     if (onCloseDetailRequest) {
       onCloseDetailRequest();
     }
