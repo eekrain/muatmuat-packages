@@ -502,10 +502,10 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   }, [isSubmitSuccessful, reset]);
 
   const { trigger: uploadLogoTrigger, isMutating: isUploadingLogo } =
-    useSWRMutateHook("v1/orders/upload", "POST", undefined, undefined, {
+    useSWRMutateHook("v1/upload/files", "POST", undefined, undefined, {
       onSuccess: (data) => {
-        if (data.Data && data.Data.photoUrl) {
-          const imageUrl = data.Data.photoUrl;
+        if (data.Data && data.Data.fileUrl) {
+          const imageUrl = data.Data.fileUrl;
           setValue("companyLogo", imageUrl, { shouldValidate: true });
           toast.success("Logo berhasil diunggah.");
         } else {
