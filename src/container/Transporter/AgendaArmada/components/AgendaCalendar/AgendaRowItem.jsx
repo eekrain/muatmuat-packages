@@ -11,6 +11,8 @@
  * @property {number} [additional=1] - Number of additional time slots (affects the width of the additional card section)
  * @property {number} [position=0] - Horizontal position offset for the card (multiplied by 205px)
  */
+import { useTranslation } from "@/hooks/use-translation";
+
 import { CardItem } from "./CardItem";
 
 /**
@@ -29,6 +31,8 @@ import { CardItem } from "./CardItem";
  */
 
 export const AgendaRowItem = ({ data, viewType, cellWidth }) => {
+  const { t } = useTranslation();
+
   if (!data) return null;
 
   // Handle placeholder items for consistent grid layout
@@ -122,8 +126,12 @@ export const AgendaRowItem = ({ data, viewType, cellWidth }) => {
   return (
     <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
       <div className="border-b border-neutral-200 px-3 py-4">
-        <h5 className="text-xs font-bold">Unknown</h5>
-        <span className="text-xxs font-semibold">No data</span>
+        <h5 className="text-xs font-bold">
+          {t("AgendaRowItem.labelUnknown", {}, "Unknown")}
+        </h5>
+        <span className="text-xxs font-semibold">
+          {t("AgendaRowItem.labelNoData", {}, "No data")}
+        </span>
       </div>
 
       <div className="relative grid grid-cols-5 overflow-hidden">

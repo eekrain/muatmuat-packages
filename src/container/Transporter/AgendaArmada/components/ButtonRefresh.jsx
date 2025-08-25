@@ -1,6 +1,7 @@
 import React from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -14,6 +15,8 @@ import { cn } from "@/lib/utils";
  * @returns {JSX.Element} The rendered button component.
  */
 const RefreshButton = ({ onClick, className, children, disabled = false }) => {
+  const { t } = useTranslation();
+
   return (
     <button
       onClick={onClick}
@@ -25,11 +28,11 @@ const RefreshButton = ({ onClick, className, children, disabled = false }) => {
     >
       <IconComponent
         src="/icons/refresh14.svg"
-        alt="Refresh"
+        alt={t("ButtonRefresh.altRefresh", {}, "Refresh")}
         width={14}
         height={14}
       />
-      <span>{children || "Refresh"}</span>
+      <span>{children || t("ButtonRefresh.buttonRefresh", {}, "Refresh")}</span>
     </button>
   );
 };

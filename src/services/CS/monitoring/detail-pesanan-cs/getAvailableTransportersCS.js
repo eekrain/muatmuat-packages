@@ -62,13 +62,13 @@ export const getAvailableTransportersCS = async (orderId) => {
 
   // --- FIX IS HERE ---
   // This function must map all the properties needed by the UI,
-  // including `logo` from `companyPicture`.
+  // including `picture` from `companyPicture`.
   return result.map((item) => ({
     name: item.companyName,
     value: item.transporterId,
     availableUnits: item.availableUnits,
     phone: item.companyPhone,
-    logo: item.companyPicture,
+    picture: item.companyPicture,
   }));
 };
 
