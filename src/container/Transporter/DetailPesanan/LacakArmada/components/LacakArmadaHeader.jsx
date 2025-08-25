@@ -35,6 +35,10 @@ import { useTranslation } from "@/hooks/use-translation";
 
 // Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
+
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
+
 function LacakArmadaHeader({
   sosUnit = 0,
   activeCount = 0,
