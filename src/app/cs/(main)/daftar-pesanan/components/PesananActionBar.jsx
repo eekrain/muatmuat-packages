@@ -113,6 +113,11 @@ const PesananActionBar = ({
     { label: "No. Pesanan (Z-A, 9-0)", value: "no_pesanan_desc" },
   ];
 
+  // consider sort active when user chooses a non-default option
+  const isSortActive = !!(
+    sortConfig?.value && sortConfig.value !== "waktu_muat_terdekat"
+  );
+
   const urgentStatusOptions = useMemo(
     () => [
       {
@@ -211,10 +216,16 @@ const PesananActionBar = ({
           onChange={(val) =>
             onSortChange(sortOptions.find((o) => o.value === val))
           }
-          icon="/icons/sort-gray.svg"
+          icon={
+            isSortActive ? "/icons/sort-active.svg" : "/icons/sort-gray.svg"
+          }
           options={sortOptions}
           disabled={disableSort}
-          className="w-[136px] !border-neutral-600 hover:!border-primary-700"
+          className={cn(
+            "w-[136px] hover:!border-primary-700",
+            isSortActive ? "!border-primary-700" : "!border-neutral-600"
+          )}
+          isActive={isSortActive}
           itemClassName="hover:!bg-neutral-200"
         />
       </div>
