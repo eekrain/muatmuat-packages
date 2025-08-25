@@ -13,7 +13,7 @@ import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 
 const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
   const { t } = useTranslation();
@@ -169,11 +169,19 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                         </div>
                         <BadgeStatus
                           variant={
-                            getArmadaStatusBadge(vehicle.driverStatus).variant
+                            getArmadaStatusBadgeWithTranslation(
+                              vehicle.driverStatus,
+                              t
+                            ).variant
                           }
                           className="h-6 w-[137px] px-0 text-xs font-semibold"
                         >
-                          {getArmadaStatusBadge(vehicle.driverStatus).label}
+                          {
+                            getArmadaStatusBadgeWithTranslation(
+                              vehicle.driverStatus,
+                              t
+                            ).label
+                          }
                         </BadgeStatus>
                       </div>
                     </div>

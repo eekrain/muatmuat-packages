@@ -16,7 +16,7 @@ import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
 
 import ImageArmada from "./components/ImageArmada";
@@ -304,14 +304,18 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                       <div className="flex items-center gap-4">
                         <BadgeStatus
                           variant={
-                            getArmadaStatusBadge(vehicle.operationalStatus)
-                              .variant
+                            getArmadaStatusBadgeWithTranslation(
+                              vehicle.operationalStatus,
+                              t
+                            ).variant
                           }
                           className="w-[146px] text-xs"
                         >
                           {
-                            getArmadaStatusBadge(vehicle.operationalStatus)
-                              .label
+                            getArmadaStatusBadgeWithTranslation(
+                              vehicle.operationalStatus,
+                              t
+                            ).label
                           }
                         </BadgeStatus>
                         <Button

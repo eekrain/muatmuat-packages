@@ -1,3 +1,5 @@
+// Translation function will be passed as parameter
+
 export const ARMADA_STATUS = {
   IN_REVIEW: "IN_REVIEW",
   VERIFICATION_REJECTED: "VERIFICATION_REJECTED",
@@ -19,6 +21,54 @@ export const ARMADA_TRUCK_IMAGE_STATUS = {
   INACTIVE: "/icons/armada-truck/truck-red.png",
 };
 
+export const getArmadaStatusConfig = (t) => ({
+  [ARMADA_STATUS.IN_REVIEW]: {
+    label: t("ArmadaStatus.inReview", {}, "Dalam Tinjauan"),
+    variant: "primary",
+  },
+  [ARMADA_STATUS.VERIFICATION_REJECTED]: {
+    label: t("ArmadaStatus.verificationRejected", {}, "Verifikasi Ditolak"),
+    variant: "error",
+  },
+  [ARMADA_STATUS.WAITING_GPS_INSTALLATION]: {
+    label: t(
+      "ArmadaStatus.waitingGpsInstallation",
+      {},
+      "Menunggu Pemasangan GPS"
+    ),
+    variant: "warning",
+  },
+  [ARMADA_STATUS.CALIBRATION_PROCESS]: {
+    label: t("ArmadaStatus.calibrationProcess", {}, "Proses Kalibrasi"),
+    variant: "warning",
+  },
+  [ARMADA_STATUS.READY_FOR_ORDER]: {
+    label: t("ArmadaStatus.readyForOrder", {}, "Siap Menerima Order"),
+    variant: "success",
+  },
+  [ARMADA_STATUS.WAITING_LOADING_TIME]: {
+    label: t("ArmadaStatus.waitingLoadingTime", {}, "Akan Muat Hari Ini"),
+    variant: "warning",
+  },
+  [ARMADA_STATUS.ON_DUTY]: {
+    label: t("ArmadaStatus.onDuty", {}, "Bertugas"),
+    variant: "primary",
+  },
+  [ARMADA_STATUS.NOT_PAIRED]: {
+    label: t("ArmadaStatus.notPaired", {}, "Belum Dipasangkan"),
+    variant: "warning",
+  },
+  [ARMADA_STATUS.INACTIVE]: {
+    label: t("ArmadaStatus.inactive", {}, "Nonaktif"),
+    variant: "neutral",
+  },
+  [ARMADA_STATUS.DELETED]: {
+    label: t("ArmadaStatus.deleted", {}, "Dihapus"),
+    variant: "error",
+  },
+});
+
+// Deprecated: Use getArmadaStatusBadgeWithTranslation instead
 export const ARMADA_STATUS_CONFIG = {
   [ARMADA_STATUS.IN_REVIEW]: {
     label: "Dalam Tinjauan",
@@ -62,8 +112,21 @@ export const ARMADA_STATUS_CONFIG = {
   },
 };
 
+// Deprecated: Use getArmadaStatusBadgeWithTranslation instead
 export const getArmadaStatusBadge = (status) => {
   const config = ARMADA_STATUS_CONFIG[status];
+  if (!config) {
+    return {
+      label: status,
+      variant: "neutral",
+    };
+  }
+  return config;
+};
+
+// New function that accepts translation function
+export const getArmadaStatusBadgeWithTranslation = (status, t) => {
+  const config = getArmadaStatusConfig(t)[status];
   if (!config) {
     return {
       label: status,

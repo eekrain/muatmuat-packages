@@ -20,8 +20,9 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import DriverDelegasiModal from "@/components/Modal/DriverDelegasiModal";
 import Toggle from "@/components/Toggle/Toggle";
 import { FleetSelectionModal } from "@/container/Transporter/Armada/FleetSelectionModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
+import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
 import { useGetDriverDelegationPopupPreference } from "@/services/Transporter/driver-delegation/getPopupPreference";
 import { useUpdateDriverDelegationStatus } from "@/services/Transporter/driver-delegation/updateDelegationStatus";
@@ -31,6 +32,7 @@ import { putNonaktifkanDriver } from "@/services/Transporter/manajemen-driver/no
 
 const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -43,9 +45,8 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [confirmUnlinkDriver, setConfirmUnlinkDriver] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [, setIsUpdating] = useState(false);
   const [nonaktifkanDriver, setNonaktifkanDriver] = useState(false);
-  const [confirmDeleteDriver, setConfirmDeleteDriver] = useState(false);
 
   // 2. Add state to track which dropdown is open, using the row ID as the key
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -125,7 +126,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
                   setIsModalOpen(true);
                 }}
               >
-                Pilih Armada
+                {t("DriverAktif.selectFleet", {}, "Pilih Armada")}
               </button>
             )}
           </div>
@@ -134,7 +135,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     },
     {
       key: "phoneNumber",
-      header: "No. Whatsapp",
+      header: t("DriverAktif.phoneColumn", {}, "No. Whatsapp"),
       render: (row) => {
         const phoneStatus = getPhoneNumberStatus(row.verificationStatus);
         return (
@@ -157,10 +158,13 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     },
     {
       key: "driverStatus",
-      header: "Status Driver",
+      header: t("DriverAktif.statusColumn", {}, "Status Driver"),
       sortable: false,
       render: (row) => {
-        const statusConfig = getDriverStatusBadge(row.driverStatus);
+        const statusConfig = getDriverStatusBadgeWithTranslation(
+          row.driverStatus,
+          t
+        );
         return (
           <BadgeStatus variant={statusConfig.variant}>
             {row.driverStatus === "ON_DUTY" && row.pendingUpdateDriver && (
@@ -171,8 +175,11 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
                 }}
               >
                 <p>
-                  Driver sedang bertugas. Status akan diperbarui setelah pesanan
-                  diselesaikan
+                  {t(
+                    "DriverAktif.driverOnDutyTooltip",
+                    {},
+                    "Driver sedang bertugas. Status akan diperbarui setelah pesanan diselesaikan"
+                  )}
                 </p>
               </InfoTooltip>
             )}
@@ -197,7 +204,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           <SimpleDropdownTrigger asChild>
             <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
-                Aksi
+                {t("DriverAktif.actionLabel", {}, "Aksi")}
               </span>
               {/* 4. Conditionally render the icon based on the open state */}
               {openDropdowns[row.id] ? (
@@ -210,7 +217,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
 
           <SimpleDropdownContent className="w-fit" align="end">
             <SimpleDropdownItem onClick={() => {}}>
-              Lihat Agenda Driver
+              {t("DriverAktif.viewScheduleAction", {}, "Lihat Agenda Driver")}
             </SimpleDropdownItem>
             {row.driverStatus === "READY_FOR_ORDER" && (
               <SimpleDropdownItem
@@ -219,13 +226,13 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
                   setNonaktifkanDriver(true);
                 }}
               >
-                Nonaktifkan
+                {t("DriverAktif.deactivateAction", {}, "Nonaktifkan")}
               </SimpleDropdownItem>
             )}
             <SimpleDropdownItem
               onClick={() => router.push(`/manajemen-driver/${row.id}/detail`)}
             >
-              Detail
+              {t("DriverAktif.detailAction", {}, "Detail")}
             </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
@@ -249,14 +256,28 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
 
     return {
       categories: [
-        { key: "truckType", label: "Jenis Truk" },
-        { key: "carrierType", label: "Jenis Carrier" },
+        {
+          key: "truckType",
+          label: t("DriverAktif.truckTypeFilter", {}, "Jenis Truk"),
+        },
+        {
+          key: "carrierType",
+          label: t("DriverAktif.carrierTypeFilter", {}, "Jenis Carrier"),
+        },
         {
           key: "verificationStatus",
-          label: "Status Nomor Whatsapp",
+          label: t(
+            "DriverAktif.whatsappStatusFilter",
+            {},
+            "Status Nomor Whatsapp"
+          ),
           searchable: false,
         },
-        { key: "driverStatus", label: "Status Driver", searchable: false },
+        {
+          key: "driverStatus",
+          label: t("DriverAktif.statusFilter", {}, "Status Driver"),
+          searchable: false,
+        },
       ],
       data: {
         truckType:
@@ -310,7 +331,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const { data: popupPreference, mutate: mutatePopupPreference } =
     useGetDriverDelegationPopupPreference();
 
-  const { trigger: updateDelegationStatus } = useUpdateDriverDelegationStatus();
+  useUpdateDriverDelegationStatus();
 
   const hasSeenModal = popupPreference?.shouldShowPopup === false;
 
@@ -354,8 +375,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
       setConfirmUnlinkDriver(false);
       // Refresh the data after successful unlink
       mutate();
-    } catch (error) {
-      console.error("Failed to unlink driver:", error);
+    } catch {
       toast.error("Gagal melepaskan armada. Silakan coba lagi.");
     } finally {
       setIsUpdating(false);
@@ -370,8 +390,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
       setNonaktifkanDriver(false);
       setSelectedDriver(null);
       mutate();
-    } catch (error) {
-      console.error("Failed to nonaktifkan driver:", error);
+    } catch {
       toast.error("Gagal menonaktifkan driver. Silakan coba lagi.");
     } finally {
       setIsUpdating(false);
@@ -426,14 +445,14 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           ),
         }}
         confirm={{
-          text: "Ya",
+          text: t("DriverAktif.confirmYes", {}, "Ya"),
           onClick: () => {
             handleUnlinkDriver();
           },
           classname: "w-[112px]",
         }}
         cancel={{
-          text: "Tidak",
+          text: t("DriverAktif.confirmNo", {}, "Tidak"),
           onClick: () => {
             setConfirmUnlinkDriver(false);
           },
@@ -453,14 +472,14 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           ),
         }}
         confirm={{
-          text: "Ya",
+          text: t("DriverAktif.confirmYes", {}, "Ya"),
           onClick: () => {
             handleNonaktifkanDriver();
           },
           classname: "w-[112px]",
         }}
         cancel={{
-          text: "Tidak",
+          text: t("DriverAktif.confirmNo", {}, "Tidak"),
           onClick: () => {
             setNonaktifkanDriver(false);
           },

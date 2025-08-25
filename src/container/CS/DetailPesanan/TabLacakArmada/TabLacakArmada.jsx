@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import { TabsContent } from "@/components/Tabs/Tabs";
@@ -43,6 +45,13 @@ export const Inner = () => {
       setMainSearchQuery(searchInputValue);
     }
   };
+
+  useEffect(() => {
+    if (searchInputValue === "") {
+      setMainSearchQuery("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInputValue]);
 
   return (
     <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
@@ -95,6 +104,7 @@ export const Inner = () => {
                   value={searchInputValue}
                   onChange={(e) => setSearchInputValue(e.target.value)}
                   onKeyPress={handleSearchKeyPress}
+                  withReset
                 />
                 <Filter />
               </div>
