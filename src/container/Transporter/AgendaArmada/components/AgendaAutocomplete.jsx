@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetSearchSuggestions } from "@/services/agenda-armada-driver/getSearchSuggestions";
 
@@ -321,6 +322,7 @@ const PopoverPanel = ({ children, className }) => {
 };
 
 const List = ({ children }) => {
+  const { t } = useTranslation();
   const { filteredItems, isLoading, useApiSuggestions, inputValue } =
     useAutocomplete();
 
@@ -330,7 +332,7 @@ const List = ({ children }) => {
       <div className="flex items-center justify-center p-4">
         <div className="flex items-center gap-2 text-xs text-neutral-500">
           <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
-          Mencari...
+          {t("AgendaAutocomplete.labelMencari", {}, "Mencari...")}
         </div>
       </div>
     );
@@ -346,7 +348,11 @@ const List = ({ children }) => {
     return (
       <div className="flex items-center justify-center p-4">
         <span className="text-xs text-neutral-500">
-          Tidak ada hasil ditemukan
+          {t(
+            "AgendaAutocomplete.labelTidakAdaHasil",
+            {},
+            "Tidak ada hasil ditemukan"
+          )}
         </span>
       </div>
     );
@@ -366,6 +372,7 @@ const List = ({ children }) => {
 };
 
 const Item = ({ index, item }) => {
+  const { t } = useTranslation();
   const {
     activeIndex,
     setActiveIndex,
@@ -415,9 +422,9 @@ const Item = ({ index, item }) => {
 
     switch (item.type) {
       case "LICENSE_PLATE":
-        return "Nomor Polisi";
+        return t("AgendaAutocomplete.labelNomorPolisi", {}, "Nomor Polisi");
       case "DRIVER_NAME":
-        return "Driver";
+        return t("AgendaAutocomplete.labelDriver", {}, "Driver");
       default:
         return null;
     }

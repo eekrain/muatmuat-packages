@@ -8,6 +8,7 @@ import {
   ModalTitle,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
@@ -111,6 +112,7 @@ const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
  * @returns {JSX.Element} A card component showing delivery schedule information
  */
 export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
+  const { t } = useTranslation();
   const {
     agendaStatus = "BERTUGAS",
     position = 0,
@@ -188,7 +190,9 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                   src="/icons/agenda/conflict-sirine.svg"
                   className="size-6"
                 />
-                <span>Jadwal Bermasalah</span>
+                <span>
+                  {t("CardItem.labelJadwalBermasalah", {}, "Jadwal Bermasalah")}
+                </span>
               </div>
               <div className="absolute bottom-2.5 left-0 w-full px-2.5">
                 <Modal>
@@ -197,11 +201,13 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                       variant="muatparts-error-secondary"
                       className="w-full text-xxs font-semibold md:h-7"
                     >
-                      Atur Ulang
+                      {t("CardItem.buttonAturUlang", {}, "Atur Ulang")}
                     </Button>
                   </ModalTrigger>
                   <ModalContent className="h-[565px] w-[908]">
-                    <ModalTitle className="sr-only">Ubah Armada</ModalTitle>
+                    <ModalTitle className="sr-only">
+                      {t("CardItem.modalTitleUbahArmada", {}, "Ubah Armada")}
+                    </ModalTitle>
                     <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
                       <div>
                         <img
@@ -245,13 +251,13 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
 
                 {hasSosIssue && (
                   <span className="rounded-md bg-error-400 px-2 py-1 text-xs font-semibold leading-none text-white">
-                    SOS
+                    {t("CardItem.labelSOS", {}, "SOS")}
                   </span>
                 )}
 
                 {isConflicted && (
                   <span className="rounded-md bg-warning-400 px-2 py-1 text-xs font-semibold leading-none text-white">
-                    Konflik
+                    {t("CardItem.labelKonflik", {}, "Konflik")}
                   </span>
                 )}
                 <InfoPopover
@@ -275,7 +281,7 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
 
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[8px] font-medium leading-none text-neutral-900">
-                      Lokasi Terkini
+                      {t("CardItem.labelLokasiTerkini", {}, "Lokasi Terkini")}
                     </span>
 
                     {estimation?.currentLocation && (
@@ -284,9 +290,14 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                           {estimation?.currentLocation}
                         </span>
                         <span className="line-clamp-1 break-all pr-2 text-xxs font-medium leading-none text-neutral-600">
-                          est. {estimation?.nextDistance}km (
-                          {estimation?.nextTime}
-                          menit)
+                          {t(
+                            "CardItem.labelEstimasi",
+                            {
+                              nextDistance: estimation?.nextDistance,
+                              nextTime: estimation?.nextTime,
+                            },
+                            `est. ${estimation?.nextDistance}km (${estimation?.nextTime}menit)`
+                          )}
                         </span>
                       </div>
                     )}
@@ -306,13 +317,17 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                 >
                   <LocationPoint
                     type="muat"
-                    title="Lokasi Muat"
+                    title={t("CardItem.titleLokasiMuat", {}, "Lokasi Muat")}
                     subtitle={firstDestinationName}
                     className="basis-1/2"
                   />
                   <div className="relative basis-1/2">
                     <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-nowrap rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold leading-none text-neutral-900">
-                      Est. {estimatedTotalDistanceKm} km
+                      {t(
+                        "CardItem.labelEstKm",
+                        { km: estimatedTotalDistanceKm },
+                        `Est. ${estimatedTotalDistanceKm} km`
+                      )}
                     </span>
                     <hr className="w-full border-dashed border-neutral-400" />
                   </div>
@@ -321,7 +336,11 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                 {lastDestinationName && (
                   <LocationPoint
                     type="bongkar"
-                    title="Lokasi Bongkar"
+                    title={t(
+                      "CardItem.titleLokasiBongkar",
+                      {},
+                      "Lokasi Bongkar"
+                    )}
                     subtitle={lastDestinationName}
                     className="absolute top-1/2 -translate-y-1/2"
                     style={{
@@ -345,7 +364,11 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                 left: `${cellConfig.left * cellWidth + 8}px`,
               }}
             >
-              Estimasi Waktu Bongkar
+              {t(
+                "CardItem.labelEstimasiWaktuBongkar",
+                {},
+                "Estimasi Waktu Bongkar"
+              )}
             </div>
           )}
 
@@ -354,7 +377,7 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
             <Modal>
               <ModalTrigger asChild>
                 <button className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700">
-                  <span>Ubah</span>
+                  <span>{t("CardItem.buttonUbah", {}, "Ubah")}</span>
                   <IconComponent
                     src="/icons/pencil-outline.svg"
                     width={12}
@@ -364,7 +387,11 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
               </ModalTrigger>
               <ModalContent className="h-[413px] w-[908]">
                 <ModalTitle className="sr-only">
-                  Ubah Estimasi Waktu Bongkar
+                  {t(
+                    "CardItem.modalTitleUbahEstimasiWaktuBongkar",
+                    {},
+                    "Ubah Estimasi Waktu Bongkar"
+                  )}
                 </ModalTitle>
                 <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
                   <div>

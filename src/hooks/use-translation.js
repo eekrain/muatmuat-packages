@@ -61,10 +61,10 @@ const createTranslationStore = () =>
               ...(commonResult?.value?.data || {}),
               ...(mockResult?.value?.data || {}),
             };
-            console.log(
-              "🚀 ~ createTranslationStore ~ mergedTranslation:",
-              mergedTranslation
-            );
+            // console.log(
+            //   "🚀 ~ createTranslationStore ~ mergedTranslation:",
+            //   mergedTranslation
+            // );
             set({
               translation: mergedTranslation,
             });

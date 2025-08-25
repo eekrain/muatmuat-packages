@@ -87,7 +87,7 @@ export const LacakArmadaProvider = ({ children }) => {
         if (!oldTransporterMap.has(uniqueMapKey)) {
           oldTransporterMap.set(uniqueMapKey, {
             name: oldTransporter.companyName,
-            logo: oldTransporter.companyPicture,
+            picture: oldTransporter.companyPicture,
             phone: oldTransporter.companyPhone,
             units: 0,
           });

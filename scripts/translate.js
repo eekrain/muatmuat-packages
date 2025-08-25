@@ -383,6 +383,82 @@ class MinimalTranslationManager {
     }
   }
 
+  // Remove duplicate keys from all mock files
+  removeDuplicates() {
+    console.log("\n🔍 Checking for duplicate keys in translation files...\n");
+
+    // First check for exact duplicate keys (same key name appearing multiple times)
+    const files = [this.jsonFiles.id, this.jsonFiles.en, this.jsonFiles.cn];
+    let hasExactDuplicates = false;
+
+    files.forEach((file) => {
+      console.log(
+        `📄 Checking ${path.basename(file)} for exact duplicate keys...`
+      );
+
+      try {
+        const content = fs.readFileSync(file, "utf8");
+
+        // Check raw content for duplicate key names
+        const lines = content.split("\n");
+        const keyPattern = /^\s*"([^"]+)"\s*:/;
+        const seenKeys = new Set();
+        const duplicateKeys = new Set();
+
+        lines.forEach((line, index) => {
+          const match = line.match(keyPattern);
+          if (match) {
+            const key = match[1];
+            if (seenKeys.has(key)) {
+              duplicateKeys.add(key);
+              hasExactDuplicates = true;
+              console.log(`   ⚠️  Line ${index + 1}: Duplicate key "${key}"`);
+            }
+            seenKeys.add(key);
+          }
+        });
+
+        if (duplicateKeys.size === 0) {
+          console.log(`   ✅ No exact duplicate keys found`);
+        } else {
+          console.log(
+            `   ⚠️  Found ${duplicateKeys.size} exact duplicate key(s)`
+          );
+        }
+      } catch (error) {
+        console.log(`   ❌ Error reading file: ${error.message}`);
+      }
+      console.log();
+    });
+
+    if (hasExactDuplicates) {
+      console.log(
+        "🔧 Fixing exact duplicate keys by re-parsing JSON files...\n"
+      );
+
+      // Re-parse and save each file (this will automatically remove exact duplicates)
+      files.forEach((file) => {
+        try {
+          const data = JSON.parse(fs.readFileSync(file, "utf8"));
+          fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
+          console.log(`   ✅ Fixed exact duplicates in ${path.basename(file)}`);
+        } catch (error) {
+          console.log(
+            `   ❌ Error fixing ${path.basename(file)}: ${error.message}`
+          );
+        }
+      });
+      console.log();
+    }
+
+    const finalCount = Object.keys(this.loadJsonFiles().id).length;
+    console.log(`📊 Final key count: ${finalCount}`);
+
+    if (!hasExactDuplicates) {
+      console.log("\n🎉 No exact duplicate key issues found!");
+    }
+  }
+
   // Validate translations - check for orphaned or missing
   validateTranslations(targetPath) {
     console.log("\n🔍 Validating translations...\n");
@@ -565,6 +641,9 @@ Utility Commands:
   status               Show translation statistics and session status.
   cleanup              Remove ALL temporary files (session, export, and plan).
   help                 Show this help message.
+  remove-duplicates    Remove duplicate translation keys from all mock files
+                       Example: npm run t remove-duplicates
+                      
 `);
   }
 }
@@ -612,6 +691,10 @@ switch (command) {
     break;
   case "report":
     manager.generateCsvReport();
+    break;
+
+  case "remove-duplicates":
+    manager.removeDuplicates();
     break;
   case "validate":
     manager.validateTranslations(args[0]);

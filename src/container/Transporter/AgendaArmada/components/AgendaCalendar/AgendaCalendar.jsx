@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { useClientWidth } from "@/hooks/use-client-width";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { AgendaRowItem } from "./AgendaRowItem";
 import { CalendarHeader1 } from "./CalendarHeader1";
@@ -22,6 +23,7 @@ export const AgendaCalendar = ({
   shouldShowOverlay,
   mutate,
 }) => {
+  const { t } = useTranslation();
   const navigator = useDateNavigator();
   const {
     displayedDates,
@@ -163,9 +165,11 @@ export const AgendaCalendar = ({
               src="/img/loading-animation.webp"
               width={80}
               height={80}
-              alt="loading"
+              alt={t("AgendaCalendar.altLoading", {}, "loading")}
             />
-            <div className="text-sm text-gray-600">Memuat...</div>
+            <div className="text-sm text-gray-600">
+              {t("AgendaCalendar.labelMemuat", {}, "Memuat...")}
+            </div>
           </div>
         </div>
       )}
@@ -215,6 +219,7 @@ export const Content = ({
   loadMoreRef,
   mutate,
 }) => {
+  const { t } = useTranslation();
   const navigator = useDateNavigator();
   const { currentDayIndex } = navigator;
   const { width: containerWidth, ref } = useClientWidth();
@@ -271,10 +276,18 @@ export const Content = ({
       <div className="flex h-[calc(100dvh-295px)] items-center justify-center bg-neutral-50">
         <div className="flex flex-col items-center justify-center text-center">
           <h3 className="mb-2 text-lg font-semibold text-gray-700">
-            Belum ada Agenda Armada & Driver
+            {t(
+              "AgendaCalendar.titleBelumAdaAgendaArmadaDriver",
+              {},
+              "Belum ada Agenda Armada & Driver"
+            )}
           </h3>
           <p className="text-sm text-gray-500">
-            Tunggu pesanan masuk untuk membuat agenda
+            {t(
+              "AgendaCalendar.messageTungguPesananMasuk",
+              {},
+              "Tunggu pesanan masuk untuk membuat agenda"
+            )}
           </p>
         </div>
       </div>
@@ -303,7 +316,13 @@ export const Content = ({
             >
               {isLoadingMore && (
                 <div className="flex items-center justify-center py-4">
-                  <div className="text-sm text-gray-500">Loading more...</div>
+                  <div className="text-sm text-gray-500">
+                    {t(
+                      "AgendaCalendar.labelLoadingMore",
+                      {},
+                      "Loading more..."
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -321,12 +340,26 @@ export const Content = ({
               type="search"
               title={
                 errorMessageType === "keyword" ? (
-                  <span>Keyword Tidak Ditemukan</span>
+                  <span>
+                    {t(
+                      "AgendaCalendar.titleKeywordTidakDitemukan",
+                      {},
+                      "Keyword Tidak Ditemukan"
+                    )}
+                  </span>
                 ) : (
                   <span>
-                    Data tidak Ditemukan.
+                    {t(
+                      "AgendaCalendar.titleDataTidakDitemukan",
+                      {},
+                      "Data tidak Ditemukan."
+                    )}
                     <br />
-                    Mohon coba hapus beberapa filter
+                    {t(
+                      "AgendaCalendar.messageHapusFilter",
+                      {},
+                      "Mohon coba hapus beberapa filter"
+                    )}
                   </span>
                 )
               }
