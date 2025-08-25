@@ -6,7 +6,7 @@ import { DriverStatusEnum } from "@/lib/constants/Transporter/agendaArmada/agend
 const useMockData = true; // Set to false to use real API
 
 // Mock API result for development/testing
-export const mockAlternativeFleetsResult = {
+export const apiResult = {
   data: {
     Message: {
       Code: 200,
@@ -88,7 +88,7 @@ export const mockAlternativeFleetsResult = {
 export const fetcherAlternativeFleet = async (conflictId) => {
   if (useMockData) {
     // Return mock data for development
-    return mockAlternativeFleetsResult.data.Data;
+    return apiResult.data.Data;
   } else {
     const result = await fetcherMuatrans.get(
       `/v1/transporter/agenda-schedules/conflicts/${conflictId}/alternatives`
@@ -99,6 +99,6 @@ export const fetcherAlternativeFleet = async (conflictId) => {
 
 export const useGetAlternativeFleet = (conflictId) =>
   useSWR(
-    conflictId ? `agenda-schedules/conflicts/${conflictId}` : null,
+    conflictId ? `agenda-schedules/conflicts/${conflictId}/alternatives` : null,
     fetcherAlternativeFleet
   );
