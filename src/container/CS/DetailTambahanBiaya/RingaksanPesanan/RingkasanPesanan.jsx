@@ -1,26 +1,14 @@
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
-
 // Assuming this is the correct import path
-import Card from "@/components/Card/Card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/Collapsible";
-import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
-import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  LightboxPreview,
-  LightboxProvider,
-} from "@/components/Lightbox/Lightbox";
-import { Modal, ModalContent } from "@/components/Modal";
 // Assuming lucide-react for icons
-import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import OrderInformation from "@/container/CS/DetailTambahanBiaya/RingaksanPesanan/OrderInformation";
 import PaymentDetail from "@/container/CS/DetailTambahanBiaya/RingaksanPesanan/PaymentDetail";
 import ShipperContactedInformation from "@/container/CS/DetailTambahanBiaya/RingaksanPesanan/ShipperContactedInformation";
+import { ORDER_STATUS } from "@/utils/CS/orderStatus";
+import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
+
+import RingkasanPesananBody from "./RIngkasanPesananBody";
 
 // Mock data to populate the component, making it easier to manage
 const orderSummaryData = {
@@ -66,6 +54,295 @@ const SectionRow = ({ label, children }) => (
   </div>
 );
 
+// sementara pakek ini biar cepet, nanti kalo udh ga males ta ganti
+const dataOrderDetail = {
+  orderId: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1",
+  orderCode: "MT25A002A",
+  invoiceNumber: "INV/MT25A002A",
+  // orderStatus: ORDER_STATUS.NEED_CHANGE_RESPONSE,
+  // orderStatus: "CONFIRMED_ORDER",
+  // orderStatus: "CANCELLED_BY_TRANSPORTER_2",
+  orderStatus: "SCHEDULED_FLEET",
+  // orderStatus: "WAITING_PAYMENT_2",
+  // orderStatus: ORDER_STATUS.DOCUMENT_PREPARATION,
+  // orderStatus: ORDER_STATUS.COMPLETED,
+  // orderStatus: ORDER_STATUS.LOADING,
+  // orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+  // orderStatus: "WAITING_PAYMENT_2", // Status dengan angka untuk testing
+  // orderStatus: "UNKNOWN_STATUS_3", // Status yang tidak ada di enum untuk testing
+  // orderStatus: "CUSTOM_LOADING_1", // Status custom untuk testing
+  // orderStatus: ORDER_STATUS.NEED_ASSIGN_FLEET, // Status untuk trigger Assign Armada button
+  // orderStatus : ORDER_STATUS.CHANGE_FLEET,
+  orderStatusUnit: 1, // Unit untuk testing
+  orderType: "SCHEDULED",
+  loadTimeStart: "2024-10-03T18:00:00.000Z",
+  // loadTimeEnd: "2024-10-04T08:00:00.000Z",
+  loadTimeEnd: null,
+  estimatedDistance: 178,
+  truckCount: 3,
+  hasSOSAlert: false,
+  hasResponseDraft: false,
+  isCancellable: true, // Pastikan bisa dibatalkan
+  isHalalLogistics: true,
+  vehicle: {
+    truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
+    truckTypeName: "Colt Diesel Engkel",
+    carrierName: "Box",
+    vehicleImage: "https://picsum.photos/200",
+  },
+  locations: [
+    {
+      id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
+      type: "PICKUP",
+      sequence: 1,
+      fullAddress:
+        "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+      detailAddress: "Rumah dengan pagar hitam",
+      city: "Kota Surabaya",
+      province: "Jawa Timur",
+      latitude: -7.2741549,
+      longitude: 112.7820621,
+      picName: "Abe Maulana",
+      picPhoneNumber: "081974012740",
+    },
+    {
+      id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7392",
+      type: "DROPOFF",
+      sequence: 1,
+      fullAddress:
+        "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+      detailAddress: "Rumah dengan pagar hitam",
+      city: "Kota Surabaya",
+      province: "Jawa Timur",
+      latitude: -7.2741549,
+      longitude: 112.7820621,
+      picName: "Abe Maulana",
+      picPhoneNumber: "081974012740",
+    },
+  ],
+  cargo: [
+    {
+      id: "1085a673-4f31-4a66-ada6-79e5e61fe434",
+      name: "Besi Baja",
+      weight: 1000,
+      weightUnit: "kg",
+      length: 1,
+      width: 2,
+      height: 5,
+      dimensionUnit: "cm",
+      cargoTypeName: "Cargo Type",
+      cargoCategoryName: "Cargo Category",
+    },
+    // {
+    //   id: "74b7ef5c-9732-47c0-9ea7-f327b65028d7",
+    //   name: "Batu Bata",
+    //   weight: 1000,
+    //   weightUnit: "kg",
+    //   length: 1,
+    //   width: 2,
+    //   height: 5,
+    //   dimensionUnit: "cm",
+    //   cargoTypeName: "Cargo Type",
+    //   cargoCategoryName: "Cargo Category",
+    // },
+    // {
+    //   id: "29e7018f-b331-4d7e-818d-3bf39ea8ddf2",
+    //   name: "Karet Mentah",
+    //   weight: 500,
+    //   weightUnit: "kg",
+    //   length: 1,
+    //   width: 2,
+    //   height: 5,
+    //   dimensionUnit: "cm",
+    //   cargoTypeName: "Cargo Type",
+    //   cargoCategoryName: "Cargo Category",
+    // },
+  ],
+  cargoDescription:
+    "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
+  photos: [
+    "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+    "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+  ],
+  deliveryOrders: ["DO-20241023-001", "DO-20241023-002"],
+  additionalServices: [
+    {
+      id: "0f678054-8459-4a36-8b1d-662e8de7580c",
+      serviceName: "Kirim Berkas",
+    },
+    // {
+    //   id: "a0f1778f-0ee2-4ec1-8be8-3e7737832fe2",
+    //   serviceName: "Bantuan Tambahan",
+    // },
+  ],
+  incomeSummary: {
+    totalPrice: 800000,
+    transportFee: 800000,
+    additionalServiceFee: 100000,
+    taxAmount: 100000,
+    totalRouteChange: 100000,
+  },
+  fleets: [
+    {
+      id: "fleet-001",
+      licensePlate: "AE 1111 LBA",
+      vehicleImage: "/img/truck.png",
+      truckType: "Colt Diesel Engkel - Box",
+      driver: {
+        id: "uuid",
+        name: "John Doe",
+        phoneNumber: "081234567890",
+        profileImage: "https://example.com/driver1.jpg",
+      },
+      hasSOSAlert: true,
+      currentStatus: TRACKING_STATUS.LOADING,
+      milestones: [
+        {
+          status: TRACKING_STATUS.SCHEDULED,
+          statusName: "Armada Dijadwalkan",
+          completed: true,
+        },
+        {
+          status: TRACKING_STATUS.LOADING,
+          statusName: "Proses Muat",
+          completed: true,
+        },
+        {
+          status: TRACKING_STATUS.UNLOADING,
+          statusName: "Proses Bongkar",
+          completed: false,
+        },
+        {
+          status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+          statusName: "Dokumen Sedang Disiapkan",
+          completed: false,
+        },
+        {
+          status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+          statusName: "Proses Pengiriman Dokumen",
+          completed: false,
+        },
+        {
+          status: TRACKING_STATUS.COMPLETED,
+          statusName: "Selesai",
+          completed: false,
+        },
+      ],
+      // Data untuk armada pengganti (jika ada)
+      replacementFleet: null,
+      // Data untuk driver pengganti (jika ada)
+      replacementDriver: null,
+      // Status perubahan armada
+      fleetChangeStatus: null, // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+    },
+    {
+      id: "fleet-002",
+      licensePlate: "AE 2222 LBA",
+      vehicleImage: "/img/truck.png",
+      truckType: "Colt Diesel Engkel - Box",
+      driver: {
+        id: "uuid-2",
+        name: "Jane Smith",
+        phoneNumber: "081234567891",
+        profileImage: "https://example.com/driver2.jpg",
+      },
+      hasSOSAlert: false,
+      currentStatus: "CUSTOM_MENUJU_KE_LOKASI_BONGKAR_2", // Status custom untuk testing
+      milestones: [
+        {
+          status: TRACKING_STATUS.SCHEDULED,
+          statusName: "Armada Dijadwalkan",
+          completed: true,
+        },
+        {
+          status: TRACKING_STATUS.LOADING,
+          statusName: "Proses Muat",
+          completed: true,
+        },
+        {
+          status: TRACKING_STATUS.IN_TRANSIT, // Status dengan angka
+          statusName: "Menuju ke Lokasi Bongkar",
+          completed: true,
+        },
+        {
+          status: TRACKING_STATUS.UNLOADING,
+          statusName: "Proses Bongkar",
+          completed: false,
+        },
+        {
+          status: TRACKING_STATUS.DOCUMENT_PREPARATION,
+          statusName: "Dokumen Sedang Disiapkan",
+          completed: false,
+        },
+        {
+          status: TRACKING_STATUS.DOCUMENT_DELIVERY,
+          statusName: "Proses Pengiriman Dokumen",
+          completed: false,
+        },
+        {
+          status: TRACKING_STATUS.COMPLETED,
+          statusName: "Selesai",
+          completed: false,
+        },
+      ],
+      // Contoh data armada pengganti
+      replacementFleet: {
+        id: "fleet-002-replacement",
+        licensePlate: "AE 3333 LBA",
+        vehicleImage: "/img/truck.png",
+        truckType: "Colt Diesel Engkel - Box",
+      },
+      // Contoh data driver pengganti
+      replacementDriver: {
+        id: "uuid-3",
+        name: "Bob Johnson",
+        phoneNumber: "081234567892",
+        profileImage: "https://example.com/driver3.jpg",
+      },
+      // Status perubahan armada
+      fleetChangeStatus: "APPROVED", // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
+    },
+    {
+      id: "fleet-003",
+      licensePlate: "AE 4444 LBA",
+      vehicleImage: "/img/truck.png",
+      truckType: "Colt Diesel Engkel - Box",
+      driver: {
+        id: "uuid-4",
+        name: "Alice Brown",
+        phoneNumber: "081234567893",
+        profileImage: "https://example.com/driver4.jpg",
+      },
+      hasSOSAlert: false,
+      currentStatus: TRACKING_STATUS.CANCELLED_BY_TRANSPORTER,
+      milestones: [
+        {
+          status: TRACKING_STATUS.SCHEDULED,
+          statusName: "Armada Dijadwalkan",
+          completed: true,
+        },
+        {
+          status: "CANCELLED",
+          statusName: "Dibatalkan",
+          completed: true,
+        },
+      ],
+      // Data untuk armada pengganti (jika ada)
+      replacementFleet: null,
+      // Data untuk driver pengganti (jika ada)
+      replacementDriver: null,
+      // Status perubahan armada
+      fleetChangeStatus: null,
+    },
+  ],
+  otherStatus: [
+    {
+      orderStatus: ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+      orderStatusUnit: 1,
+    },
+  ],
+};
+
 const RingkasanPesanan = ({
   order,
   contactSummary,
@@ -90,169 +367,7 @@ const RingkasanPesanan = ({
           shipper={shipper}
           transporters={transporters}
         />
-        <Card className="border-0">
-          <div className="p-6">
-            {/* Halal Logistics Banner */}
-            {orderSummaryData.isHalal && (
-              <HalalLogistik text="Memerlukan pengiriman dengan sertifikasi halal logistik" />
-            )}
-            {/* Order Summary Section */}
-            <div className="mt-6 flex flex-col gap-6">
-              <h2 className="text-base font-bold text-neutral-900">
-                Ringkasan Pesanan
-              </h2>
-
-              {/* Key-Value List Layout */}
-              <SectionRow label="Informasi Armada">
-                <div className="flex items-center gap-4">
-                  <LightboxProvider
-                    image={orderSummaryData.fleetInfo.image}
-                    title={orderSummaryData.fleetInfo.type}
-                  >
-                    <LightboxPreview
-                      image={orderSummaryData.fleetInfo.image}
-                      alt={orderSummaryData.fleetInfo.type}
-                      className="size-[68px] rounded-xl object-cover"
-                    />
-                  </LightboxProvider>
-                  <div>
-                    <h3 className="text-xs font-bold text-neutral-900">
-                      {orderSummaryData.fleetInfo.type}
-                    </h3>
-                    <p className="mt-2 text-xs font-medium text-neutral-900">
-                      Kebutuhan : {orderSummaryData.fleetInfo.needs} Unit
-                    </p>
-                  </div>
-                </div>
-              </SectionRow>
-
-              <SectionRow label="Waktu Muat">
-                <p className="text-xs font-medium text-neutral-900">
-                  {orderSummaryData.loadTime}
-                </p>
-              </SectionRow>
-
-              <SectionRow label="Rute">
-                <div className="flex flex-col gap-3">
-                  <p className="text-xs font-medium text-neutral-900">
-                    Estimasi {orderSummaryData.route.estimatedDistance}
-                  </p>
-                  <TimelineContainer>
-                    {orderSummaryData.route.locations.map((loc, index) => (
-                      <NewTimelineItem
-                        key={index}
-                        variant={
-                          loc.type === "muat" ? "number-muat" : "number-bongkar"
-                        }
-                        index={index}
-                        totalLength={orderSummaryData.route.locations.length}
-                        activeIndex={-1}
-                        title={
-                          loc.address?.length > 40
-                            ? `${loc.address.substring(0, 40)}...`
-                            : loc.address
-                        }
-                      ></NewTimelineItem>
-                    ))}
-                  </TimelineContainer>
-                </div>
-              </SectionRow>
-
-              <SectionRow label="Informasi Muatan">
-                <div className="flex flex-col gap-2">
-                  {orderSummaryData.loadInfo.items.map((item, index) => (
-                    <div key={index} className="mt-1 flex items-start gap-2">
-                      <IconComponent
-                        src="/icons/box.svg" // Example icon
-                        alt="Cargo icon"
-                        className="mt-0.5 h-4 w-4 text-neutral-600"
-                      />
-                      <p className="text-sm text-neutral-600">
-                        <span className="font-semibold text-neutral-900">
-                          {item.name}
-                        </span>{" "}
-                        {item.details}
-                      </p>
-                    </div>
-                  ))}
-                  <Modal closeOnOutsideClick>
-                    <ModalContent>
-                      <div className="flex flex-col gap-y-3 p-6">
-                        {/* Header */}
-                        <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
-                          Informasi Muatan
-                        </h2>
-                        <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
-                          {orderSummaryData.loadInfo.items.map(
-                            (item, index) => (
-                              <div
-                                key={index}
-                                className="mt-1 flex items-start gap-2"
-                              >
-                                <IconComponent
-                                  src="/icons/box.svg" // Example icon
-                                  alt="Cargo icon"
-                                  className="mt-0.5 h-4 w-4 text-neutral-600"
-                                />
-                                <p className="text-sm text-neutral-600">
-                                  <span className="font-semibold text-neutral-900">
-                                    {item.name}
-                                  </span>{" "}
-                                  {item.details}
-                                </p>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </div>
-                    </ModalContent>
-                  </Modal>
-                </div>
-              </SectionRow>
-            </div>
-          </div>
-
-          {/* Collapsible PIC Section */}
-          <Collapsible open={isPicExpanded} onOpenChange={setIsPicExpanded}>
-            <div className="border-t border-neutral-200">
-              <CollapsibleTrigger className="flex w-full items-center justify-between p-6 text-base font-bold text-neutral-900">
-                <span>Detail PIC</span>
-                <ChevronDown
-                  className={`h-5 w-5 text-neutral-500 transition-transform duration-300 ${
-                    isPicExpanded ? "rotate-180" : ""
-                  }`}
-                />
-              </CollapsibleTrigger>
-            </div>
-            <CollapsibleContent>
-              <div className="border-t border-neutral-200 bg-neutral-50 p-6">
-                {/* Content for PIC details goes here */}
-                <p className="text-sm text-neutral-500">
-                  Informasi PIC akan ditampilkan di sini.
-                </p>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* "Lihat Selengkapnya" button - for cargo list expansion */}
-          <div className="border-t border-neutral-200 p-4 text-center">
-            <button
-              onClick={() => setIsLoadMoreVisible(!isLoadMoreVisible)}
-              className="flex w-full items-center justify-center gap-1 text-sm font-bold text-primary-700"
-            >
-              <span>
-                {isLoadMoreVisible
-                  ? "Lihat Lebih Sedikit"
-                  : "Lihat Selengkapnya"}
-              </span>
-              <ChevronDown
-                className={`h-5 w-5 transition-transform ${
-                  isLoadMoreVisible ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-          </div>
-        </Card>
+        <RingkasanPesananBody dataOrderDetail={dataOrderDetail} />
       </div>
 
       {/* Right Column */}

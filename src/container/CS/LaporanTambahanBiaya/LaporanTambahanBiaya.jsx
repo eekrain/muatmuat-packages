@@ -16,7 +16,7 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
-import { periodOptions } from "@/lib/constants/Shared/periodOptions";
+import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
 import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
 
@@ -38,6 +38,8 @@ const LaporanTambahanBiaya = ({
   const isFirstTimer = false;
 
   const [tempSearch, setTempSearch] = useState("");
+
+  const periodOptions = translatedPeriodOptions(t);
 
   const tabItems = useShallowMemo(() => {
     return [
@@ -72,12 +74,23 @@ const LaporanTambahanBiaya = ({
           label: "Shipper",
           searchable: true,
         },
+        {
+          key: "paymentMethod",
+          label: "Opsi Pembayaran",
+          searchable: false,
+        },
       ],
       data: {
         shipper: filterOptions
           ? filterOptions.shippers.map((shipper) => ({
               id: shipper.id,
               label: shipper.name,
+            }))
+          : [],
+        paymentMethod: filterOptions
+          ? filterOptions.paymentMethods.map((paymentMethod) => ({
+              id: paymentMethod.id,
+              label: paymentMethod.name,
             }))
           : [],
       },
@@ -124,9 +137,8 @@ const LaporanTambahanBiaya = ({
           {reports.length === 0 ? null : (
             <div className="flex items-center gap-x-3">
               <DropdownPeriode
-                // disable
-                // disable={orders.length === 0}
-                options={periodOptions(t)}
+                disable={reports.length === 0}
+                options={periodOptions}
                 onSelect={() => {}}
                 recentSelections={recentSelections}
                 value={null}
@@ -211,7 +223,7 @@ const LaporanTambahanBiaya = ({
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${20 || reports?.length} Laporan`}
+                  {`Total : ${reports?.length} Laporan`}
                 </span>
               </div>
               {false ? (
@@ -267,11 +279,11 @@ const LaporanTambahanBiaya = ({
       </Card>
       {reports.length > 0 ? (
         <Pagination
-          currentPage={1}
-          totalPages={2}
-          perPage={10}
-          onPageChange={() => {}}
-          onPerPageChange={() => {}}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          perPage={pagination.itemsPerPage}
+          onPageChange={(value) => onChangeQueryParams("page", value)}
+          onPerPageChange={(value) => onChangeQueryParams("limit", value)}
           className="py-0"
         />
       ) : null}
