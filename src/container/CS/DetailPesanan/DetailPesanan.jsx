@@ -8,6 +8,7 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 import DetailPesananHeader from "@/container/CS/DetailPesanan/DetailPesananHeader/DetailPesananHeader";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetOrderDetailCS } from "@/services/CS/monitoring/detail-pesanan-cs/getOrderDetailCS";
 
 import { TabLacakArmada } from "./TabLacakArmada/TabLacakArmada";
@@ -17,19 +18,20 @@ import { TabRiwayatAktivitas } from "./TabRiwayatAktivitas/TabRiwayatAktivitas";
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
   const [activeTab, setActiveTab] = useState("riwayat-aktivitas");
+  const { t } = useTranslation();
 
   const { data: dataDetailPesanan } = useGetOrderDetailCS(params.orderId);
 
   const tabItems = [
     {
       value: "ringkasan-pesanan",
-      label: "Ringkasan Pesanan",
+      label: t("DetailPesanan.tabRingkasanPesanan", {}, "Ringkasan Pesanan"),
     },
     {
       value: "lacak-armada",
       label: (
         <div className="flex items-center gap-x-1">
-          <span>Lacak Armada</span>
+          <span>{t("DetailPesanan.tabLacakArmada", {}, "Lacak Armada")}</span>
           {dataDetailPesanan?.orderDetail?.totalAssignedTruck > 0 && (
             <span>
               ({dataDetailPesanan?.orderDetail?.totalAssignedTruck || 0})
@@ -37,7 +39,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
           )}
           {dataDetailPesanan?.orderDetail?.hasSos && (
             <div className="inline-flex h-[14px] items-center rounded bg-error-400 p-1 text-[8px] font-bold text-neutral-50">
-              SOS
+              {t("DetailPesanan.badgeSos", {}, "SOS")}
             </div>
           )}
         </div>
@@ -45,11 +47,15 @@ const DetailPesanan = ({ breadcrumbData }) => {
     },
     {
       value: "ringkasan-transaksi",
-      label: "Ringkasan Transaksi",
+      label: t(
+        "DetailPesanan.tabRingkasanTransaksi",
+        {},
+        "Ringkasan Transaksi"
+      ),
     },
     {
       value: "riwayat-aktivitas",
-      label: "Riwayat Aktivitas",
+      label: t("DetailPesanan.tabRiwayatAktivitas", {}, "Riwayat Aktivitas"),
     },
   ];
 

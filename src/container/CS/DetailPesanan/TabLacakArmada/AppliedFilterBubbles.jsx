@@ -57,7 +57,11 @@ export const AppliedFilterBubbles = () => {
         onClick={clearAllFilters}
         className="w-[113px] flex-shrink-0 cursor-pointer text-xs font-bold text-primary-700 hover:text-primary-800"
       >
-        {t("clear_all_filters", null, "Hapus Semua Filter")}
+        {t(
+          "AppliedFilterBubbles.buttonHapusSemuaFilter",
+          {},
+          "Hapus Semua Filter"
+        )}
       </button>
 
       {/* Left Arrow */}

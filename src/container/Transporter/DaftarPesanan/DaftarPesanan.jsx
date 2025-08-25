@@ -594,6 +594,7 @@ const DaftarPesanan = ({
                         key={key}
                         onClick={() => {
                           setFilterType("tab");
+                          onChangeQueryParams("seach", "");
                           onChangeQueryParams("status", tab.value);
                         }}
                         className={cn(

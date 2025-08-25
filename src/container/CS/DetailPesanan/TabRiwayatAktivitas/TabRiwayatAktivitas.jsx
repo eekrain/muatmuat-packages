@@ -8,12 +8,13 @@ import Button from "@/components/Button/Button";
 import CardRiwayatPerubahan from "@/components/Card/CardRiwayatPerubahan";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
 const activityData = [
   {
-    id: "a7a71c3b-907d-4e5b-aff8-f2b648c2c531",
+    id: "ac56761c-830b-4f69-b655-3d509ecbe381",
     timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
     actor: "PT. Siba Surya (Transporter)",
     action:
@@ -428,9 +429,17 @@ const activityData = [
 ];
 
 export const TabRiwayatAktivitas = () => {
+  const { t } = useTranslation();
+
   return (
     <TabsContent className="flex flex-col gap-y-4" value="riwayat-aktivitas">
-      <CardRiwayatPerubahan.Root title="Riwayat Aktivitas">
+      <CardRiwayatPerubahan.Root
+        title={t(
+          "TabRiwayatAktivitas.titleRiwayatAktivitas",
+          {},
+          "Riwayat Aktivitas"
+        )}
+      >
         {activityData.map((item, idx) => (
           <Content key={item.id} item={item} idx={idx} />
         ))}
@@ -440,6 +449,8 @@ export const TabRiwayatAktivitas = () => {
 };
 
 const Content = ({ item, idx }) => {
+  const { t } = useTranslation();
+
   const renderChangeComponents = (changeItems) => {
     const changeTypeMap = {
       driver: {
@@ -464,7 +475,11 @@ const Content = ({ item, idx }) => {
           timestamp: formatDate(changeData.timestamp),
           before: changeData.before,
           after: changeData.after,
-          title: "Perubahan Rute Muat & Bongkar",
+          title: t(
+            "TabRiwayatAktivitas.titlePerubahanRuteMuatBongkar",
+            {},
+            "Perubahan Rute Muat & Bongkar"
+          ),
           blastCount: changeData?.blastCount,
         }),
       },
@@ -489,7 +504,11 @@ const Content = ({ item, idx }) => {
       gmRejectOrderRequest: {
         component: CardRiwayatPerubahan.ItemPenolakanGM,
         getProps: (changeData) => ({
-          title: "Alasan Penolakan GM muatrans",
+          title: t(
+            "TabRiwayatAktivitas.titleAlasanPenolakanGm",
+            {},
+            "Alasan Penolakan GM muatrans"
+          ),
           reason: changeData.reason,
         }),
       },
@@ -547,7 +566,7 @@ const Content = ({ item, idx }) => {
               className="h-8 min-w-[160px] !rounded-full !text-sm"
               onClick={() => alert("handle button1 click")}
             >
-              Blast Ulang
+              {t("TabRiwayatAktivitas.buttonBlastUlang", {}, "Blast Ulang")}
             </Button>
           )}
           {item.changes?.isCanAssignAnotherTransporter && (
@@ -556,7 +575,11 @@ const Content = ({ item, idx }) => {
               className="h-8 min-w-[174px] !rounded-full !text-sm"
               onClick={() => alert("handle button2 click")}
             >
-              Tugaskan Transporter Lain
+              {t(
+                "TabRiwayatAktivitas.buttonTugaskanTransporterLain",
+                {},
+                "Tugaskan Transporter Lain"
+              )}
             </Button>
           )}
           {item.changes?.isCanReset && (
@@ -565,7 +588,7 @@ const Content = ({ item, idx }) => {
               className="h-8 min-w-[174px] !rounded-full !text-sm"
               onClick={() => alert("handle button2 click")}
             >
-              Atur Ulang
+              {t("TabRiwayatAktivitas.buttonAturUlang", {}, "Atur Ulang")}
             </Button>
           )}
         </div>
@@ -576,7 +599,11 @@ const Content = ({ item, idx }) => {
           {/* Left Section: Label and Info Icon */}
           <div className="flex flex-1 items-center gap-2">
             <p className="text-sm font-bold leading-tight text-neutral-900">
-              Penyesuaian Pendapatan
+              {t(
+                "TabRiwayatAktivitas.labelPenyesuaianPendapatan",
+                {},
+                "Penyesuaian Pendapatan"
+              )}
             </p>
             <button
               onClick={() => alert("More information about revenue adjustment")}
@@ -613,6 +640,7 @@ const Content = ({ item, idx }) => {
     item.changes?.isCanAssignAnotherTransporter,
     item.changes?.isCanReset,
     item.changes?.revenueAdjustment,
+    t,
   ]);
 
   return (
