@@ -297,7 +297,11 @@ const TransporterDetailContainer = ({ transporterId }) => {
       <HubungiModal
         isOpen={hubungiModalOpen}
         onClose={closeHubungiModal}
-        transporterData={transporterData}
+        contacts={{
+          pics: transporterData?.contact || [],
+          emergencyContact: transporterData?.emergencyContact || null,
+          companyContact: transporterData?.company?.phoneNumber,
+        }}
       />
     </div>
   );
