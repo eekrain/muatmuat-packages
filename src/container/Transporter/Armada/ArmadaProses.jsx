@@ -14,8 +14,9 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { deleteVehicle } from "@/services/Transporter/manajemen-armada/deleteVehicle";
 import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
@@ -25,6 +26,7 @@ const ArmadaProses = ({
   onStatusChange,
   count,
 }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -55,7 +57,7 @@ const ArmadaProses = ({
   );
 
   const getStatusBadge = (status) => {
-    const statusConfig = getArmadaStatusBadge(status);
+    const statusConfig = getArmadaStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

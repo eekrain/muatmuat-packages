@@ -19,7 +19,7 @@ import { toast } from "@/lib/toast";
 import { useCancelFleet } from "@/services/Transporter/daftar-pesanan/detail-pesanan/cancelFleet";
 import {
   TRACKING_STATUS,
-  getTrackingStatusBadge,
+  getTrackingStatusBadgeWithTranslation,
 } from "@/utils/Transporter/trackingStatus";
 
 import AlasanPembatalanModal from "./AlasanPembatalanModal";
@@ -303,7 +303,7 @@ function CardLacakArmada({
   const showViewSOSButton = hasSOSAlert && totalSosCount === 1;
 
   // Get status badge using tracking status
-  const statusBadge = getTrackingStatusBadge(status);
+  const statusBadge = getTrackingStatusBadgeWithTranslation(status, t);
 
   // --- Render Utama ---
   return (

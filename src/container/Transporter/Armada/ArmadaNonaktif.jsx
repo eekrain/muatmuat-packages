@@ -21,8 +21,9 @@ import {
   DriverSelectionModal,
   ExpiredDocumentWarningModal,
 } from "@/container/Transporter/Driver/DriverSelectionModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { activateVehicle } from "@/services/Transporter/manajemen-armada/activateVehicle";
 import { deleteVehicle } from "@/services/Transporter/manajemen-armada/deleteVehicle";
 import { useGetExpiredVehiclesSummary } from "@/services/Transporter/manajemen-armada/getExpiredVehicles";
@@ -35,6 +36,7 @@ const ArmadaNonaktif = ({
   onStatusChange,
   count,
 }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -65,7 +67,7 @@ const ArmadaNonaktif = ({
   const { data: summaryData } = useGetExpiredVehiclesSummary();
 
   const getStatusBadge = (status) => {
-    const statusConfig = getArmadaStatusBadge(status);
+    const statusConfig = getArmadaStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

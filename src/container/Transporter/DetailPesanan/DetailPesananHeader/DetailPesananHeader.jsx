@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cancelOrder } from "@/services/Transporter/daftar-pesanan/detail-pesanan/cancelOrder";
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
@@ -17,6 +18,7 @@ import AlertResponPerubahan from "./components/AlertResponPerubahan";
 const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   // Nanti disesuaikan Lagi
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [isCancelling, setIsCancelling] = useState(false);
   // const [showCancelModal, setShowCancelModal] = useState(false);
 
