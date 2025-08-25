@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
 
 import PermintaanAngkutDetail from "./PermintaanAngkutDetail";
@@ -15,6 +16,7 @@ const PermintaanAngkut = ({
   onDetailRequest,
   onCloseDetailRequest,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("tersedia");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
@@ -164,7 +166,11 @@ const PermintaanAngkut = ({
           {/* Fixed Header - Search Input and Tabs */}
           <div className="flex-shrink-0 bg-white px-4 py-6">
             <h1 className="mb-4 text-base font-bold text-neutral-900">
-              Permintaan Jasa Angkut
+              {t(
+                "PermintaanAngkut.titleTransportServiceRequest",
+                {},
+                "Permintaan Jasa Angkut"
+              )}
             </h1>
 
             {/* Suspended Account Alert */}
@@ -176,15 +182,23 @@ const PermintaanAngkut = ({
                 />
                 <div className="flex flex-col">
                   <span className="text-[12px] font-semibold text-[#F22C25]">
-                    Akun Kamu Ditangguhkan
+                    {t(
+                      "PermintaanAngkut.alertTitleAccountSuspended",
+                      {},
+                      "Akun Kamu Ditangguhkan"
+                    )}
                   </span>
                   <span className="text-[10px] font-medium text-[#000000]">
-                    Hubungi dukungan pelanggan untuk aktivasi kembali
+                    {t(
+                      "PermintaanAngkut.alertSubtitleContactSupport",
+                      {},
+                      "Hubungi dukungan pelanggan untuk aktivasi kembali"
+                    )}
                     <a
                       href={data?.userStatus?.supportContactUrl}
                       className="ml-1 cursor-pointer font-medium text-primary-700 hover:text-primary-800"
                     >
-                      disini
+                      {t("PermintaanAngkut.linkHere", {}, "disini")}
                     </a>
                   </span>
                 </div>
@@ -200,15 +214,23 @@ const PermintaanAngkut = ({
                 />
                 <div className="flex flex-col">
                   <span className="text-[12px] font-semibold text-[#FF7A00]">
-                    Pengaturan Delegasi Driver Sedang Aktif
+                    {t(
+                      "PermintaanAngkut.alertTitleDriverDelegationActive",
+                      {},
+                      "Pengaturan Delegasi Driver Sedang Aktif"
+                    )}
                   </span>
                   <span className="text-[10px] font-medium text-[#000000]">
-                    Tidak dapat menerima atau menolak pesanan secara langsung
+                    {t(
+                      "PermintaanAngkut.alertSubtitleCannotAcceptDeclineOrders",
+                      {},
+                      "Tidak dapat menerima atau menolak pesanan secara langsung"
+                    )}
                     <a
                       href={data?.userStatus?.delegationResetUrl}
                       className="ml-1 cursor-pointer font-medium text-primary-700 hover:text-primary-800"
                     >
-                      Atur ulang
+                      {t("PermintaanAngkut.buttonReset", {}, "Atur ulang")}
                     </a>
                   </span>
                 </div>
@@ -218,7 +240,11 @@ const PermintaanAngkut = ({
             {/* Search Input */}
             <div className="mb-4">
               <Search
-                placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+                placeholder={t(
+                  "PermintaanAngkut.searchPlaceholder",
+                  {},
+                  "Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+                )}
                 onSearch={handleSearch}
                 autoSearch={true}
                 debounceTime={300}
@@ -239,7 +265,7 @@ const PermintaanAngkut = ({
                 }`}
               >
                 <span className="whitespace-nowrap">
-                  Tersedia (
+                  {t("PermintaanAngkut.tabLabelAvailable", {}, "Tersedia")} (
                   <span
                     className={`${
                       shouldAnimate(
@@ -266,7 +292,12 @@ const PermintaanAngkut = ({
               >
                 <IconComponent src="/icons/halal.svg" className="h-4 w-4" />
                 <span className="whitespace-nowrap">
-                  Halal Logistik (
+                  {t(
+                    "PermintaanAngkut.tabLabelHalalLogistics",
+                    {},
+                    "Halal Logistik"
+                  )}{" "}
+                  (
                   <span
                     className={`${
                       shouldAnimate(
@@ -293,7 +324,7 @@ const PermintaanAngkut = ({
               >
                 <IconComponent src="/icons/bookmark.svg" className="h-4 w-4" />
                 <span className="whitespace-nowrap">
-                  Disimpan (
+                  {t("PermintaanAngkut.tabLabelSaved", {}, "Disimpan")} (
                   <span
                     className={`${
                       dynamicTabCounts.disimpan >= 100
@@ -322,15 +353,23 @@ const PermintaanAngkut = ({
                 />
                 <div className="flex flex-col">
                   <span className="text-[12px] font-semibold text-[#F9A307]">
-                    Memerlukan Pengiriman Dengan Sertifikasi Halal Logistik
+                    {t(
+                      "PermintaanAngkut.warningTitleRequiresHalalCertification",
+                      {},
+                      "Memerlukan Pengiriman Dengan Sertifikasi Halal Logistik"
+                    )}
                   </span>
                   <span className="text-[10px] font-medium text-[#000000]">
-                    Tambahkan sertifikasi halal dengan menghubungi kami
+                    {t(
+                      "PermintaanAngkut.warningSubtitleAddCertification",
+                      {},
+                      "Tambahkan sertifikasi halal dengan menghubungi kami"
+                    )}
                     <a
                       href="#"
                       className="ml-1 cursor-pointer font-semibold text-primary-700 hover:text-primary-800"
                     >
-                      disini
+                      {t("PermintaanAngkut.linkHere", {}, "disini")}
                     </a>
                   </span>
                 </div>
@@ -374,6 +413,7 @@ const RequestList = ({
   searchValue,
   onAcceptRequest,
 }) => {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -382,7 +422,13 @@ const RequestList = ({
             src="/icons/loader-truck-spinner.svg"
             className="h-6 w-6 animate-spin"
           />
-          <span className="text-sm font-medium">Memuat permintaan...</span>
+          <span className="text-sm font-medium">
+            {t(
+              "PermintaanAngkut.requestListLoading",
+              {},
+              "Memuat permintaan..."
+            )}
+          </span>
         </div>
       </div>
     );
@@ -394,21 +440,44 @@ const RequestList = ({
       switch (activeTab) {
         case "halal_logistik":
           return {
-            title: "Belum Ada Permintaan Halal Logistik",
-            subtitle: "Mohon bersabar untuk menanti permintaan baru.",
+            title: t(
+              "PermintaanAngkut.requestListEmptyTitleHalal",
+              {},
+              "Belum Ada Permintaan Halal Logistik"
+            ),
+            subtitle: t(
+              "PermintaanAngkut.requestListEmptySubtitlePleaseWait",
+              {},
+              "Mohon bersabar untuk menanti permintaan baru."
+            ),
             icon: "/icons/halal.svg",
           };
         case "disimpan":
           return {
-            title: "Belum Ada Permintaan Tersimpan",
-            subtitle:
-              "Anda belum menyimpan permintaan angkut apapun. Simpan permintaan yang menarik dengan menekan ikon bookmark untuk melihatnya di sini.",
+            title: t(
+              "PermintaanAngkut.requestListEmptyTitleSaved",
+              {},
+              "Belum Ada Permintaan Tersimpan"
+            ),
+            subtitle: t(
+              "PermintaanAngkut.requestListEmptySubtitleSaved",
+              {},
+              "Anda belum menyimpan permintaan angkut apapun. Simpan permintaan yang menarik dengan menekan ikon bookmark untuk melihatnya di sini."
+            ),
             icon: "/icons/bookmark.svg",
           };
         default:
           return {
-            title: "Oops, belum ada permintaan jasa angkut",
-            subtitle: "Mohon bersabar untuk menanti permintaan baru",
+            title: t(
+              "PermintaanAngkut.requestListEmptyTitleDefault",
+              {},
+              "Oops, belum ada permintaan jasa angkut"
+            ),
+            subtitle: t(
+              "PermintaanAngkut.requestListEmptySubtitleDefault",
+              {},
+              "Mohon bersabar untuk menanti permintaan baru"
+            ),
             icon: "/icons/truck-jenis.svg",
           };
       }
@@ -421,10 +490,18 @@ const RequestList = ({
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              Oops, belum ada permintaan jasa angkut
+              {t(
+                "PermintaanAngkut.requestListEmptyTitleDefault",
+                {},
+                "Oops, belum ada permintaan jasa angkut"
+              )}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              Mohon bersabar untuk menanti permintaan baru{" "}
+              {t(
+                "PermintaanAngkut.requestListEmptySubtitleDefault",
+                {},
+                "Mohon bersabar untuk menanti permintaan baru"
+              )}{" "}
             </p>
           </div>
         </DataNotFound>
@@ -461,7 +538,11 @@ const RequestList = ({
           />
           <div className="text-center">
             <h3 className="text-lg font-semibold text-[#868686]">
-              Keyword Tidak Ditemukan
+              {t(
+                "PermintaanAngkut.requestListSearchNotFound",
+                {},
+                "Keyword Tidak Ditemukan"
+              )}
             </h3>
           </div>
         </div>
