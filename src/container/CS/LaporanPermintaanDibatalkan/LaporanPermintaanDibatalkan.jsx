@@ -1,16 +1,45 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import { DataTable } from "@/components/DataTable";
+import Card from "@/components/Card/Card";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Pagination from "@/components/Pagination/Pagination";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import Table from "@/components/Table/Table";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
+import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
 
-const LaporanPermintaanDibatalkan = () => {
+const LaporanPermintaanDibatalkan = ({
+  isLoading,
+  orders,
+  pagination,
+  periodHistory,
+  hasNoOrders,
+  queryParams,
+  lastFilterField,
+  currentPeriodValue,
+  setCurrentPeriodValue,
+  onChangeQueryParams,
+}) => {
   const { t } = useTranslation();
+
+  const [tempSearch, setTempSearch] = useState("");
+
   const periodOptions = translatedPeriodOptions(t);
+
+  const recentSelections = useShallowMemo(() => {
+    return periodHistory.map((item) => ({
+      name: item.displayText,
+      value: item.displayText,
+      start_date: formatDateToDDMonYYYY(item.startate),
+      end_date: formatDateToDDMonYYYY(item.endDate),
+    }));
+  }, [periodHistory]);
 
   const columns = [
     {
@@ -193,20 +222,73 @@ const LaporanPermintaanDibatalkan = () => {
     },
   ];
 
+  const DataEmptyComponent = () => {
+    if (lastFilterField !== "search") {
+      return (
+        <DataNotFound
+          className="gap-5"
+          title="Keyword Tidak Ditemukan"
+          width={144}
+          height={122}
+        />
+      );
+    } else {
+      return (
+        <DataNotFound
+          type="data"
+          className="gap-3"
+          title="Tidak ada data"
+          width={96}
+          height={77}
+        />
+      );
+    }
+  };
+
+  // Handle search
+  const handleSearch = (e) => {
+    if (e.key === "Enter" && tempSearch.length >= 3) {
+      onChangeQueryParams("search", tempSearch);
+    }
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setTempSearch("");
+  };
+
+  // Generic function to handle sorting for any column
+  const handleSort = (columnName) => {
+    // If sort is empty or not the current column, set to current column and order to desc
+    if (queryParams.sort !== columnName) {
+      onChangeQueryParams("sort", columnName);
+      onChangeQueryParams("order", "desc");
+    }
+    // If sort is the current column and order is desc, change to asc
+    else if (queryParams.sort === columnName && queryParams.order === "desc") {
+      onChangeQueryParams("order", "asc");
+    }
+    // If sort is the current column and order is asc, reset sort and order
+    else {
+      onChangeQueryParams("sort", "");
+      onChangeQueryParams("order", "");
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Laporan Permintaan Dibatalkan</h1>
         <div className="flex items-center gap-x-3">
           <DropdownPeriode
-            // disable={true}
+            disable={orders.length === 0}
             options={periodOptions}
             onSelect={() => {}}
-            recentSelections={[]}
+            recentSelections={recentSelections}
             value={null} // Pass the current value to control the dropdown
           />
           <Button
-            // disabled
+            disabled={orders.length === 0}
             iconLeft="/icons/download16.svg"
             variant="muattrans-primary"
             onClick={() => {}}
@@ -216,22 +298,78 @@ const LaporanPermintaanDibatalkan = () => {
         </div>
       </div>
       {/* <CancelledOrderTable /> */}
-      <DataTable
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-        columns={columns}
-        searchPlaceholder="Cari Permintaan "
-        totalCountLabel="Permintaan Dibatalkan"
-        currentPage={2}
-        totalPages={20}
-        totalItems={5}
-        perPage={10}
-        onPageChange={() => {}}
-        onPerPageChange={() => {}}
-        onSearch={() => {}}
-        onSort={() => {}}
-        loading={false}
-        showPagination
-      />
+      <Card className="border-none">
+        {hasNoOrders ? (
+          <div className="flex h-[280px] items-center justify-center">
+            <div className="flex flex-col items-center gap-y-3">
+              <DataNotFound
+                type="data"
+                title="Oops, belum ada laporan permintaan jasa angkut yang dibatalkan"
+                className="gap-3"
+                textClass="w-full"
+                width={96}
+                height={77}
+              />
+              <span className="text-xs font-medium text-neutral-600">
+                Permintaan jasa angkut yang telah dibatalkan oleh shipper akan
+                ditampilkan disini
+              </span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-y-6 p-6 pt-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-x-3">
+                  <Input
+                    className="gap-0"
+                    disabled={orders.length === 0 && !queryParams.search}
+                    appearance={{ containerClassName: "w-[262px]" }}
+                    placeholder="Cari Permintaan "
+                    icon={{
+                      left: "/icons/search16.svg",
+                      right: tempSearch ? (
+                        <IconComponent
+                          src="/icons/silang16.svg"
+                          onClick={handleClearSearch}
+                        />
+                      ) : null,
+                    }}
+                    value={tempSearch}
+                    onChange={({ target: { value } }) => setTempSearch(value)}
+                    onKeyUp={handleSearch}
+                  />
+                </div>
+                <span className="text-base font-semibold">
+                  {`Total : ${orders?.length} Permintaan Dibatalkan`}
+                </span>
+              </div>
+            </div>
+            <Table
+              columns={columns}
+              data={orders}
+              loading={isLoading}
+              onRowClick={undefined}
+              onSort={handleSort}
+              sortConfig={{
+                sort: queryParams.sort,
+                order: queryParams.order,
+              }}
+              emptyComponent={<DataEmptyComponent />}
+            />
+          </>
+        )}
+      </Card>
+      {orders.length === 0 ? null : (
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          perPage={pagination.itemsPerPage}
+          onPageChange={(value) => onChangeQueryParams("page", value)}
+          onPerPageChange={(value) => onChangeQueryParams("limit", value)}
+          className="py-0"
+        />
+      )}
     </div>
   );
 };
