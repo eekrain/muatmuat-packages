@@ -53,7 +53,6 @@ export const saveCustomPeriod = async (payload) => {
     if (scenario < 0.1) {
       throw mockErrorResponse;
     }
-
     return mockSaveCustomPeriodResponse(payload).data;
   }
 

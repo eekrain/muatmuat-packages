@@ -1,7 +1,7 @@
 // Period options untuk dropdown
-export const periodOptions = (t) => [
+export const translatedPeriodOptions = (t) => [
   {
-    name: `${t("EksekusiTenderIndexSemuaPeriode")} (Default)`,
+    name: t("PenaltyTable.periodOptionAll"),
     value: "",
     format: "day",
   },

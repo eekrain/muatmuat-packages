@@ -18,9 +18,9 @@ import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
+import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
 import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
-import { useCancelOrder } from "@/services/Shipper/detailpesanan/cancelOrder";
-import { useGetShipperBankAccounts } from "@/services/Shipper/rekening/getShipperBankAccounts";
+import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import {
   useRequestOtpActions,
   useRequestOtpStore,
@@ -38,12 +38,11 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const [pendingCancelData, setPendingCancelData] = useState(null);
 
   const { data: cancellationReasons } = useGetCancellationReasons();
-  const { data: bankAccounts } = useGetShipperBankAccounts();
+  const { data: bankAccounts } = useGetBankAccounts();
   const { data: bankOptions } = useGetAvailableBankOptions();
   const params = useParams();
-  const { triggerCancelOrder } = useCancelOrder(params.orderId);
   const [cancelFormErrors, setCancelFormErrors] = useState({});
-  // const { mutate } = useGetDetailPesananData(orderId);
+  const { mutate } = useGetDetailPesananData(params?.orderId);
 
   const handleProceedCancelOrder = async ({
     selectedReason,
@@ -79,17 +78,23 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
       setIsModalReasonOpen(false);
       setIsModalRekeningOpen(true);
     } else {
-      try {
-        await triggerCancelOrder({ data: body });
-        toast.success(t("messageBerhasilMembatalkanPesanan"));
-        setIsModalReasonOpen(false);
-        // TODO: Mutate detail pesanan data to reflect cancellation
-      } catch (error) {
-        toast.error(
-          error?.response?.data?.Data?.Message ||
-            t("messageGagalMembatalkanPesanan")
-        );
-      }
+      // Implement cancel order
+      const body = {
+        reasonId: selectedReason,
+        additionalInfo: isOtherReason ? customReason : "",
+      };
+      console.log(bankAccounts, "bankAccount");
+      fetcherMuatrans
+        .post(`v1/orders/${params.orderId}/cancel`, body)
+        .then((response) => {
+          toast.success(t("messageBerhasilMembatalkanPesanan"));
+          mutate();
+        })
+        .catch((error) => {
+          toast.error(error.response.data?.Data?.Message);
+        });
+
+      setIsModalReasonOpen(false);
     }
   };
 

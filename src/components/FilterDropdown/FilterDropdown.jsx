@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import {
   SimpleDropdown,
@@ -279,27 +279,19 @@ const FilterDropdown = ({
                           category.label || ""
                         )}
                         icon={{
-                          left: (
+                          left: "/icons/search16.svg",
+                          right: searchQueries[category.key] ? (
+                            // && searchQueries[category.key].length > 2
                             <IconComponent
-                              src="/icons/datatable-search.svg"
-                              width={12}
+                              src="/icons/silang16.svg"
+                              onClick={() =>
+                                handleSearchChange(category.key, "")
+                              }
                             />
-                          ),
-                          right:
-                            searchQueries[category.key] &&
-                            searchQueries[category.key].length > 2 ? (
-                              <button
-                                onClick={() =>
-                                  handleSearchChange(category.key, "")
-                                }
-                                className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
-                              >
-                                <X className="h-3 w-3 text-neutral-600" />
-                              </button>
-                            ) : null,
+                          ) : null,
                         }}
                         appearance={{
-                          containerClassName: "h-8",
+                          containerClassName: "h-8 w-[166px]",
                           inputClassName: "text-xs font-medium mt-0",
                         }}
                       />
@@ -307,7 +299,10 @@ const FilterDropdown = ({
                   )}
 
                   {/* Items List */}
-                  <div className="overflow-y-auto" style={{ maxHeight }}>
+                  <div
+                    className="w-[193px] overflow-y-auto"
+                    style={{ maxHeight }}
+                  >
                     {getFilteredItems(category.key, category).length === 0 ? (
                       <div className="flex h-[42px] w-full items-center justify-center">
                         <span className="text-center text-xs font-medium">

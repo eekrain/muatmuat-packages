@@ -20,7 +20,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === params?.driverId
   );
-
+  console.log(dataStatusPesanan?.driverStatus, "tes1234");
   return (
     <FormResponsiveLayout
       title={{

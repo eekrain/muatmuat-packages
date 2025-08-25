@@ -18,6 +18,7 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
 import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
+import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import {
   useRequestOtpActions,
   useRequestOtpStore,
@@ -49,7 +50,7 @@ export const BottomsheetAlasanPembatalan = ({
   const [customReason, setCustomReason] = useState("");
   const [customReasonError, setCustomReasonError] = useState(null);
   const [globalError, setGlobalError] = useState(null);
-  // const { mutate } = useGetDetailPesananData(orderId);
+  const { mutate } = useGetDetailPesananData(orderId);
   const handleConfirm = async () => {
     setCustomReasonError(null);
     setGlobalError(null);
@@ -59,7 +60,7 @@ export const BottomsheetAlasanPembatalan = ({
         t(
           "BottomsheetAlasanPembatalan.errorCancellationReasonRequired",
           {},
-          "Alasan pembatalan wajib diisi"
+          "Alasan pembatalan wajib dipilih"
         )
       );
       return;
@@ -118,6 +119,7 @@ export const BottomsheetAlasanPembatalan = ({
             "Berhasil membatalkan pesanan"
           )
         );
+        mutate();
         onConfirm?.();
         onOpenChange(false);
       } catch (error) {

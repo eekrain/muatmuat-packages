@@ -16,7 +16,6 @@ import {
 } from "@/lib/constants/Shipper/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
-import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
@@ -269,7 +268,7 @@ const DetailPesananScreen = ({
           <TabContentDetailPIC dataDetailPIC={dataDetailPIC} />
         </Tabs>
 
-        <button
+        {/* <button
           onClick={() =>
             toast.success(
               t(
@@ -281,7 +280,7 @@ const DetailPesananScreen = ({
           }
         >
           {t("DetailPesananScreen.testButton", {}, "tes")}
-        </button>
+        </button> */}
       </div>
 
       {!NOT_ALLOWED_SHOW_FOOTER.includes(dataStatusPesanan?.orderStatus) ? (

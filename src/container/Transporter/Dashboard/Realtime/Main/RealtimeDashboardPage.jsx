@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import DashboardSection from "@/app/transporter/(main)/dashboard/real-time/components/DashboardSection";
 import IncomeCards from "@/app/transporter/(main)/dashboard/real-time/components/IncomeCards";
@@ -9,6 +9,7 @@ import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/St
 import SuspendedAccountAlert from "@/app/transporter/(main)/dashboard/real-time/components/SuspendedAccountAlert";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetSosReports } from "@/services/Transporter/dashboard/getSosReports";
 
 const RealtimeDashboardPage = () => {
   const { t } = useTranslation();
@@ -16,6 +17,13 @@ const RealtimeDashboardPage = () => {
   const [accountStatus, setAccountStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // SOS Reports data
+  const {
+    data: sosReportsData,
+    isLoading: sosReportsLoading,
+    isError: sosReportsError,
+  } = useGetSosReports();
 
   // NOTE: pesananLabel, alertLabel, and contents objects are removed as they are now handled by t() directly.
 
@@ -195,21 +203,50 @@ const RealtimeDashboardPage = () => {
         className="bg-[#FFECB4]"
       >
         <div className="grid grid-cols-4 gap-4">
-          {Object.entries(dashboardData.alerts).map(([key, data]) => (
-            <StatCard
-              key={key}
-              label={t(
-                `RealtimeDashboardPage.alertsLabel${key.charAt(0).toUpperCase() + key.slice(1)}`
-              )}
-              href={contentMap.alerts[key].href}
-              openNewTab={contentMap.alerts[key].openNewTab}
-              value={data.count}
-              tooltipText={t(
-                `RealtimeDashboardPage.alertsTooltip${key.charAt(0).toUpperCase() + key.slice(1)}`
-              )}
-              side={contentMap.alerts[key].side}
-            />
-          ))}
+          {Object.entries(dashboardData.alerts).map(([key, data]) => {
+            // Override sosReports data with real SOS data if available
+            if (key === "sosReports" && sosReportsData?.summary) {
+              return (
+                <StatCard
+                  key={key}
+                  label={t(
+                    `RealtimeDashboardPage.alertsLabel${key.charAt(0).toUpperCase() + key.slice(1)}`,
+                    {},
+                    "Laporan SOS"
+                  )}
+                  href={contentMap.alerts[key].href}
+                  openNewTab={contentMap.alerts[key].openNewTab}
+                  value={sosReportsData.summary.activeReports}
+                  tooltipText={t(
+                    `RealtimeDashboardPage.alertsTooltip${key.charAt(0).toUpperCase() + key.slice(1)}`,
+                    {},
+                    `${sosReportsData.summary.activeReports} laporan SOS aktif, ${sosReportsData.summary.resolvedReports} telah diselesaikan. Rata-rata waktu respon: ${sosReportsData.summary.averageResponseTime}`
+                  )}
+                  side={contentMap.alerts[key].side}
+                  icon="/icons/sos-alert.svg"
+                  variant={
+                    sosReportsData.summary.activeReports > 0 ? "alert" : "soft"
+                  }
+                />
+              );
+            }
+
+            return (
+              <StatCard
+                key={key}
+                label={t(
+                  `RealtimeDashboardPage.alertsLabel${key.charAt(0).toUpperCase() + key.slice(1)}`
+                )}
+                href={contentMap.alerts[key].href}
+                openNewTab={contentMap.alerts[key].openNewTab}
+                value={data.count}
+                tooltipText={t(
+                  `RealtimeDashboardPage.alertsTooltip${key.charAt(0).toUpperCase() + key.slice(1)}`
+                )}
+                side={contentMap.alerts[key].side}
+              />
+            );
+          })}
         </div>
       </DashboardSection>
 

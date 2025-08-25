@@ -53,6 +53,7 @@ const DriverQRCodeSingleScreen = () => {
         open={isOpenShareVia}
         onOpenChange={setIsOpenShareVia}
         shareUrl={qrData?.shareLink}
+        qrCodeImage={qrData?.qrCodeImage}
       />
     </FormResponsiveLayout>
   );

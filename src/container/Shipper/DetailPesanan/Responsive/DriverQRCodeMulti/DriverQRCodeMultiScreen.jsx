@@ -26,6 +26,21 @@ export default function MultiDriverQRCodeScreen({ dataStatusPesanan }) {
     );
   }, [dataStatusPesanan?.driverStatus, searchQuery]);
 
+  // Generate share URL for multiple drivers
+  const shareUrl = useMemo(() => {
+    if (params?.orderId) {
+      return `${window.location.origin}/orders/${params.orderId}/qr-code`;
+    }
+    return "";
+  }, [params?.orderId]);
+
+  // Get QR code image from first driver for sharing
+  const firstDriver = filteredDrivers?.[0];
+  const { qrData: firstDriverQRData } = useGetDriverQRCodeById({
+    driverId: firstDriver?.driverId,
+    orderId: params?.orderId,
+  });
+
   return (
     <FormResponsiveLayout
       title={{
@@ -69,6 +84,8 @@ export default function MultiDriverQRCodeScreen({ dataStatusPesanan }) {
       <BottomsheetShareVia
         open={isShareBottomsheetOpen}
         onOpenChange={setIsShareBottomsheetOpen}
+        shareUrl={shareUrl}
+        qrCodeImage={firstDriverQRData?.qrCodeImage}
       />
     </FormResponsiveLayout>
   );
@@ -82,7 +99,7 @@ const DriverQRItem = ({ driver, orderId }) => {
   });
 
   if (!qrData) return null;
-
+  console.log(qrData, "tes");
   return (
     <DriverInfo.Root
       key={driver?.driverId}
