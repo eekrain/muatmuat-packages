@@ -2038,7 +2038,7 @@
   "CardFleet.respondChange": "Respon Perubahan",
   "CardFleet.sosHistory": "Riwayat SOS",
   "CardFleet.understand": "Mengerti",
-  "SOSContainer.fleetCount": "{totalActiveSos} Armada",
+  "SOSContainer.fleetCount": "{count} Armada",
   "SOSContainer.title": "SOS",
   "SOSContainer.noReports": "Belum Ada Laporan",
   "SOSContainer.searchPlaceholder": "Cari No. Polisi / Nama Driver",
