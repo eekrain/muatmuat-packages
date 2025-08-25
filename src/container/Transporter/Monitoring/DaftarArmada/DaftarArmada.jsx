@@ -297,7 +297,7 @@ const DaftarArmada = ({
             >
               {t(
                 "DaftarArmada.sosTab",
-                { sosCount: sosCount },
+                { count: sosCount },
                 `SOS (${sosCount})`
               )}
               {/* Notifikasi dot bisa ditambahkan logika tambahan jika diperlukan */}
@@ -319,7 +319,7 @@ const DaftarArmada = ({
           >
             {t(
               "DaftarArmada.allTab",
-              { totalFleets: totalFleets },
+              { count: totalFleets },
               `Semua (${totalFleets})`
             )}
           </button>

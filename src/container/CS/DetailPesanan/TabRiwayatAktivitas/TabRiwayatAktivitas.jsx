@@ -6,10 +6,19 @@ import { sub } from "date-fns";
 
 import Button from "@/components/Button/Button";
 import CardRiwayatPerubahan from "@/components/Card/CardRiwayatPerubahan";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { TabsContent } from "@/components/Tabs/Tabs";
 import { formatDate } from "@/lib/utils/dateFormat";
+import { idrFormat } from "@/lib/utils/formatters";
 
 const activityData = [
+  {
+    id: "a7a71c3b-907d-4e5b-aff8-f2b648c2c531",
+    timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
+    actor: "PT. Siba Surya (Transporter)",
+    action:
+      "Telah menerima perubahan detail pesanan yang dibuat <b>PT. Airmas International (Shipper)</b>",
+  },
   {
     id: "a7a71c3b-907d-4e5b-aff8-f2b648c2c531",
     timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
@@ -20,7 +29,19 @@ const activityData = [
       isCanRepeatBlast: false,
       isCanAssignAnotherTransporter: false,
       isCanReset: false,
+      revenueAdjustment: {
+        before: 24500000,
+        after: 25400000,
+      },
       items: {
+        changeTime: {
+          before: {
+            timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
+          },
+          after: {
+            timestamp: sub(new Date(), { days: 1, hours: 10 }).toISOString(),
+          },
+        },
         changeRoute: {
           before: {
             distance: "178 km",
@@ -29,8 +50,8 @@ const activityData = [
               { sequence: 2, fullAddress: "Kab. Sidoarjo, Kec. Sedati" },
             ],
             dropoffs: [
-              { sequence: 1, fullAddress: "Kab. Pasuruan, Kec. Klojen" },
-              { sequence: 2, fullAddress: "Kab. Malang, Kec. Singosari" },
+              { sequence: 1, fullAddress: "Kab. Malang, Kec. Singosari" },
+              { sequence: 2, fullAddress: "Kab. Pasuruan, Kec. Klojen" },
             ],
           },
           after: {
@@ -40,21 +61,21 @@ const activityData = [
               { sequence: 2, fullAddress: "Kab. Sidoarjo, Kec. Sedati" },
             ],
             dropoffs: [
-              { sequence: 1, fullAddress: "Kab. Pasuruan, Kec. Klojen" },
-              { sequence: 2, fullAddress: "Kab. Malang, Kec. Blimbing" },
+              { sequence: 1, fullAddress: "Kab. Malang, Kec. Blimbing" },
+              { sequence: 2, fullAddress: "Kab. Pasuruan, Kec. Klojen" },
             ],
           },
         },
       },
     },
   },
-  {
-    id: "a7a71c3b-907d-4e5b-aff8-f2b648c2c531",
-    timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
-    actor: "PT Rajawali Trans Logistic (Transporter)",
-    action:
-      "Telah menerima perubahan transporter yang dibuat <b>CS Daffa Toldo (CS muatrans)</b>. Perubahan menunggu konfirmasi <b>Transporter</b> baru dan <b>GM muatrans</b>",
-  },
+  // {
+  //   id: "a7a71c3b-907d-4e5b-aff8-f2b648c2c531",
+  //   timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
+  //   actor: "PT Rajawali Trans Logistic (Transporter)",
+  //   action:
+  //     "Telah menerima perubahan transporter yang dibuat <b>CS Daffa Toldo (CS muatrans)</b>. Perubahan menunggu konfirmasi <b>Transporter</b> baru dan <b>GM muatrans</b>",
+  // },
   // {
   //   id: "0cdfe0a1-55aa-4622-b194-0f945cf895f6",
   //   timestamp: sub(new Date(), { days: 1, hours: 20 }).toISOString(),
@@ -91,45 +112,45 @@ const activityData = [
   //     },
   //   },
   // },
-  {
-    id: "60cb241d-3243-4d29-a219-2b34eeacfdee",
-    timestamp: sub(new Date(), {
-      days: 2,
-      hours: 3,
-      minutes: 15,
-    }).toISOString(),
-    actor: "CS Daffa Toldo (CS muatrans)",
-    action: "Telah melakukan perubahan pada pesanan ini",
-    changes: {
-      title: "Detail Perubahan",
-      isCanRepeatBlast: false,
-      isCanAssignAnotherTransporter: false,
-      isCanReset: false,
-      items: {
-        transporter: {
-          before: [
-            {
-              name: "PT Kaltim Jaya Makmur",
-              picture: "https://picsum.photos/100?random=33",
-              phone: "021-345-6789",
-              units: 3,
-            },
-          ],
-          after: [
-            {
-              name: "PT. Truk Jaya Abadi",
-              value: "d1b3e4c5-1f2a-4b3c-8a9d-0e1f2a3b4c5d",
-              availableUnits: 2,
-              phone: "031-111-2222",
-              picture: "https://picsum.photos/100?random=123123",
-              units: 2,
-            },
-          ],
-          blastCount: 1,
-        },
-      },
-    },
-  },
+  // {
+  //   id: "60cb241d-3243-4d29-a219-2b34eeacfdee",
+  //   timestamp: sub(new Date(), {
+  //     days: 2,
+  //     hours: 3,
+  //     minutes: 15,
+  //   }).toISOString(),
+  //   actor: "CS Daffa Toldo (CS muatrans)",
+  //   action: "Telah melakukan perubahan pada pesanan ini",
+  //   changes: {
+  //     title: "Detail Perubahan",
+  //     isCanRepeatBlast: false,
+  //     isCanAssignAnotherTransporter: false,
+  //     isCanReset: false,
+  //     items: {
+  //       transporter: {
+  //         before: [
+  //           {
+  //             name: "PT Kaltim Jaya Makmur",
+  //             picture: "https://picsum.photos/100?random=33",
+  //             phone: "021-345-6789",
+  //             units: 3,
+  //           },
+  //         ],
+  //         after: [
+  //           {
+  //             name: "PT. Truk Jaya Abadi",
+  //             value: "d1b3e4c5-1f2a-4b3c-8a9d-0e1f2a3b4c5d",
+  //             availableUnits: 2,
+  //             phone: "031-111-2222",
+  //             picture: "https://picsum.photos/100?random=123123",
+  //             units: 2,
+  //           },
+  //         ],
+  //         blastCount: 1,
+  //       },
+  //     },
+  //   },
+  // },
   // {
   //   id: "2e8c5850-6bf6-43ca-9646-337354ed3e4c",
   //   timestamp: sub(new Date(), { days: 2, hours: 14 }).toISOString(),
@@ -377,12 +398,12 @@ const activityData = [
   //     },
   //   },
   // },
-  // {
-  //   id: "a817e51d-ecc1-4eef-8ffc-2923679faa2a",
-  //   timestamp: sub(new Date(), { days: 2, hours: 14 }).toISOString(),
-  //   actor: "PT. Siba Surya (Transporter)",
-  //   action: "Telah mengkonfirmasi siap pada pesanan",
-  // },
+  {
+    id: "a817e51d-ecc1-4eef-8ffc-2923679faa2a",
+    timestamp: sub(new Date(), { days: 2, hours: 14 }).toISOString(),
+    actor: "PT. Siba Surya (Transporter)",
+    action: "Telah mengkonfirmasi siap pada pesanan",
+  },
   {
     id: "f5859b85-b36c-411b-9de9-18dff0f8cd20",
     timestamp: sub(new Date(), {
@@ -479,6 +500,19 @@ const Content = ({ item, idx }) => {
           after: changeData.after,
         }),
       },
+      changeTime: {
+        component: CardRiwayatPerubahan.ItemPerubahanWaktu,
+        getProps: (changeData) => ({
+          before: {
+            timestamp: formatDate(changeData.before.timestamp, {
+              padDay: true,
+            }),
+          },
+          after: {
+            timestamp: formatDate(changeData.after.timestamp, { padDay: true }),
+          },
+        }),
+      },
     };
 
     return Object.entries(changeItems)
@@ -499,48 +533,86 @@ const Content = ({ item, idx }) => {
   };
 
   const footer = useMemo(() => {
-    const isAny =
+    const isFooterButtons =
       item.changes?.isCanRepeatBlast ||
       item.changes?.isCanAssignAnotherTransporter ||
       item.changes?.isCanReset;
 
-    if (!isAny) return null;
+    if (isFooterButtons) {
+      return (
+        <div className="mt-4 flex justify-end gap-3">
+          {item.changes?.isCanRepeatBlast && (
+            <Button
+              variant="muattrans-primary-secondary"
+              className="h-8 min-w-[160px] !rounded-full !text-sm"
+              onClick={() => alert("handle button1 click")}
+            >
+              Blast Ulang
+            </Button>
+          )}
+          {item.changes?.isCanAssignAnotherTransporter && (
+            <Button
+              variant="muattrans-primary"
+              className="h-8 min-w-[174px] !rounded-full !text-sm"
+              onClick={() => alert("handle button2 click")}
+            >
+              Tugaskan Transporter Lain
+            </Button>
+          )}
+          {item.changes?.isCanReset && (
+            <Button
+              variant="muattrans-primary"
+              className="h-8 min-w-[174px] !rounded-full !text-sm"
+              onClick={() => alert("handle button2 click")}
+            >
+              Atur Ulang
+            </Button>
+          )}
+        </div>
+      );
+    } else if (item.changes?.revenueAdjustment) {
+      return (
+        <div className="mt-4 box-border flex w-full flex-row items-center justify-between gap-12 rounded-lg border border-neutral-400 p-4">
+          {/* Left Section: Label and Info Icon */}
+          <div className="flex flex-1 items-center gap-2">
+            <p className="text-sm font-bold leading-tight text-neutral-900">
+              Penyesuaian Pendapatan
+            </p>
+            <button
+              onClick={() => alert("More information about revenue adjustment")}
+              aria-label="More information"
+              className="flex h-4 w-4 items-center justify-center"
+            >
+              <IconComponent
+                src="/icons/info-circle24.svg"
+                alt="Info icon"
+                className="h-full w-full"
+              />
+            </button>
+          </div>
 
-    return (
-      <div className="mt-4 flex justify-end gap-3">
-        {item.changes?.isCanRepeatBlast && (
-          <Button
-            variant="muattrans-primary-secondary"
-            className="h-8 min-w-[160px] !rounded-full !text-sm"
-            onClick={() => alert("handle button1 click")}
-          >
-            Blast Ulang
-          </Button>
-        )}
-        {item.changes?.isCanAssignAnotherTransporter && (
-          <Button
-            variant="muattrans-primary"
-            className="h-8 min-w-[174px] !rounded-full !text-sm"
-            onClick={() => alert("handle button2 click")}
-          >
-            Tugaskan Transporter Lain
-          </Button>
-        )}
-        {item.changes?.isCanReset && (
-          <Button
-            variant="muattrans-primary"
-            className="h-8 min-w-[174px] !rounded-full !text-sm"
-            onClick={() => alert("handle button2 click")}
-          >
-            Atur Ulang
-          </Button>
-        )}
-      </div>
-    );
+          {/* Right Section: Price Adjustment */}
+          <div className="flex flex-1 items-center gap-4">
+            <p className="text-right text-sm font-medium text-neutral-900 line-through">
+              {idrFormat(24500000)}
+            </p>
+            <IconComponent
+              src="/icons/arrow-right.svg"
+              alt="Indicates adjustment to"
+              className="h-4 w-4 flex-shrink-0"
+            />
+            <p className="text-right text-sm font-bold leading-tight text-neutral-900">
+              {idrFormat(25400000)}
+            </p>
+          </div>
+        </div>
+      );
+    }
   }, [
     item.changes?.isCanRepeatBlast,
     item.changes?.isCanAssignAnotherTransporter,
     item.changes?.isCanReset,
+    item.changes?.revenueAdjustment,
   ]);
 
   return (
@@ -565,85 +637,3 @@ const Content = ({ item, idx }) => {
     </CardRiwayatPerubahan.Item>
   );
 };
-
-// // --- Mock Data from Screenshot ---
-// const routeData = {
-//   before: {
-//     distance: "178 km",
-//     pickups: [
-//       { sequence: 1, fullAddress: "Kota Surabaya, Kec. Tegalsari" },
-//       { sequence: 2, fullAddress: "Kab. Sidoarjo, Kec. Sedati" },
-//     ],
-//     dropoffs: [
-//       { sequence: 1, fullAddress: "Kab. Malang, Kec. Singosari" },
-//       { sequence: 2, fullAddress: "Kab. Pasuruan, Kec. Klojen" },
-//     ],
-//   },
-//   after: {
-//     distance: "182 km",
-//     pickups: [
-//       { sequence: 1, fullAddress: "Kota Surabaya, Kec. Wonorejo" },
-//       { sequence: 2, fullAddress: "Kab. Sidoarjo, Kec. Sedati" },
-//     ],
-//     dropoffs: [
-//       { sequence: 1, fullAddress: "Kab. Malang, Kec. Blimbing" },
-//       { sequence: 2, fullAddress: "Kab. Pasuruan, Kec. Klojen" },
-//     ],
-//   },
-// };
-
-// const RouteComparisonExample = () => {
-//   const { before, after } = routeData;
-
-//   const combinedLocations = useMemo(
-//     () => [
-//       ...before.pickups.map((before, i) => ({
-//         before,
-//         after: after.pickups[i],
-//         type: "pickup",
-//       })),
-//       ...before.dropoffs.map((before, i) => ({
-//         before,
-//         after: after.dropoffs[i],
-//         type: "dropoff",
-//       })),
-//     ],
-//     [before, after]
-//   );
-
-//   return (
-//     <div className="w-full max-w-4xl rounded-lg border border-neutral-200 bg-white p-6 font-sans">
-//       <div className="relative">
-//         <div className="absolute left-1/2 top-0 z-20 h-full w-[0.75px] -translate-x-1/2 bg-neutral-400" />
-//         <div className="grid grid-cols-2 text-xs font-medium text-neutral-600">
-//           <div className="pb-2 pl-4">
-//             Rute Awal :{" "}
-//             <span className="text-neutral-900">Estimasi {before.distance}</span>
-//           </div>
-//           <div className="pb-2 pl-4">
-//             Rute Baru :{" "}
-//             <span className="text-neutral-900">Estimasi {after.distance}</span>
-//           </div>
-//         </div>
-//         <div className="relative flex flex-col">
-//           {combinedLocations.map((loc, index) => (
-//             <TimelineChangeRow
-//               key={`${loc.type}-${loc.before.sequence}`}
-//               before={loc.before}
-//               after={loc.after}
-//               type={loc.type}
-//               showPickupHeader={index === 0}
-//               showDropoffHeader={
-//                 loc.type === "dropoff" &&
-//                 combinedLocations[index - 1]?.type === "pickup"
-//               }
-//               isLast={index === combinedLocations.length - 1}
-//               // This is the new logic to check if the next item is of a different type
-//               isLastInGroup={loc.type !== combinedLocations[index + 1]?.type}
-//             />
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
