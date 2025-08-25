@@ -391,7 +391,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
         <div className="absolute left-1/2 top-4 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
           <IconComponent
             src="/icons/draggable-button.svg"
-            className={cn("h-4 w-14")}
+            className={cn("h-4 w-14 cursor-pointer")}
           />
         </div>
         <div className="flex items-center gap-2">
