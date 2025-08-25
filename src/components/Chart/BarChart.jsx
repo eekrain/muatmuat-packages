@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-// The CustomTooltip remains unchanged as it's already well-styled.
+// The CustomTooltip remains unchanged.
 const CustomTooltip = ({ active, payload, label, dataKeys }) => {
   if (active && payload && payload.length) {
     const total = payload.reduce((sum, entry) => sum + entry.value, 0);
@@ -51,10 +51,37 @@ const CustomTooltip = ({ active, payload, label, dataKeys }) => {
   return null;
 };
 
-// RENAMED and SIMPLIFIED: This shape now *always* applies the top radius.
-const RoundedTopBar = (props) => {
-  const { radiusValue } = props;
-  return <Rectangle {...props} radius={[radiusValue, radiusValue, 0, 0]} />;
+// ✅ ADDED: New shape component with dynamic rounding logic.
+// This component checks which bar is visibly on top for each stack and applies the radius.
+const DynamicRoundedBar = (props) => {
+  const {
+    payload,
+    dataKeys,
+    currentDataKey,
+    radiusValue,
+    ...rest // Recharts props like x, y, width, height, fill
+  } = props;
+
+  // Find the key of the topmost bar that has a value > 0 for this data point
+  let topVisibleKey = null;
+  // Iterate from the top of the stack downwards
+  for (let i = dataKeys.length - 1; i >= 0; i--) {
+    const key = dataKeys[i].key;
+    if (payload[key] > 0) {
+      topVisibleKey = key;
+      break; // Found the highest visible bar, stop searching
+    }
+  }
+
+  // Apply rounding only if the current bar segment is the topmost visible one
+  const shouldBeRounded = currentDataKey === topVisibleKey;
+
+  if (shouldBeRounded) {
+    return <Rectangle {...rest} radius={[radiusValue, radiusValue, 0, 0]} />;
+  }
+
+  // Otherwise, render a standard, non-rounded rectangle
+  return <Rectangle {...rest} />;
 };
 
 // The CustomLegend remains unchanged.
@@ -88,9 +115,11 @@ const CustomBarChart = ({
   showXAxisLine = true,
   radiusValue = 6,
   maxBarSize = 60,
-  barCategoryGap = "35%", // ADDED: Control the gap between bars
-  barSize, // ADDED: Set a fixed bar width (overrides responsiveness)
+  barCategoryGap = "35%",
+  barSize,
 }) => {
+  const tickFontSize = data && data.length > 3 ? 10 : 12;
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
@@ -101,7 +130,6 @@ const CustomBarChart = ({
           left: -20,
           bottom: 5,
         }}
-        // Use the new props here
         barCategoryGap={barCategoryGap}
         barSize={barSize}
       >
@@ -110,7 +138,7 @@ const CustomBarChart = ({
           dataKey={xAxisKey}
           axisLine={showXAxisLine ? { stroke: "#d9d9d9" } : false}
           tickLine={false}
-          tick={{ fontSize: 12, fill: "#7b7b7b", fontWeight: 500 }}
+          tick={{ fontSize: tickFontSize, fill: "#7b7b7b", fontWeight: 500 }}
         />
         <YAxis
           axisLine={false}
@@ -122,8 +150,9 @@ const CustomBarChart = ({
           cursor={{ fill: "transparent" }}
         />
         <Legend verticalAlign="top" align="center" content={<CustomLegend />} />
-        {dataKeys.map((item, barIndex) => {
-          const isTopBar = barIndex === dataKeys.length - 1;
+        {dataKeys.map((item) => {
+          const barColor =
+            item.key === "Pesanan Instan" ? colors[0] : colors[1];
 
           return (
             <Bar
@@ -131,12 +160,15 @@ const CustomBarChart = ({
               dataKey={item.key}
               name={item.name}
               stackId="a"
-              fill={colors[barIndex % colors.length]}
+              fill={barColor}
               maxBarSize={maxBarSize}
+              // ✅ UPDATED: Use the new dynamic shape component for every bar segment.
               shape={
-                isTopBar ? (
-                  <RoundedTopBar radiusValue={radiusValue} />
-                ) : undefined
+                <DynamicRoundedBar
+                  dataKeys={dataKeys}
+                  currentDataKey={item.key}
+                  radiusValue={radiusValue}
+                />
               }
               activeBar={false}
             />

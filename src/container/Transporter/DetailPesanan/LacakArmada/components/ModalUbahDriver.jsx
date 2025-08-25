@@ -12,8 +12,8 @@ import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+import { useAssignDriver } from "@/services/Transporter/daftar-pesanan/detail-pesanan/assignDriver";
 import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
-import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const ModalUbahDriver = ({
   onClose,
@@ -22,6 +22,7 @@ const ModalUbahDriver = ({
   vehiclePlate = "L 8312 L",
   currentDriverId,
   title = "Ubah Driver",
+  orderId, // Add orderId prop
 }) => {
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
@@ -34,6 +35,7 @@ const ModalUbahDriver = ({
   const [showVehicleWarning, setShowVehicleWarning] = useState(false);
   const [driverWithVehicle, setDriverWithVehicle] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [assignRequest, setAssignRequest] = useState(null);
   //toggle radio button dan badge jadwal driver tidak ada
   const isDriverAvaliable = false;
 
@@ -49,7 +51,47 @@ const ModalUbahDriver = ({
     search: searchValue,
   });
 
+  // Assign driver mutation
+  const {
+    data: assignResult,
+    error: assignError,
+    isLoading: isAssigning,
+  } = useAssignDriver(orderId, vehicleId, assignRequest);
+
   const drivers = driversData?.drivers || [];
+
+  // Handle assign driver result
+  useEffect(() => {
+    if (assignResult) {
+      console.log("Assign driver result:", assignResult);
+
+      // Show success toast
+      toast.success(
+        t("ModalUbahDriver.assignSuccess", {}, "Berhasil mengubah driver")
+      );
+
+      setShowConfirmation(false);
+      resetState();
+      onClose();
+      onSuccess?.(vehicleId, selectedDriverId);
+      setAssignRequest(null); // Reset request
+    }
+  }, [assignResult, onClose, onSuccess, vehicleId, selectedDriverId, t]);
+
+  // Handle assign driver error
+  useEffect(() => {
+    if (assignError) {
+      console.error("Assign driver error:", assignError);
+
+      // Show error toast
+      toast.error(
+        t("ModalUbahDriver.assignError", {}, "Gagal mengubah driver")
+      );
+
+      setIsUpdating(false);
+      setAssignRequest(null); // Reset request
+    }
+  }, [assignError, t]);
 
   // Update selected driver when current driver changes
   useEffect(() => {
@@ -84,19 +126,15 @@ const ModalUbahDriver = ({
     if (selectedDriverId && vehicleId) {
       setIsUpdating(true);
       try {
-        await updateVehicleDriver(vehicleId, selectedDriverId);
+        // Prepare request body - only newDriverId
+        const requestBody = {
+          newDriverId: selectedDriverId,
+        };
 
-        // Success handling
-        // toast.success("Berhasil mengubah driver");
-        setShowConfirmation(false);
-        resetState();
-        onClose();
+        console.log("Assign driver request body:", requestBody);
 
-        // Call success callback
-        onSuccess?.(vehicleId, selectedDriverId);
-
-        // Refresh drivers list
-        refetchDrivers();
+        // Set assign request to trigger the mutation
+        setAssignRequest(requestBody);
       } catch (error) {
         console.error("Failed to update driver:", error);
         toast.error(
@@ -106,7 +144,6 @@ const ModalUbahDriver = ({
             "Gagal mengubah driver. Silakan coba lagi."
           )
         );
-      } finally {
         setIsUpdating(false);
       }
     }
@@ -339,9 +376,9 @@ const ModalUbahDriver = ({
                 className="h-8 w-28"
                 onClick={handleConfirm}
                 type="button"
-                disabled={isUpdating}
+                disabled={isUpdating || isAssigning}
               >
-                {isUpdating ? (
+                {isUpdating || isAssigning ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 ) : (
                   t("ModalUbahDriver.confirmYes", {}, "Ya")
@@ -413,7 +450,7 @@ const ModalUbahDriver = ({
                 className="h-8 w-[104px]"
                 onClick={handleVehicleWarningCancel}
                 type="button"
-                disabled={isUpdating}
+                disabled={isUpdating || isAssigning}
               >
                 {t("ModalUbahDriver.cancelButton", {}, "Batal")}
               </Button>
@@ -422,7 +459,7 @@ const ModalUbahDriver = ({
                 className="h-8 w-[104px]"
                 onClick={handleVehicleWarningConfirm}
                 type="button"
-                disabled={isUpdating}
+                disabled={isUpdating || isAssigning}
               >
                 {t("ModalUbahDriver.confirmYes", {}, "Ya")}
               </Button>

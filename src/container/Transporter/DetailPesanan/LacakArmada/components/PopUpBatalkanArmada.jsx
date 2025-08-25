@@ -12,10 +12,13 @@ import {
 } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 
-const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
+const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm, plateNumber }) => {
   const { t } = useTranslation();
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState("");
+
+  // Debug: log plateNumber
+  console.log("PopUpBatalkanArmada - plateNumber:", plateNumber);
 
   const handleClose = () => {
     // Reset states when closing
@@ -53,11 +56,7 @@ const PopUpBatalkanArmada = ({ isOpen, onClose, onConfirm }) => {
           </h3>
 
           <p className="text-sm text-neutral-900">
-            {t(
-              "PopUpBatalkanArmada.confirmationMessage",
-              {},
-              "Apakah kamu yakin ingin membatalkan armada dari pesanan MT25A010A?"
-            )}
+            {`Apakah kamu yakin ingin membatalkan armada ${plateNumber || "Plat Nomor"} dari pesanan ini?`}
           </p>
 
           {/* Checkbox + Label */}

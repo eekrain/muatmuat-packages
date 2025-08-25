@@ -118,7 +118,6 @@ const AlasanPembatalanArmadaModal = ({
             className="w-[112px]"
             onClick={handleSubmit}
             disabled={isSubmitting || isLoading}
-            {...((isSubmitting || isLoading) && { loading: true })}
           >
             Simpan
           </Button>

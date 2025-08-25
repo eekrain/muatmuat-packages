@@ -13,7 +13,8 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
-import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
+import { useTranslation } from "@/hooks/use-translation";
+import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
 import { useGetArchiveDriversData } from "@/services/Transporter/manajemen-driver/getArchiveDriversData";
 
 const DriverArsip = ({
@@ -22,6 +23,7 @@ const DriverArsip = ({
   onStatusChange,
   count,
 }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -42,7 +44,7 @@ const DriverArsip = ({
   });
 
   const getStatusBadge = (status) => {
-    const statusConfig = getDriverStatusBadge(status);
+    const statusConfig = getDriverStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

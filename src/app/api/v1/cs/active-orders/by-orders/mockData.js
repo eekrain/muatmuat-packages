@@ -204,6 +204,56 @@ export const successResponse = {
         updatedAt: "2025-08-22T13:00:00Z",
       },
 
+      // Additional order for same transporter (transporter-uuid-2) and same shipper (shipper-uuid-2)
+      {
+        orderId: "order-uuid-13",
+        orderNumber: "MT-20250822-0013",
+        orderType: "INSTANT",
+        orderStatus: "WAITING_CONFIRMATION_SHIPPER",
+        orderStatusUnit: 0,
+        sosUnit: 0,
+        transporterInfo: {
+          transporterId: "transporter-uuid-2",
+          transporterName: "PT Kargo Nusantara",
+          phoneNumber: "082233445566",
+        },
+        shipperInfo: {
+          shipperId: "shipper-uuid-2",
+          shipperName: "PT Pelayaran Sentosa",
+          phoneNumber: "081199223344",
+        },
+        loadTimeStart: "2025-08-23T13:00:00Z",
+        loadTimeEnd: "2025-08-23T15:00:00Z",
+        route: {
+          pickupLocations: [
+            {
+              locationId: "loc-pickup-13",
+              fullAddress: "Jl. Melati 12",
+              city: "Surabaya",
+              district: "Genteng",
+            },
+          ],
+          dropoffLocations: [
+            {
+              locationId: "loc-dropoff-13",
+              fullAddress: "Jl. Wijaya 8",
+              city: "Malang",
+              province: "Jawa Timur",
+            },
+          ],
+          estimatedDistance: 56000,
+        },
+        fleetInfo: {
+          vehicleType: "BOX_TRUCK",
+          carrierType: "THIRD_PARTY",
+          totalUnits: 1,
+          cargoName: ["Material Proyek"],
+          totalWeight: 1200,
+        },
+        createdAt: "2025-08-22T14:00:00Z",
+        updatedAt: "2025-08-22T14:10:00Z",
+      },
+
       {
         orderId: "order-uuid-6",
         orderNumber: "MT-20250822-0006",

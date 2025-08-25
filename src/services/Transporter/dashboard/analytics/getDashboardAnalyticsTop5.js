@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
 // Set to true to use mock data, false for actual API calls.
-const useMockData = true;
+const useMockData = false;
 
 // --- Mock Data ---
 
@@ -65,72 +65,72 @@ export const mockAPIResultDrivers = {
   },
 };
 
-// Mock data for a successful response for the "truck-types" category.
-export const mockAPIResultTruckTypes = {
+// Mock data for a successful response for the "fleets" category.
+export const mockAPIResultFleets = {
   data: {
     Message: {
       Code: 200,
-      Text: "Top 5 truck types retrieved successfully",
+      Text: "Top 5 fleets retrieved successfully",
     },
     Data: {
-      category: "truck-types",
+      category: "fleets",
       hasData: true,
       items: [
         {
           rank: 1,
-          truckTypeID: "uuid-truck-type-1",
-          truckTypeName: "Truk Fuso Box",
-          carrierTypeName: "Box",
-          truckImage: "https://storage.muatrans.com/trucks/fuso-box.jpg",
+          fleetID: "uuid-fleet-1",
+          fleetName: "Truk Fuso Box",
+          fleetType: "Box",
+          fleetImage: "https://storage.muatrans.com/trucks/fuso-box.jpg",
           usageCount: 125,
         },
         {
           rank: 2,
-          truckTypeID: "uuid-truck-type-2",
-          truckTypeName: "Tronton Wing Box",
-          carrierTypeName: "Wing Box",
-          truckImage: "https://storage.muatrans.com/trucks/tronton-wingbox.jpg",
+          fleetID: "uuid-fleet-2",
+          fleetName: "Tronton Wing Box",
+          fleetType: "Wing Box",
+          fleetImage: "https://storage.muatrans.com/trucks/tronton-wingbox.jpg",
           usageCount: 110,
         },
         {
           rank: 3,
-          truckTypeID: "uuid-truck-type-3",
-          truckTypeName: "Pick-up Bak",
-          carrierTypeName: "Bak",
-          truckImage: "https://storage.muatrans.com/trucks/pickup-bak.jpg",
+          fleetID: "uuid-fleet-3",
+          fleetName: "Pick-up Bak",
+          fleetType: "Bak",
+          fleetImage: "https://storage.muatrans.com/trucks/pickup-bak.jpg",
           usageCount: 95,
         },
         {
           rank: 4,
-          truckTypeID: "uuid-truck-type-4",
-          truckTypeName: "CDD Long",
-          carrierTypeName: "Box",
-          truckImage: "https://storage.muatrans.com/trucks/cdd-long.jpg",
+          fleetID: "uuid-fleet-4",
+          fleetName: "CDD Long",
+          fleetType: "Box",
+          fleetImage: "https://storage.muatrans.com/trucks/cdd-long.jpg",
           usageCount: 80,
         },
         {
           rank: 5,
-          truckTypeID: "uuid-truck-type-5",
-          truckTypeName: "Container 20 Feet",
-          carrierTypeName: "Container",
-          truckImage: "https://storage.muatrans.com/trucks/container-20.jpg",
+          fleetID: "uuid-fleet-5",
+          fleetName: "Container 20 Feet",
+          fleetType: "Container",
+          fleetImage: "https://storage.muatrans.com/trucks/container-20.jpg",
           usageCount: 70,
         },
       ],
     },
-    Type: "TOP5_TRUCK_TYPES",
+    Type: "TOP5_FLEETS",
   },
 };
 
-// Mock data for a successful response for the "loading-areas" category.
-export const mockAPIResultLoadingAreas = {
+// Mock data for a successful response for the "loads" category.
+export const mockAPIResultLoads = {
   data: {
     Message: {
       Code: 200,
       Text: "Top 5 loading areas retrieved successfully",
     },
     Data: {
-      category: "loading-areas",
+      category: "loads",
       hasData: true,
       items: [
         {
@@ -169,15 +169,15 @@ export const mockAPIResultLoadingAreas = {
   },
 };
 
-// Mock data for a successful response for the "unloading-areas" category.
-export const mockAPIResultUnloadingAreas = {
+// Mock data for a successful response for the "unloads" category.
+export const mockAPIResultUnloads = {
   data: {
     Message: {
       Code: 200,
       Text: "Top 5 unloading areas retrieved successfully",
     },
     Data: {
-      category: "unloading-areas",
+      category: "unloads",
       hasData: true,
       items: [
         {
@@ -232,6 +232,24 @@ export const mockAPIResultWithoutData = {
   },
 };
 
+// Mock data for a validation error response.
+export const mockAPIResultValidationError = {
+  Message: {
+    Code: 400,
+    Text: "Validation failed",
+  },
+  Data: [
+    {
+      type: "field",
+      value: "fleet",
+      msg: "Category must be drivers, fleets, loads, or unloads",
+      path: "category",
+      location: "query",
+    },
+  ],
+  Type: "/v1/transporter/dashboard/analytics/top-five?startDate=2025-08-01&endDate=2025-08-31&period=&category=fleet",
+};
+
 /**
  * Fetcher function for the Top 5 analytics data.
  * @param {Array} cacheKey - The SWR cache key, containing the URL and query parameters.
@@ -245,12 +263,12 @@ export const fetcherDashboardAnalyticsTop5 = async (cacheKey) => {
     switch (params.category) {
       case "drivers":
         return mockAPIResultDrivers.data.Data;
-      case "truck-types":
-        return mockAPIResultTruckTypes.data.Data;
-      case "loading-areas":
-        return mockAPIResultLoadingAreas.data.Data;
-      case "unloading-areas":
-        return mockAPIResultUnloadingAreas.data.Data;
+      case "fleets":
+        return mockAPIResultFleets.data.Data;
+      case "loads":
+        return mockAPIResultLoads.data.Data;
+      case "unloads":
+        return mockAPIResultUnloads.data.Data;
       default:
         // Return no data for any other category or if testing the empty state
         return mockAPIResultWithoutData.data.Data;
@@ -274,7 +292,7 @@ export const fetcherDashboardAnalyticsTop5 = async (cacheKey) => {
 export const useGetDashboardAnalyticsTop5 = (params = {}) => {
   // SWR uses the cacheKey to uniquely identify and cache requests.
   // By including the params object, SWR will automatically re-fetch when the params change.
-  const cacheKey = ["/v1/dashboard/analytics/top5", params];
+  const cacheKey = ["/v1/transporter/dashboard/analytics/top-five", params];
 
   const { data, error, isLoading } = useSWR(
     // Only fetch if a category is provided

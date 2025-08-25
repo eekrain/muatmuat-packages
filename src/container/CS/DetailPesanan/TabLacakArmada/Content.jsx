@@ -1,20 +1,24 @@
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { ArmadaStatusItem } from "./ArmadaStatusItem";
 import ChangeAssignmentCard from "./ChangeAssignmentCard";
 import { useLacakArmadaContext } from "./use-lacak-armada";
 
 export const Content = () => {
+  const { t } = useTranslation();
   const {
     data,
+    finalData,
     isEdit,
     assignments,
     handleAssignmentChange,
     availableTransporters,
     hasActiveFilters,
     hasActiveSearch,
+    hasNoSearchResults,
     filteredDataByFilters,
   } = useLacakArmadaContext();
 
@@ -27,40 +31,33 @@ export const Content = () => {
       filteredDataByFilters.every(
         (transporter) => !transporter.fleets || transporter.fleets.length === 0
       ));
-  const hasNoSearchResults =
-    hasActiveSearch &&
-    (!data ||
-      data.length === 0 ||
-      data.every(
-        (transporter) => !transporter.fleets || transporter.fleets.length === 0
-      )) &&
-    filteredDataByFilters &&
-    filteredDataByFilters.length > 0 &&
-    filteredDataByFilters.some(
-      (transporter) => transporter.fleets && transporter.fleets.length > 0
-    );
 
   if (!data || data.length === 0) {
     return (
       <div className="flex w-full justify-center text-center font-medium text-neutral-600">
         <DataNotFound type="data" width={95.5} height={76.76}>
-          <div className="text-base font-semibold">Belum ada Armada</div>
+          <div className="text-base font-semibold">
+            {t("Content.titleBelumAdaArmada", {}, "Belum ada Armada")}
+          </div>
           <div className="mt-3 text-xs">
-            Tugaskan transporter secara langsung, atau gunakan fitur blast ulang
-            agar sistem mengirimkan penawaran ke transporter lain
+            {t(
+              "Content.descriptionBelumAdaArmada",
+              {},
+              "Tugaskan transporter secara langsung, atau gunakan fitur blast ulang agar sistem mengirimkan penawaran ke transporter lain"
+            )}
           </div>
           <div className="mt-3 flex justify-center gap-3">
             <Button
               variant="muattrans-primary-secondary"
               className="h-8 min-w-[160px] !rounded-full !text-sm"
             >
-              Pilih Transporter
+              {t("Content.buttonPilihTransporter", {}, "Pilih Transporter")}
             </Button>
             <Button
               variant="muattrans-primary"
               className="h-8 min-w-[160px] !rounded-full !text-sm"
             >
-              Blast Ulang
+              {t("Content.buttonBlastUlang", {}, "Blast Ulang")}
             </Button>
           </div>
         </DataNotFound>
@@ -78,9 +75,17 @@ export const Content = () => {
         >
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              Data tidak Ditemukan.
+              {t(
+                "Content.messageDataTidakDitemukan",
+                {},
+                "Data tidak Ditemukan."
+              )}
               <br />
-              Mohon coba hapus beberapa filter
+              {t(
+                "Content.messageCobahapusFilter",
+                {},
+                "Mohon coba hapus beberapa filter"
+              )}
             </p>
           </div>
         </DataNotFound>
@@ -98,7 +103,11 @@ export const Content = () => {
         >
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              Keyword Tidak Ditemukan
+              {t(
+                "Content.messageKeywordTidakDitemukan",
+                {},
+                "Keyword Tidak Ditemukan"
+              )}
             </p>
           </div>
         </DataNotFound>
@@ -106,7 +115,10 @@ export const Content = () => {
     );
   }
 
-  return data.map((transporter, transporterIndex) => {
+  // Use finalData for rendering to get proper search/filter results
+  const dataToRender = finalData || data || [];
+
+  return dataToRender.map((transporter, transporterIndex) => {
     const unassignedCount =
       transporter.fleetsOrdered - (transporter.fleets?.length || 0);
     const transporterKey = `${transporter.transporterId}-${transporterIndex}`;
@@ -120,7 +132,11 @@ export const Content = () => {
           <div className="flex flex-1 items-center gap-4">
             <img
               src={transporter.companyPicture || "/img/default-picture.png"}
-              alt={`picture ${transporter.companyName}`}
+              alt={t(
+                "Content.altPictureCompany",
+                { companyName: transporter.companyName },
+                "picture {companyName}"
+              )}
               className="size-10 rounded-full border border-neutral-500 object-cover"
             />
             <div className="flex flex-col gap-3">
@@ -133,7 +149,13 @@ export const Content = () => {
                     src="/icons/transporter16.svg"
                     className="size-4 text-muat-trans-secondary-900"
                   />
-                  <span>{transporter.fleetsOrdered} Unit</span>
+                  <span>
+                    {t(
+                      "Content.labelUnit",
+                      { count: transporter.fleetsOrdered },
+                      "{count} Unit"
+                    )}
+                  </span>
                 </div>
                 <div className="size-0.5 rounded-full bg-neutral-600" />
                 <div className="flex items-center gap-1">
@@ -150,7 +172,7 @@ export const Content = () => {
             variant="muattrans-primary"
             className="h-8 min-w-[105px] !rounded-full !text-sm"
           >
-            Hubungi
+            {t("Content.buttonHubungi", {}, "Hubungi")}
           </Button>
         </div>
         <div className="divide-y divide-neutral-200">
@@ -162,7 +184,11 @@ export const Content = () => {
                   key={unassignedId}
                   uniqueGroupName={unassignedId}
                   armadaImage="/img/truck.png"
-                  armadaName={`Armada ${(transporter.fleets?.length || 0) + index + 1}`}
+                  armadaName={t(
+                    "Content.labelArmadaNumber",
+                    { number: (transporter.fleets?.length || 0) + index + 1 },
+                    "Armada {number}"
+                  )}
                   value={
                     assignments[unassignedId] || {
                       type: "SAME_TRANSPORTER",
@@ -179,9 +205,13 @@ export const Content = () => {
           ) : transporter.fleets.length === 0 ? (
             <div className="flex h-[72px] items-center justify-center">
               <p className="text-center text-base font-semibold text-neutral-600">
-                Belum Ada Armada
+                {t("Content.messageBelumAdaArmada", {}, "Belum Ada Armada")}
                 <br />
-                Transporter Perlu Assign Armada
+                {t(
+                  "Content.messageTransporterPerluAssign",
+                  {},
+                  "Transporter Perlu Assign Armada"
+                )}
               </p>
             </div>
           ) : (

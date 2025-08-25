@@ -13,10 +13,12 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { useTranslation } from "@/hooks/use-translation";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 
 const ArmadaArsip = ({ onPageChange, onPerPageChange, count }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -34,7 +36,7 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange, count }) => {
   });
 
   const getStatusBadge = (status) => {
-    const statusConfig = getArmadaStatusBadge(status);
+    const statusConfig = getArmadaStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}

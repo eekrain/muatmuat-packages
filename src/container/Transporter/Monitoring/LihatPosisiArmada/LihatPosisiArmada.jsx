@@ -12,7 +12,7 @@ import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetOrdersMultiFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getOrdersMultiFleetTracking";
-import { getTrackingStatusBadge } from "@/utils/Transporter/trackingStatus";
+import { getTrackingStatusBadgeWithTranslation } from "@/utils/Transporter/trackingStatus";
 
 const LihatPosisiArmada = ({ onClose, orderId }) => {
   const { t } = useTranslation();
@@ -85,11 +85,19 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                   <div className="mb-3 flex items-center gap-2">
                     <BadgeStatus
                       variant={
-                        getTrackingStatusBadge(vehicle.trackingStatus).variant
+                        getTrackingStatusBadgeWithTranslation(
+                          vehicle.trackingStatus,
+                          t
+                        ).variant
                       }
                       className="inline-flex w-auto flex-shrink-0"
                     >
-                      {getTrackingStatusBadge(vehicle.trackingStatus).label}
+                      {
+                        getTrackingStatusBadgeWithTranslation(
+                          vehicle.trackingStatus,
+                          t
+                        ).label
+                      }
                     </BadgeStatus>
                     {vehicle.sosStatus?.hasSos && (
                       <BadgeSOSPopover

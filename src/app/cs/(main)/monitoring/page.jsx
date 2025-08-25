@@ -39,9 +39,9 @@ import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import { cn } from "@/lib/utils";
+import { useGetFleetCount } from "@/services/CS/getFleetCount";
 import { useGetCsFleetLocations } from "@/services/CS/monitoring/getCsFleetLocation";
 import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
-import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { MapInterfaceOverlay } from "./components/Map/MapInterfaceOverlay";
@@ -74,6 +74,7 @@ const Page = () => {
 
   // Track onboarding state at parent level to prevent reset
   const [hasShownOnboarding, setHasShownOnboarding] = useState(false);
+  const [hasFleet, setHasFleet] = useState(false);
 
   // Create combined state object for easier access
   const state = { panels, map, filters, selections };
@@ -140,8 +141,6 @@ const Page = () => {
       panelsDispatch({ type: PANEL_ACTIONS.SET_FULLSCREEN, payload: false });
     }
   };
-
-  const hasFleet = fleetData?.hasFleet || false;
 
   // Mock notification counts - replace with actual API data
   const requestCount = 100; // Replace with actual count from API
@@ -332,6 +331,14 @@ const Page = () => {
 
   // PilihArmada handlers are now imported from useMonitoringHandlers hook
 
+  useEffect(() => {
+    console.log("fleetData", fleetData);
+    if (fleetData && fleetData.data.Data) {
+      console.log("fleetData has Data", fleetData);
+      setHasFleet(true);
+    }
+  }, [fleetData]);
+
   return (
     <>
       <div
@@ -397,6 +404,7 @@ const Page = () => {
                   order: filters.selectedOrderFilters,
                 }}
                 showPilihArmada={panels.showPilihArmada}
+                fleetLocationsData={fleetLocationsData}
               />
             )}
 

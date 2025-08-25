@@ -4,15 +4,30 @@ import { useMemo } from "react";
 
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import LineChart from "@/components/Chart/LineChart";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import { useGetDashboardAnalyticsIncome } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsIncome";
+import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const TotalRevenue = () => {
-  // Fetch income analytics data using the custom SWR hook
-  const { data: incomeData, isLoading } = useGetDashboardAnalyticsIncome();
+  const { startDate, endDate, label } = useAnalyticsStore();
 
-  // Memoize the chart data directly from the API response without transformation
+  // Adjust dates for the API call. If the selected start and end dates are the same,
+  // set the start date to the previous day to create a two-day range.
+  let apiStartDate = startDate;
+  if (startDate && endDate && startDate === endDate) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() - 1);
+    apiStartDate = date.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+  }
+
+  const { data: incomeData, isLoading } = useGetDashboardAnalyticsIncome({
+    startDate: apiStartDate,
+    endDate,
+  });
+
+  // Memoize the chart data directly from the API response
   const chartData = useMemo(() => {
     return incomeData?.lineChartData || [];
   }, [incomeData]);
@@ -39,10 +54,11 @@ const TotalRevenue = () => {
         </div>
         <div>
           <p className="text-lg font-bold text-neutral-900">
-            {`Rp${incomeData.totalIncome.toLocaleString("id-ID")}`}
+            {/* Added a fallback to prevent crashing if data is not yet available */}
+            {`Rp${(incomeData?.totalIncome || 0).toLocaleString("id-ID")}`}
           </p>
           <p className="text-xs font-medium text-neutral-600">
-            {incomeData?.periodLabel || "Tidak ada data"}
+            {label || "Tidak ada data"}
           </p>
         </div>
       </CardHeader>
@@ -51,20 +67,15 @@ const TotalRevenue = () => {
           <LineChart data={chartData} />
         ) : (
           // Empty State when no data is available
-          <div className="flex h-full flex-col items-center justify-center gap-3">
-            <ImageComponent
-              src="/img/dashboard/empty-revenue.png"
-              alt="Total Orders"
-              width={95}
-              height={95}
-            />
-            <p className="text-base font-semibold text-neutral-600">
-              Belum Ada Pendapatan Diterima
-            </p>
-            <p className="pt-[2px] text-xs font-medium text-neutral-600">
-              Pendapatan kamu akan muncul di sini setelah ada transaksi masuk
-            </p>
-          </div>
+          <DataEmpty
+            isResponsive={false}
+            subtitleClassname="max-w-full"
+            titleClassname="pb-2"
+            className="mt-8 bg-transparent"
+            src="/icons/dashboard/money-not-found.svg"
+            title="Belum Ada Total Pendapatan"
+            subtitle="Total pendapatan yang diterima muatrans akan ditampilkan disini"
+          />
         )}
       </CardContent>
     </Card>

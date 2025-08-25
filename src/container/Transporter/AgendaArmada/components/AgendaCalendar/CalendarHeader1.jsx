@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import MyDropdown from "@/components/Dropdown/MyDropdown";
@@ -265,7 +265,7 @@ const SearchSection = memo(
     const [filters, setFilters] = useState(filtersFromStore);
 
     // Sync filters when store changes
-    useMemo(() => {
+    useEffect(() => {
       setFilters(filtersFromStore);
     }, [filtersFromStore]);
 

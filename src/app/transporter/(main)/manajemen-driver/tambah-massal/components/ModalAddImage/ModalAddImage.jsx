@@ -40,7 +40,6 @@ export default function ModalAddImage({
       ...prev,
       [imageType]: image,
     }));
-
     if (isError && image) {
       setIsError(false);
     }

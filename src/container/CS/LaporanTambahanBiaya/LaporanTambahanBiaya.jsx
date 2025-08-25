@@ -16,7 +16,7 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
-import { periodOptions } from "@/lib/constants/Shared/periodOptions";
+import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
 import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
 
@@ -31,13 +31,19 @@ const LaporanTambahanBiaya = ({
   periodHistory,
   filterOptions,
   hasNoReports,
+  queryParams,
   lastFilterField,
+  currentPeriodValue,
+  setCurrentPeriodValue,
   onChangeQueryParams,
 }) => {
   const { t } = useTranslation();
   const isFirstTimer = false;
 
   const [tempSearch, setTempSearch] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState({});
+
+  const periodOptions = translatedPeriodOptions(t);
 
   const tabItems = useShallowMemo(() => {
     return [
@@ -68,16 +74,27 @@ const LaporanTambahanBiaya = ({
     () => ({
       categories: [
         {
-          key: "shipper",
+          key: "shipperId",
           label: "Shipper",
           searchable: true,
         },
+        {
+          key: "paymentMethodId",
+          label: "Opsi Pembayaran",
+          searchable: false,
+        },
       ],
       data: {
-        shipper: filterOptions
+        shipperId: filterOptions
           ? filterOptions.shippers.map((shipper) => ({
               id: shipper.id,
               label: shipper.name,
+            }))
+          : [],
+        paymentMethodId: filterOptions
+          ? filterOptions.paymentMethods.map((paymentMethod) => ({
+              id: paymentMethod.id,
+              label: paymentMethod.name,
             }))
           : [],
       },
@@ -124,9 +141,8 @@ const LaporanTambahanBiaya = ({
           {reports.length === 0 ? null : (
             <div className="flex items-center gap-x-3">
               <DropdownPeriode
-                // disable
                 disable={reports.length === 0}
-                options={periodOptions(t)}
+                options={periodOptions}
                 onSelect={() => {}}
                 recentSelections={recentSelections}
                 value={null}
@@ -162,17 +178,6 @@ const LaporanTambahanBiaya = ({
               height={77}
             />
           </div>
-        ) : reports.length === 0 && activeTab === "completed" ? (
-          <div className="flex h-[280px] items-center justify-center">
-            <DataNotFound
-              type="data"
-              title="Belum Ada Laporan Tambahan Biaya"
-              className="gap-3"
-              textClass="w-full"
-              width={96}
-              height={77}
-            />
-          </div>
         ) : (
           <>
             <div className="flex flex-col gap-y-6 p-6 pt-5">
@@ -180,10 +185,7 @@ const LaporanTambahanBiaya = ({
                 <div className="flex items-center gap-x-3">
                   <Input
                     className="gap-0"
-                    // disabled
-                    // disabled={
-                    //   hasNoOrders || (!hasFilteredOrders && !queryParams.search)
-                    // }
+                    disabled={reports.length === 0 && !queryParams.search}
                     appearance={{ containerClassName: "w-[262px]" }}
                     placeholder="Cari Nama/Perusahaan"
                     icon={{
@@ -200,46 +202,78 @@ const LaporanTambahanBiaya = ({
                     onKeyUp={handleSearch}
                   />
                   <FilterDropdown
-                    // disabled
                     categories={filterConfig.categories}
                     data={filterConfig.data}
-                    selectedValues={{}}
-                    onSelectionChange={() => {}}
+                    selectedValues={selectedFilters}
+                    onSelectionChange={(filters) => {
+                      setSelectedFilters((prevState) => ({
+                        ...prevState,
+                        ...filters,
+                      }));
+                    }}
                     searchPlaceholder="Cari {category}"
                     multiSelect={false}
-                    // disabled={isFilterDisabled}
+                    disabled={
+                      reports.length === 0 &&
+                      !queryParams.shipperId &&
+                      !queryParams.paymentMethodId
+                    }
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${20 || reports?.length} Laporan`}
+                  {`Total : ${reports?.length} Laporan`}
                 </span>
               </div>
-              {false ? (
+              {JSON.stringify(selectedFilters) !== "{}" ? (
                 <div className="flex items-center gap-x-3">
-                  <Button className="font-bold" variant="link">
+                  <Button
+                    className="font-bold"
+                    onClick={() => {
+                      setSelectedFilters({});
+                    }}
+                    variant="link"
+                  >
                     Hapus Semua Filter
                   </Button>
-                  <TagBubble
-                    withRemove={{
-                      onRemove: () => {},
-                    }}
-                  >
-                    Prima Arifandi
-                  </TagBubble>
+                  {Object.entries(selectedFilters).map(
+                    ([filterKey, filterValue]) => {
+                      return (
+                        <TagBubble
+                          key={filterKey}
+                          withRemove={{
+                            onRemove: () => {
+                              setSelectedFilters((prevState) => {
+                                const newFilters = { ...prevState };
+                                delete newFilters[filterKey];
+                                return newFilters;
+                              });
+                            },
+                          }}
+                        >
+                          {filterValue.label}
+                        </TagBubble>
+                      );
+                    }
+                  )}
                 </div>
               ) : null}
             </div>
             {reports.length > 0 ? (
               reports.map((order, key) => (
                 <div className="border-t border-t-neutral-400" key={key}>
-                  <OrderWithAdditionalCost {...order} />
+                  <OrderWithAdditionalCost activeTab={activeTab} {...order} />
                 </div>
               ))
             ) : (
               <div
                 className={cn(
                   "flex items-center justify-center",
-                  lastFilterField === "search" ? "h-[193px]" : "h-[145px]"
+                  lastFilterField === "search"
+                    ? "h-[193px]"
+                    : lastFilterField === "shippedId" ||
+                        lastFilterField === "paymentMethodId"
+                      ? "h-[212px]"
+                      : "h-[145px]"
                 )}
               >
                 {lastFilterField === "search" ? (
@@ -247,6 +281,20 @@ const LaporanTambahanBiaya = ({
                     title="Keyword Tidak Ditemukan"
                     className="gap-5"
                     textClass="w-full"
+                    width={142}
+                    height={122}
+                  />
+                ) : lastFilterField === "shippedId" ||
+                  lastFilterField === "paymentMethodId" ? (
+                  <DataNotFound
+                    title={
+                      <span>
+                        Data tidak Ditemukan.
+                        <br />
+                        Mohon coba hapus beberapa filter
+                      </span>
+                    }
+                    className="gap-5"
                     width={142}
                     height={122}
                   />
@@ -267,11 +315,11 @@ const LaporanTambahanBiaya = ({
       </Card>
       {reports.length > 0 ? (
         <Pagination
-          currentPage={1}
-          totalPages={2}
-          perPage={10}
-          onPageChange={() => {}}
-          onPerPageChange={() => {}}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          perPage={pagination.itemsPerPage}
+          onPageChange={(value) => onChangeQueryParams("page", value)}
+          onPerPageChange={(value) => onChangeQueryParams("limit", value)}
           className="py-0"
         />
       ) : null}

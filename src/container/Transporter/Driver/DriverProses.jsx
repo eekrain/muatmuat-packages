@@ -14,8 +14,9 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
+import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
 import { deleteDriver } from "@/services/Transporter/manajemen-driver/deleteDriver";
 import { useGetProcessDriversData } from "@/services/Transporter/manajemen-driver/getProcessDriversData";
 
@@ -26,6 +27,7 @@ const DriverProses = ({
   count,
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState();
@@ -48,7 +50,7 @@ const DriverProses = ({
   });
 
   const getStatusBadge = (status) => {
-    const statusConfig = getDriverStatusBadge(status);
+    const statusConfig = getDriverStatusBadgeWithTranslation(status, t);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}
@@ -173,8 +175,8 @@ const DriverProses = ({
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (sorr, order) => {
-    setSortConfig({ sorr, order });
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
   };
 
   const handleStatusChange = (status) => {

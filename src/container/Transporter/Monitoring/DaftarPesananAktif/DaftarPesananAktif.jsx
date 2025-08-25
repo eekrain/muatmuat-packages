@@ -36,10 +36,10 @@ import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pes
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 import {
-  ORDER_ACTIONS,
   ORDER_STATUS,
-  getOrderStatusActions,
-  getOrderStatusBadge,
+  getOrderActions,
+  getOrderStatusActionsWithTranslation,
+  getOrderStatusBadgeWithTranslation,
 } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
@@ -135,7 +135,7 @@ const DaftarPesananAktif = ({
     };
 
     const translationKey = statusTranslations[status];
-    const statusBadge = getOrderStatusBadge(status);
+    const statusBadge = getOrderStatusBadgeWithTranslation(status, t);
 
     if (translationKey) {
       return t(translationKey, {}, statusBadge.label);
@@ -161,6 +161,7 @@ const DaftarPesananAktif = ({
 
   // Handle action button clicks based on action type
   const handleActionClick = (actionType, row) => {
+    const ORDER_ACTIONS = getOrderActions(t);
     switch (actionType) {
       case ORDER_ACTIONS.TRACK_FLEET.type:
         onTrackFleet?.(row);
@@ -510,7 +511,9 @@ const DaftarPesananAktif = ({
                 </div>
                 <Button
                   variant="link"
-                  onClick={() => console.log("View SOS Details", row.sosStatus)}
+                  onClick={() => {
+                    router.push("/monitoring?leftPanel=sos");
+                  }}
                   className="h-auto p-0 text-xs font-medium"
                 >
                   {t("DaftarPesananAktif.viewSos", {}, "Lihat SOS")}
@@ -527,7 +530,10 @@ const DaftarPesananAktif = ({
       headerClassName: "px-4 py-3 ",
       className: "p-4 align-top",
       render: (row) => {
-        const statusBadge = getOrderStatusBadge(row.orderStatus);
+        const statusBadge = getOrderStatusBadgeWithTranslation(
+          row.orderStatus,
+          t
+        );
         return (
           <div className="flex flex-col gap-2">
             <BadgeStatus
@@ -639,7 +645,11 @@ const DaftarPesananAktif = ({
       headerClassName: "px-4 py-3",
       className: "p-4 align-top",
       render: (row) => {
-        const config = getOrderStatusActions(row.orderStatus, row);
+        const config = getOrderStatusActionsWithTranslation(
+          row.orderStatus,
+          row,
+          t
+        );
 
         // If status has dropdown actions
         if (config) {

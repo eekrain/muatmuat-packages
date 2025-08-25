@@ -83,7 +83,6 @@ export const getCustomPeriods = async (params = {}) => {
 
 export const useGetCustomPeriods = (params = {}) => {
   const queryParams = new URLSearchParams();
-
   if (params.module) {
     queryParams.append("module", params.module);
   }
@@ -100,13 +99,11 @@ export const useGetCustomPeriods = (params = {}) => {
             (period) => period.module === "driver-activities"
           );
         }
-
         if (params.module === "fleet-activities") {
           return mockCustomPeriodsResponse.data.Data.Data.filter(
             (period) => period.module === "fleet-activities"
           );
         }
-
         // Return all periods if no module filter
         return mockCustomPeriodsResponse.data.Data.Data;
       }

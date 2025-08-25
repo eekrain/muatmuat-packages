@@ -3,130 +3,126 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
-// Set to true to use mock data, false for actual API calls.
-const useMockData = true;
+// Set to false to use actual API calls.
+const useMockData = false;
 
-// --- Mock Data ---
+// --- Mock Data (Unchanged) ---
 export const mockAPIResult = {
   data: {
     Message: {
       Code: 200,
-      Text: "Delivery summary retrieved successfully",
+      Text: "OK",
     },
     Data: {
-      hasData: true,
-      totalItems: 3,
-      totalPages: 1,
-      currentPage: 1,
-      itemsPerPage: 10,
-      appliedFilters: {
-        period: "all",
-        search: "",
-        truckTypes: [],
-        carrierTypes: [],
-      },
-      deliveries: [
+      reports: [
         {
-          orderID: "uuid-order-1",
-          orderCode: "MT2025080001",
-          completedDate: "2025-08-15T15:23:00Z",
-          routes: {
-            loading: [{ city: "Jakarta Utara", province: "DKI Jakarta" }],
-            unloading: [{ city: "Surabaya", province: "Jawa Timur" }],
-            hasMoreLocations: false,
-          },
+          licensePlate: "B 1111 FMI",
           fleet: {
-            licensePlate: "B 1234 CD",
-            truckTypeName: "Colt Diesel Engkel",
-            carrierTypeName: "Box",
+            truckTypeId: "26ff8b9e-b8cc-40a9-9b9e-a3404752c5fd",
+            truckTypeName: "Colt Diesel Double",
+            carrierTypeId: "550e8400-e29b-41d4-a716-446655440001",
+            carrierTypeName: "Bak Terbuka",
           },
-          totalDistance: 93.5,
-          totalTonnage: 180,
-          utilizedFleets: 1,
+          totalDistance: 21.22,
+          totalTonnage: 100,
         },
         {
-          orderID: "uuid-order-2",
-          orderCode: "MT2025080002",
-          completedDate: "2025-08-16T11:05:00Z",
-          routes: {
-            loading: [{ city: "Bekasi", province: "Jawa Barat" }],
-            unloading: [{ city: "Semarang", province: "Jawa Tengah" }],
-            hasMoreLocations: true,
-          },
+          licensePlate: "B 1234 ABC",
           fleet: {
-            licensePlate: "L 0291 AA",
-            truckTypeName: "Tractor Head 6x4",
-            carrierTypeName: "Flatbed Container",
+            truckTypeId: "26ff8b9e-b8cc-40a9-9b9e-a3404752c5fd",
+            truckTypeName: "Colt Diesel Double",
+            carrierTypeId: "550e8400-e29b-41d4-a716-446655440001",
+            carrierTypeName: "Bak Terbuka",
           },
-          totalDistance: 77,
-          totalTonnage: 180,
-          utilizedFleets: 1,
+          totalDistance: 48.9,
+          totalTonnage: 50102,
         },
         {
-          orderID: "uuid-order-3",
-          orderCode: "MT2025080003",
-          completedDate: "2025-08-17T09:45:00Z",
-          routes: {
-            loading: [{ city: "Bandung", province: "Jawa Barat" }],
-            unloading: [{ city: "Yogyakarta", province: "DIY" }],
-            hasMoreLocations: false,
-          },
+          licensePlate: "L 9191 PRS",
           fleet: {
-            licensePlate: "L 2412 AA",
-            truckTypeName: "Colt Diesel Engkel",
-            carrierTypeName: "Box",
+            truckTypeId: "8e545657-fff1-4b99-94d4-f52c53f5cc52",
+            truckTypeName: "Medium Truck 4 x 2 + Gandengan",
+            carrierTypeId: "550e8400-e29b-41d4-a716-446655440001",
+            carrierTypeName: "Bak Terbuka",
           },
-          totalDistance: 55,
-          totalTonnage: 180,
-          utilizedFleets: 1,
+          totalDistance: 20.85,
+          totalTonnage: 6000,
         },
       ],
-      dataFilter: {
-        truckTypes: [
-          { id: "cde", value: "Colt Diesel Engkel" },
-          { id: "th6x4", value: "Tractor Head 6x4" },
-        ],
-        carrierTypes: [
-          { id: "box", value: "Box" },
-          { id: "flatbed", value: "Flatbed Container" },
-        ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        totalItems: 3,
+        totalPages: 1,
       },
     },
-    Type: "DELIVERY_SUMMARY",
+    Type: "DASHBOARD_TRANSPORTER_DELIVERY_SUMMARY_REPORT",
   },
 };
 
 /**
+ * Transforms the raw API data into the structure expected by the UI components.
+ */
+const transformAPIData = (apiData) => {
+  if (!apiData || !apiData.reports) {
+    return {
+      deliveries: [],
+      totalItems: 0,
+      totalPages: 1,
+      currentPage: 1,
+      itemsPerPage: 10,
+      hasData: false,
+    };
+  }
+
+  return {
+    deliveries: apiData.reports,
+    totalItems: apiData.pagination.totalItems,
+    totalPages: apiData.pagination.totalPages,
+    currentPage: apiData.pagination.page,
+    itemsPerPage: apiData.pagination.limit,
+    hasData: (apiData.reports || []).length > 0,
+  };
+};
+
+/**
  * Fetcher function for the delivery summary report.
- * @param {Array} args - SWR key arguments.
- * @param {string} args[0] - The API endpoint URL.
- * @param {Object} args[1] - The query parameters.
- * @returns {Promise<Object>} The data portion of the API response.
  */
 export const fetcherDeliverySummary = async ([url, params]) => {
   if (useMockData) {
-    // Returns the entire `Data` object, including `deliveries` and `dataFilter`.
-    return mockAPIResult.data.Data;
+    return transformAPIData(mockAPIResult.data.Data);
   }
-  const result = await fetcherMuatrans.get(url, { params });
-  return result?.data?.Data || {};
+
+  try {
+    // Assuming `fetcherMuatrans.get` returns the full Axios response object.
+    const response = await fetcherMuatrans.get(url, { params });
+    // ✨ FIX: Access the payload correctly via `response.data.Data`.
+    // `response.data` is the API response body.
+    // `response.data.Data` is the specific data object we need to transform.
+    return transformAPIData(response?.data?.Data);
+  } catch (error) {
+    console.error("Failed to fetch delivery summary:", error);
+    // Re-throw the error so SWR can correctly manage the error state.
+    throw error;
+  }
 };
 
 /**
  * SWR hook to fetch the delivery summary report.
- * @param {Object} params - Query parameters for the API call.
- * @returns {Object} An object containing the fetched data, loading state, and error state.
  */
 export const useGetDeliverySummary = (params = {}) => {
-  const cleanedParams = {};
-  for (const key in params) {
-    if (params[key] !== null && params[key] !== "") {
-      cleanedParams[key] = params[key];
+  const cleanedParams = Object.entries(params).reduce((acc, [key, value]) => {
+    if (value !== null && value !== "") {
+      acc[key] = value;
     }
-  }
+    return acc;
+  }, {});
 
   const { data, error, isLoading, mutate } = useSWR(
-    ["/v1/transporter/reports/delivery-summary", cleanedParams],
+    [
+      "/v1/transporter/dashboard/analytics/delivery-summary/report",
+      cleanedParams,
+    ],
     fetcherDeliverySummary,
     { revalidateOnFocus: false }
   );

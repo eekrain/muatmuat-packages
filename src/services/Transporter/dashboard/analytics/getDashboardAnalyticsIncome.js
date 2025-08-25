@@ -4,59 +4,48 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
 // Set to true to use mock data, false for actual API calls.
-const useMockData = true;
+const useMockData = false;
 
 // --- Mock Data ---
 
-// Mock data for a successful response.
+// Mock data for a successful response based on the real API contract.
 export const mockAPIResult = {
   data: {
     Message: {
       Code: 200,
-      Text: "Income data retrieved successfully",
+      Text: "OK",
     },
     Data: {
-      totalIncome: 176000000,
-      periodLabel: "Dalam Bulan Ini",
+      totalIncome: 175966288,
+      periode: "2025-08-01 - 2025-08-31",
       lineChartData: [
         {
-          date: "2025-01-01",
-          dateLabel: "01 Jan",
-          income: 5500000,
+          date: "2025-08-01",
+          dateLabel: "1 Aug - 8 Aug",
+          tooltipDateLabel: "01 Aug - 08 Aug 2025",
+          income: 0,
         },
         {
-          date: "2025-01-05",
-          dateLabel: "05 Jan",
-          income: 7200000,
+          date: "2025-08-09",
+          dateLabel: "9 Aug - 16 Aug",
+          tooltipDateLabel: "09 Aug - 16 Aug 2025",
+          income: 38988111,
         },
         {
-          date: "2025-01-10",
-          dateLabel: "10 Jan",
-          income: 8900000,
+          date: "2025-08-17",
+          dateLabel: "17 Aug - 24 Aug",
+          tooltipDateLabel: "17 Aug - 24 Aug 2025",
+          income: 135678984,
         },
         {
-          date: "2025-01-15",
-          dateLabel: "15 Jan",
-          income: 6500000,
-        },
-        {
-          date: "2025-01-20",
-          dateLabel: "20 Jan",
-          income: 11200000,
-        },
-        {
-          date: "2025-01-25",
-          dateLabel: "25 Jan",
-          income: 9800000,
-        },
-        {
-          date: "2025-01-30",
-          dateLabel: "30 Jan",
-          income: 15400000,
+          date: "2025-08-25",
+          dateLabel: "25 Aug - 31 Aug",
+          tooltipDateLabel: "25 Aug - 31 Aug 2025",
+          income: 1299193,
         },
       ],
     },
-    Type: "INCOME_DATA",
+    Type: "DASHBOARD_TRANSPORTER_INCOME",
   },
 };
 

@@ -94,53 +94,76 @@ const DaftarArmadaCs = ({
     mutate: refetchFleets,
   } = useGetFleetList({
     search: searchTerm,
-    sosOnly: activeTab === "sos",
+    has_fleet_status: activeTab === "ready" ? "READY_FOR_ORDER" : undefined,
     truckStatus: truckStatusFilter,
     orderStatus: orderStatusFilter,
   });
 
-  const fleets = fleetData?.fleets || [];
-  const sosCount =
-    fleetData?.summary?.statusBreakdown?.sos ||
-    fleets.filter((f) => f.hasSOSAlert).length;
-  const hasFilterData = fleetData?.summary;
+  // Get all data for total counts (without status filtering)
+  const { data: allFleetData } = useGetFleetList({
+    search: searchTerm,
+    truckStatus: truckStatusFilter,
+    orderStatus: orderStatusFilter,
+  });
+
+  // Extract transporters and calculate totals from the new data structure
+  const transporters = fleetData?.transporters || [];
+  const allTransporters = allFleetData?.transporters || [];
+
+  // Calculate total fleets from all data (without status filtering)
+  const totalFleets = useMemo(() => {
+    return allTransporters.reduce((total, transporter) => {
+      return total + (transporter.fleets?.length || 0);
+    }, 0);
+  }, [allTransporters]);
+
+  const readyCount = useMemo(() => {
+    return allTransporters.reduce((total, transporter) => {
+      const readyFleets =
+        transporter.fleets?.filter(
+          (fleet) => fleet.status === "READY_FOR_ORDER"
+        ) || [];
+      return total + readyFleets.length;
+    }, 0);
+  }, [allTransporters]);
+
+  // Get filter counts from the new structure
+  const filterCounts = fleetData?.filterOptions || {};
+
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
 
-  const groupedFleets = useMemo(() => {
-    const filtered = fleets.filter((fleet) => {
-      const searchMatch =
-        fleet.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        fleet.driver?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        fleet.transporter?.companyName
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
+  // Process transporters and their fleets with filtering
+  const processedTransporters = useMemo(() => {
+    return transporters
+      .map((transporter) => {
+        const filteredFleets = (transporter.fleets || []).filter((fleet) => {
+          // Search filter
+          const searchMatch =
+            fleet.licensePlate
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            fleet.driver?.name
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            transporter.companyName
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase());
 
-      if (activeTab === "sos") {
-        return fleet.hasSOSAlert && searchMatch;
-      }
-      return searchMatch;
-    });
+          // Ready tab filter
+          if (activeTab === "ready") {
+            return fleet.status === "READY_FOR_ORDER" && searchMatch;
+          }
 
-    if (filtered.length === 0) {
-      return [];
-    }
+          return searchMatch;
+        });
 
-    const groups = filtered.reduce((acc, fleet) => {
-      const key = fleet.transporterId;
-      if (!acc[key]) {
-        acc[key] = {
-          transporter: fleet.transporter,
-          fleets: [],
+        return {
+          ...transporter,
+          fleets: filteredFleets,
         };
-      }
-      acc[key].fleets.push(fleet);
-      return acc;
-    }, {});
-
-    return Object.values(groups);
-  }, [fleets, searchTerm, activeTab]);
-
-  const totalFleets = fleetData?.pagination?.totalItems || 0;
+      })
+      .filter((transporter) => transporter.fleets.length > 0); // Only show transporters with fleets
+  }, [transporters, searchTerm, activeTab]);
 
   const handleAcknowledge = async (fleet) => {
     try {
@@ -198,7 +221,7 @@ const DaftarArmadaCs = ({
 
   const handleFleetCardClick = (fleet) => {
     if (onFleetClick) onFleetClick(fleet);
-    if (onFleetSelect) onFleetSelect(fleet.id);
+    if (onFleetSelect) onFleetSelect(fleet.fleetId);
   };
 
   const handleOpenHubungiModal = (transporter) => {
@@ -238,7 +261,7 @@ const DaftarArmadaCs = ({
           />
           <FilterPopoverArmada
             onApplyFilter={handleApplyFilter}
-            filterCounts={fleetData?.summary?.statusBreakdown}
+            filterCounts={filterCounts}
             isPopoverOpen={isFilterPopoverOpen}
             onOpenChange={setIsFilterPopoverOpen}
             isFilterActive={
@@ -252,17 +275,17 @@ const DaftarArmadaCs = ({
       </div>
 
       {/* filter tabs */}
-      {hasFilterData && sosCount > 0 && (
+      {readyCount > 0 && (
         <div className="flex gap-2 px-4 pb-3">
           <button
             className={`relative rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-              activeTab === "sos"
+              activeTab === "ready"
                 ? "border-primary-700 bg-primary-50 text-primary-700"
                 : "border-neutral-200 bg-neutral-200 text-black"
             }`}
-            onClick={() => setActiveTab("sos")}
+            onClick={() => setActiveTab("ready")}
           >
-            SOS ({sosCount})
+            Siap Menerima Order ({readyCount})
             <NotificationDot
               size="sm"
               color="red"
@@ -294,17 +317,35 @@ const DaftarArmadaCs = ({
           <div className="text-center text-red-600">
             Gagal memuat data armada.
           </div>
-        ) : groupedFleets.length === 0 ? (
+        ) : processedTransporters.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <DataNotFound
-              type="search"
-              title="Data Armada Tidak Ditemukan"
-              message="Coba ubah kata kunci atau filter pencarian Anda."
-            />
+            {searchTerm ||
+            activeTab === "ready" ||
+            selectedTruckStatuses.length > 0 ||
+            selectedOrderStatuses.length > 0 ? (
+              // Search/filter results empty
+              <DataNotFound
+                type="search"
+                title="Data Armada Tidak Ditemukan"
+                message="Coba ubah kata kunci atau filter pencarian Anda."
+              />
+            ) : (
+              // First time - no data at all
+              <DataNotFound type="data">
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-center text-base font-semibold leading-tight text-neutral-600">
+                    Belum ada armada
+                  </p>
+                  <p className="text-center text-xs font-medium leading-tight text-neutral-600">
+                    Hubungi Transporter untuk menambahkan armada
+                  </p>
+                </div>
+              </DataNotFound>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
-            {groupedFleets.map(({ transporter, fleets: transporterFleets }) => (
+            {processedTransporters.map((transporter) => (
               <Card
                 key={transporter.id}
                 className="border-neutral-400 p-0 !shadow-none"
@@ -329,7 +370,7 @@ const DaftarArmadaCs = ({
                             width={16}
                             height={16}
                           />
-                          <span>{transporterFleets.length} Armada</span>
+                          <span>{transporter.fleets.length} Armada</span>
                           <li className="flex items-center gap-1 pl-[26px]">
                             <IconComponent
                               src="/icons/ellipse-7.svg"
@@ -358,16 +399,16 @@ const DaftarArmadaCs = ({
                 </CardHeader>
                 <CardContent className="border-neutral-400 !p-0 !pt-3">
                   <div className="space-y-3 px-4 pb-4">
-                    {transporterFleets.map((fleet) => (
+                    {transporter.fleets.map((fleet) => (
                       <div
-                        key={fleet.id}
+                        key={fleet.fleetId}
                         onClick={() => handleFleetCardClick(fleet)}
                         className="cursor-pointer"
                       >
                         <CardFleet
                           fleet={fleet}
-                          isExpanded={expandedId === fleet.id}
-                          onToggleExpand={() => toggleExpanded(fleet.id)}
+                          isExpanded={expandedId === fleet.fleetId}
+                          onToggleExpand={() => toggleExpanded(fleet.fleetId)}
                           onOpenDriverModal={() => handleOpenDriverModal(fleet)}
                           onOpenResponseChangeModal={() =>
                             handleOpenResponseChangeModal(fleet)
@@ -394,9 +435,9 @@ const DaftarArmadaCs = ({
         <DriverSelectionModal
           onClose={() => setShowDriverModal(false)}
           onSuccess={handleDriverSelectionSuccess}
-          vehicleId={selectedFleet.id}
+          vehicleId={selectedFleet.fleetId}
           vehiclePlate={selectedFleet.licensePlate}
-          currentDriverId={selectedFleet.driver?.id || null}
+          currentDriverId={selectedFleet.driver?.driverId || null}
         />
       )}
       {showResponseChangeModal && selectedFleetForResponse && (
@@ -412,13 +453,13 @@ const DaftarArmadaCs = ({
       )}
       <SosPopupNotification
         isOpen={showSosNotification}
-        sosCount={sosCount}
+        sosCount={readyCount}
         onClose={() => {
           setShowSosNotification(false);
           acknowledgeSosAlert();
         }}
         onConfirm={() => {
-          setActiveTab("sos");
+          setActiveTab("ready");
           setShowSosNotification(false);
           acknowledgeSosAlert();
         }}

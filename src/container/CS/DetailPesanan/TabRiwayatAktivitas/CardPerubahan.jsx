@@ -6,7 +6,7 @@ import {
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
-const Content = ({ title = "Detail Perubahan", className, children }) => {
+const Root = ({ title = "Detail Perubahan", className, children }) => {
   return (
     <Collapsible
       defaultOpen
@@ -77,7 +77,7 @@ const ChangeDetailColumn = ({ label, children }) => (
   </div>
 );
 
-const ItemPerubahanDriver = ({ isFirst, timestamp, oldDriver, newDriver }) => {
+const PerubahanDriver = ({ isFirst, timestamp, oldDriver, newDriver }) => {
   return (
     <ChangeSection
       iconSrc="/icons/card-perubahan/driver.svg"
@@ -106,7 +106,7 @@ const ItemPerubahanDriver = ({ isFirst, timestamp, oldDriver, newDriver }) => {
   );
 };
 
-const ItemPerubahanArmada = ({ isFirst, timestamp, oldArmada, newArmada }) => {
+const PerubahanArmada = ({ isFirst, timestamp, oldArmada, newArmada }) => {
   const ArmadaInfo = ({ picture, plate, driverName }) => (
     <>
       <img
@@ -155,9 +155,5 @@ const ItemPerubahanArmada = ({ isFirst, timestamp, oldArmada, newArmada }) => {
   );
 };
 
-const CardPerubahan = {
-  Root: Content,
-  PerubahanDriver: ItemPerubahanDriver,
-  PerubahanArmada: ItemPerubahanArmada,
-};
+const CardPerubahan = { Root, PerubahanDriver, PerubahanArmada };
 export default CardPerubahan;

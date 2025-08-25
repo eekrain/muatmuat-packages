@@ -4,11 +4,9 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
 // Set to true to use mock data, false for actual API calls.
-const useMockData = true;
+const useMockData = false; // Changed to false to enable real API calls
 
 // --- Mock Data ---
-
-// Mock data for a successful response including price per segment.
 export const mockAPIResult = {
   data: {
     Message: {
@@ -50,9 +48,7 @@ export const mockAPIResult = {
   },
 };
 
-export const fetcherDashboardAnalyticsMissedOrders = async (cacheKey) => {
-  const [url, params] = cacheKey;
-
+export const fetcherDashboardAnalyticsMissedOrders = async ([url, params]) => {
   if (useMockData) {
     return mockAPIResult.data.Data;
   }
@@ -62,18 +58,20 @@ export const fetcherDashboardAnalyticsMissedOrders = async (cacheKey) => {
     return result?.data?.Data || {}; // Return data or an empty object on failure
   } catch (error) {
     console.error("Error fetching dashboard missed orders analytics:", error);
-    return {}; // Ensure the hook receives an object even on error
+    throw error; // Re-throw the error to be caught by SWR
   }
 };
 
-export const useGetDashboardAnalyticsMissedOrders = (params = {}) => {
+export const useGetDashboardAnalyticsMissedOrders = (params) => {
+  // The cache key now correctly includes the passed-in params.
   const cacheKey = [
     "/v1/transporter/dashboard/analytics/missed-orders",
     params,
   ];
 
   const { data, error, isLoading } = useSWR(
-    cacheKey,
+    // Only fetch if params are provided
+    params ? cacheKey : null,
     fetcherDashboardAnalyticsMissedOrders,
     {
       revalidateOnFocus: false,
@@ -83,6 +81,6 @@ export const useGetDashboardAnalyticsMissedOrders = (params = {}) => {
   return {
     data,
     isLoading,
-    isError: error,
+    isError: !!error, // Coerce error to a boolean
   };
 };

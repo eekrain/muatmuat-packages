@@ -2,11 +2,13 @@ import { useParams } from "next/navigation";
 import { useMemo } from "react";
 
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetOrderAlertsCS } from "@/services/CS/monitoring/detail-pesanan-cs/getOrderAlertCS";
 
 export const Alert = () => {
   const params = useParams();
   const { data } = useGetOrderAlertsCS(params.orderId);
+  const { t } = useTranslation();
 
   const alertItems = useMemo(
     () =>
@@ -16,7 +18,11 @@ export const Alert = () => {
             label: item?.label,
             button: {
               onClick: () => alert("anjay"),
-              label: "Lihat Alasan Pembatalan",
+              label: t(
+                "Alert.buttonLihatAlasanPembatalan",
+                {},
+                "Lihat Alasan Pembatalan"
+              ),
             },
           };
         }
@@ -25,14 +31,14 @@ export const Alert = () => {
             label: item?.label,
             button: {
               onClick: () => alert("anjay"),
-              label: "Lihat Perubahan",
+              label: t("Alert.buttonLihatPerubahan", {}, "Lihat Perubahan"),
             },
           };
         }
 
         return { label: item?.label };
       }) || [],
-    [data]
+    [data, t]
   );
 
   return (

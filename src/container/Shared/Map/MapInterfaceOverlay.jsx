@@ -32,6 +32,7 @@ export const MapInterfaceOverlay = ({
   hasData = true,
   activeFilters = { truck: [], order: [] },
   showPilihArmada = false,
+  fleetLocationsData,
 }) => {
   const { data: sosStatusSummary } = useGetSosStatusSummary();
   const [centerButtonClicked, setCenterButtonClicked] =
@@ -160,6 +161,7 @@ export const MapInterfaceOverlay = ({
             onSearch={onSearch}
             containerClassName="max-w-[300px] flex-1"
             inputClassName="w-full"
+            fleetLocationsData={fleetLocationsData}
           />
 
           {/* Filter Button */}

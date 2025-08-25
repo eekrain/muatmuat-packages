@@ -15,11 +15,21 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
   return (
     <Modal closeOnOutsideClick>
       <ModalTrigger>
-        <ButtonMini>Lihat Status Lainnya</ButtonMini>
+        <ButtonMini>
+          {t(
+            "ModalLihatStatusLainnya.buttonLihatStatusLainnya",
+            {},
+            "Lihat Status Lainnya"
+          )}
+        </ButtonMini>
       </ModalTrigger>
       <ModalContent type="muatmuat" className="px-6 py-8">
         <h2 className="mb-6 text-center text-base font-bold leading-[1.2] text-neutral-900">
-          Status Lainnya
+          {t(
+            "ModalLihatStatusLainnya.titleStatusLainnya",
+            {},
+            "Status Lainnya"
+          )}
         </h2>
         <div className="flex flex-col gap-2">
           {otherStatus.map((item) => (

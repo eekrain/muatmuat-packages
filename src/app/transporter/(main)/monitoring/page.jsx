@@ -127,8 +127,23 @@ const Page = () => {
 
   // Get initial tab value from query parameter
   const tabParam = searchParams.get("tab");
+  const leftPanelParam = searchParams.get("leftPanel");
   const initialTab = getTabValue(tabParam);
   const [selectedTab, setSelectedTab] = useState(initialTab);
+
+  // Handle leftPanel query parameter to open SOS panel
+  useEffect(() => {
+    if (leftPanelParam === "sos") {
+      handleOpenSOSPanel();
+      // Clean up the URL after opening the panel
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("leftPanel");
+      const newUrl = newParams.toString()
+        ? `/monitoring?${newParams.toString()}`
+        : "/monitoring";
+      router.replace(newUrl);
+    }
+  }, [leftPanelParam, handleOpenSOSPanel, router, searchParams]);
 
   // Update tab when query parameter changes
   useEffect(() => {
@@ -407,7 +422,7 @@ const Page = () => {
                 onToggleFullscreen={handleToggleFullscreen}
                 isFullscreen={panels.isFullscreen}
                 showLicensePlate={map.showLicensePlate}
-                onToggleLicensePlate={(value) =>
+                onToggleLicensePlate={() =>
                   mapDispatch({ type: MAP_ACTIONS.TOGGLE_LICENSE_PLATE })
                 }
                 onCenter={handleResetZoom}
@@ -418,6 +433,7 @@ const Page = () => {
                   order: filters.selectedOrderFilters,
                 }}
                 showPilihArmada={panels.showPilihArmada}
+                fleetLocationsData={fleetLocationsData}
               />
             )}
 

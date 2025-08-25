@@ -209,7 +209,12 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
                   text: "Siap Menerima Order",
                 };
               }
-              return { variant: "success", text: "Siap Menerima Order" };
+              return {
+                variant: "success",
+                text: "Siap Menerima Order",
+                className:
+                  "bg-success-50 text-success-400 group-hover:bg-success-400 group-hover:text-success-50",
+              };
 
             case "ON_DUTY":
               if (row.isRecommended) {
@@ -218,7 +223,12 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
                   text: "Bertugas",
                 };
               }
-              return { variant: "primary", text: "Bertugas" };
+              return {
+                variant: "primary",
+                text: "Bertugas",
+                className:
+                  "bg-primary-50 text-primary-700 group-hover:bg-primary-700 group-hover:text-primary-50",
+              };
             case "WAITING_LOADING_TIME":
               if (row.isRecommended) {
                 return {
@@ -226,7 +236,12 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
                   text: "Akan Muat Hari Ini",
                 };
               }
-              return { variant: "warning", text: "Akan Muat Hari Ini" };
+              return {
+                variant: "warning",
+                text: "Akan Muat Hari Ini",
+                className:
+                  "bg-warning-100 text-warning-700 group-hover:bg-warning-700 group-hover:text-warning-100",
+              };
             default:
               return { variant: "default", text: status };
           }
@@ -322,14 +337,20 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
   // Function to get row className based on recommendation status
   const getRowClassName = (row) => {
     return row.isRecommended
-      ? "bg-success-50 hover:bg-success-50 border-b border-success-400"
-      : "hover:bg-muat-trans-primary-50 hover:border hover:border-muat-trans-primary-400";
+      ? "group bg-success-50 hover:bg-success-50 border-b border-success-400 cursor-pointer hover:border hover:border-success-400"
+      : "group hover:bg-muat-trans-primary-50 hover:border hover:border-muat-trans-primary-400 cursor-pointer";
   };
 
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex h-16 items-center gap-3 px-4">
+      <div className="relative flex h-16 items-center gap-3 px-4">
+        <div className="absolute left-1/2 top-4 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+          <IconComponent
+            src="/icons/draggable-button.svg"
+            className={cn("h-4 w-14")}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <h3 className="whitespace-nowrap text-xs font-bold">
             Pilih armada yang ditugaskan

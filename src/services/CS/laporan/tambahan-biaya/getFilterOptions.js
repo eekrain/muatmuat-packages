@@ -74,6 +74,18 @@ export const mockAPIResult = {
           type: "user10",
         },
       ],
+      paymentMethods: [
+        {
+          id: generateUUID(),
+          name: "Kartu Kredit",
+          type: "credit-card",
+        },
+        {
+          id: generateUUID(),
+          name: "Transfer Bank",
+          type: "bank-transfer",
+        },
+      ],
     },
   },
 };
@@ -89,6 +101,7 @@ export const getFilterOptions = async (url) => {
   }
   return {
     shippers: result?.data?.Data.shippers || [],
+    paymentMethods: result?.data?.Data.paymentMethods || [],
   };
 };
 

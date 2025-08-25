@@ -17,13 +17,15 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { deactivateVehicle } from "@/services/Transporter/manajemen-armada/deactivateVehicle";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
 
 const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -135,7 +137,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
       sortable: false,
       width: "200px",
       render: (row) => {
-        const statusConfig = getArmadaStatusBadge(row.status);
+        const statusConfig = getArmadaStatusBadgeWithTranslation(row.status, t);
         return (
           <BadgeStatus variant={statusConfig.variant}>
             {row.status === "ON_DUTY" && row.pendingUpdateDriver && (
