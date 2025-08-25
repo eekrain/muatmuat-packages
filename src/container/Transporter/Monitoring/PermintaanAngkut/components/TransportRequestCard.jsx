@@ -83,6 +83,27 @@ const TransportRequestCard = ({
     return `${weight.toLocaleString("id-ID")} ${unit}`;
   };
 
+  // Format time difference from createdAt
+  const formatTimeAgo = (dateString) => {
+    if (!dateString) return "-";
+    const now = new Date();
+    const created = new Date(dateString);
+    const diffMs = now - created;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay > 0) {
+      return `${diffDay} Hari yang lalu`;
+    } else if (diffHour > 0) {
+      return `${diffHour} Jam yang lalu`;
+    } else if (diffMin > 0) {
+      return `${diffMin} Menit yang lalu`;
+    } else {
+      return `${diffSec} Detik yang lalu`;
+    }
+  };
+
   return (
     <div className="relative">
       {/* Modal for accepting scheduled request */}
@@ -117,7 +138,7 @@ const TransportRequestCard = ({
                 Permintaan Baru
               </span>
               <span className="text-[12px] font-normal text-neutral-600">
-                {request.newRequestDuration}
+                {formatTimeAgo(request.createdAt)}
               </span>
             </div>
             <div className="border-b border-warning-400"></div>

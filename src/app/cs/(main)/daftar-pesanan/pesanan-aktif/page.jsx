@@ -15,7 +15,7 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useTranslation } from "@/hooks/use-translation";
 
-import PesananAktifTab from "./components/PesananAktifTab";
+import PesananAktifTab from "../components/PesananAktifTab";
 
 const DaftarPesananPage = () => {
   const { t } = useTranslation();
@@ -183,6 +183,9 @@ const DaftarPesananPage = () => {
                 <Button
                   variant="muattrans-primary-secondary"
                   disabled={disableUploadButton}
+                  onClick={() =>
+                    router.push("/daftar-pesanan/pesanan-aktif/unggah-resi")
+                  }
                 >
                   {t("daftarPesanan.buttonUploadReceipt", {}, "Unggah Resi")}
                 </Button>

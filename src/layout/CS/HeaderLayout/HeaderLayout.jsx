@@ -204,7 +204,9 @@ const NavigationMenuItem = ({ item, pathname }) => {
       href={item.href}
       className={cn(
         "flex h-8 items-center gap-1 border-b-2 border-transparent",
-        pathname.startsWith(item.href) && "border-muat-trans-primary-400"
+        ((item.activePattern && pathname.startsWith(item.activePattern)) ||
+          (item.href && pathname.startsWith(item.href))) &&
+          "border-muat-trans-primary-400"
       )}
     >
       <IconComponent src={item.icon} />
@@ -277,7 +279,8 @@ const HeaderLayout = ({
     {
       id: "order",
       label: t("HeaderLayout.navigation.daftarPesanan", {}, "Daftar Pesanan"),
-      href: "/daftar-pesanan",
+      href: "/daftar-pesanan/pesanan-aktif",
+      activePattern: "/daftar-pesanan",
       icon: "/icons/header-transporter/agenda.svg",
     },
     {

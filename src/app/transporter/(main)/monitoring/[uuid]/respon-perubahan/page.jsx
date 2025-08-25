@@ -11,6 +11,7 @@ import BadgeStatus from "@/components/Badge/BadgeStatus";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
@@ -64,6 +65,8 @@ const ResponPerubahanPage = () => {
     title: t("ResponPerubahanPage.acceptChange", {}, "Terima Perubahan"),
     responseType: "accept",
   });
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
 
   // Mock data for demonstration
   const armadaList = [
@@ -264,6 +267,24 @@ const ResponPerubahanPage = () => {
     setCurrentArmadaId(null);
   };
 
+  const handleNavigationAttempt = (url) => {
+    // Check if any response has been filled
+    if (hasAnyResponse) {
+      setPendingNavigation(url);
+      setIsConfirmationModalOpen(true);
+    } else {
+      router.push(url);
+    }
+  };
+
+  const handleConfirmNavigation = () => {
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+    }
+    setIsConfirmationModalOpen(false);
+    setPendingNavigation(null);
+  };
+
   const handleMassalSave = (
     selectedArmadaList,
     responseType,
@@ -410,7 +431,7 @@ const ResponPerubahanPage = () => {
               <Button
                 variant="muattrans-primary-secondary"
                 onClick={() =>
-                  router.push(
+                  handleNavigationAttempt(
                     `/transporter/monitoring/${params.uuid}/detail-pesanan`
                   )
                 }
@@ -737,6 +758,20 @@ const ResponPerubahanPage = () => {
               massalModalConfig.responseType
           )
           .map((armada) => armada.id.toString())}
+      />
+      {/* ConfirmationModal */}
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        setIsOpen={setIsConfirmationModalOpen}
+        description={{
+          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+        }}
+        cancel={{
+          text: "Ya",
+          onClick: handleConfirmNavigation,
+          classname: "w-[112px]",
+        }}
+        confirm={{ text: "Batal", classname: "w-[112px]" }}
       />
     </div>
   );

@@ -446,7 +446,8 @@ function CardLacakArmada({
               </div>
             </div>
 
-            {replacementFleet && replacementDriver && (
+            {((replacementFleet && replacementDriver) ||
+              fleetChangeStatus === "PENDING") && (
               <IconComponent
                 src="/icons/arrow-right.svg"
                 className="text-neutral-700"
@@ -454,6 +455,7 @@ function CardLacakArmada({
                 height={24}
               />
             )}
+
             {/* Armada Pengganti */}
             <div className="flex items-center gap-3">
               {fleetChangeStatus === "PENDING" && (

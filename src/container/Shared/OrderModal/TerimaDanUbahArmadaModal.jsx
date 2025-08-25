@@ -232,7 +232,7 @@ const TerimaDanUbahArmadaModal = ({
           </div>
 
           {/* Armada List */}
-          <div className="mx-6 mb-4 max-h-[291px] overflow-y-auto rounded-lg border border-neutral-400">
+          <div className="mx-6 mb-4 h-[291px] overflow-y-auto rounded-lg border border-neutral-400">
             {filteredArmada.length === 0 ? (
               <div className="flex h-[291px] items-center justify-center py-8">
                 <SearchNotFound />
@@ -322,7 +322,7 @@ const TerimaDanUbahArmadaModal = ({
             <Button
               variant="muattrans-primary"
               onClick={handleFormSubmit}
-              disabled={isSubmitting || !selectedArmada}
+              disabled={isSubmitting}
               className="h-10 w-24 text-sm"
             >
               {isSubmitting

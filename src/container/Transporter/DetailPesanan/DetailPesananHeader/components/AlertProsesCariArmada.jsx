@@ -1,6 +1,10 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-function AlertProsesCariArmada({ fleetFound }) {
+function AlertProsesCariArmada({
+  fleetFound,
+  fleetsNeedingReplacement = 1,
+  foundCount = 0,
+}) {
   return (
     <div
       className={
@@ -27,10 +31,12 @@ function AlertProsesCariArmada({ fleetFound }) {
           saat.
         </h3>
         <div className="">
-          {fleetFound && (
+          {fleetFound && fleetsNeedingReplacement > 1 && (
             <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
               Armada pengganti telah berhasil ditemukan{" "}
-              <span className="font-bold">1/3 armada</span>
+              <span className="font-bold">
+                {foundCount}/{fleetsNeedingReplacement} armada
+              </span>
             </p>
           )}
           <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
