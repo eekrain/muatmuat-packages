@@ -52,6 +52,42 @@ export const successResponse = {
                 createdAt: "2025-08-22T09:00:00Z",
                 updatedAt: "2025-08-22T09:15:00Z",
               },
+              {
+                orderId: "order-uuid-13",
+                orderNumber: "MT-20250822-0013",
+                orderType: "INSTANT",
+                orderStatus: "WAITING_CONFIRMATION_SHIPPER",
+                orderStatusUnit: 0,
+                sosUnit: 0,
+                loadTimeStart: "2025-08-23T13:00:00Z",
+                loadTimeEnd: "2025-08-23T15:00:00Z",
+                pickupLocations: [
+                  {
+                    locationId: "loc-pickup-13",
+                    fullAddress: "Jl. Melati 12",
+                    city: "Surabaya",
+                    district: "Genteng",
+                  },
+                ],
+                dropoffLocations: [
+                  {
+                    locationId: "loc-dropoff-13",
+                    fullAddress: "Jl. Wijaya 8",
+                    city: "Malang",
+                    province: "Jawa Timur",
+                  },
+                ],
+                estimatedDistance: 56000,
+                fleetInfo: {
+                  vehicleType: "BOX_TRUCK",
+                  carrierType: "THIRD_PARTY",
+                  totalUnits: 1,
+                  cargoName: ["Material Proyek"],
+                  totalWeight: 1200,
+                },
+                createdAt: "2025-08-22T14:00:00Z",
+                updatedAt: "2025-08-22T14:10:00Z",
+              },
             ],
           },
           {
