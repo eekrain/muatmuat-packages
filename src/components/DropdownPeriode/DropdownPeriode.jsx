@@ -232,7 +232,7 @@ const DropdownPeriode = ({
           </li>
           {recentSelections.length > 0 && (
             <>
-              <hr className="border-gray-200" />
+              {/* <hr className="border-gray-200" /> */}
               <li className="medium-xs px-[10px] py-2 text-neutral-600">
                 Terakhir Dicari
               </li>

@@ -125,6 +125,11 @@ const ModalPilihPeriode = ({
                 onChange={() => {}}
                 classInput={"w-full"}
                 status={validate?.start_date && "error"}
+                appearance={{
+                  containerClassName: validate?.start_date
+                    ? "border-error-400"
+                    : "",
+                }}
                 className={"!w-[136px] max-w-none"}
                 placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
                 icon={{
@@ -147,6 +152,11 @@ const ModalPilihPeriode = ({
               <Input
                 value={inputDateCustom?.end_date}
                 status={validate?.end_date && "error"}
+                appearance={{
+                  containerClassName: validate?.end_date
+                    ? "border-error-400"
+                    : "",
+                }}
                 onClick={() =>
                   setInputDateCustom((a) => ({ ...a, status: "end_date" }))
                 }
@@ -155,7 +165,17 @@ const ModalPilihPeriode = ({
                 className={"!w-[136px] max-w-none"}
                 placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
                 icon={{
-                  right: <IconComponent src={"/icons/calendar16.svg"} />,
+                  right: (
+                    <IconComponent
+                      onClick={() => {
+                        setInputDateCustom((a) => ({
+                          ...a,
+                          status: "end_date",
+                        }));
+                      }}
+                      src={"/icons/calendar16.svg"}
+                    />
+                  ),
                 }}
               />
 
