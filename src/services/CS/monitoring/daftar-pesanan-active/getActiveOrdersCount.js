@@ -24,9 +24,9 @@ const apiResultActiveOrdersCount = {
       DOCUMENT_DELIVERY: 1,
     },
     availableStatuses: {
-      hasNeedChangeResponse: false,
-      hasNeedConfirmationReady: false,
-      hasNeedAssignVehicle: false,
+      hasNeedChangeResponse: true,
+      hasNeedConfirmationReady: true,
+      hasNeedAssignVehicle: true,
       totalNeedChangeResponse: 2,
       totalNeedConfirmationReady: 1,
       totalNeedAssignVehicle: 1,

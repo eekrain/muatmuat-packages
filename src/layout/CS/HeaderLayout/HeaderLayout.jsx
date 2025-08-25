@@ -166,7 +166,7 @@ const NavigationMenuItem = ({ item, pathname }) => {
                         : ""
                     )}
                   >
-                    <span>
+                    <span className={`${isSelected ? "font-semibold" : ""}`}>
                       {t(
                         `HeaderLayout.navigation.${dropdownItem.id}`,
                         {},

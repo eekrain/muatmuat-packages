@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetAvailableSchedulePeriods } from "@/services/Transporter/agenda-armada-driver/getAvailableSchedulePeriods";
@@ -12,6 +13,7 @@ import { AgendaNotFound } from "./components/AgendaNotFound";
 import RefreshButton from "./components/ButtonRefresh";
 
 const AgendaArmadaDriverPage = () => {
+  const { t } = useTranslation();
   const { data: periodsData } = useGetAvailableSchedulePeriods();
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -44,11 +46,23 @@ const AgendaArmadaDriverPage = () => {
   useEffect(() => {
     if (isRefreshing) {
       if (status === "success") {
-        toast.success("Jadwal berhasil diperbarui!");
+        toast.success(
+          t(
+            "AgendaArmadaPage.messageSuccessJadwalBerhasilDiperbarui",
+            {},
+            "Jadwal berhasil diperbarui!"
+          )
+        );
         setLastUpdated(new Date());
         setIsRefreshing(false);
       } else if (status === "error") {
-        toast.error("Jadwal tidak ada perubahan");
+        toast.error(
+          t(
+            "AgendaArmadaPage.messageErrorJadwalTidakAdaPerubahan",
+            {},
+            "Jadwal tidak ada perubahan"
+          )
+        );
         setIsRefreshing(false);
       }
     }
@@ -93,11 +107,20 @@ const AgendaArmadaDriverPage = () => {
       <div className="flex flex-col gap-4 pt-6">
         <div className="flex flex-row items-center justify-between">
           <h1 className="text-xl font-bold text-black">
-            Agenda Armada & Driver
+            {t(
+              "AgendaArmadaPage.titleAgendaArmadaDriver",
+              {},
+              "Agenda Armada & Driver"
+            )}
           </h1>
           <div className="flex items-center gap-3">
             <p className="text-xs font-bold text-black">
-              Terakhir di update: {formatDate(lastUpdated)}
+              {t(
+                "AgendaArmadaPage.labelTerakhirDiUpdate",
+                {},
+                "Terakhir di update:"
+              )}{" "}
+              {formatDate(lastUpdated)}
             </p>
             <RefreshButton onClick={handleRefresh} disabled={isLoading} />
           </div>
@@ -110,9 +133,15 @@ const AgendaArmadaDriverPage = () => {
                 src="/img/loading-animation.webp"
                 width={80}
                 height={80}
-                alt="loading"
+                alt={t("AgendaArmadaPage.altLoading", {}, "loading")}
               />
-              <div className="text-sm text-gray-600">Memuat agenda...</div>
+              <div className="text-sm text-gray-600">
+                {t(
+                  "AgendaArmadaPage.labelMemuatAgenda",
+                  {},
+                  "Memuat agenda..."
+                )}
+              </div>
             </div>
           </div>
         ) : displaySchedules.length > 0 ? (
@@ -133,12 +162,18 @@ const AgendaArmadaDriverPage = () => {
         ) : isError ? (
           <div className="flex items-center justify-center py-12">
             <div className="rounded-md bg-red-100 p-4 text-center text-red-700">
-              <p>Gagal memuat data. Silakan coba lagi nanti.</p>
+              <p>
+                {t(
+                  "AgendaArmadaPage.messageErrorGagalMemuatData",
+                  {},
+                  "Gagal memuat data. Silakan coba lagi nanti."
+                )}
+              </p>
               <button
                 onClick={handleRefresh}
                 className="mt-2 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
               >
-                Coba Lagi
+                {t("AgendaArmadaPage.buttonCobaLagi", {}, "Coba Lagi")}
               </button>
             </div>
           </div>

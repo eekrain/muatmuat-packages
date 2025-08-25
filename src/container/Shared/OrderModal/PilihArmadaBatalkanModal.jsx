@@ -11,17 +11,13 @@ import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import ImageArmada from "./components/ImageArmada";
 
-// Valibot validation schema
-const FleetSelectionSchema = v.object({
-  selectedFleets: v.pipe(
-    v.array(v.any()),
-    v.minLength(1, "Armada wajib diisi")
-  ),
-});
+// Valibot validation schema will be created inside component
+// to access translation function
 
 const PilihArmadaBatalkan = ({
   isOpen,
@@ -31,8 +27,20 @@ const PilihArmadaBatalkan = ({
   onConfirm,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [selectAll, setSelectAll] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Create validation schema with translation
+  const FleetSelectionSchema = v.object({
+    selectedFleets: v.pipe(
+      v.array(v.any()),
+      v.minLength(
+        1,
+        t("PilihArmadaBatalkan.fleetRequired", {}, "Armada wajib diisi")
+      )
+    ),
+  });
 
   const {
     handleSubmit,
@@ -90,8 +98,8 @@ const PilihArmadaBatalkan = ({
         selectedFleets: data.selectedFleets,
       });
       handleClose();
-    } catch (error) {
-      console.error("Error canceling fleets:", error);
+    } catch {
+      // Error canceling fleets
     } finally {
       setIsSubmitting(false);
     }
@@ -119,7 +127,11 @@ const PilihArmadaBatalkan = ({
         type="muatmuat"
       >
         <ModalTitle className="sr-only">
-          Pilih Armada Yang Ingin Dibatalkan
+          {t(
+            "PilihArmadaBatalkan.title",
+            {},
+            "Pilih Armada Yang Ingin Dibatalkan"
+          )}
         </ModalTitle>
 
         {/* Modal Content */}
@@ -131,7 +143,11 @@ const PilihArmadaBatalkan = ({
               "mb-8 w-[420px] max-w-[420px] flex-none self-stretch"
             )}
           >
-            Pilih Armada Yang Ingin Dibatalkan
+            {t(
+              "PilihArmadaBatalkan.title",
+              {},
+              "Pilih Armada Yang Ingin Dibatalkan"
+            )}
           </h2>
 
           {/* Fleet List Container */}
@@ -145,7 +161,7 @@ const PilihArmadaBatalkan = ({
                 className="gap-4"
               >
                 <span className="flex-none text-xs font-medium leading-tight text-black">
-                  Pilih Semua Armada
+                  {t("PilihArmadaBatalkan.selectAll", {}, "Pilih Semua Armada")}
                 </span>
               </Checkbox>
             </div>
@@ -199,7 +215,12 @@ const PilihArmadaBatalkan = ({
 
                       {/* Status Badge */}
                       <BadgeStatus variant="primary" className="w-auto">
-                        {fleet.status || "Armada Dijadwalkan"}
+                        {fleet.status ||
+                          t(
+                            "PilihArmadaBatalkan.fleetScheduled",
+                            {},
+                            "Armada Dijadwalkan"
+                          )}
                       </BadgeStatus>
                     </div>
                   </div>
@@ -226,8 +247,11 @@ const PilihArmadaBatalkan = ({
           {/* Footer */}
           <div className="flex items-center justify-between">
             <p className="flex-none text-xs font-bold leading-tight text-black">
-              Total Unit Dibatalkan : {selectedFleets.length}/{fleetList.length}{" "}
-              Unit
+              {t(
+                "PilihArmadaBatalkan.totalCancelled",
+                { current: selectedFleets.length, total: fleetList.length },
+                `Total Unit Dibatalkan : ${selectedFleets.length}/${fleetList.length} Unit`
+              )}
             </p>
 
             <Button
@@ -237,7 +261,7 @@ const PilihArmadaBatalkan = ({
               {...((isSubmitting || isLoading) && { loading: true })}
               className=""
             >
-              Batalkan Armada
+              {t("PilihArmadaBatalkan.cancelFleet", {}, "Batalkan Armada")}
             </Button>
           </div>
         </div>

@@ -294,3 +294,139 @@ export const TimelinePICData = ({
     </div>
   );
 };
+
+export const TimelineChangeRow = ({
+  before,
+  after,
+  type,
+  isLast = false,
+  isLastInGroup = false,
+  showPickupHeader = false,
+  showDropoffHeader = false,
+}) => {
+  const isChanged = before.fullAddress !== after.fullAddress;
+  const showHeader = showPickupHeader || showDropoffHeader;
+
+  const { ref: containerRef, height: containerHeight } = useClientHeight();
+  const { ref: contentRef, height: contentHeight } = useClientHeight();
+
+  const ContentColumn = ({ location, innerRef = null }) => (
+    <div
+      ref={innerRef}
+      className={cn(
+        "relative z-10 flex flex-col justify-center", // Add z-10 to ensure content is above the highlight
+        showHeader && "-mt-5"
+      )}
+    >
+      {showHeader && (
+        <div className="h-5 text-xs font-medium text-neutral-500">
+          {showPickupHeader ? "Lokasi Muat" : "Lokasi Bongkar"}
+        </div>
+      )}
+      <div className="flex min-h-[28px] items-center">
+        <p className="line-clamp-1 flex-1 break-all text-sm font-medium text-neutral-900">
+          {location.fullAddress}
+        </p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn(
+        "relative grid grid-cols-[1fr_1px_1fr] gap-x-6 px-12",
+        showPickupHeader && "pt-5",
+        isLastInGroup && !isLast && "pb-8"
+      )}
+    >
+      {/* Absolute positioning for the highlight to ensure it covers the full dynamic height */}
+      {isChanged && (
+        <>
+          <div
+            className={cn(
+              "absolute inset-0 top-[2px] z-0 h-6 rounded-md bg-[#F0F9F6]",
+              showPickupHeader && "top-[22px]"
+            )}
+          />
+
+          {isChanged && (
+            <span
+              className={cn(
+                "absolute right-2 top-[7px] ml-2 flex h-[14px] w-auto flex-shrink-0 items-center justify-center rounded bg-black px-2 text-[8px] font-semibold leading-[130%] text-white",
+                showPickupHeader && "top-[27px]"
+              )}
+            >
+              Rute Diubah
+            </span>
+          )}
+        </>
+      )}
+
+      {/* Left side (Old Route) */}
+      <div className="grid grid-cols-[auto_1fr] items-start gap-x-3">
+        <div className="relative flex h-7 justify-center">
+          {!isLast && (
+            <div
+              className="absolute left-1/2 w-px -translate-x-1/2 border-l-2 border-dashed border-neutral-300"
+              // Using the more robust line calculation logic
+              style={{
+                height: `${containerHeight - contentHeight / 2 - 2}px`,
+                top: `${contentHeight / 2 + 6}px`,
+              }}
+            />
+          )}
+          <div
+            className={cn(
+              "relative z-10 mt-[6px] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full",
+              type === "pickup" ? "bg-[#FFC217]" : "bg-[#461B02]"
+            )}
+          >
+            <span
+              className={cn(
+                "text-[10px] font-bold leading-[12px] md:mt-[0.7]",
+                type === "pickup" ? "text-[#461B02]" : "text-white"
+              )}
+            >
+              {before.sequence}
+            </span>
+          </div>
+        </div>
+        <ContentColumn location={before} innerRef={contentRef} />
+      </div>
+
+      <div />
+
+      {/* Right side (New Route) */}
+      <div className="grid grid-cols-[auto_1fr] items-start gap-x-3">
+        <div className="relative flex h-7 justify-center">
+          {!isLast && (
+            <div
+              className="absolute left-1/2 w-px -translate-x-1/2 border-l-2 border-dashed border-neutral-300"
+              style={{
+                height: `${containerHeight - contentHeight / 2 - 2}px`,
+                top: `${contentHeight / 2 + 6}px`,
+              }}
+            />
+          )}
+          <div
+            className={cn(
+              "relative z-10 mt-[6px] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full",
+              type === "pickup" ? "bg-[#FFC217]" : "bg-[#461B02]"
+            )}
+          >
+            <span
+              className={cn(
+                "text-[10px] font-bold leading-[12px] md:mt-[0.5]",
+                type === "pickup" ? "text-[#461B02]" : "text-white"
+              )}
+            >
+              {after.sequence}
+            </span>
+          </div>
+        </div>
+        <ContentColumn location={after} />
+      </div>
+    </div>
+  );
+};

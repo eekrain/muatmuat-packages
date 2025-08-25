@@ -70,6 +70,7 @@ export const Select = forwardRef(
             data-slot="select-trigger"
             data-size={"sm"}
             className={cn(
+              "group",
               "flex h-8 items-center justify-between gap-2 rounded-md border px-3 text-sm font-semibold leading-[14.4px] transition-colors duration-200 md:text-xs md:font-medium",
               "bg-white text-black focus:outline-none focus:ring-1 focus:ring-primary-700/20",
               "border-neutral-600 hover:border-primary-700 data-[state=open]:border-primary-700",
@@ -85,7 +86,12 @@ export const Select = forwardRef(
               className="flex-1 truncate text-left placeholder:text-neutral-600"
             />
             <SelectPrimitive.Icon asChild>
-              <IconComponent src="/icons/chevron-down.svg" />
+              <span
+                data-slot="select-chevron"
+                className="inline-flex transition-transform duration-200 group-data-[state=open]:rotate-180"
+              >
+                <IconComponent src="/icons/chevron-down.svg" />
+              </span>
             </SelectPrimitive.Icon>
           </SelectPrimitive.Trigger>
 

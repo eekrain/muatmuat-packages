@@ -26,6 +26,11 @@ const apiResultTransportRequestList = {
           name: "PT Shipper ABC",
           logo: "https://cdn.example.com/logo.jpg",
           createdAt: "2025-08-20T14:10:00+07:00",
+          address: {
+            city: "Jakarta",
+            district: "Kebayoran Baru",
+            province: "DKI Jakarta",
+          },
         },
         orderType: "INSTANT",
         loadTimeStart: "2025-08-20T09:00:00Z",
@@ -136,7 +141,7 @@ const apiResultTransportRequestList = {
         },
 
         pricing: {
-          potentialIncome: 200000,
+          potentialIncome: 200000000,
         },
         counters: {
           available: 25,
@@ -543,24 +548,6 @@ const apiResultTransportRequestList = {
       scheduled: 1,
       halal: 1,
       hasBlinkNode: true,
-    },
-    newRequestsCount: {
-      total: 1,
-      display: "1",
-      hasAnimation: true,
-    },
-    lastSyncTimestamp: "2025-01-15T15:00:00Z",
-    userStatus: {
-      isSuspended: false,
-      suspensionReason: "",
-      suspensionMessage: "",
-      supportContactUrl: "",
-      driverDelegationEnabled: false,
-      delegationWarningMessage: "",
-      delegationResetUrl: "",
-      isHalalCertified: true,
-      halalCertificationMessage: "",
-      halalCertificationUrl: "",
     },
   },
   Type: "CS_REQUESTS",

@@ -32,6 +32,7 @@ export const TabContentRingkasan = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  overloadData,
   paymentMethods,
 }) => {
   return (
@@ -52,8 +53,10 @@ export const TabContentRingkasan = ({
       </div>
 
       {/* Ganti sendiri pakek logic menunggu pelunasan, ditoggle dulu sementara */}
-      {dataRingkasanPembayaran?.orderStatus === "WAITING_PAYMENT_3" &&
-      dataRingkasanPembayaran?.priceChange ? (
+      {(dataRingkasanPembayaran?.orderStatus === "WAITING_PAYMENT_3" &&
+        dataRingkasanPembayaran?.priceChange) ||
+      (dataRingkasanPembayaran?.orderStatus === "WAITING_REPAYMENT_1" &&
+        dataRingkasanPembayaran?.priceCharge) ? (
         <RepaymentPaymentMethod paymentMethods={paymentMethods} />
       ) : null}
 
@@ -68,6 +71,7 @@ export const TabContentRingkasan = ({
             <AdditionalFeesDetail
               priceCharge={dataRingkasanPembayaran.priceCharge}
               waitingTimeRaw={waitingTimeRaw}
+              overloadData={overloadData}
             />
           ) : SHOW_UPDATE_ORDER_FEE.includes(dataStatusPesanan?.orderStatus) ? (
             <UpdateOrderFeeSummary

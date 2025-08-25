@@ -916,7 +916,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
         <ModalContent>
           <div className="relative w-[472px] space-y-6 p-6">
             <div className="text-center text-sm font-bold">
-              Cari Kelurahan/Kecamatan/Kode Pos
+              Isi Kelurahan/Kecamatan/Kode Pos
             </div>
             <div className="min-h-[1px] w-full border border-solid border-stone-300 bg-stone-300" />
             <SearchPostal

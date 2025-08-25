@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -11,8 +11,9 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { useGetTransporterDrivers } from "@/services/CS/transporters/getTransporterDrivers";
 
-const DaftarDriverTab = ({ mockDriverData = [] }) => {
+const DaftarDriverTab = ({ transporterId }) => {
   // Local state for this tab
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -20,20 +21,83 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
 
+  // Prepare API parameters
+  const apiParams = useMemo(() => {
+    const params = {
+      page: currentPage,
+      limit: perPage,
+    };
+
+    // Add search parameter
+    if (searchValue.trim() && searchValue.length >= 3) {
+      params.search = searchValue.trim();
+    }
+
+    // Add status filter
+    if (filters.status) {
+      const statusValue =
+        typeof filters.status === "object" ? filters.status.id : filters.status;
+      params.status = statusValue;
+    }
+
+    // Add sorting
+    if (sortConfig.sort && sortConfig.order) {
+      params.sort = sortConfig.sort;
+      params.order = sortConfig.order;
+    }
+
+    return params;
+  }, [currentPage, perPage, searchValue, filters, sortConfig]);
+
+  // API call to get transporter drivers
+  const {
+    data: driversData,
+    error,
+    isLoading,
+    mutate,
+  } = useGetTransporterDrivers(transporterId, apiParams);
+
+  // Extract data from API response
+  const drivers = driversData?.drivers || [];
+  const pagination = driversData?.pagination || {};
+  const totalItems = pagination.totalItems || 0;
+  const totalPages = pagination.totalPages || 1;
+
+  // Status label mapping from API status to display label
+  const getStatusLabel = (apiStatus) => {
+    const statusMap = {
+      READY_FOR_ORDER: "Siap Menerima Order",
+      SCHEDULED: "Akan Muat Hari Ini",
+      ON_DUTY: "Bertugas",
+      NOT_PAIRED: "Belum Dipasangkan",
+      NON_ACTIVE: "Nonaktif",
+      WAITING_FOR_LOADING: "Menunggu Jam Muat",
+    };
+    return statusMap[apiStatus] || apiStatus;
+  };
+
   // Status badge helper
   const getStatusBadge = (status) => {
     let variant = "success";
     if (status === "Siap Menerima Order") {
       variant = "success"; // Green
     } else if (
-      status === "Menunggu Jam Muat" ||
-      status === "Belum Dipasangkan"
+      status === "Akan Muat Hari Ini" ||
+      status === "Menunggu Jam Muat"
     ) {
       variant = "warning"; // Yellow/Orange
     } else if (status === "Bertugas") {
       variant = "primary"; // Blue
+    } else if (status === "Belum Dipasangkan") {
+      variant = "warning"; // Yellow/Orange
     } else if (status === "Nonaktif") {
-      variant = "neutral"; // Red
+      variant = "neutral"; // Gray
+    } else if (status === "Verifikasi Ditolak") {
+      variant = "error"; // Red
+    } else if (status === "Dalam Verifikasi") {
+      variant = "warning"; // Yellow/Orange
+    } else if (status === "Non Aktif") {
+      variant = "neutral"; // Gray
     }
     return <BadgeStatus variant={variant}>{status}</BadgeStatus>;
   };
@@ -41,7 +105,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
   // Driver table columns
   const driverColumns = [
     {
-      key: "driverName",
+      key: "name",
       header: "Nama Driver",
       sortable: true,
       className: "min-w-[315px]",
@@ -73,10 +137,10 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
     {
       key: "licenseType",
       header: "No. Pol Kendaraan",
-      sortable: true,
+      sortable: false,
       render: (row) => (
         <div className="text-[10px] font-medium">
-          {row.assignedVehicle || "-"}
+          {row.truckLicensePlate || "-"}
         </div>
       ),
     },
@@ -86,15 +150,14 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
       sortable: false,
       render: (row) => (
         <div className="line-clamp-2 text-[10px] font-medium">
-          {row.vehicleType ||
-            "Ultra Long Wheelbase Heavy Duty 10x4 Axle Diesel Truck - Multi Axle Expandable Flatbed Modular Cargo Carrier for Oversized Materials and Equipment Transportation Needs"}
+          {row.truckType || ""}
         </div>
       ),
     },
     {
       key: "status",
       header: "Status",
-      sortable: false,
+      sortable: true,
       className: "min-w-[200px]",
       render: (row) => getStatusBadge(row.status),
     },
@@ -106,11 +169,12 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
       categories: [{ key: "status", label: "Status" }],
       data: {
         status: [
-          { id: "Menunggu Jam Muat", label: "Menunggu Jam Muat" },
-          { id: "Siap Menerima Order", label: "Siap Menerima Order" },
-          { id: "Bertugas", label: "Bertugas" },
-          { id: "Belum Dipasangkan", label: "Belum Dipasangkan" },
-          { id: "Nonaktif", label: "Nonaktif" },
+          { id: "READY_FOR_ORDER", label: "Siap Menerima Order" },
+          { id: "WAITING_FOR_LOADING", label: "Menunggu Jam Muat" },
+          { id: "SCHEDULED", label: "Akan Muat Hari Ini" },
+          { id: "ON_DUTY", label: "Bertugas" },
+          { id: "NOT_PAIRED", label: "Belum Dipasangkan" },
+          { id: "NON_ACTIVE", label: "Nonaktif" },
         ],
       },
     };
@@ -207,65 +271,38 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
     setCurrentPage(1);
   };
 
-  // Data filtering and pagination
-  const getFilteredData = () => {
-    let filteredData = [...mockDriverData];
+  // Transform API data to match component expectations
+  const transformDriverData = (apiDrivers) => {
+    if (!apiDrivers || !Array.isArray(apiDrivers)) return [];
 
-    if (searchValue.trim() && searchValue.length >= 3) {
-      filteredData = filteredData.filter((item) =>
-        Object.values(item).some((value) =>
-          value?.toString().toLowerCase().includes(searchValue.toLowerCase())
-        )
-      );
-    }
-
-    if (filters.status) {
-      const statusValue =
-        typeof filters.status === "object" ? filters.status.id : filters.status;
-      filteredData = filteredData.filter((item) => item.status === statusValue);
-    }
-
-    if (sortConfig.sort && sortConfig.order) {
-      filteredData.sort((a, b) => {
-        let aValue = a[sortConfig.sort];
-        let bValue = b[sortConfig.sort];
-
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
-
-        if (aValue < bValue) {
-          return sortConfig.order === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.order === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return filteredData;
+    return apiDrivers.map((driver) => ({
+      id: driver.id,
+      name: driver.name,
+      phone: driver.phoneNumber,
+      truckLicensePlate: driver.truckLicensePlate,
+      truckType: driver.truckType,
+      truckCarrierType: driver.truckCarrierType,
+      status: getStatusLabel(driver.status),
+      avatar: driver.photo || null,
+    }));
   };
 
-  const filteredData = getFilteredData();
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / perPage);
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = startIndex + perPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
+  // Transform API data to match component expectations
+  const transformedData = transformDriverData(drivers);
   const showPagination = totalItems >= 10;
 
   // Data state logic
   const hasSearch = searchValue.trim().length > 0;
   const hasFilters = Object.keys(filters).length > 0;
-  const hasData = filteredData.length > 0;
-  const originalDataExists = mockDriverData.length > 0;
+  const hasData = transformedData.length > 0;
+  const originalDataExists =
+    !isLoading && (hasData || (!hasSearch && !hasFilters));
 
-  const showNoDataState = !originalDataExists;
-  const showSearchNotFoundState = hasSearch && !hasData && originalDataExists;
+  const showNoDataState =
+    !isLoading && !originalDataExists && !hasSearch && !hasFilters;
+  const showSearchNotFoundState = !isLoading && hasSearch && !hasData && !error;
   const showFilterNotFoundState =
-    hasFilters && !hasData && originalDataExists && !hasSearch;
+    !isLoading && hasFilters && !hasData && !error && !hasSearch;
 
   return (
     <TabsContent value="daftar-driver" className="">
@@ -347,7 +384,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
 
             {/* Table */}
             <Table
-              data={paginatedData}
+              data={transformedData}
               columns={driverColumns}
               emptyComponent={
                 showSearchNotFoundState ? (
@@ -368,6 +405,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
               }
               onSort={handleSort}
               sortConfig={sortConfig}
+              loading={isLoading}
             />
           </>
         )}
@@ -382,6 +420,7 @@ const DaftarDriverTab = ({ mockDriverData = [] }) => {
             onPageChange={handlePageChange}
             onPerPageChange={handlePerPageChange}
             variants="muatrans"
+            totalItems={totalItems}
           />
         </div>
       )}

@@ -20,6 +20,7 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { cancelFleet } from "@/services/CS/cancel-fleet";
 
 import {
   ORDER_STATUS,
@@ -108,6 +109,26 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
       return;
     }
     openModal("confirmCancelFleet");
+  };
+
+  const handleFinalizeCancelFleet = async (reason) => {
+    setIsLoading(true);
+    try {
+      await cancelFleet(order.id, {
+        vehicleIds: modalData.fleetToCancel,
+        reason: reason,
+      });
+      toast.success(
+        `Berhasil membatalkan ${modalData.fleetToCancel.length} armada dari pesanan ${order.orderCode} - ${order.transporter.name}`
+      );
+    } catch (error) {
+      toast.error(
+        error?.message || "Gagal membatalkan armada. Silakan coba lagi."
+      );
+    } finally {
+      closeModal("cancelFleetReason");
+      setIsLoading(false);
+    }
   };
 
   const proceedToSelectFleetToCancel = async () => {
@@ -595,12 +616,13 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
       <CancelReasonModal
         isOpen={modalState.cancelFleetReason}
         onClose={() => closeModal("cancelFleetReason")}
-        onSubmit={(reason) => {
-          toast.success(
-            `Berhasil membatalkan ${modalData.fleetToCancel.length} armada dari pesanan ${order.orderCode} - ${order.transporter.name}`
-          );
-          closeModal("cancelFleetReason");
-        }}
+        onSubmit={handleFinalizeCancelFleet}
+        // onSubmit={(reason) => {
+        //   toast.success(
+        //     `Berhasil membatalkan ${modalData.fleetToCancel.length} armada dari pesanan ${order.orderCode} - ${order.transporter.name}`
+        //   );
+        //   closeModal("cancelFleetReason");
+        // }}
         title="Masukkan Alasan Pembatalan"
         placeholder="Masukkan alasan pembatalan"
       />

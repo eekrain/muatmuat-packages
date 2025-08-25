@@ -125,9 +125,31 @@ const TimeReportCompleted = ({ reportTime }) => (
   </div>
 );
 
+// Mapping untuk kategori SOS
+const getSOSCategoryDisplay = (category) => {
+  const categoryMap = {
+    MECHANICAL_ISSUE: "Masalah Mekanis",
+    ACCIDENT: "Kecelakaan",
+    BREAKDOWN: "Kendaraan Mogok",
+    FUEL_ISSUE: "Masalah Bahan Bakar",
+    TIRE_ISSUE: "Masalah Ban",
+    ENGINE_ISSUE: "Masalah Mesin",
+    ELECTRICAL_ISSUE: "Masalah Kelistrikan",
+    MEDICAL_EMERGENCY: "Darurat Medis",
+    SECURITY_ISSUE: "Masalah Keamanan",
+    TRAFFIC_ISSUE: "Masalah Lalu Lintas",
+    WEATHER_ISSUE: "Masalah Cuaca",
+    OTHER: "Lainnya",
+  };
+
+  return categoryMap[category] || category || "-";
+};
+
 // Kategori SOS
 const SOSCategory = ({ category }) => (
-  <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
+  <p className="text-xs font-semibold text-error-400">
+    {getSOSCategoryDisplay(category)}
+  </p>
 );
 
 // Deskripsi SOS
@@ -302,9 +324,12 @@ const DriverAndPhoneSection = ({ driverName, phone }) => (
 const LocationAndFleetSection = ({ fleet }) => (
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
-      <LocationInfo locationText={fleet?.location?.lastAddress} showLabel />
+      <LocationInfo
+        locationText={fleet?.location?.lastAddress || "Lokasi tidak tersedia"}
+        showLabel
+      />
       <p className="ml-6 text-xxs font-semibold">
-        {fleet?.location?.lastAddress}
+        {fleet?.location?.lastAddress || "Lokasi tidak tersedia"}
       </p>
     </div>
     <div>
@@ -324,8 +349,13 @@ const LocationAndFleetSection = ({ fleet }) => (
 
 // Detail saat status ON_DUTY
 const OnDutyDetails = ({ fleet }) => {
-  const pickup = fleet?.order?.pickupLocation;
-  const dropoff = fleet?.order?.dropoffLocation;
+  // Handle both array and object formats for pickup/dropoff locations
+  const pickup = Array.isArray(fleet?.order?.pickupLocation)
+    ? fleet?.order?.pickupLocation[0]
+    : fleet?.order?.pickupLocation;
+  const dropoff = Array.isArray(fleet?.order?.dropoffLocation)
+    ? fleet?.order?.dropoffLocation[0]
+    : fleet?.order?.dropoffLocation;
   const status = fleet?.sosStatus;
   const needsResponse = fleet?.needsResponseChange;
 
@@ -437,7 +467,7 @@ export default function CardFleetSOS({
 
   const driverName = fleet?.driver?.fullName;
   const phone = fleet?.driver?.phoneNumber;
-  const locationText = fleet?.location?.lastAddress || "Unknown";
+  const locationText = fleet?.location?.lastAddress || "Lokasi tidak tersedia";
 
   const sosStatus = fleet?.sosStatus;
   const isSOSNew = sosStatus === "OPEN";

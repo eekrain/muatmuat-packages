@@ -166,7 +166,7 @@ const RiwayatTransporterTidakAktif = () => {
     categories: [
       {
         key: "condition",
-        label: "Kondisi",
+        label: t("RiwayatTransporterTidakAktif.filterCondition", {}, "Kondisi"),
         searchable: false,
       },
     ],
@@ -191,7 +191,11 @@ const RiwayatTransporterTidakAktif = () => {
   const columns = [
     {
       key: "done-date",
-      header: "Tanggal Selesai",
+      header: t(
+        "RiwayatTransporterTidakAktif.columnDoneDate",
+        {},
+        "Tanggal Selesai"
+      ),
       width: "184px",
       className: "align-top !pl-6 !pr-2.5",
       headerClassName: "pl-6 pr-2.5",
@@ -203,7 +207,11 @@ const RiwayatTransporterTidakAktif = () => {
     },
     {
       key: "transporter",
-      header: "Transporter",
+      header: t(
+        "RiwayatTransporterTidakAktif.columnTransporter",
+        {},
+        "Transporter"
+      ),
       width: "430px",
       className: "align-top !px-2.5",
       headerClassName: "px-2.5",
@@ -218,13 +226,14 @@ const RiwayatTransporterTidakAktif = () => {
             <span className="line-clamp-1 text-xs font-bold text-neutral-900">
               {row.transporterName}
             </span>
-
             <button
-              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer"
+              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer hover:font-semibold hover:text-[#1257C6]"
               onClick={() => setShowHubungiModal(true)}
             >
               <IconComponent src={"/icons/call-blue.svg"} />
-              <div>Hubungi</div>
+              <div>
+                {t("RiwayatTransporterTidakAktif.buttonContact", {}, "Hubungi")}
+              </div>
             </button>
           </div>
         </div>
@@ -232,7 +241,7 @@ const RiwayatTransporterTidakAktif = () => {
     },
     {
       key: "condition",
-      header: "Kondisi",
+      header: t("RiwayatTransporterTidakAktif.columnCondition", {}, "Kondisi"),
       width: "430px",
       sortable: false,
       className: "align-top !px-2.5",
@@ -243,11 +252,9 @@ const RiwayatTransporterTidakAktif = () => {
         </span>
       ),
     },
-
     {
       key: "action",
       header: "",
-      // width: "142px",
       headerClassName: "pl2.5 pr-6",
       className: "align-top !pl-2.5 !pr-6",
       sortable: false,
@@ -268,7 +275,7 @@ const RiwayatTransporterTidakAktif = () => {
             }
           }}
         >
-          Detail
+          {t("RiwayatTransporterTidakAktif.columnAction", {}, "Detail")}
         </Button>
       ),
     },
@@ -278,7 +285,11 @@ const RiwayatTransporterTidakAktif = () => {
     <div className="mx-auto flex max-w-[1280px] flex-col gap-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">
-          Laporan Riwayat Transporter Tidak Aktif
+          {t(
+            "RiwayatTransporterTidakAktif.title",
+            {},
+            "Laporan Riwayat Transporter Tidak Aktif"
+          )}
         </h1>
         <div className="flex items-center gap-x-3">
           <DropdownPeriode
@@ -292,7 +303,7 @@ const RiwayatTransporterTidakAktif = () => {
             variant="muattrans-primary"
             onClick={handleDownload}
           >
-            Unduh
+            {t("RiwayatTransporterTidakAktif.download", {}, "Unduh")}
           </Button>
         </div>
       </div>
@@ -321,7 +332,11 @@ const RiwayatTransporterTidakAktif = () => {
       {isError ? (
         <div className="flex items-center justify-center p-8">
           <span className="text-error-500">
-            Terjadi kesalahan saat memuat data. Silakan coba lagi.
+            {t(
+              "RiwayatTransporterTidakAktif.error",
+              {},
+              "Terjadi kesalahan saat memuat data. Silakan coba lagi."
+            )}
           </span>
         </div>
       ) : !apiData?.items && !isLoading ? (
@@ -330,8 +345,16 @@ const RiwayatTransporterTidakAktif = () => {
         <DataTable
           data={currentData}
           columns={columns}
-          searchPlaceholder="Cari Transporter "
-          totalCountLabel="Laporan"
+          searchPlaceholder={t(
+            "RiwayatTransporterTidakAktif.searchPlaceholder",
+            {},
+            "Cari Transporter "
+          )}
+          totalCountLabel={t(
+            "RiwayatTransporterTidakAktif.totalCountLabel",
+            {},
+            "Laporan"
+          )}
           currentPage={apiData?.pagination?.currentPage || currentPage}
           totalPages={totalPages}
           totalItems={totalItems}

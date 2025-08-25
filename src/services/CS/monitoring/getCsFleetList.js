@@ -51,7 +51,7 @@ export const mockApiResultCsFleet = {
         {
           id: "fleet-uuid-90",
           transporterId: "transporter-mja",
-          licensePlate: "B7890JKL",
+          licensePlate: "B7891JKL",
           status: "ON_DUTY",
           verificationStatus: "VERIFICATION_APPROVED",
           driverId: "driver-uuid-5",

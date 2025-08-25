@@ -8,7 +8,11 @@ import { idrFormat } from "@/lib/utils/formatters";
  * Komponen utama yang menampilkan detail biaya tambahan.
  * Menggunakan BottomSheet untuk menampilkan detail waktu tunggu.
  */
-const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
+const AdditionalFeesDetail = ({
+  priceCharge,
+  waitingTimeRaw,
+  overloadData,
+}) => {
   const { t } = useTranslation();
 
   // Jika tidak ada biaya tambahan, jangan tampilkan komponen
@@ -99,7 +103,7 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
                   </span>
                 </div>
                 {/* BottomSheet overload muatan */}
-                <BiayaOverloadMuatanBottomsheet />
+                <BiayaOverloadMuatanBottomsheet drivers={overloadData} />
               </div>
               <span className="text-sm font-semibold text-neutral-900">
                 {idrFormat(priceCharge.overloadFee.totalAmount)}

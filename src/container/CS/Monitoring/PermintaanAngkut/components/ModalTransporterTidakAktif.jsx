@@ -1,51 +1,64 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+// ++ ADDED: useMemo
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
 import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
 
 import ModalDetailTransporterTidakAktif from "./ModalDetailTransporterTidakAktif";
 
-const getStatusText = (transporter) => {
-  switch (transporter.inactivityStatus) {
-    case "ARMADA_INACTIVE":
-      return `Armada Nonaktif Terlalu Banyak (${transporter.current}/${transporter.total})`;
-    case "TRANSPORTER_IDLE":
-      return `Admin Terdeteksi Sering Idle (${transporter.current}/${transporter.total} Order)`;
-    case "TRANSPORTER_INACTIVE":
-      return "Transporter Tidak Aktif";
-    default:
-      return "Transporter Tidak Aktif";
-  }
-};
-
 const ModalTransporterTidakAktif = ({ onClose }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data, isLoading } = useGetInactiveTransporter();
   const allTransporters = data?.transporters || [];
   const [searchValue, setSearchValue] = useState("");
-  const [filteredTransporters, setFilteredTransporters] =
-    useState(allTransporters);
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
-  useEffect(() => {
-    setFilteredTransporters(allTransporters);
-  }, [allTransporters]);
+  const getStatusText = (transporter) => {
+    switch (transporter.inactivityStatus) {
+      case "ARMADA_INACTIVE":
+        return t(
+          "ModalTransporterTidakAktif.statusArmadaNonaktifTerlaluBanyak",
+          { current: transporter.current, total: transporter.total },
+          "Armada Nonaktif Terlalu Banyak ({current}/{total})"
+        );
+      case "TRANSPORTER_IDLE":
+        return t(
+          "ModalTransporterTidakAktif.statusAdminTerdeteksiSeringIdle",
+          { current: transporter.current, total: transporter.total },
+          "Admin Terdeteksi Sering Idle ({current}/{total} Order)"
+        );
+      case "TRANSPORTER_INACTIVE":
+      default:
+        return t(
+          "ModalTransporterTidakAktif.statusTransporterTidakAktif",
+          {},
+          "Transporter Tidak Aktif"
+        );
+    }
+  };
 
+  // FIXED: Removed useState and useEffect for filteredTransporters.
+  // Instead, derive the filtered list directly using useMemo to prevent infinite loops.
+  const filteredTransporters = useMemo(() => {
+    if (!searchValue) {
+      return allTransporters;
+    }
+    const lowercasedValue = searchValue.toLowerCase();
+    return allTransporters.filter((t) =>
+      t.transporterName.toLowerCase().includes(lowercasedValue)
+    );
+  }, [allTransporters, searchValue]);
+
+  // FIXED: Simplified the search handler. It only needs to update the search value state.
   const handleSearch = (value) => {
     setSearchValue(value);
-    if (!value) {
-      setFilteredTransporters(allTransporters);
-      return;
-    }
-    const lower = value.toLowerCase();
-    setFilteredTransporters(
-      allTransporters.filter((t) =>
-        t.transporterName.toLowerCase().includes(lower)
-      )
-    );
   };
 
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -69,11 +82,17 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${showHubungiModal || showDetailModal ? "hidden" : ""}`}
+      >
         <div className="relative h-[460px] w-[600px] rounded-xl bg-white p-6 shadow-lg">
           <div className="mb-4 flex items-center justify-center">
             <h2 className="text-[16px] font-bold text-neutral-900">
-              Transporter Tidak Aktif
+              {t(
+                "ModalTransporterTidakAktif.titleModal",
+                {},
+                "Transporter Tidak Aktif"
+              )}
             </h2>
             <button
               onClick={onClose}
@@ -83,7 +102,11 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
             </button>
           </div>
           <Search
-            placeholder="Cari No. Polisi / Nama Driver / Transporter "
+            placeholder={t(
+              "ModalTransporterTidakAktif.placeholderSearch",
+              {},
+              "Cari No. Polisi / Nama Driver / Transporter "
+            )}
             onSearch={handleSearch}
             autoSearch={true}
             debounceTime={300}
@@ -96,7 +119,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
           >
             {isLoading ? (
               <div className="py-8 text-center text-neutral-400">
-                Loading...
+                {t("ModalTransporterTidakAktif.textLoading", {}, "Loading...")}
               </div>
             ) : filteredTransporters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12">
@@ -106,7 +129,11 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
                   className="mb-4 h-[140px] w-[140px]"
                 />
                 <div className="text-lg font-medium text-neutral-500">
-                  Keyword Tidak Ditemukan
+                  {t(
+                    "ModalTransporterTidakAktif.textKeywordTidakDitemukan",
+                    {},
+                    "Keyword Tidak Ditemukan"
+                  )}
                 </div>
               </div>
             ) : (
@@ -139,15 +166,27 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
                       <Button
                         variant="muattrans-primary-secondary"
                         className="h-8 w-[90px] rounded-full text-sm font-semibold"
+                        onClick={() => {
+                          setShowHubungiModal(true);
+                          setSelectedTransporter(transporter);
+                        }}
                       >
-                        Hubungi
+                        {t(
+                          "ModalTransporterTidakAktif.buttonHubungi",
+                          {},
+                          "Hubungi"
+                        )}
                       </Button>
                       <Button
                         variant="muattrans-primary"
                         className="h-8 w-[90px] rounded-full text-sm font-semibold"
                         onClick={() => handleDetailClick(transporter)}
                       >
-                        Detail
+                        {t(
+                          "ModalTransporterTidakAktif.buttonDetail",
+                          {},
+                          "Detail"
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -167,6 +206,12 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
           onSelesaikan={() => setShowDetailModal(false)}
         />
       )}
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={selectedTransporter || null}
+      />
     </>
   );
 };

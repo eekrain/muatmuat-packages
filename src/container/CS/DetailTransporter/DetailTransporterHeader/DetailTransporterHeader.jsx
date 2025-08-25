@@ -1,9 +1,12 @@
 import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 const DetailTransporterHeader = ({ transporter }) => {
+  const { t } = useTranslation();
   const router = useRouter();
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-x-3">
@@ -14,7 +17,11 @@ const DetailTransporterHeader = ({ transporter }) => {
           className="text-primary-700"
         />
         <h1 className="text-xl font-bold text-neutral-900">
-          Detail Transporter
+          {t(
+            "DetailTransporterHeader.titleDetailTransporter",
+            {},
+            "Detail Transporter"
+          )}
         </h1>
       </div>
     </div>

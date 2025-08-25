@@ -7,6 +7,7 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { useTranslation } from "@/hooks/use-translation";
 
 import ModalCatatanPenyelesaian from "./ModalCatatanPenyelesaian";
 
@@ -18,6 +19,7 @@ const ModalDetailTransporterTidakAktif = ({
   _onSelesaikan,
   _onHubungi,
 }) => {
+  const { t } = useTranslation();
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [showCatatanModal, setShowCatatanModal] = useState(false);
 
@@ -27,7 +29,7 @@ const ModalDetailTransporterTidakAktif = ({
   const formatDuration = (minutes) => {
     if (!minutes) return "-";
     const jam = Math.floor(minutes / 60);
-    return `${jam} Jam`;
+    return t("ModalDetailTransporterTidakAktif.textJam", { jam }, `${jam} Jam`);
   };
 
   return (
@@ -36,7 +38,13 @@ const ModalDetailTransporterTidakAktif = ({
         <div className="relative w-[600px] rounded-xl bg-white p-6 shadow-lg">
           {/* Header */}
           <div className="relative mb-2 flex items-center justify-center">
-            <h2 className="text-[16px] font-bold text-neutral-900">k Aktif</h2>
+            <h2 className="text-[16px] font-bold text-neutral-900">
+              {t(
+                "ModalDetailTransporterTidakAktif.titleDetailTransporterTidakAktif",
+                {},
+                "Detail Transporter Tidak Aktif"
+              )}
+            </h2>
             <button
               onClick={onClose}
               className="absolute right-0 top-0 text-gray-400 hover:text-gray-600"
@@ -56,7 +64,11 @@ const ModalDetailTransporterTidakAktif = ({
                 {transporter.transporterName}
               </div>
               <div className="mb-1 text-xs font-medium text-error-400">
-                Transporter Tidak Aktif
+                {t(
+                  "ModalDetailTransporterTidakAktif.statusTransporterTidakAktif",
+                  {},
+                  "Transporter Tidak Aktif"
+                )}
               </div>
               <div className="mb-3 text-xs text-neutral-600">
                 {latestNote?.content}
@@ -65,7 +77,11 @@ const ModalDetailTransporterTidakAktif = ({
               <div className="flex gap-12">
                 <div>
                   <div className="mb-1 text-xs text-neutral-600">
-                    Tanggal Terakhir Aktif
+                    {t(
+                      "ModalDetailTransporterTidakAktif.labelTanggalTerakhirAktif",
+                      {},
+                      "Tanggal Terakhir Aktif"
+                    )}
                   </div>
                   <div className="text-xs font-medium text-neutral-900">
                     {detail.lastActiveAt
@@ -86,7 +102,11 @@ const ModalDetailTransporterTidakAktif = ({
                 </div>
                 <div>
                   <div className="mb-1 text-xs text-neutral-600">
-                    Lama Tidak Aktif
+                    {t(
+                      "ModalDetailTransporterTidakAktif.labelLamaTidakAktif",
+                      {},
+                      "Lama Tidak Aktif"
+                    )}
                   </div>
                   <div className="text-xs font-medium text-neutral-900">
                     {formatDuration(detail.inactiveDuration)}
@@ -101,12 +121,20 @@ const ModalDetailTransporterTidakAktif = ({
             <div className="mb-4 flex h-[187px] flex-col overflow-y-auto rounded-xl border border-neutral-300 p-4">
               <div className="mb-3 flex items-center">
                 <p className="text-xs font-bold text-neutral-900">
-                  Detail Penyelesaian
+                  {t(
+                    "ModalDetailTransporterTidakAktif.titleDetailPenyelesaian",
+                    {},
+                    "Detail Penyelesaian"
+                  )}
                 </p>
               </div>
               <div className="mb-2 flex flex-col gap-2">
                 <p className="text-xs font-medium text-neutral-600">
-                  Tanggal Diselesaikan
+                  {t(
+                    "ModalDetailTransporterTidakAktif.labelTanggalDiselesaikan",
+                    {},
+                    "Tanggal Diselesaikan"
+                  )}
                 </p>
                 <p className="text-xs font-medium text-neutral-900">
                   {latestNote?.history?.reportedAt
@@ -121,20 +149,34 @@ const ModalDetailTransporterTidakAktif = ({
                 </p>
               </div>
               <div className="mb-2 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-600">Catatan</p>
+                <p className="text-xs font-medium text-neutral-600">
+                  {t(
+                    "ModalDetailTransporterTidakAktif.labelCatatan",
+                    {},
+                    "Catatan"
+                  )}
+                </p>
                 <p className="text-xs font-medium text-neutral-900">
                   {latestNote?.history?.notes || "-"}
                 </p>
               </div>
               <div className="mb-3 flex flex-col gap-2">
                 <p className="text-xs font-medium text-neutral-600">
-                  Foto Pendukung
+                  {t(
+                    "ModalDetailTransporterTidakAktif.labelFotoPendukung",
+                    {},
+                    "Foto Pendukung"
+                  )}
                 </p>
                 <LightboxProvider
                   images={
                     latestNote?.history?.photos?.map((photo) => photo.url) || []
                   }
-                  title="Foto Pendukung"
+                  title={t(
+                    "ModalDetailTransporterTidakAktif.titleFotoPendukung",
+                    {},
+                    "Foto Pendukung"
+                  )}
                 >
                   <div className="flex flex-row gap-2">
                     {latestNote?.history?.photos?.length > 0 ? (
@@ -144,12 +186,20 @@ const ModalDetailTransporterTidakAktif = ({
                           image={photo.url}
                           index={idx}
                           className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
-                          alt={`Foto Pendukung ${idx + 1}`}
+                          alt={t(
+                            "ModalDetailTransporterTidakAktif.altFotoPendukung",
+                            { number: idx + 1 },
+                            `Foto Pendukung ${idx + 1}`
+                          )}
                         />
                       ))
                     ) : (
                       <span className="text-xs text-neutral-500">
-                        Tidak ada foto
+                        {t(
+                          "ModalDetailTransporterTidakAktif.textTidakAdaFoto",
+                          {},
+                          "Tidak ada foto"
+                        )}
                       </span>
                     )}
                   </div>
@@ -165,7 +215,11 @@ const ModalDetailTransporterTidakAktif = ({
               className="h-8 w-[105px] rounded-full text-sm font-semibold"
               onClick={() => setShowHubungiModal(true)}
             >
-              Hubungi
+              {t(
+                "ModalDetailTransporterTidakAktif.buttonHubungi",
+                {},
+                "Hubungi"
+              )}
             </Button>
             {latestNote?.status === "active" && (
               <Button
@@ -179,7 +233,13 @@ const ModalDetailTransporterTidakAktif = ({
                   />
                 }
               >
-                <span>Selesaikan</span>
+                <span>
+                  {t(
+                    "ModalDetailTransporterTidakAktif.buttonSelesaikan",
+                    {},
+                    "Selesaikan"
+                  )}
+                </span>
               </Button>
             )}
           </div>

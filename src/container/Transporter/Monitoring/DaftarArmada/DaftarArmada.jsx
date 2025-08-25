@@ -82,7 +82,6 @@ const DaftarArmada = ({
       fleetId: selectedFleetId,
     };
 
-    console.log("Updating API params:", newParams); // Debug log
     setApiParams(newParams);
   };
 
@@ -90,8 +89,6 @@ const DaftarArmada = ({
   useEffect(() => {
     updateApiParams();
   }, [truckStatusFilter, orderStatusFilter, searchTerm, selectedFleetId]);
-
-  console.log("Calling useGetFleetList with params:", apiParams); // Debug log
 
   const {
     data: fleetData,
@@ -105,8 +102,13 @@ const DaftarArmada = ({
   const sosCount = fleetData?.filter?.sos || 0;
   const hasFilterData = fleetData?.filter;
 
-  console.log("DaftarArmada received fleetData:", fleetData); // Debug log
-  console.log("DaftarArmada filter counts:", fleetData?.filter); // Debug log
+  // Set active tab to "all" if there are no SOS alerts
+  useEffect(() => {
+    if (hasFilterData && sosCount === 0 && activeTab === "sos") {
+      setActiveTab("all");
+    }
+  }, [hasFilterData, sosCount, activeTab]);
+
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
 
   // Variabel boolean untuk menentukan apakah ada filter yang aktif
@@ -265,9 +267,9 @@ const DaftarArmada = ({
             autoSearch={true}
             debounceTime={300}
             defaultValue={searchTerm}
-            inputClassName={activeTab !== "all" ? "w-[315px]" : "w-[229px]"}
+            inputClassName="w-[229px]"
           />
-          {activeTab === "all" && (
+          {fleetData && (
             <FilterPopoverArmada
               onApplyFilter={handleApplyFilter}
               filterCounts={fleetData?.filter}
@@ -282,25 +284,31 @@ const DaftarArmada = ({
       </div>
 
       {/* filter tabs */}
-      {hasFilterData && sosCount !== 0 && (
+      {fleetData && (
         <div className="flex gap-2 px-4 pb-3">
-          <button
-            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-              activeTab === "sos"
-                ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-            }`}
-            onClick={() => setActiveTab("sos")}
-          >
-            {t("DaftarArmada.sosTab", { count: sosCount }, `SOS (${sosCount})`)}
-            {/* Notifikasi dot bisa ditambahkan logika tambahan jika diperlukan */}
-            <NotificationDot
-              size="sm"
-              color="red"
-              position="absolute"
-              positionClasses="top-0 right-0"
-            />
-          </button>
+          {sosCount > 0 && (
+            <button
+              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+                activeTab === "sos"
+                  ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                  : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+              }`}
+              onClick={() => setActiveTab("sos")}
+            >
+              {t(
+                "DaftarArmada.sosTab",
+                { sosCount: sosCount },
+                `SOS (${sosCount})`
+              )}
+              {/* Notifikasi dot bisa ditambahkan logika tambahan jika diperlukan */}
+              <NotificationDot
+                size="sm"
+                color="red"
+                position="absolute"
+                positionClasses="top-0 right-0"
+              />
+            </button>
+          )}
           <button
             className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "all"
@@ -311,7 +319,7 @@ const DaftarArmada = ({
           >
             {t(
               "DaftarArmada.allTab",
-              { count: totalFleets },
+              { totalFleets: totalFleets },
               `Semua (${totalFleets})`
             )}
           </button>
@@ -324,7 +332,7 @@ const DaftarArmada = ({
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
             <span className="ml-2 text-gray-600">
-              {t("DaftarArmada.loadingFleet", {}, "Loading fleet data...")}
+              {t("DaftarArmada.loadingFleet", {}, "Memuat data armada...")}
             </span>
           </div>
         ) : error ? (
@@ -335,11 +343,11 @@ const DaftarArmada = ({
                 {t(
                   "DaftarArmada.errorLoadingFleet",
                   {},
-                  "Failed to load fleet data"
+                  "Gagal memuat data armada"
                 )}
               </p>
               <p className="mt-1 text-xs text-gray-500">
-                {t("DaftarArmada.tryAgainLater", {}, "Please try again later")}
+                {t("DaftarArmada.tryAgainLater", {}, "Silakan coba lagi nanti")}
               </p>
             </div>
           </div>

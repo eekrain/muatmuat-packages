@@ -25,6 +25,7 @@ export const FilterSelect = forwardRef(
       icon = null,
       displayValueOverride = null,
       renderItem = null,
+      contentClassName = "",
       onFocus,
       ...props
     },
@@ -61,7 +62,7 @@ export const FilterSelect = forwardRef(
 
             <Select.Content
               ref={ref}
-              className="w-auto min-w-[220px]"
+              className={cn("w-auto min-w-[220px]", contentClassName)}
               maxHeight="280px"
             >
               {options.length === 0 ? (

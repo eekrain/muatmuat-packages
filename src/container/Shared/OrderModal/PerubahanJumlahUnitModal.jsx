@@ -18,6 +18,7 @@ import {
   ModalTitle,
 } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ const PerubahanJumlahUnitModal = ({
   onConfirm,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [uploadedFiles, setUploadedFiles] = useState([null, null, null, null]); // 4 slots for images
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,32 +44,81 @@ const PerubahanJumlahUnitModal = ({
       v.object({
         unitCount: v.pipe(
           v.string(),
-          v.minLength(1, "Jumlah unit armada wajib diisi"),
-          v.regex(/^\d+$/, "Jumlah unit harus berupa angka"),
+          v.minLength(
+            1,
+            t(
+              "PerubahanJumlahUnitModal.unitCountRequired",
+              {},
+              "Jumlah unit armada wajib diisi"
+            )
+          ),
+          v.regex(
+            /^\d+$/,
+            t(
+              "PerubahanJumlahUnitModal.unitCountMustBeNumber",
+              {},
+              "Jumlah unit harus berupa angka"
+            )
+          ),
           v.transform((val) => parseInt(val, 10)),
-          v.minValue(1, "Jumlah unit minimal 1 armada"),
-          v.maxValue(maxUnits, "Jumlah unit melebihi kebutuhan armada")
+          v.minValue(
+            1,
+            t(
+              "PerubahanJumlahUnitModal.unitCountMinimum",
+              {},
+              "Jumlah unit minimal 1 armada"
+            )
+          ),
+          v.maxValue(
+            maxUnits,
+            t(
+              "PerubahanJumlahUnitModal.unitCountExceeds",
+              {},
+              "Jumlah unit melebihi kebutuhan armada"
+            )
+          )
         ),
         selectedReason: v.pipe(
           v.string(),
-          v.minLength(1, "Alasan perubahan wajib diisi")
+          v.minLength(
+            1,
+            t(
+              "PerubahanJumlahUnitModal.reasonRequired",
+              {},
+              "Alasan perubahan wajib diisi"
+            )
+          )
         ),
         otherReason: v.string(),
         supportingFiles: v.pipe(
           v.array(v.any()),
-          v.minLength(1, "Foto Pendukung harus memiliki minimal 1 foto")
+          v.minLength(
+            1,
+            t(
+              "PerubahanJumlahUnitModal.photoRequired",
+              {},
+              "Foto Pendukung harus memiliki minimal 1 foto"
+            )
+          )
         ),
       }),
       v.forward(
         v.partialCheck(
           [["selectedReason"], ["otherReason"]],
           (input) => {
-            if (input.selectedReason === "Lainnya") {
+            if (
+              input.selectedReason ===
+              t("PerubahanJumlahUnitModal.otherReason", {}, "Lainnya")
+            ) {
               return input.otherReason && input.otherReason.trim().length > 0;
             }
             return true;
           },
-          "Alasan lainnya wajib diisi"
+          t(
+            "PerubahanJumlahUnitModal.otherReasonRequired",
+            {},
+            "Alasan lainnya wajib diisi"
+          )
         ),
         ["otherReason"]
       )
@@ -95,10 +146,10 @@ const PerubahanJumlahUnitModal = ({
   const unitCount = watch("unitCount");
 
   const changeReasons = [
-    "Kendaraan Bermasalah",
-    "Driver Berhalangan",
-    "Bencana Alam",
-    "Lainnya",
+    t("PerubahanJumlahUnitModal.vehicleProblem", {}, "Kendaraan Bermasalah"),
+    t("PerubahanJumlahUnitModal.driverUnavailable", {}, "Driver Berhalangan"),
+    t("PerubahanJumlahUnitModal.naturalDisaster", {}, "Bencana Alam"),
+    t("PerubahanJumlahUnitModal.otherReason", {}, "Lainnya"),
   ];
 
   const handleFileUpload = (file, index) => {
@@ -115,7 +166,13 @@ const PerubahanJumlahUnitModal = ({
     } else {
       // Check file size (10MB = 10 * 1024 * 1024 bytes)
       if (file.size > 10 * 1024 * 1024) {
-        toast.error("Ukuran file melebihi 10MB");
+        toast.error(
+          t(
+            "PerubahanJumlahUnitModal.fileSizeExceeded",
+            {},
+            "Ukuran file melebihi 10MB"
+          )
+        );
         return;
       }
 
@@ -141,7 +198,8 @@ const PerubahanJumlahUnitModal = ({
         orderData,
         newUnitCount: data.unitCount,
         reason:
-          data.selectedReason === "Lainnya"
+          data.selectedReason ===
+          t("PerubahanJumlahUnitModal.otherReason", {}, "Lainnya")
             ? data.otherReason
             : data.selectedReason,
         reasonType: data.selectedReason,
@@ -177,7 +235,9 @@ const PerubahanJumlahUnitModal = ({
         type="muattrans"
       >
         <ModalHeader size="small" />
-        <ModalTitle className="sr-only">Perubahan Jumlah Unit</ModalTitle>
+        <ModalTitle className="sr-only">
+          {t("PerubahanJumlahUnitModal.title", {}, "Perubahan Jumlah Unit")}
+        </ModalTitle>
 
         {/* Modal Content */}
         <div className="pl-6 pr-2 pt-9">
@@ -186,24 +246,39 @@ const PerubahanJumlahUnitModal = ({
               {/* Masukkan Perubahan Jumlah Unit */}
               <div className="flex flex-col">
                 <h3 className="mb-3.5 font-bold text-black">
-                  Masukkan Perubahan Jumlah Unit<span className="">*</span>
+                  {t(
+                    "PerubahanJumlahUnitModal.enterChangeUnit",
+                    {},
+                    "Masukkan Perubahan Jumlah Unit"
+                  )}
+                  <span className="">*</span>
                 </h3>
 
                 <p className="mb-3 text-xs font-medium text-[#7B7B7B]">
-                  Jumlah Kebutuhan Armada Yang Kamu Terima :{" "}
+                  {t(
+                    "PerubahanJumlahUnitModal.fleetRequirement",
+                    {},
+                    "Jumlah Kebutuhan Armada Yang Kamu Terima"
+                  )}{" "}
+                  :{" "}
                   <span className="font-semibold text-neutral-900">
-                    {currentUnitCount} Unit
+                    {currentUnitCount}{" "}
+                    {t("PerubahanJumlahUnitModal.unit", {}, "Unit")}
                   </span>
                 </p>
 
                 <div className="mb-2 flex items-center gap-3">
                   <span className="text-sm font-medium text-black">
-                    Ubah menjadi
+                    {t("PerubahanJumlahUnitModal.changeTo", {}, "Ubah menjadi")}
                   </span>
                   <Input
                     type="number"
                     min="1"
-                    placeholder="Jumlah"
+                    placeholder={t(
+                      "PerubahanJumlahUnitModal.amount",
+                      {},
+                      "Jumlah"
+                    )}
                     value={unitCount}
                     onChange={(e) => {
                       setValue("unitCount", e.target.value);
@@ -217,7 +292,7 @@ const PerubahanJumlahUnitModal = ({
                     }}
                   />
                   <span className="text-sm font-medium text-black">
-                    unit armada
+                    {t("PerubahanJumlahUnitModal.fleetUnit", {}, "unit armada")}
                   </span>
                 </div>
 
@@ -235,7 +310,12 @@ const PerubahanJumlahUnitModal = ({
               {/* Pilih Alasan Perubahan */}
               <div className="flex flex-col">
                 <h3 className="mb-3.5 font-bold text-black">
-                  Pilih Alasan Perubahan<span className="">*</span>
+                  {t(
+                    "PerubahanJumlahUnitModal.selectChangeReason",
+                    {},
+                    "Pilih Alasan Perubahan"
+                  )}
+                  <span className="">*</span>
                 </h3>
 
                 <div className="mb-2 flex flex-col gap-3">
@@ -248,14 +328,28 @@ const PerubahanJumlahUnitModal = ({
                       checked={selectedReason === reason}
                       onChange={() => {
                         setValue("selectedReason", reason);
-                        if (reason !== "Lainnya") {
+                        if (
+                          reason !==
+                          t(
+                            "PerubahanJumlahUnitModal.otherReason",
+                            {},
+                            "Lainnya"
+                          )
+                        ) {
                           setValue("otherReason", "");
                         }
                         trigger("selectedReason");
                       }}
                       onClick={({ value }) => {
                         setValue("selectedReason", value);
-                        if (value !== "Lainnya") {
+                        if (
+                          value !==
+                          t(
+                            "PerubahanJumlahUnitModal.otherReason",
+                            {},
+                            "Lainnya"
+                          )
+                        ) {
                           setValue("otherReason", "");
                         }
                         trigger("selectedReason");
@@ -267,7 +361,8 @@ const PerubahanJumlahUnitModal = ({
                 </div>
 
                 {/* Show input when Lainnya is selected */}
-                {selectedReason === "Lainnya" && (
+                {selectedReason ===
+                  t("PerubahanJumlahUnitModal.otherReason", {}, "Lainnya") && (
                   <InputAlasanLainnya
                     value={otherReason}
                     onChange={(value) => {
@@ -277,21 +372,32 @@ const PerubahanJumlahUnitModal = ({
                     disabled={isSubmitting || isLoading}
                     isError={
                       errors.otherReason &&
-                      selectedReason === "Lainnya" &&
+                      selectedReason ===
+                        t(
+                          "PerubahanJumlahUnitModal.otherReason",
+                          {},
+                          "Lainnya"
+                        ) &&
                       !otherReason.trim()
                     }
                   />
                 )}
 
                 {/* Error Alert for Other Reason */}
-                {errors.otherReason && selectedReason === "Lainnya" && (
-                  <p
-                    className="text-left text-xs font-medium leading-tight"
-                    style={{ color: "#EE4343" }}
-                  >
-                    {errors.otherReason.message}
-                  </p>
-                )}
+                {errors.otherReason &&
+                  selectedReason ===
+                    t(
+                      "PerubahanJumlahUnitModal.otherReason",
+                      {},
+                      "Lainnya"
+                    ) && (
+                    <p
+                      className="text-left text-xs font-medium leading-tight"
+                      style={{ color: "#EE4343" }}
+                    >
+                      {errors.otherReason.message}
+                    </p>
+                  )}
 
                 {/* Error Alert for Reason */}
                 {errors.selectedReason && (
@@ -307,7 +413,11 @@ const PerubahanJumlahUnitModal = ({
               {/* Masukkan Lampiran Foto Pendukung */}
               <div className="flex flex-col gap-3.5">
                 <h3 className="font-bold text-black">
-                  Masukkan Lampiran Foto Pendukung
+                  {t(
+                    "PerubahanJumlahUnitModal.uploadSupportingPhoto",
+                    {},
+                    "Masukkan Lampiran Foto Pendukung"
+                  )}
                   <span className="">*</span>
                 </h3>
 
@@ -326,7 +436,11 @@ const PerubahanJumlahUnitModal = ({
                       errorText=""
                       isBig={false}
                       className="!h-10 !w-10 !rounded"
-                      cropperTitle="Upload Foto Pendukung"
+                      cropperTitle={t(
+                        "PerubahanJumlahUnitModal.uploadSupportingPhotoTitle",
+                        {},
+                        "Upload Foto Pendukung"
+                      )}
                     />
                   ))}
                 </div>
@@ -335,8 +449,11 @@ const PerubahanJumlahUnitModal = ({
                   className="text-xs font-medium leading-tight"
                   style={{ color: "#7B7B7B" }}
                 >
-                  Min. 1 foto dengan format file jpg/jpeg/png, besar file maks.
-                  10MB
+                  {t(
+                    "PerubahanJumlahUnitModal.photoRequirements",
+                    {},
+                    "Min. 1 foto dengan format file jpg/jpeg/png, besar file maks. 10MB"
+                  )}
                 </p>
 
                 {/* Error Alert for Photo Upload */}
@@ -361,10 +478,18 @@ const PerubahanJumlahUnitModal = ({
                 />
                 <div className="flex flex-col">
                   <p className="text-xs font-medium leading-tight text-black">
-                    Perubahan jumlah unit kemungkinan akan dikenakan penalti.
+                    {t(
+                      "PerubahanJumlahUnitModal.penaltyWarning",
+                      {},
+                      "Perubahan jumlah unit kemungkinan akan dikenakan penalti."
+                    )}
                   </p>
                   <p className="text-xs font-semibold leading-tight text-black">
-                    Penalti kamu saat ini : 0
+                    {t(
+                      "PerubahanJumlahUnitModal.currentPenalty",
+                      { penalty: 0 },
+                      "Penalti kamu saat ini : 0"
+                    )}
                   </p>
                 </div>
               </div>
@@ -380,7 +505,7 @@ const PerubahanJumlahUnitModal = ({
             disabled={isSubmitting || isLoading}
             className="px-8"
           >
-            Batal
+            {t("PerubahanJumlahUnitModal.cancel", {}, "Batal")}
           </Button>
           <Button
             variant="muattrans-warning"
@@ -389,7 +514,7 @@ const PerubahanJumlahUnitModal = ({
             {...((isSubmitting || isLoading) && { loading: true })}
             className="bg-[#F5C451] px-8 text-black hover:bg-[#F5C451]/90"
           >
-            Simpan
+            {t("PerubahanJumlahUnitModal.save", {}, "Simpan")}
           </Button>
         </ModalFooter>
       </ModalContent>

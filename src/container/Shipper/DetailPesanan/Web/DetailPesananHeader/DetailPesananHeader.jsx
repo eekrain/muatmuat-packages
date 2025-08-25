@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import { Alert } from "@/components/Alert/Alert";
 import Button from "@/components/Button/Button";
 import {
   SimpleDropdown,
@@ -43,6 +44,7 @@ const DetailPesananHeader = ({
   dataRingkasanPembayaran,
   isShowWaitFleetAlert,
   mutateDetailPesanan,
+  refundInfo,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -79,12 +81,6 @@ const DetailPesananHeader = ({
   const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
   const [isDriverRatingModalOpen, setIsDriverRatingModalOpen] = useState(false);
 
-  const { trigger: autoComplete, isMutating: isAutoCompleteMutating } =
-    useSWRMutateHook(
-      params.orderId ? "/v1/orders/auto-complete" : null,
-      "POST"
-    );
-
   const { trigger: confirmDocumentReceived, isMutating: isConfirmingDocument } =
     useSWRMutateHook(
       params.orderId ? `v1/orders/${params.orderId}/document-received` : null,
@@ -119,7 +115,6 @@ const DetailPesananHeader = ({
         // toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
       }
     } catch (error) {
-      console.error("Error confirming document received:", error);
       toast.error(
         t(
           "DetailPesananHeader.toastErrorKonfirmasi",
@@ -138,6 +133,11 @@ const DetailPesananHeader = ({
     }
     setIsReorderFleetModalOpen(false);
   };
+
+  const isCancelled =
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.CANCELED_BY_SYSTEM ||
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.CANCELED_BY_SHIPPER ||
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.CANCELED_BY_TRANSPORTER;
 
   // Check if all drivers have been reviewed
   const areAllDriversReviewed =
@@ -234,6 +234,20 @@ const DetailPesananHeader = ({
           </div>
         </PageTitle>
         <div className="flex items-center gap-x-3">
+          {isCancelled &&
+            refundInfo &&
+            !showButtonConfig.DetailRefund && ( // Ensure button doesn't duplicate
+              <Button
+                variant="muatparts-primary"
+                onClick={() =>
+                  router.push(
+                    `/shipper/detail-pesanan/${dataStatusPesanan?.orderId}/refund`
+                  )
+                }
+              >
+                Detail Refund
+              </Button>
+            )}
           {showButtonConfig?.DetailRefund && (
             <Link
               href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
@@ -251,6 +265,7 @@ const DetailPesananHeader = ({
               </Button>
             </Link>
           )}
+
           {showButtonConfig?.DetailPembayaran && (
             <ModalDetailPembayaran
               dataRingkasanPembayaran={dataRingkasanPembayaran}
@@ -333,6 +348,29 @@ const DetailPesananHeader = ({
         </div>
       </div>
 
+      {refundInfo?.refundStatus === "REFUND_PROCESSING" && (
+        <Alert
+          variant="warning"
+          className="mb-4"
+          message="Pengembalian dana sedang dalam proses"
+        />
+      )}
+      {refundInfo?.refundStatus === "REFUND_SUCCESS" && (
+        <Alert
+          variant="success"
+          className="mb-4"
+          message="Pengembalian dana berhasil"
+        />
+      )}
+
+      {isShowWaitFleetAlert && (
+        <Alert
+          variant="warning"
+          className="mb-4"
+          message="Pesanan sedang menunggu armada."
+        />
+      )}
+
       {/* Modal Konfirmasi Dokumen Diterima */}
       <ConfirmationModal
         variant="muatparts"
@@ -350,6 +388,7 @@ const DetailPesananHeader = ({
         }}
         cancel={{
           text: t("DetailPesananHeader.modalButtonBelum", {}, "Belum"),
+          loading: isConfirmingDocument,
           disabled: isConfirmingDocument,
           classname: "bg-white text-primary-700 border-primary-700",
         }}
@@ -360,6 +399,7 @@ const DetailPesananHeader = ({
             "Sudah Menerima"
           ),
           onClick: handleReceiveDocument,
+          loading: isConfirmingDocument,
           disabled: isConfirmingDocument,
           classname: "bg-primary-700 text-white hover:bg-primary-700",
         }}
@@ -380,7 +420,7 @@ const DetailPesananHeader = ({
         }}
         cancel={{
           text: t("DetailPesananHeader.modalButtonPesanBaru", {}, "Pesan Baru"),
-          onClick: () => handleReorderFleet(),
+          onClick: () => handleReorderFleet(params.orderId),
         }}
         confirm={{
           text: t(

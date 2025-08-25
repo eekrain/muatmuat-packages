@@ -3,6 +3,7 @@ import { memo, useCallback, useMemo, useState } from "react";
 import Button from "@/components/Button/Button";
 import MyDropdown from "@/components/Dropdown/MyDropdown";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { AgendaAutocomplete } from "../AgendaAutocomplete";
 import { AgendaFilterPopover } from "../AgendaFilterPopover";
@@ -26,6 +27,7 @@ const months = [
 
 // Memoized Period Dropdown Component
 const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
+  const { t } = useTranslation();
   const availableYears = useMemo(() => {
     if (!availableMonths) return [];
     return Object.keys(availableMonths).sort(
@@ -59,7 +61,9 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
           width={12}
           height={12}
         />
-        <span>Pilih Periode</span>
+        <span>
+          {t("CalendarHeader1.labelPilihPeriode", {}, "Pilih Periode")}
+        </span>
       </div>
     );
   }
@@ -73,7 +77,9 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
             width={12}
             height={12}
           />
-          <span>Ubah Periode</span>
+          <span>
+            {t("CalendarHeader1.labelUbahPeriode", {}, "Ubah Periode")}
+          </span>
         </div>
       </MyDropdown.Trigger>
       <MyDropdown.Content>
@@ -103,61 +109,99 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
 
 PeriodDropdown.displayName = "PeriodDropdown";
 
-const statusFiltersData = [
+const getStatusFiltersData = (t) => [
   {
     id: "BERTUGAS",
-    label: "Bertugas",
+    label: t("CalendarHeader1.statusBertugas", {}, "Bertugas"),
     count: 3,
     color: { className: "bg-[#176CF7]" },
   },
   {
     id: "MENUNGGU_JAM_MUAT",
-    label: "Menunggu Jam Muat & Dijadwalkan",
+    label: t(
+      "CalendarHeader1.statusMenungguJamMuat",
+      {},
+      "Menunggu Jam Muat & Dijadwalkan"
+    ),
     count: 2,
     color: { className: "bg-[#FF7A00]" },
   },
   {
     id: "SOS",
-    label: "Urgent Issue & SOS (1)",
+    label: t("CalendarHeader1.statusSOS", {}, "Urgent Issue & SOS (1)"),
     count: 2,
     color: { className: "bg-error-400" },
   },
   {
     id: "PENGIRIMAN_SELESAI",
-    label: "Pengiriman Selesai",
+    label: t(
+      "CalendarHeader1.statusPengirimanSelesai",
+      {},
+      "Pengiriman Selesai"
+    ),
     count: 1,
     color: { className: "bg-[#F1F1F1] border border-[#C4C4C4]" },
   },
   {
     id: "NON_AKTIF",
-    label: "Non Aktif",
+    label: t("CalendarHeader1.statusNonAktif", {}, "Non Aktif"),
     count: 5,
     color: { className: "bg-[#F8F8FB] border border-[#C4C4C4]" },
   },
 ];
 
-const armadaFiltersData = [
-  { id: "coltDieselEngkel", label: "Colt Diesel Engkel - Box", count: 5 },
-  { id: "tronton", label: "Tronton - Box", count: 5 },
+const getArmadaFiltersData = (t) => [
   {
-    id: "coltDieselEngkelEngkel",
-    label: "Colt Diesel Engkel - Engkel",
+    id: "coltDieselEngkel",
+    label: t(
+      "CalendarHeader1.armadaColtDieselEngkelBox",
+      {},
+      "Colt Diesel Engkel - Box"
+    ),
     count: 5,
   },
-  { id: "pickup", label: "Pickup - Box", count: 5 },
-  { id: "coltDieselDouble", label: "Colt Diesel Double - Box", count: 5 },
+  {
+    id: "tronton",
+    label: t("CalendarHeader1.armadaTrontonBox", {}, "Tronton - Box"),
+    count: 5,
+  },
+  {
+    id: "coltDieselEngkelEngkel",
+    label: t(
+      "CalendarHeader1.armadaColtDieselEngkelEngkel",
+      {},
+      "Colt Diesel Engkel - Engkel"
+    ),
+    count: 5,
+  },
+  {
+    id: "pickup",
+    label: t("CalendarHeader1.armadaPickupBox", {}, "Pickup - Box"),
+    count: 5,
+  },
+  {
+    id: "coltDieselDouble",
+    label: t(
+      "CalendarHeader1.armadaColtDieselDoubleBox",
+      {},
+      "Colt Diesel Double - Box"
+    ),
+    count: 5,
+  },
 ];
 
 // Memoized Search Section Component
 const SearchSection = memo(
   ({ _search, _onSearchChange, _filterAgendaStatus, onFilterChange }) => {
+    const { t } = useTranslation();
     const { viewType } = useAgendaNavigatorStore();
     // Store integration
     const { filterAgendaStatus, setFilterAgendaStatus } =
       useAgendaNavigatorStore();
 
     // Use the predefined status filters data instead of generating from STATUS_CODES
-    const statusFilterOptions = statusFiltersData;
+    const statusFilterOptions = getStatusFiltersData(t);
+    const armadaFilterOptions = getArmadaFiltersData(t);
 
     // Check if any filters are active (not all enabled, which is the default state)
     const hasActiveFilters = useMemo(() => {
@@ -277,7 +321,13 @@ const SearchSection = memo(
           onSelect={handleSelect}
         >
           <AgendaAutocomplete.Trigger>
-            <AgendaAutocomplete.Input placeholder="Cari No. Polisi atau Nama Driver" />
+            <AgendaAutocomplete.Input
+              placeholder={t(
+                "CalendarHeader1.placeholderCariNoPolisiDriver",
+                {},
+                "Cari No. Polisi atau Nama Driver"
+              )}
+            />
           </AgendaAutocomplete.Trigger>
 
           <AgendaAutocomplete.Popover>
@@ -306,7 +356,7 @@ const SearchSection = memo(
               <span
                 className={`flex-grow text-left text-xs font-medium ${filterTextClass}`}
               >
-                Filter
+                {t("CalendarHeader1.buttonFilter", {}, "Filter")}
               </span>
               <IconComponent
                 src="/icons/filter16.svg"
@@ -318,7 +368,9 @@ const SearchSection = memo(
           <AgendaFilterPopover.Content>
             <AgendaFilterPopover.CloseButton />
 
-            <AgendaFilterPopover.Section title="Status">
+            <AgendaFilterPopover.Section
+              title={t("CalendarHeader1.sectionTitleStatus", {}, "Status")}
+            >
               {statusFilterOptions.map((item) => (
                 <AgendaFilterPopover.CheckboxItem
                   key={item.id}
@@ -329,8 +381,14 @@ const SearchSection = memo(
             </AgendaFilterPopover.Section>
 
             {viewType === "armada" && (
-              <AgendaFilterPopover.Section title="Jenis Armada">
-                {armadaFiltersData.map((item) => (
+              <AgendaFilterPopover.Section
+                title={t(
+                  "CalendarHeader1.sectionTitleJenisArmada",
+                  {},
+                  "Jenis Armada"
+                )}
+              >
+                {armadaFilterOptions.map((item) => (
                   <AgendaFilterPopover.CheckboxItem
                     key={item.id}
                     {...item}
@@ -342,10 +400,10 @@ const SearchSection = memo(
 
             <AgendaFilterPopover.Footer>
               <AgendaFilterPopover.ResetButton>
-                Reset
+                {t("CalendarHeader1.buttonReset", {}, "Reset")}
               </AgendaFilterPopover.ResetButton>
               <AgendaFilterPopover.ApplyButton>
-                Tampilkan
+                {t("CalendarHeader1.buttonTampilkan", {}, "Tampilkan")}
               </AgendaFilterPopover.ApplyButton>
             </AgendaFilterPopover.Footer>
           </AgendaFilterPopover.Content>
@@ -367,53 +425,67 @@ const NavigationSection = memo(
     canNextMonth,
     availableMonths,
     setMonth,
-  }) => (
-    <div className="absolute left-1/2 flex h-full flex-1 -translate-x-1/2 flex-col items-center justify-center gap-2 p-3">
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label="Previous Month"
-          className="flex h-5 w-5 items-center justify-center rounded hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={prevMonth}
-          disabled={!canPrevMonth}
-        >
-          <IconComponent
-            src="/icons/agenda/chevron-left-rounded.svg"
-            width={7}
-            height={12}
-            className="text-neutral-900"
-          />
-        </button>
-        <h2 className="text-center text-lg font-semibold text-neutral-900">
-          {displayMonthYear}
-        </h2>
-        <button
-          type="button"
-          aria-label="Next Month"
-          className="flex h-5 w-5 items-center justify-center rounded hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={nextMonth}
-          disabled={!canNextMonth}
-        >
-          <IconComponent
-            src="/icons/agenda/chevron-right-rounded.svg"
-            width={7}
-            height={12}
-            className="text-neutral-900"
-          />
-        </button>
+  }) => {
+    const { t } = useTranslation();
+
+    return (
+      <div className="absolute left-1/2 flex h-full flex-1 -translate-x-1/2 flex-col items-center justify-center gap-2 p-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={t(
+              "CalendarHeader1.ariaLabelPreviousMonth",
+              {},
+              "Previous Month"
+            )}
+            className="flex h-5 w-5 items-center justify-center rounded hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={prevMonth}
+            disabled={!canPrevMonth}
+          >
+            <IconComponent
+              src="/icons/agenda/chevron-left-rounded.svg"
+              width={7}
+              height={12}
+              className="text-neutral-900"
+            />
+          </button>
+          <h2 className="text-center text-lg font-semibold text-neutral-900">
+            {displayMonthYear}
+          </h2>
+          <button
+            type="button"
+            aria-label={t(
+              "CalendarHeader1.ariaLabelNextMonth",
+              {},
+              "Next Month"
+            )}
+            className="flex h-5 w-5 items-center justify-center rounded hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={nextMonth}
+            disabled={!canNextMonth}
+          >
+            <IconComponent
+              src="/icons/agenda/chevron-right-rounded.svg"
+              width={7}
+              height={12}
+              className="text-neutral-900"
+            />
+          </button>
+        </div>
+        <PeriodDropdown
+          availableMonths={availableMonths}
+          onMonthClick={setMonth}
+        />
       </div>
-      <PeriodDropdown
-        availableMonths={availableMonths}
-        onMonthClick={setMonth}
-      />
-    </div>
-  )
+    );
+  }
 );
 
 NavigationSection.displayName = "NavigationSection";
 
 // Memoized Today Button Component
 const TodayButton = memo(({ setDate, todayDate, isTodayNotInView }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex h-full w-[415px] items-center justify-end p-3">
       <Button
@@ -422,7 +494,7 @@ const TodayButton = memo(({ setDate, todayDate, isTodayNotInView }) => {
         onClick={() => setDate(todayDate)}
         variant="muatparts-primary"
       >
-        Kembali Ke Hari Ini
+        {t("CalendarHeader1.buttonKembaliKeHariIni", {}, "Kembali Ke Hari Ini")}
       </Button>
     </div>
   );
@@ -439,6 +511,7 @@ export const CalendarHeader1 = memo(
     onFilterChange,
     availablePeriods,
   }) => {
+    const { t } = useTranslation();
     const {
       displayMonthYear,
       prevMonth,
@@ -475,7 +548,11 @@ export const CalendarHeader1 = memo(
             onClick={() => setDate(todayDate)}
             variant="muatparts-primary"
           >
-            Kembali Ke Hari Ini
+            {t(
+              "CalendarHeader1.buttonKembaliKeHariIni",
+              {},
+              "Kembali Ke Hari Ini"
+            )}
           </Button>
         </div>
       </div>
