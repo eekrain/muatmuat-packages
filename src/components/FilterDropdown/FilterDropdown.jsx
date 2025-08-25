@@ -247,7 +247,16 @@ const FilterDropdown = ({
                   onMouseEnter={() => handleMouseEnter(category.key)}
                   onMouseLeave={() => handleMouseLeave(category.key)}
                 >
-                  <span className="text-xs font-medium">{category.label}</span>
+                  <span
+                    className={cn(
+                      "text-xs",
+                      selectedValues?.[category.key]
+                        ? "font-semibold"
+                        : "font-medium"
+                    )}
+                  >
+                    {category.label}
+                  </span>
                   <div className="flex items-center gap-2">
                     <ChevronRight size={16} className="text-neutral-700" />
                   </div>
