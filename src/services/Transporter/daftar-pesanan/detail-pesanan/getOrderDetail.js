@@ -188,7 +188,6 @@ const mockApiResult = {
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
         // Status perubahan armada
-        fleetChangeStatus: null, // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
       },
       {
         id: "fleet-002",
@@ -255,7 +254,6 @@ const mockApiResult = {
           profileImage: "https://example.com/driver3.jpg",
         },
         // Status perubahan armada
-        fleetChangeStatus: "APPROVED", // "PENDING", "APPROVED", "REJECTED", "COMPLETED"
       },
       {
         id: "fleet-003",
@@ -307,7 +305,6 @@ const mockApiResult = {
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
         // Status perubahan armada
-        fleetChangeStatus: null,
       },
       {
         id: "fleet-004",
@@ -359,7 +356,6 @@ const mockApiResult = {
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
         // Status perubahan armada
-        fleetChangeStatus: null,
       },
       {
         id: "fleet-005",
@@ -411,7 +407,6 @@ const mockApiResult = {
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
         // Status perubahan armada
-        fleetChangeStatus: null,
       },
       {
         id: "fleet-007",
@@ -463,7 +458,6 @@ const mockApiResult = {
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
         // Status perubahan armada
-        fleetChangeStatus: null,
       },
       {
         id: "fleet-008",
@@ -514,8 +508,6 @@ const mockApiResult = {
         replacementFleet: null,
         // Data untuk driver pengganti (jika ada)
         replacementDriver: null,
-        // Status perubahan armada
-        fleetChangeStatus: "COMPLETED",
       },
       {
         id: "fleet-009",
@@ -572,7 +564,6 @@ const mockApiResult = {
           profileImage: "https://example.com/driver9-replacement.jpg",
         },
         // Status perubahan armada sudah selesai
-        fleetChangeStatus: "COMPLETED",
       },
     ],
     otherStatus: [
