@@ -185,6 +185,7 @@ const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
                 replacementDriver={armada.replacementDriver}
                 fleetChangeStatus={armada.fleetChangeStatus}
                 onNavigateToRiwayat={onNavigateToRiwayat}
+                totalSosCount={sosCount}
               />
             ))
           ) : (

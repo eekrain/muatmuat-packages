@@ -15,6 +15,8 @@ import { useTranslation } from "@/hooks/use-translation";
 
 // Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
 
+// Design Reference: https://www.figma.com/design/qVy9QwWNBWov4ZLrogzLiG/-Transporter---Monitoring-Alternate---Web?node-id=137-49798&t=NgdDLUIPMZQKBhuh-4
+
 function LacakArmadaHeader({
   sosUnit = 0,
   activeCount = 0,
@@ -46,7 +48,7 @@ function LacakArmadaHeader({
           </h2>
 
           {/* SOS Badge */}
-          {sosUnit > 0 && Number.isInteger(sosUnit) && (
+          {sosUnit > 1 && Number.isInteger(sosUnit) && (
             <div className="flex items-center gap-2">
               <div className="inline-flex h-6 items-center justify-center rounded-md bg-red-500 px-3 text-xs font-semibold text-white">
                 {t(
