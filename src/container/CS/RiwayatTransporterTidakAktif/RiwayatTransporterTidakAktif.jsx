@@ -174,27 +174,15 @@ const RiwayatTransporterTidakAktif = () => {
       condition: [
         {
           id: "INACTIVE_FLEET_TOO_MANY",
-          label: t(
-            "RiwayatTransporterTidakAktif.inactiveFleetTooMany",
-            {},
-            TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY
-          ),
+          label: TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY,
         },
         {
           id: "ADMIN_IDLE_DETECTED",
-          label: t(
-            "RiwayatTransporterTidakAktif.adminIdleDetected",
-            {},
-            TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED
-          ),
+          label: TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED,
         },
         {
           id: "TRANSPORTER_INACTIVE",
-          label: t(
-            "RiwayatTransporterTidakAktif.transporterInactive",
-            {},
-            TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE
-          ),
+          label: TransporterInactiveTypeEnum.TRANSPORTER_INACTIVE,
         },
       ],
     },
@@ -239,7 +227,7 @@ const RiwayatTransporterTidakAktif = () => {
               {row.transporterName}
             </span>
             <button
-              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer"
+              className="flex items-center gap-2 text-xs font-medium text-primary-500 hover:cursor-pointer hover:font-semibold hover:text-[#1257C6]"
               onClick={() => setShowHubungiModal(true)}
             >
               <IconComponent src={"/icons/call-blue.svg"} />

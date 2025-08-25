@@ -66,7 +66,6 @@ const CardMenu = ({
       <div className={cn("flex-shrink-0", actionContainerClassName)}>
         {customAction ||
           (status === "completed" ? (
-            // "Completed" state is a special, non-interactive variant
             <Button
               className="pointer-events-none h-[32px] w-[177px] bg-neutral-200 text-xs font-semibold text-neutral-600 hover:bg-neutral-200"
               iconLeft="/icons/check16.svg"
@@ -78,10 +77,12 @@ const CardMenu = ({
               Selesai
             </Button>
           ) : (
-            // Default interactive button for any other case
-            <Button className="h-[32px] w-[177px]" onClick={onClick}>
-              {buttonText}
-            </Button>
+            // MODIFICATION: Only render the Button if buttonText has a value
+            buttonText && (
+              <Button className="h-[32px] w-[177px]" onClick={onClick}>
+                {buttonText}
+              </Button>
+            )
           ))}
       </div>
     </div>
@@ -93,14 +94,7 @@ CardMenu.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   buttonText: PropTypes.string,
-  /**
-   * The onClick function is optional. It defaults to an empty function to prevent errors.
-   */
   onClick: PropTypes.func,
-  /**
-   * The status is optional. Use "completed" for the special completed state.
-   * If omitted, it will render the default, clickable button.
-   */
   status: PropTypes.string,
   className: PropTypes.string,
   iconContainerClassName: PropTypes.string,
@@ -111,7 +105,8 @@ CardMenu.propTypes = {
 };
 
 CardMenu.defaultProps = {
-  buttonText: "Click Me",
+  // MODIFICATION: Change default from "Click Me" to null
+  buttonText: null,
   onClick: () => {},
   status: undefined,
   className: "",

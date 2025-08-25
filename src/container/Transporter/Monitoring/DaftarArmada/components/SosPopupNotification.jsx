@@ -9,14 +9,21 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 const SosPopupNotification = ({ isOpen, onClose, onConfirm, sosCount = 1 }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent className="w-modal-small" type="muattrans">
         <ModalHeader size="small" onClose={onClose} />
         <ModalTitle className="sr-only">
-          Notifikasi Bantuan Darurat (SOS)
+          {t(
+            "SosPopupNotification.title",
+            {},
+            "Notifikasi Bantuan Darurat (SOS)"
+          )}
         </ModalTitle>
         <div className="flex flex-col items-center justify-center p-8 text-center">
           <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-error-50">
@@ -28,10 +35,18 @@ const SosPopupNotification = ({ isOpen, onClose, onConfirm, sosCount = 1 }) => {
             />
           </div>
           <h3 className="text-base font-bold text-neutral-900">
-            Driver Membutuhkan Bantuan!
+            {t(
+              "SosPopupNotification.driverNeedsHelp",
+              {},
+              "Driver Membutuhkan Bantuan!"
+            )}
           </h3>
           <p className="mt-2 text-sm text-neutral-600">
-            Terdapat {sosCount} driver baru yang sedang membutuhkan bantuan
+            {t(
+              "SosPopupNotification.newDriversNeedHelp",
+              { count: sosCount },
+              `Terdapat ${sosCount} driver baru yang sedang membutuhkan bantuan`
+            )}
           </p>
           <div className="mt-8 flex w-full gap-3">
             <Button
@@ -39,10 +54,10 @@ const SosPopupNotification = ({ isOpen, onClose, onConfirm, sosCount = 1 }) => {
               onClick={onClose}
               className="w-full"
             >
-              Tutup
+              {t("SosPopupNotification.closeButton", {}, "Tutup")}
             </Button>
             <Button onClick={onConfirm} className="w-full">
-              Lihat
+              {t("SosPopupNotification.viewButton", {}, "Lihat")}
             </Button>
           </div>
         </div>

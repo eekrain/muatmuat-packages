@@ -10,6 +10,8 @@ import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
+import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtpProfilStore";
 
 const SetPasswordPage = () => {
   const router = useRouter();
@@ -25,11 +27,14 @@ const SetPasswordPage = () => {
   const token = searchParams.get("token");
 
   // SWR mutation hook for API call
-  // const {
-  //   trigger: verifyEmail,
-  //   isMutating,
-  //   error,
-  // } = useVerifyEmailVerification();
+  const {
+    trigger: verifyEmail,
+    isMutating,
+    error,
+  } = useVerifyEmailVerification();
+
+  // Store actions for saving OTP data
+  const { setField } = useRequestOtpProfilActions();
 
   const {
     register,
@@ -56,36 +61,36 @@ const SetPasswordPage = () => {
     setIsConfirmPasswordVisible((prev) => !prev);
 
   const onSubmit = async (data) => {
-    // try {
-    //   // Prepare request body according to API contract
-    //   const requestBody = {
-    //     email: email,
-    //     token: token,
-    //     password: data.password,
-    //     confirmPassword: data.confirmPassword,
-    //   };
+    try {
+      // Prepare request body according to API contract
+      const requestBody = {
+        email: email,
+        token: token,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      };
 
-    //   // Call API
-    //   const response = await verifyEmail(requestBody);
+      // Call API
+      const response = await verifyEmail(requestBody);
+      console.log(response, "verifyemail");
+      const { phoneNumber, token: otpToken, expiresIn } = response.data.Data;
 
-    //   if (response.data.Message.Code === 201) {
-    //     // Extract phoneNumber and token from response
-    //     const { phoneNumber, token: otpToken, expiresIn } = response.data.Data;
+      // Save response data to store
+      setField("target", phoneNumber);
+      setField("token", otpToken);
+      setField("expiresIn", expiresIn);
+      setField("otpType", "WHATSAPP");
+      setField("purpose", "EMAIL_VERIFICATION");
+      setField("step", "VERIFY_OTP");
 
-    //     // Initialize OTP store with data from email verification
-    //     initializeFromEmailVerification({
-    //       phoneNumber,
-    //       token: otpToken,
-    //       expiresIn,
-    //       redirectUrl: "/dashboard",
-    //     });
-
-    //     // Redirect to OTP page without parameters
-    //     router.push("/otp");
-    //   }
-    // } catch (error) {
-    //   console.error("Email verification failed:", error);
-    // }
+      // Redirect to OTP page without parameters
+      router.push("/otp");
+      if (response.data.Message.Code === 201) {
+        // Extract phoneNumber and token from response
+      }
+    } catch (error) {
+      console.error("Email verification failed:", error);
+    }
     console.log("tes");
   };
 

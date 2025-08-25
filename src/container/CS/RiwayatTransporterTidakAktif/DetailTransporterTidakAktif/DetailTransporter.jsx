@@ -8,6 +8,7 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { useTranslation } from "@/hooks/use-translation";
 import { TransporterInactiveTypeEnum } from "@/lib/constants/Transporter/laporan/transporterInactive.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetTransporterInactiveFleetDetails } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactiveDetail";
@@ -27,10 +28,10 @@ function formatDuration(minutes) {
 }
 
 // Column definitions for inactive status
-const armadaNonaktifColumns = [
+const armadaNonaktifColumns = (t) => [
   {
     key: "licensePlate",
-    header: "No. Polisi",
+    header: t("DetailTransporter.licensePlate", {}, "No. Polisi"),
     width: "131px",
     sortable: true,
     render: (row) => (
@@ -41,9 +42,8 @@ const armadaNonaktifColumns = [
   },
   {
     key: "driverName",
-    header: "Nama Driver",
+    header: t("DetailTransporter.driverName", {}, "Nama Driver"),
     width: "245px",
-
     sortable: true,
     render: (row) => (
       <span className="text-wrap text-xs font-medium text-neutral-900">
@@ -53,9 +53,8 @@ const armadaNonaktifColumns = [
   },
   {
     key: "tanggalNonaktif",
-    header: "Tanggal Nonaktif",
+    header: t("DetailTransporter.tanggalNonaktif", {}, "Tanggal Nonaktif"),
     width: "131px",
-
     sortable: true,
     render: (row) => (
       <span className="text-xs font-medium text-neutral-900">
@@ -65,9 +64,12 @@ const armadaNonaktifColumns = [
   },
   {
     key: "lamaNonaktif",
-    header: "Lama Armada Nonaktif",
+    header: t(
+      "DetailTransporter.lamaArmadaNonaktif",
+      {},
+      "Lama Armada Nonaktif"
+    ),
     width: "131px",
-
     sortable: true,
     render: (row) => (
       <span className="text-xs font-medium text-neutral-900">
@@ -78,13 +80,12 @@ const armadaNonaktifColumns = [
 ];
 
 // Column definitions for idle status
-const armadaIdleColumns = [
+const armadaIdleColumns = (t) => [
   {
     key: "orderNumber",
-    header: "No. Pesanan",
+    header: t("DetailTransporter.orderNumber", {}, "No. Pesanan"),
     sortable: true,
     width: "131px",
-
     render: (row) => (
       <span className="text-xs font-medium text-neutral-900">
         {row.orderNumber}
@@ -93,10 +94,13 @@ const armadaIdleColumns = [
   },
   {
     key: "receivingTransporter",
-    header: "Transporter Penerima",
+    header: t(
+      "DetailTransporter.receivingTransporter",
+      {},
+      "Transporter Penerima"
+    ),
     sortable: true,
     width: "245px",
-
     render: (row) => (
       <span className="text-wrap text-xs font-medium text-neutral-900">
         {row.receivingTransporter}
@@ -105,10 +109,13 @@ const armadaIdleColumns = [
   },
   {
     key: "orderCreationTime",
-    header: "Waktu Pesanan Dibuat",
+    header: t(
+      "DetailTransporter.orderCreationTime",
+      {},
+      "Waktu Pesanan Diblast"
+    ),
     sortable: true,
     width: "131px",
-
     render: (row) => (
       <span className="text-xs font-medium text-neutral-900">
         {row.orderCreationTime}
@@ -117,10 +124,9 @@ const armadaIdleColumns = [
   },
   {
     key: "pickupTime",
-    header: "Waktu Pengambilan",
+    header: t("DetailTransporter.pickupTime", {}, "Waktu Pengambilan"),
     sortable: true,
     width: "131px",
-
     render: (row) => (
       <span className="text-xs font-medium text-neutral-900">
         {row.pickupTime}
@@ -147,6 +153,8 @@ const fleetNoteData = {
 };
 
 const DetailTransporter = ({ breadcrumbData }) => {
+  const { t } = useTranslation();
+
   // State for pagination and UI controls
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -171,10 +179,10 @@ const DetailTransporter = ({ breadcrumbData }) => {
 
   // Determine status type
   const statusFleet =
-    transporterInfo?.status ||
-    TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY;
+    t(transporterInfo?.status) ||
+    t(TransporterInactiveTypeEnum.INACTIVE_FLEET_TOO_MANY);
   const isIdleStatus =
-    statusFleet === TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED;
+    statusFleet === t(TransporterInactiveTypeEnum.ADMIN_IDLE_DETECTED);
 
   // Initialize sort config based on status
   const [sortConfig, setSortConfig] = useState({
@@ -332,7 +340,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                   {transporter.name}
                 </p>
                 <p className="text-xs font-medium text-error-400">
-                  {`${transporterInfo.status} (5/7${isIdleStatus ? " Order" : ""})`}
+                  {`${t(transporterInfo.status)} (5/7${isIdleStatus ? " Order" : ""})`}
                 </p>
               </div>
             </div>
@@ -345,19 +353,27 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold"
                 onClick={() => setShowHubungiModal(true)}
               >
-                Hubungi
+                {t("DetailTransporter.contactButton", {}, "Hubungi")}
               </Button>
             </div>
           </div>
           <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
             <div className="mb-4 flex items-center">
               <p className="text-xs font-semibold text-neutral-900">
-                Detail Penyelesaian
+                {t(
+                  "DetailTransporter.resolutionDetailTitle",
+                  {},
+                  "Detail Penyelesaian"
+                )}
               </p>
             </div>
             <div className="mb-3 flex flex-col gap-2">
               <p className="text-xs font-medium text-neutral-600">
-                Tanggal Diselesaikan
+                {t(
+                  "DetailTransporter.resolvedDateLabel",
+                  {},
+                  "Tanggal Diselesaikan"
+                )}
               </p>
               <p className="text-xs font-medium text-neutral-900">
                 {fleetNoteData?.history?.reportedAt
@@ -372,21 +388,31 @@ const DetailTransporter = ({ breadcrumbData }) => {
               </p>
             </div>
             <div className="mb-3 flex flex-col gap-2">
-              <p className="text-xs font-medium text-neutral-600">Catatan</p>
+              <p className="text-xs font-medium text-neutral-600">
+                {t("DetailTransporter.noteLabel", {}, "Catatan")}
+              </p>
               <p className="text-xs font-medium text-neutral-900">
                 {fleetNoteData?.history?.notes || "-"}
               </p>
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-xs font-medium text-neutral-600">
-                Foto Pendukung
+                {t(
+                  "DetailTransporter.supportingPhotosLabel",
+                  {},
+                  "Foto Pendukung"
+                )}
               </p>
               <LightboxProvider
                 images={
                   fleetNoteData?.history?.photos?.map((photo) => photo.url) ||
                   []
                 }
-                title="Foto Penyelesaian"
+                title={t(
+                  "DetailTransporter.photoTitle",
+                  {},
+                  "Foto Penyelesaian"
+                )}
               >
                 <div className="flex flex-row gap-2">
                   {fleetNoteData?.history?.photos?.length > 0 ? (
@@ -396,12 +422,16 @@ const DetailTransporter = ({ breadcrumbData }) => {
                         image={photo.url}
                         index={idx}
                         className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
-                        alt={`Foto Penyelesaian ${idx + 1}`}
+                        alt={t(
+                          "DetailTransporter.photoAlt",
+                          { idx: idx + 1 },
+                          `Foto Penyelesaian ${idx + 1}`
+                        )}
                       />
                     ))
                   ) : (
                     <span className="text-xs text-neutral-500">
-                      Tidak ada foto
+                      {t("DetailTransporter.noPhoto", {}, "Tidak ada foto")}
                     </span>
                   )}
                 </div>
@@ -435,14 +465,26 @@ const DetailTransporter = ({ breadcrumbData }) => {
 
           <DataTable
             data={processedData}
-            columns={isIdleStatus ? armadaIdleColumns : armadaNonaktifColumns}
+            columns={
+              isIdleStatus ? armadaIdleColumns(t) : armadaNonaktifColumns(t)
+            }
             searchPlaceholder={
               isIdleStatus
-                ? "Cari No. Pesanan / Nama Transporter"
-                : "Cari Nama Driver / No. Polisi"
+                ? t(
+                    "DetailTransporter.searchOrderPlaceholder",
+                    {},
+                    "Cari No. Pesanan / Nama Transporter"
+                  )
+                : t(
+                    "DetailTransporter.searchFleetPlaceholder",
+                    {},
+                    "Cari Nama Driver / No. Polisi"
+                  )
             }
             totalCountLabel={
-              isIdleStatus ? "Order Terlewat" : "Armada Nonaktif"
+              isIdleStatus
+                ? t("DetailTransporter.totalOrderLabel", {}, "Order Terlewat")
+                : t("DetailTransporter.totalFleetLabel", {}, "Armada Nonaktif")
             }
             currentPage={currentPage}
             totalPages={totalPages}

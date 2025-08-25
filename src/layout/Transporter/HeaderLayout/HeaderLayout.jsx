@@ -379,27 +379,30 @@ const HeaderLayout = ({ notifCounter = { notification: 0, chat: 0 } }) => {
             {t("HeaderLayout.helpCenter", {}, "Pusat Bantuan")}
           </Link>
 
-          <div className="flex items-center gap-x-3">
-            {isLoggedIn && (
-              <div className="flex items-center gap-x-3 pr-3">
-                {MENU_NOTIFICATIONS.map((menu, idx) => (
-                  <NotificationIcon
-                    key={idx}
-                    src={menu.src}
-                    count={
-                      menu.countKey ? notifCounter[menu.countKey] : menu.count
-                    }
-                  />
-                ))}
-              </div>
-            )}
-            <hr className="h-5 border-r border-neutral-500" />
-            <UserDropdown
-              dataUser={dataUser}
-              logout={logout}
-              isLoggedIn={isLoggedIn}
-            />
-          </div>
+          {pathname !== "/login" && (
+            <div className="flex items-center gap-x-3">
+              {isLoggedIn && (
+                <div className="flex items-center gap-x-3">
+                  {MENU_NOTIFICATIONS.map((menu, idx) => (
+                    <NotificationIcon
+                      key={idx}
+                      src={menu.src}
+                      count={
+                        menu.countKey ? notifCounter[menu.countKey] : menu.count
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+
+              <hr className="h-5 border-r border-neutral-500" />
+              <UserDropdown
+                dataUser={dataUser}
+                logout={logout}
+                isLoggedIn={isLoggedIn}
+              />
+            </div>
+          )}
         </div>
       </div>
 

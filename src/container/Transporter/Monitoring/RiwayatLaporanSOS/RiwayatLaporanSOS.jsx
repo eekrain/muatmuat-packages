@@ -14,6 +14,26 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetSosList } from "@/services/Transporter/monitoring/getSosList";
 
+// Mapping untuk kategori SOS
+const getSOSCategoryDisplay = (category) => {
+  const categoryMap = {
+    MECHANICAL_ISSUE: "Masalah Mekanis",
+    ACCIDENT: "Kecelakaan",
+    BREAKDOWN: "Kendaraan Mogok",
+    FUEL_ISSUE: "Masalah Bahan Bakar",
+    TIRE_ISSUE: "Masalah Ban",
+    ENGINE_ISSUE: "Masalah Mesin",
+    ELECTRICAL_ISSUE: "Masalah Kelistrikan",
+    MEDICAL_EMERGENCY: "Darurat Medis",
+    SECURITY_ISSUE: "Masalah Keamanan",
+    TRAFFIC_ISSUE: "Masalah Lalu Lintas",
+    WEATHER_ISSUE: "Masalah Cuaca",
+    OTHER: "Lainnya",
+  };
+
+  return categoryMap[category] || category || "-";
+};
+
 const RiwayatLaporanSOS = ({ onToggleExpand, isExpanded }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -114,7 +134,7 @@ const RiwayatLaporanSOS = ({ onToggleExpand, isExpanded }) => {
         <div className="flex flex-col gap-2 text-xxs">
           {/* Baris Pertama: Kategori Laporan (warna merah) */}
           <p className="text-xs font-semibold text-error-500">
-            {row.categoryName}
+            {getSOSCategoryDisplay(row.categoryName)}
           </p>
           <p className="text-xs font-medium text-neutral-900">
             {row.description}

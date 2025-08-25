@@ -11,10 +11,12 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 
 const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
+  const { t } = useTranslation();
   const [confirmLoading, setConfirmLoading] = useState(false);
 
   // Use order data directly from the list
@@ -32,10 +34,22 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const orderCode = orderInfo?.orderCode || "MT25A001A";
-      toast.success(`Berhasil konfirmasi siap untuk pesanan ${orderCode}`);
+      toast.success(
+        t(
+          "ConfirmReadyModal.confirmSuccess",
+          { orderCode },
+          `Berhasil konfirmasi siap untuk pesanan ${orderCode}`
+        )
+      );
       onClose();
     } catch (error) {
-      toast.error("Gagal melakukan konfirmasi. Silakan coba lagi.");
+      toast.error(
+        t(
+          "ConfirmReadyModal.confirmError",
+          {},
+          "Gagal melakukan konfirmasi. Silakan coba lagi."
+        )
+      );
     } finally {
       setConfirmLoading(false);
     }
@@ -74,7 +88,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
           {/* Header */}
           <div className="flex items-center justify-center px-6 pt-6">
             <ModalTitle className="text-base font-bold leading-[120%] text-black">
-              Konfirmasi Siap
+              {t("ConfirmReadyModal.title", {}, "Konfirmasi Siap")}
             </ModalTitle>
           </div>
 
@@ -83,14 +97,22 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
             {/* Informasi Armada Section */}
             <div className="max-h-[160px] overflow-y-auto rounded-lg border border-neutral-400 p-4">
               <h3 className="mb-4 text-xs font-medium leading-[120%] text-neutral-600">
-                Informasi Armada
+                {t(
+                  "ConfirmReadyModal.fleetInformation",
+                  {},
+                  "Informasi Armada"
+                )}
               </h3>
 
               <div className="space-y-3">
                 {assignedVehicles.length === 0 ? (
                   <div className="flex h-32 items-center justify-center">
                     <span className="text-sm text-neutral-600">
-                      Tidak ada armada tersedia
+                      {t(
+                        "ConfirmReadyModal.noFleetAvailable",
+                        {},
+                        "Tidak ada armada tersedia"
+                      )}
                     </span>
                   </div>
                 ) : (
@@ -110,7 +132,13 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                               {vehicle.licensePlate}
                             </span>
                             <span className="flex-1 text-xs font-semibold leading-[120%] text-[#434343]">
-                              - {vehicle.driverName || "No Driver"}
+                              -{" "}
+                              {vehicle.driverName ||
+                                t(
+                                  "ConfirmReadyModal.noDriver",
+                                  {},
+                                  "No Driver"
+                                )}
                             </span>
                           </div>
                           {vehicle.location && (
@@ -125,8 +153,14 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                                 </span>
                                 {vehicle.location.distanceFromPickup && (
                                   <span className="text-[10px] font-medium leading-[130%] text-[#7B7B7B]">
-                                    ({vehicle.location.distanceFromPickup} km
-                                    dari lokasi muat)
+                                    {t(
+                                      "ConfirmReadyModal.distanceFromPickup",
+                                      {
+                                        distance:
+                                          vehicle.location.distanceFromPickup,
+                                      },
+                                      `(${vehicle.location.distanceFromPickup} km dari lokasi muat)`
+                                    )}
                                   </span>
                                 )}
                               </div>
@@ -154,18 +188,23 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                 {/* Heading and Badges */}
                 <div className="flex flex-col gap-2">
                   <h3 className="text-xs font-medium leading-[120%] text-neutral-600">
-                    Informasi Pesanan
+                    {t(
+                      "ConfirmReadyModal.orderInformation",
+                      {},
+                      "Informasi Pesanan"
+                    )}
                   </h3>
                   <div className="flex items-center gap-2">
                     <BadgeStatus variant="success" className="w-auto text-xs">
-                      Instan
+                      {t("ConfirmReadyModal.instant", {}, "Instan")}
                     </BadgeStatus>
                     {orderInfo?.timeLabel && (
                       <BadgeStatus
                         variant="warning"
                         className="w-auto whitespace-nowrap text-xs"
                       >
-                        {orderInfo.timeLabel.text || "Muat Besok"}
+                        {orderInfo.timeLabel.text ||
+                          t("ConfirmReadyModal.loadTomorrow", {}, "Muat Besok")}
                       </BadgeStatus>
                     )}
                     {orderInfo?.hasOverload && (
@@ -173,7 +212,11 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                         variant="error"
                         className="w-auto whitespace-nowrap text-xs"
                       >
-                        Potensi Overload
+                        {t(
+                          "ConfirmReadyModal.potentialOverload",
+                          {},
+                          "Potensi Overload"
+                        )}
                       </BadgeStatus>
                     )}
                     {orderInfo?.hasAdditionalService && (
@@ -185,7 +228,11 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                           src="/icons/add.svg"
                           className="mr-1 h-3 w-3"
                         />
-                        Layanan Tambahan
+                        {t(
+                          "ConfirmReadyModal.additionalService",
+                          {},
+                          "Layanan Tambahan"
+                        )}
                       </BadgeStatus>
                     )}
                     {orderInfo?.isHalalLogistics && (
@@ -202,7 +249,11 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                 {/* Potential Earnings */}
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-xs font-medium leading-[120%] text-neutral-600">
-                    Potensi Pendapatan
+                    {t(
+                      "ConfirmReadyModal.potentialEarnings",
+                      {},
+                      "Potensi Pendapatan"
+                    )}
                   </span>
                   <span className="text-sm font-bold leading-[120%] text-primary-700">
                     {potentialEarnings}
@@ -225,7 +276,11 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                   />
                   <div className="flex flex-col items-end">
                     <span className="text-xs font-medium leading-[130%] text-black/50">
-                      Estimasi Jarak
+                      {t(
+                        "ConfirmReadyModal.estimatedDistance",
+                        {},
+                        "Estimasi Jarak"
+                      )}
                     </span>
                     <span className="text-xs font-semibold leading-[130%] text-black">
                       {estimatedDistance} km
@@ -246,15 +301,28 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                     />
                     <div className="flex flex-1 flex-col gap-1.5">
                       <span className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                        Informasi Muatan (Total :{" "}
-                        {orderInfo?.totalWeight
-                          ? `${orderInfo.totalWeight} ${orderInfo.weightUnit || "kg"}`
-                          : "2.500 kg"}
-                        )
+                        {t(
+                          "ConfirmReadyModal.cargoInfo",
+                          {
+                            total: orderInfo?.totalWeight
+                              ? `${orderInfo.totalWeight} ${orderInfo.weightUnit || "kg"}`
+                              : "2.500 kg",
+                          },
+                          `Informasi Muatan (Total : ${
+                            orderInfo?.totalWeight
+                              ? `${orderInfo.totalWeight} ${orderInfo.weightUnit || "kg"}`
+                              : "2.500 kg"
+                          })`
+                        )}
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-semibold leading-[120%] text-black">
-                          {orderInfo?.cargos?.[0] || "Peralatan Rumah Tangga"}
+                          {orderInfo?.cargos?.[0] ||
+                            t(
+                              "ConfirmReadyModal.householdEquipment",
+                              {},
+                              "Peralatan Rumah Tangga"
+                            )}
                           {orderInfo?.cargos?.length > 1 && ","}
                         </span>
                         {orderInfo?.cargos?.length > 1 && (
@@ -262,13 +330,21 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                             side="top"
                             trigger={
                               <span className="cursor-pointer text-xs font-semibold leading-[120%] text-primary-700">
-                                +{orderInfo.cargos.length - 1} lainnya
+                                {t(
+                                  "ConfirmReadyModal.othersCount",
+                                  { count: orderInfo.cargos.length - 1 },
+                                  `+${orderInfo.cargos.length - 1} lainnya`
+                                )}
                               </span>
                             }
                           >
                             <div className="flex flex-col gap-1">
                               <p className="text-sm font-medium">
-                                Informasi Muatan
+                                {t(
+                                  "ConfirmReadyModal.cargoInformation",
+                                  {},
+                                  "Informasi Muatan"
+                                )}
                               </p>
                               <ol className="list-inside list-decimal space-y-0.5">
                                 {orderInfo.cargos
@@ -299,18 +375,36 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                     />
                     <div className="flex flex-1 flex-col gap-1.5">
                       <span className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                        Kebutuhan Armada
+                        {t(
+                          "ConfirmReadyModal.fleetRequirement",
+                          {},
+                          "Kebutuhan Armada"
+                        )}
                       </span>
                       <span className="text-xs font-semibold leading-[120%] text-black">
-                        {orderInfo?.truckCount || 3} Unit (
-                        {orderInfo?.truckTypeName ||
-                          orderInfo?.truckType?.name ||
-                          "Colt Diesel Engkel"}{" "}
-                        -{" "}
-                        {orderInfo?.carrierName ||
-                          orderInfo?.carrierTruck?.name ||
-                          "Box"}
-                        )
+                        {t(
+                          "ConfirmReadyModal.fleetDetails",
+                          {
+                            count: orderInfo?.truckCount || 3,
+                            truckType:
+                              orderInfo?.truckTypeName ||
+                              orderInfo?.truckType?.name ||
+                              "Colt Diesel Engkel",
+                            carrier:
+                              orderInfo?.carrierName ||
+                              orderInfo?.carrierTruck?.name ||
+                              "Box",
+                          },
+                          `${orderInfo?.truckCount || 3} Unit (${
+                            orderInfo?.truckTypeName ||
+                            orderInfo?.truckType?.name ||
+                            "Colt Diesel Engkel"
+                          } - ${
+                            orderInfo?.carrierName ||
+                            orderInfo?.carrierTruck?.name ||
+                            "Box"
+                          })`
+                        )}
                       </span>
                     </div>
                   </div>
@@ -323,7 +417,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                     />
                     <div className="flex flex-1 flex-col gap-1.5">
                       <span className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                        Waktu Muat
+                        {t("ConfirmReadyModal.loadingTime", {}, "Waktu Muat")}
                       </span>
                       <span className="text-xs font-semibold leading-[120%] text-black">
                         {formatLoadTime(
@@ -358,7 +452,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
               className="w-[112px] text-sm md:h-[34px]"
               disabled={confirmLoading}
             >
-              Batal
+              {t("ConfirmReadyModal.cancel", {}, "Batal")}
             </Button>
             <Button
               variant="muattrans-primary"
@@ -366,7 +460,9 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
               className="w-[150px] text-sm md:h-[34px]"
               disabled={confirmLoading}
             >
-              {confirmLoading ? "Memproses..." : "Konfirmasi Siap"}
+              {confirmLoading
+                ? t("ConfirmReadyModal.processing", {}, "Memproses...")
+                : t("ConfirmReadyModal.confirmReady", {}, "Konfirmasi Siap")}
             </Button>
           </div>
         </div>

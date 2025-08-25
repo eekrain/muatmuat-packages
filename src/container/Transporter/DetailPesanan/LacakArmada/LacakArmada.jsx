@@ -1,18 +1,20 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
+import { useTranslation } from "@/hooks/use-translation";
 import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 
 import CardLacakArmada from "./components/CardLacakArmada";
 import LacakArmadaHeader from "./components/LacakArmadaHeader";
 
-const LacakArmada = ({ dataOrderDetail }) => {
+const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
 
   // Tentukan tab aktif berdasarkan status order
-  const getInitialActiveTab = () => {
+  const getInitialActiveTab = useCallback(() => {
     if (!dataOrderDetail?.orderStatus) return "aktif";
 
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
@@ -26,33 +28,46 @@ const LacakArmada = ({ dataOrderDetail }) => {
     return riwayatStatuses.includes(dataOrderDetail.orderStatus)
       ? "riwayat"
       : "aktif";
-  };
+  }, [dataOrderDetail?.orderStatus]);
 
-  const [activeTab, setActiveTab] = useState(getInitialActiveTab);
+  const [activeTab, setActiveTab] = useState(() => {
+    // Ensure activeTab is never undefined by providing fallback
+    try {
+      return getInitialActiveTab();
+    } catch {
+      return "aktif";
+    }
+  });
   const router = useRouter();
 
   // Update tab aktif ketika dataOrderDetail berubah
   useEffect(() => {
-    setActiveTab(getInitialActiveTab());
-  }, [dataOrderDetail?.orderStatus]);
+    if (dataOrderDetail) {
+      setActiveTab(getInitialActiveTab());
+    }
+  }, [dataOrderDetail?.orderStatus, getInitialActiveTab]);
 
   // Ambil data armada dari dataOrderDetail.fleets
-  const armadaList =
-    dataOrderDetail?.fleets?.map((fleet) => ({
-      id: fleet.id,
-      plateNumber: fleet.licensePlate,
-      driverName: fleet.driver?.name,
-      driverAvatar: fleet.driver?.profileImage,
-      vehicleImage: fleet.vehicleImage,
-      hasSOSAlert: fleet.hasSOSAlert || false,
-      status: fleet.currentStatus || "SCHEDULED_FLEET", // Status dari fleet individual
-      milestones: fleet.milestones || [], // Milestones dari fleet
-      replacementFleet: fleet.replacementFleet || null, // Data armada pengganti
-      replacementDriver: fleet.replacementDriver || null, // Data driver pengganti
-      fleetChangeStatus: fleet.fleetChangeStatus || null, // Status perubahan armada
-    })) || [];
+  const armadaList = useMemo(() => {
+    return (
+      dataOrderDetail?.fleets?.map((fleet, index) => ({
+        id: fleet.id,
+        uniqueKey: `${fleet.id}-${fleet.licensePlate}-${index}`, // Add unique key for tracking
+        plateNumber: fleet.licensePlate,
+        driverName: fleet.driver?.name,
+        driverAvatar: fleet.driver?.profileImage,
+        vehicleImage: fleet.vehicleImage,
+        hasSOSAlert: fleet.hasSOSAlert || false,
+        status: fleet.currentStatus || "SCHEDULED_FLEET", // Status dari fleet individual
+        milestones: fleet.milestones || [], // Milestones dari fleet
+        replacementFleet: fleet.replacementFleet || null, // Data armada pengganti
+        replacementDriver: fleet.replacementDriver || null, // Data driver pengganti
+        fleetChangeStatus: fleet.fleetChangeStatus || null, // Status perubahan armada
+      })) || []
+    );
+  }, [dataOrderDetail?.fleets]);
   // Kategorisasi armada berdasarkan status order
-  const categorizeArmada = (armada) => {
+  const categorizeArmada = useCallback((armada) => {
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
     const riwayatStatuses = [
       TRACKING_STATUS.COMPLETED,
@@ -62,52 +77,78 @@ const LacakArmada = ({ dataOrderDetail }) => {
     ];
 
     return riwayatStatuses.includes(armada.status) ? "riwayat" : "aktif";
-  };
+  }, []);
   // Filter armada berdasarkan tab aktif
-  const armadaByTab = armadaList.filter(
-    (armada) => categorizeArmada(armada) === activeTab
-  );
+  const armadaByTab = useMemo(() => {
+    return (
+      armadaList?.filter((armada) => categorizeArmada(armada) === activeTab) ||
+      []
+    );
+  }, [armadaList, categorizeArmada, activeTab]);
+
   // Filter armada berdasarkan search value
-  const filteredArmada = armadaByTab.filter(
-    (armada) =>
-      armada.plateNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-      armada.driverName.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const filteredArmada = useMemo(() => {
+    return (
+      armadaByTab?.filter(
+        (armada) =>
+          (armada?.plateNumber || "")
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          (armada?.driverName || "")
+            .toLowerCase()
+            .includes(searchValue.toLowerCase())
+      ) || []
+    );
+  }, [armadaByTab, searchValue]);
   // Hitung jumlah armada per kategori
-  const aktifCount = armadaList.filter(
-    (armada) => categorizeArmada(armada) === "aktif"
-  ).length;
-  const riwayatCount = armadaList.filter(
-    (armada) => categorizeArmada(armada) === "riwayat"
-  ).length;
+  const aktifCount = useMemo(() => {
+    return (
+      armadaList?.filter((armada) => categorizeArmada(armada) === "aktif")
+        ?.length || 0
+    );
+  }, [armadaList, categorizeArmada]);
+
+  const riwayatCount = useMemo(() => {
+    return (
+      armadaList?.filter((armada) => categorizeArmada(armada) === "riwayat")
+        ?.length || 0
+    );
+  }, [armadaList, categorizeArmada]);
 
   // Hitung jumlah armada dengan SOS alert
-  const sosCount = armadaList.filter((armada) => armada.hasSOSAlert).length;
+  const sosCount = useMemo(() => {
+    return armadaList?.filter((armada) => armada?.hasSOSAlert)?.length || 0;
+  }, [armadaList]);
 
   // Cek apakah hanya ada satu data untuk menyembunyikan search
-  const shouldShowSearch = armadaByTab.length > 1;
+  const shouldShowSearch = useMemo(() => {
+    return (armadaByTab?.length || 0) > 1;
+  }, [armadaByTab]);
 
   // Cek apakah button "Lihat Posisi Armada" harus disembunyikan
-  const shouldHidePositionButton = dataOrderDetail?.orderStatus?.startsWith(
-    "WAITING_CONFIRMATION_SHIPPER"
-  );
+  const shouldHidePositionButton = useMemo(() => {
+    return dataOrderDetail?.orderStatus?.startsWith(
+      "WAITING_CONFIRMATION_SHIPPER"
+    );
+  }, [dataOrderDetail?.orderStatus]);
 
   // Cek apakah harus menampilkan DataNotFound (ketika ada search value tapi tidak ada hasil)
-  const shouldShowDataNotFound =
-    searchValue.length > 0 && filteredArmada.length === 0;
+  const shouldShowDataNotFound = useMemo(() => {
+    return searchValue.length > 0 && (filteredArmada?.length || 0) === 0;
+  }, [searchValue, filteredArmada]);
 
   // Handler functions
-  const handleTabChange = (tab) => {
+  const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
-  };
+  }, []);
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = useCallback((e) => {
     setSearchValue(e.target.value);
-  };
+  }, []);
 
-  const handleDetailStatusClick = () => {
+  const handleDetailStatusClick = useCallback(() => {
     router.push(`/daftar-pesanan/uuid/detail-pesanan/detail-status-armada`);
-  };
+  }, [router]);
   return (
     <Card className="rounded-xl border-none">
       <CardContent className="flex flex-col gap-y-6 p-6">
@@ -123,15 +164,14 @@ const LacakArmada = ({ dataOrderDetail }) => {
           hidePositionButton={shouldHidePositionButton}
           showDataNotFound={shouldShowDataNotFound}
           sosUnit={sosCount}
-          isSOS={sosCount > 1}
         />
 
         {/* Fleet Cards */}
         <div className="flex flex-col gap-4">
-          {filteredArmada.length > 0 ? (
-            filteredArmada.map((armada, index) => (
+          {filteredArmada && filteredArmada.length > 0 ? (
+            filteredArmada.map((armada) => (
               <CardLacakArmada
-                key={armada.id || armada.plateNumber}
+                key={armada.uniqueKey}
                 plateNumber={armada.plateNumber}
                 driverName={armada.driverName}
                 vehicleImageUrl={armada.vehicleImage}
@@ -144,6 +184,7 @@ const LacakArmada = ({ dataOrderDetail }) => {
                 replacementFleet={armada.replacementFleet}
                 replacementDriver={armada.replacementDriver}
                 fleetChangeStatus={armada.fleetChangeStatus}
+                onNavigateToRiwayat={onNavigateToRiwayat}
               />
             ))
           ) : (
@@ -155,11 +196,18 @@ const LacakArmada = ({ dataOrderDetail }) => {
                 alt="Empty cart"
               />
               <div className="mt-2 font-semibold text-neutral-600">
-                Belum ada perubahan armada
+                {t(
+                  "LacakArmada.noFleetChanges",
+                  {},
+                  "Belum ada perubahan armada"
+                )}
               </div>
               <div className="mb-3 max-w-full text-center text-xs font-medium text-neutral-600">
-                Perubahan armada maupun armada dibatalkan dan armada selesai
-                akan ditampilkan disini
+                {t(
+                  "LacakArmada.fleetChangesDescription",
+                  {},
+                  "Perubahan armada maupun armada dibatalkan dan armada selesai akan ditampilkan disini"
+                )}
               </div>
             </div>
           )}

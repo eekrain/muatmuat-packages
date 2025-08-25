@@ -9,8 +9,11 @@ import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
 import { idrFormat } from "@/lib/utils/formatters";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
+import { usePostDocumentReceived } from "@/services/Shipper/detailpesanan/postDocumentReceived";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import { BottomsheetAlasanPembatalan } from "./Popup/BottomsheetAlasanPembatalan";
 import CancelUpdateOrderModal from "./Popup/CancelUpdateOrderModal";
@@ -25,13 +28,24 @@ const LIST_SHOW_TOTAL_PRICE = [
 export const FooterDetailPesanan = ({
   dataStatusPesanan,
   dataRingkasanPembayaran,
+  dataRingkasanPesanan,
   isConfirmWaiting,
-  onConfirmWaitingChange,
+  paymentMethods,
+  mutate,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
   const navigation = useResponsiveNavigation();
   const router = useRouter();
+  const paymentMethodId = useSewaArmadaStore(
+    (state) => state.formValues.paymentMethodId
+  );
+
+  // Find the selected payment method from the paymentMethods data
+  const selectedPaymentMethod = paymentMethods
+    ?.flatMap((category) => category.methods)
+    .find((method) => method.id === paymentMethodId);
+
   const { trigger: confirmWaiting } = useSWRMutateHook(
     `v1/orders/${params.orderId}/waiting-confirmation`
   );
@@ -57,6 +71,26 @@ export const FooterDetailPesanan = ({
   ] = useState(false);
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
+
+  const {
+    triggerPostDocumentReceived,
+    isMutatingPostDocumentReceived,
+    errorPostDocumentReceived,
+  } = usePostDocumentReceived(params.orderId);
+
+  const handleConfirmDocumentReceived = async () => {
+    try {
+      await triggerPostDocumentReceived();
+      toast.success("Status pesanan berhasil diperbarui menjadi Selesai.");
+      mutate(); // Refresh order data
+      setReceiveDocumentEvidenceOpen(false);
+    } catch (_error) {
+      toast.error(
+        errorPostDocumentReceived?.response?.data?.Message?.Text ||
+          "Gagal mengonfirmasi dokumen."
+      );
+    }
+  };
 
   const [isCancelUpdateOrderModal, setCancelUpdateOrderModal] = useState(false);
 
@@ -88,22 +122,19 @@ export const FooterDetailPesanan = ({
         dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
       ) {
         // Gunakan payment-process untuk waiting payment 1
-        const result = await paymentProcess({
+        await paymentProcess({
           paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
         });
-        console.log("Payment process berhasil:", result);
       } else if (
         dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
       ) {
         // Gunakan repayment-process untuk waiting payment 3
-        const result = await repaymentProcess({
-          paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+        await repaymentProcess({
+          paymentMethodId: selectedPaymentMethod.id,
           repaymentType: "CHANGE",
         });
-        console.log("Repayment process berhasil:", result);
       }
     } catch (err) {
-      console.error("Gagal memproses pembayaran:", err);
       // Tambahkan error handling sesuai kebutuhan
     }
   };
@@ -158,6 +189,7 @@ export const FooterDetailPesanan = ({
             className="h-10 w-full p-0"
             onClick={() => setReceiveDocumentEvidenceOpen(true)}
             type="button"
+            disabled={isMutatingPostDocumentReceived}
           >
             {t("FooterDetailPesanan.dokumenDiterima", {}, "Dokumen Diterima")}
           </Button>
@@ -234,7 +266,7 @@ export const FooterDetailPesanan = ({
             <Button
               variant={variant}
               className="h-10 w-full p-0"
-              onClick={() => alert("Simpan")}
+              onClick={handleLanjutPembayaran}
               type="button"
             >
               {t(
@@ -322,9 +354,8 @@ export const FooterDetailPesanan = ({
                       continueWaiting: true,
                     });
                     // Optional: Reset the waiting state after confirmation
-                    // onConfirmWaitingChange(false);
                   } catch (error) {
-                    console.error("Failed to confirm waiting:", error);
+                    // Failed to confirm waiting
                   }
                 }}
                 type="button"
@@ -426,7 +457,13 @@ export const FooterDetailPesanan = ({
                 {t("FooterDetailPesanan.rute", {}, "Rute")}
               </div>
               <div className="text-xs font-medium leading-[1.1]">
-                {t("FooterDetailPesanan.estimasiJarak", {}, "Estimasi 178 km")}
+                {t(
+                  "FooterDetailPesanan.estimasiJarak",
+                  {
+                    distance: dataRingkasanPesanan?.estimatedDistance || "178",
+                  },
+                  "Estimasi {distance} km"
+                )}
               </div>
             </div>
           ) : null}
@@ -448,7 +485,8 @@ export const FooterDetailPesanan = ({
       <ModalKonfimasiBuktiDokumenDiterima
         open={isReceiveDocumentEvidenceOpen}
         onOpenChange={setReceiveDocumentEvidenceOpen}
-        onConfirm={() => setReceiveDocumentEvidenceOpen(false)}
+        onConfirm={handleConfirmDocumentReceived}
+        isLoading={isMutatingPostDocumentReceived}
       />
 
       <ModalBatalkanPesananResponsive

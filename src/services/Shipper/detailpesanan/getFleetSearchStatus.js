@@ -23,6 +23,7 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
   const intervalRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
+  const [searchStatus, setSearchStatus] = useState("idle"); // idle, waiting, failed
   const previousShowPopupRef = useRef(false);
 
   const { data: fleetSearchStatusData, mutate: refetchFleetSearchStatus } =
@@ -47,13 +48,20 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
     // Check if shouldShowPopup changed from false to true
     if (shouldShowPopup && !previousShowPopupRef.current) {
       setIsOpen(true);
+      // Determine status based on API response, assuming 'FAILED' for failure
+      // This needs to be adjusted based on the actual API response structure
+      if (fleetSearchStatus?.searchStatus === "FAILED") {
+        setSearchStatus("failed");
+      } else {
+        setSearchStatus("waiting");
+      }
       // Stop the interval when popup should be shown
       clearRefetchInterval();
     }
 
     // Update the ref with current value for next comparison
     previousShowPopupRef.current = shouldShowPopup;
-  }, [shouldShowPopup]);
+  }, [shouldShowPopup, fleetSearchStatus]);
 
   useShallowCompareEffect(() => {
     // Clear any existing interval first
@@ -91,6 +99,8 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
     isShow,
     setIsOpen,
     setIsShow,
+    clearRefetchInterval,
+    searchStatus, // Expose the new status
   };
 };
 

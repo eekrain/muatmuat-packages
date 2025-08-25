@@ -70,7 +70,7 @@ const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
 
       // API call to transporter auth with Basic Auth
       const response = await xior.post(
-        "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/login",
+        "https://apimtrans-az.assetlogistik.com/v1/cs/auth/login",
         {
           loginId: formData.loginId,
           password: formData.password,

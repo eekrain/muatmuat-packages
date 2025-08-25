@@ -153,8 +153,11 @@ class MinimalTranslationManager {
     const content = fs.readFileSync(targetPath, "utf8");
 
     const patterns = [
-      /t\s*\(\s*['"`]([^'"`]+)['"`]\s*,\s*(\{[^}]*\})?\s*,\s*['"`]([^'"`]+)['"`]\s*\)/g,
-      /t\s*\(\s*`([^`]+)`\s*,\s*(\{[^}]*\})?\s*,\s*`([^`]+)`\s*\)/g,
+      // Pattern for template literals with backticks - handle complex expressions
+      /t\s*\(\s*['"`]([^'"`]+)['"`]\s*,\s*(\{[^}]*\})?\s*,\s*`([^`]*(?:`[^`]*)*)`\s*\)/g,
+      // Pattern for regular string quotes - handle escaped quotes
+      /t\s*\(\s*['"`]([^'"`]+)['"`]\s*,\s*(\{[^}]*\})?\s*,\s*['"`]((?:[^'"`\\]|\\.)*?)['"`]\s*\)/g,
+      // Fallback pattern for simple cases
       /t\s*\(\s*["']([^"']+)["']\s*,\s*(\{[^}]*\})?\s*,\s*["']([^"']+)["']\s*\)/g,
     ];
 
