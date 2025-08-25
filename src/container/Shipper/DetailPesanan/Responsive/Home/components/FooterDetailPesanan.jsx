@@ -9,7 +9,9 @@ import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
@@ -38,6 +40,47 @@ export const FooterDetailPesanan = ({
   const paymentMethodId = useSewaArmadaStore(
     (state) => state.formValues.paymentMethodId
   );
+  const { mutate } = useGetDetailPesananData(params.orderId);
+
+  const { trigger: confirmDocumentReceived, isMutating: isConfirmingDocument } =
+    useSWRMutateHook(
+      params.orderId ? `v1/orders/${params.orderId}/document-received` : null,
+      "POST"
+    );
+
+  const handleReceiveDocument = async () => {
+    try {
+      const result = await confirmDocumentReceived();
+
+      if (
+        result?.data?.Message?.Code === 200 ||
+        result?.Message?.Code === 200 ||
+        result?.data?.Message?.Code === 201 ||
+        result?.Message?.Code === 201
+      ) {
+        toast.success(
+          t(
+            "DetailPesananHeader.toastDokumenBerhasil",
+            {},
+            "Dokumen berhasil dikonfirmasi diterima"
+          )
+        );
+        setReceiveDocumentEvidenceOpen(false);
+        mutate();
+      } else {
+        // toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
+      }
+    } catch (error) {
+      console.error("Error confirming document received:", error);
+      toast.error(
+        t(
+          "DetailPesananHeader.toastErrorKonfirmasi",
+          {},
+          "Terjadi kesalahan saat mengkonfirmasi dokumen"
+        )
+      );
+    }
+  };
 
   // Find the selected payment method from the paymentMethods data
   const selectedPaymentMethod = paymentMethods
@@ -466,7 +509,7 @@ export const FooterDetailPesanan = ({
       <ModalKonfimasiBuktiDokumenDiterima
         open={isReceiveDocumentEvidenceOpen}
         onOpenChange={setReceiveDocumentEvidenceOpen}
-        onConfirm={() => setReceiveDocumentEvidenceOpen(false)}
+        onConfirm={handleReceiveDocument}
       />
 
       <ModalBatalkanPesananResponsive

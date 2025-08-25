@@ -20,6 +20,7 @@ import { toast } from "@/lib/toast";
 import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
 import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
 import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
+import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import {
   useRequestOtpActions,
   useRequestOtpStore,
@@ -41,7 +42,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const { data: bankOptions } = useGetAvailableBankOptions();
   const params = useParams();
   const [cancelFormErrors, setCancelFormErrors] = useState({});
-  // const { mutate } = useGetDetailPesananData(orderId);
+  const { mutate } = useGetDetailPesananData(params?.orderId);
 
   const handleProceedCancelOrder = ({
     selectedReason,
@@ -86,6 +87,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
         .post(`v1/orders/${params.orderId}/cancel`, body)
         .then((response) => {
           toast.success(t("messageBerhasilMembatalkanPesanan"));
+          mutate();
         })
         .catch((error) => {
           toast.error(error.response.data?.Data?.Message);

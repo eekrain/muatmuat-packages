@@ -17,10 +17,11 @@ const shareOptions = [
   { name: "Email", icon: "/img/share-icons/gmail.png" },
 ];
 
-const ShareOption = ({ name, icon, shareUrl }) => {
+const ShareOption = ({ name, icon, shareUrl, qrCodeImage }) => {
   const handleShare = () => {
+    const urlToShare = qrCodeImage;
     const message = encodeURIComponent(
-      `Silakan scan QR Code ini untuk melanjutkan proses muat: ${shareUrl}`
+      `Silakan scan QR Code ini untuk melanjutkan proses muat: ${urlToShare}`
     );
 
     switch (name) {
@@ -29,20 +30,20 @@ const ShareOption = ({ name, icon, shareUrl }) => {
         break;
       case "Telegram":
         window.open(
-          `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent("Silakan scan QR Code ini untuk melanjutkan proses muat")}`,
+          `https://t.me/share/url?url=${encodeURIComponent(urlToShare)}&text=${encodeURIComponent("Silakan scan QR Code ini untuk melanjutkan proses muat")}`,
           "_blank"
         );
         break;
       case "Facebook":
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlToShare)}`,
           "_blank"
         );
         break;
       case "Instagram":
         // Instagram tidak mendukung sharing via URL, copy ke clipboard
         navigator.clipboard.writeText(
-          `Silakan scan QR Code ini untuk melanjutkan proses muat: ${shareUrl}`
+          `Silakan scan QR Code ini untuk melanjutkan proses muat: ${urlToShare}`
         );
         alert(
           "Link telah disalin ke clipboard. Anda dapat membagikannya di Instagram."
@@ -61,7 +62,7 @@ const ShareOption = ({ name, icon, shareUrl }) => {
         );
         break;
       case "Salin Tautan":
-        navigator.clipboard.writeText(shareUrl);
+        navigator.clipboard.writeText(urlToShare);
         break;
       default:
         console.log(`Sharing via ${name}`);
@@ -84,7 +85,12 @@ const ShareOption = ({ name, icon, shareUrl }) => {
   );
 };
 
-export const BottomsheetShareVia = ({ open, onOpenChange, shareUrl = "" }) => {
+export const BottomsheetShareVia = ({
+  open,
+  onOpenChange,
+  shareUrl = "",
+  qrCodeImage = "",
+}) => {
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
@@ -102,6 +108,7 @@ export const BottomsheetShareVia = ({ open, onOpenChange, shareUrl = "" }) => {
                 name={option.name}
                 icon={option.icon}
                 shareUrl={shareUrl}
+                qrCodeImage={qrCodeImage}
               />
             ))}
           </div>
