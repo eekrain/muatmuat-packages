@@ -21,40 +21,41 @@ const statusStyles = {
   MENUNGGU: "bg-warning-100 text-warning-900",
 };
 
-const conflictingSchedules = [
-  {
-    // First schedule: starts at day 1, ends at day 3 (middle)
-    id: 1,
-    fleetID: "f1e2d3c4-b5a6-7890-1234-56789abcdef0",
-    agendaStatus: "BERTUGAS",
-    firstDestinationName: "Jakarta Pusat",
-    lastDestinationName: "Bandung",
-    scheduled: 2, // 3 days duration
-    additional: 1,
-    position: 0, // starts at first column
-    estimatedTotalDistanceKm: 150,
-    hasSosIssue: false,
-    driverName: "John Doe",
-    licensePlate: "B 1234 ABC",
-  },
-  {
-    // Second schedule: starts at day 3 (middle), ends at day 5
-    id: 2,
-    fleetID: "f1e2d3c4-b5a6-7890-1234-56789abcdef0",
-    agendaStatus: "MENUNGGU_JAM_MUAT",
-    firstDestinationName: "Surabaya",
-    lastDestinationName: "Malang",
-    scheduled: 2, // 3 days duration
-    additional: 1,
-    position: 2, // starts at third column (middle)
-    estimatedTotalDistanceKm: 90,
-    hasSosIssue: false,
-    driverName: "Jane Smith",
-    licensePlate: "L 9812 AX",
-  },
-];
-
-const ChangeFleet = ({ cardData }) => {
+const ChangeFleet = ({
+  cardData,
+  conflictingSchedules = [
+    {
+      // First schedule: starts at day 1, ends at day 3 (middle)
+      id: 1,
+      fleetID: "f1e2d3c4-b5a6-7890-1234-56789abcdef0",
+      agendaStatus: "BERTUGAS",
+      firstDestinationName: "Jakarta Pusat",
+      lastDestinationName: "Bandung",
+      scheduled: 2, // 3 days duration
+      additional: 1,
+      position: 0, // starts at first column
+      estimatedTotalDistanceKm: 150,
+      hasSosIssue: false,
+      driverName: "John Doe",
+      licensePlate: "B 1234 ABC",
+    },
+    {
+      // Second schedule: starts at day 3 (middle), ends at day 5
+      id: 2,
+      fleetID: "f1e2d3c4-b5a6-7890-1234-56789abcdef0",
+      agendaStatus: "MENUNGGU_JAM_MUAT",
+      firstDestinationName: "Surabaya",
+      lastDestinationName: "Malang",
+      scheduled: 2, // 3 days duration
+      additional: 1,
+      position: 2, // starts at third column (middle)
+      estimatedTotalDistanceKm: 90,
+      hasSosIssue: false,
+      driverName: "Jane Smith",
+      licensePlate: "L 9812 AX",
+    },
+  ],
+}) => {
   const conflictId = "f1e2d3c4-b5a6-7890-1234-56789abcdef0"; // Use a valid mock id
   const { data: alternativeFleetData } = useGetAlternativeFleet(conflictId);
   const availableFleets = (alternativeFleetData?.alternatives || []).map(
