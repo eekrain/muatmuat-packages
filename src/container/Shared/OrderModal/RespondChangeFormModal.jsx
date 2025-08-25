@@ -298,6 +298,7 @@ const RespondChangeFormModal = ({
                       selectedResponse === "reject_cancel" && (
                         <div className="pl-5">
                           {/* terdapat case dimana ada perbedaan wording LDZ-17.4 17.5 */}
+                          {/* Armada akan dibatalkan, akan ada pergantian armada di lokasi bongkar 1, dan akan ada penyesuaian pendapatan. */}
                           <div className="flex h-6 flex-none items-center self-stretch rounded-md bg-error-50 px-2 py-1 text-xs font-semibold text-error-400">
                             Armada akan dibatalkan, akan ada penyesuaian
                             pendapatan, dan tidak ada kompensasi

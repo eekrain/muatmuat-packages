@@ -1,31 +1,56 @@
 import { X } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
-function AlertPerubahanLokasi() {
+function AlertPerubahanLokasi({
+  ordersWithChanges = [],
+  isFiltered = false,
+  onViewOrders,
+  onBackToDefault,
+  onClose,
+  isVisible = true,
+}) {
+  const { t } = useTranslation();
+
+  // Hide alert if explicitly set to not visible
+  if (!isVisible) {
+    return null;
+  }
+
+  // Hide alert if no orders with changes exist
+  if (ordersWithChanges.length === 0) {
+    return null;
+  }
+
+  const changeCount = ordersWithChanges.length;
+
   return (
     <div className="flex items-center justify-between gap-1 bg-secondary-100 px-4 py-2 text-xs">
       <div className="flex items-center gap-1">
         <IconComponent src={"/icons/warning16.svg"} className="h-4 w-4" />
-        Terdapat perubahan lokasi muat dan jam muat pada 2 pesanan.
-        {/* masih perlu penyesuaian kondisi */}
-        {true ? (
+        {t(
+          "AlertPerubahanLokasi.changeMessage",
+          { count: changeCount },
+          `Terdapat perubahan lokasi muat dan jam muat pada ${changeCount} pesanan.`
+        )}
+        {!isFiltered ? (
           <button
             className="cursor-pointer font-medium text-primary-700"
-            onClick={() => alert("Lihat Pesanan")}
+            onClick={onViewOrders}
           >
-            Lihat Pesanan
+            {t("AlertPerubahanLokasi.viewOrders", {}, "Lihat Pesanan")}
           </button>
         ) : (
           <button
             className="cursor-pointer font-medium text-primary-700"
-            onClick={() => alert("Kembali ke default Pesanan")}
+            onClick={onBackToDefault}
           >
-            Kembali Ke Default
+            {t("AlertPerubahanLokasi.backToDefault", {}, "Kembali Ke Default")}
           </button>
         )}
       </div>
-      <button onClick={() => alert("close alert perubahan")}>
+      <button onClick={onClose}>
         <X className="h-[14px] w-[14px] text-primary-700" />
       </button>
     </div>

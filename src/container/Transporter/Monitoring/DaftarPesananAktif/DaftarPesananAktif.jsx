@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -68,6 +68,7 @@ const DaftarPesananAktif = ({
       CHANGE_UNIT_COUNT: "OrderActions.changeUnitCount",
       RESPOND_CHANGE: "OrderActions.respondChange",
       CONFIRM_READY: "OrderActions.confirmReady",
+      VIEW_CHANGE: "OrderActions.viewChange",
     };
 
     const translationKey = translationKeys[actionType];
@@ -81,6 +82,13 @@ const DaftarPesananAktif = ({
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [openDropdowns, setOpenDropdowns] = useState({});
+
+  // Alert Perubahan Lokasi state management
+  const [isLocationChangeAlertVisible, setIsLocationChangeAlertVisible] =
+    useState(true);
+  const [isFilteredByLocationChange, setIsFilteredByLocationChange] =
+    useState(false);
+
   const [assignArmadaModalOpen, setAssignArmadaModalOpen] = useState(false);
   const [selectedOrderForArmada, setSelectedOrderForArmada] = useState(null);
   const [confirmReadyModalOpen, setConfirmReadyModalOpen] = useState(false);
@@ -105,6 +113,9 @@ const DaftarPesananAktif = ({
     useState(null);
   const [ubahJumlahUnitModalOpen, setUbahJumlahUnitModalOpen] = useState(false);
   const [selectedOrderForChangeUnit, setSelectedOrderForChangeUnit] =
+    useState(null);
+  const [viewChangeModalOpen, setViewChangeModalOpen] = useState(false);
+  const [selectedOrderForViewChange, setSelectedOrderForViewChange] =
     useState(null);
   const router = useRouter();
 
@@ -153,11 +164,77 @@ const DaftarPesananAktif = ({
     return statusMap[filterKey] || null;
   };
 
-  const { data, isLoading } = useGetActiveOrders({
+  // Prepare the request parameters with location change filter
+  const requestParams = {
     search: searchValue,
     status: getFilterStatus(selectedFilter),
+    hasLocationChange: isFilteredByLocationChange || undefined, // Only add if filtering by location change
     ...sortConfig,
-  });
+  };
+
+  const { data, isLoading } = useGetActiveOrders(requestParams);
+
+  // Calculate orders with location/time changes
+  const orders = data?.orders || [];
+  const ordersWithLocationChanges = orders.filter(
+    (order) => order.hasChangeRequest
+  );
+
+  // Reset alert visibility if no orders with changes exist
+  React.useEffect(() => {
+    if (
+      ordersWithLocationChanges.length === 0 &&
+      isLocationChangeAlertVisible
+    ) {
+      setIsLocationChangeAlertVisible(false);
+      setIsFilteredByLocationChange(false);
+    } else if (
+      ordersWithLocationChanges.length > 0 &&
+      !isLocationChangeAlertVisible &&
+      !isFilteredByLocationChange
+    ) {
+      // Show alert again if there are orders with changes and alert was previously hidden
+      setIsLocationChangeAlertVisible(true);
+    }
+  }, [
+    ordersWithLocationChanges.length,
+    isLocationChangeAlertVisible,
+    isFilteredByLocationChange,
+  ]);
+
+  // Handler functions for AlertPerubahanLokasi
+  const handleViewOrdersWithChanges = () => {
+    setIsFilteredByLocationChange(true);
+    // Clear other filters when filtering by location change
+    setSelectedFilter(null);
+    setSearchValue("");
+  };
+
+  const handleBackToDefault = () => {
+    setIsFilteredByLocationChange(false);
+    // Optionally clear other filters as well
+    setSelectedFilter(null);
+    setSearchValue("");
+  };
+
+  const handleCloseLocationChangeAlert = () => {
+    setIsLocationChangeAlertVisible(false);
+    // Also reset filtering if currently filtered by location change
+    if (isFilteredByLocationChange) {
+      setIsFilteredByLocationChange(false);
+    }
+  };
+
+  // Handle search while location filter is active
+  const handleSearch = (value) => {
+    console.log("🔍 Search triggered with value:", value);
+    console.log("🔍 Value length:", value.length);
+    console.log("🔍 Setting search value to:", value);
+    setSearchValue(value);
+    // Keep location change filter active if it was active
+    // Search functionality is implemented via useGetActiveOrders hook
+    // which automatically refetches data when searchValue changes
+  };
 
   // Handle action button clicks based on action type
   const handleActionClick = (actionType, row) => {
@@ -211,6 +288,11 @@ const DaftarPesananAktif = ({
       case ORDER_ACTIONS.CONFIRM_READY.type:
         setSelectedOrderForConfirm(row);
         setConfirmReadyModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
+        break;
+      case "VIEW_CHANGE":
+        setSelectedOrderForViewChange(row);
+        setViewChangeModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       default:
@@ -415,6 +497,28 @@ const DaftarPesananAktif = ({
             {row.orderCode}
           </span>
           <BadgeOrderType type={row.orderType} className="w-[70px]" />
+          <div className="flex items-center gap-1">
+            <InfoTooltip
+              trigger={
+                <button type="button" className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-warning-900"></div>
+                </button>
+              }
+              side="right"
+              align="start"
+            >
+              <p className="text-xs">
+                {t(
+                  "DaftarPesananAktif.locationChangeTooltip",
+                  {},
+                  "Terdapat perubahan lokasi muat dan jam muat oleh shipper, klik pada aksi untuk melihat perubahan"
+                )}
+              </p>
+            </InfoTooltip>
+            <p className="text-xxs text-warning-900">
+              {t("DaftarPesananAktif.hasChanges", {}, "Terdapat perubahan")}
+            </p>
+          </div>
         </div>
       ),
     },
@@ -653,6 +757,28 @@ const DaftarPesananAktif = ({
 
         // If status has dropdown actions
         if (config) {
+          // Clone the config to avoid mutating the original
+          const modifiedConfig = { ...config, actions: [...config.actions] };
+
+          // Add "Lihat Perubahan" action if the order has change requests
+          if (row.hasChangeRequest) {
+            const ORDER_ACTIONS = getOrderActions(t);
+            const viewChangeAction = {
+              ...ORDER_ACTIONS.VIEW_CHANGE,
+              isError: false,
+            };
+
+            // Insert as the first action (at the top of the dropdown)
+            modifiedConfig.actions.unshift(viewChangeAction);
+
+            // Adjust width to accommodate longer text if needed
+            if (modifiedConfig.width === "w-[122px]") {
+              modifiedConfig.width = "w-[137px]";
+            } else if (modifiedConfig.width === "w-[137px]") {
+              modifiedConfig.width = "w-[152px]";
+            }
+          }
+
           return (
             <SimpleDropdown
               open={openDropdowns[row.id] || false}
@@ -680,10 +806,10 @@ const DaftarPesananAktif = ({
               </SimpleDropdownTrigger>
 
               <SimpleDropdownContent
-                className={cn("mr-1 mt-0", config.width)}
+                className={cn("mr-1 mt-0", modifiedConfig.width)}
                 side="left"
               >
-                {config.actions.map((actionItem, index) => (
+                {modifiedConfig.actions.map((actionItem, index) => (
                   <SimpleDropdownItem
                     key={index}
                     onClick={() => handleActionClick(actionItem.type, row)}
@@ -743,18 +869,30 @@ const DaftarPesananAktif = ({
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-base font-semibold text-neutral-600">
-              {t(
-                "DaftarPesananAktif.noActiveOrders",
-                {},
-                "Belum ada pesanan aktif"
-              )}
+              {isFilteredByLocationChange
+                ? t(
+                    "DaftarPesananAktif.noOrdersWithChanges",
+                    {},
+                    "Tidak ada pesanan dengan perubahan lokasi/waktu"
+                  )
+                : t(
+                    "DaftarPesananAktif.noActiveOrders",
+                    {},
+                    "Belum ada pesanan aktif"
+                  )}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              {t(
-                "DaftarPesananAktif.activeOrdersWillAppear",
-                {},
-                "Pesanan aktif akan muncul di sini"
-              )}
+              {isFilteredByLocationChange
+                ? t(
+                    "DaftarPesananAktif.changeOrdersWillAppear",
+                    {},
+                    "Pesanan dengan perubahan akan muncul di sini"
+                  )
+                : t(
+                    "DaftarPesananAktif.activeOrdersWillAppear",
+                    {},
+                    "Pesanan aktif akan muncul di sini"
+                  )}
             </p>
           </div>
         </div>
@@ -762,7 +900,6 @@ const DaftarPesananAktif = ({
     </tr>
   );
 
-  const orders = data?.orders || [];
   const totalActiveOrders = activeOrdersCount?.totalActiveOrders || 0;
   const availableStatuses = data?.availableStatuses || {};
 
@@ -853,14 +990,7 @@ const DaftarPesananAktif = ({
               {},
               "Cari Pesanan"
             )}
-            onSearch={(value) => {
-              console.log("🔍 Search triggered with value:", value);
-              console.log("🔍 Value length:", value.length);
-              console.log("🔍 Setting search value to:", value);
-              setSearchValue(value);
-              // Search functionality is implemented via useGetActiveOrders hook
-              // which automatically refetches data when searchValue changes
-            }}
+            onSearch={handleSearch}
             onFocus={() => {
               if (!isExpanded) {
                 onToggleExpand();
@@ -889,7 +1019,14 @@ const DaftarPesananAktif = ({
       {/* Content */}
       {isExpanded && (
         <>
-          <AlertPerubahanLokasi />
+          <AlertPerubahanLokasi
+            ordersWithChanges={ordersWithLocationChanges}
+            isFiltered={isFilteredByLocationChange}
+            onViewOrders={handleViewOrdersWithChanges}
+            onBackToDefault={handleBackToDefault}
+            onClose={handleCloseLocationChangeAlert}
+            isVisible={isLocationChangeAlertVisible}
+          />
 
           <div className="flex-1 overflow-hidden">
             {/* Check if there are no active orders */}
@@ -967,6 +1104,17 @@ const DaftarPesananAktif = ({
           setSelectedOrderForChange(null);
         }}
         orderData={selectedOrderForChange}
+      />
+
+      {/* View Change Modal (Read-only) */}
+      <RespondChangeModal
+        isOpen={viewChangeModalOpen}
+        onClose={() => {
+          setViewChangeModalOpen(false);
+          setSelectedOrderForViewChange(null);
+        }}
+        orderData={selectedOrderForViewChange}
+        hideActionButton={true}
       />
 
       {/* Batalkan Armada Modal */}
