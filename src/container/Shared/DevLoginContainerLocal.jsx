@@ -7,7 +7,10 @@ import xior from "xior";
 
 import { useTokenActions } from "@/store/AuthStore/tokenStore";
 
-const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
+const DevLoginContainerLocal = ({
+  onSuccessRedirect = "/dashboard/analytics",
+  mode = "transporter", // 'cs' or 'transporter'
+}) => {
   const [formData, setFormData] = useState({
     loginId: "",
     password: "",
@@ -70,7 +73,7 @@ const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
 
       // API call to transporter auth with Basic Auth
       const response = await xior.post(
-        "https://apimtrans-az.assetlogistik.com/v1/cs/auth/login",
+        `https://apimtrans-az.assetlogistik.com/v1/${mode}/auth/login`,
         {
           loginId: formData.loginId,
           password: formData.password,
@@ -209,4 +212,4 @@ const DevLoginContainer = ({ onSuccessRedirect = "/dashboard/analytics" }) => {
   );
 };
 
-export default DevLoginContainer;
+export default DevLoginContainerLocal;
