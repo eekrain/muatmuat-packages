@@ -23,6 +23,8 @@ const Page = () => {
     search: "",
     startDate: null,
     endDate: null,
+    shipperId: null,
+    paymentMethodId: null,
     sort: "",
     order: "",
   };
@@ -30,6 +32,7 @@ const Page = () => {
   const [lastFilterField, setLastFilterField] = useState("");
   const [activeTab, setActiveTab] = useState("active");
   const [hasNoReports, setHasNoReports] = useState(false);
+  const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
 
   const additionalCostReportsQueryString = useShallowMemo(() => {
     const params = new URLSearchParams();
@@ -126,7 +129,10 @@ const Page = () => {
       periodHistory={periodHistory}
       filterOptions={filterOptions}
       hasNoReports={hasNoReports}
+      queryParams={queryParams}
       lastFilterField={lastFilterField}
+      currentPeriodValue={currentPeriodValue}
+      setCurrentPeriodValue={setCurrentPeriodValue}
       onChangeQueryParams={handleChangeQueryParams}
     />
   );

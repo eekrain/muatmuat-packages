@@ -510,7 +510,9 @@ const DaftarPesananAktif = ({
                 </div>
                 <Button
                   variant="link"
-                  onClick={() => console.log("View SOS Details", row.sosStatus)}
+                  onClick={() => {
+                    router.push("/monitoring?leftPanel=sos");
+                  }}
                   className="h-auto p-0 text-xs font-medium"
                 >
                   {t("DaftarPesananAktif.viewSos", {}, "Lihat SOS")}

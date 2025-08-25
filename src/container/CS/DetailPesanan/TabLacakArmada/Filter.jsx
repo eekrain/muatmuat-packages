@@ -40,7 +40,9 @@ export const Filter = () => {
         disabled={hasNoSearchResults && !hasActiveFilters}
       />
       <MyDropdown.Content align="start">
-        <MyDropdown.HoverRoot title="Transporter">
+        <MyDropdown.HoverRoot
+          title={t("Filter.titleTransporter", {}, "Transporter")}
+        >
           <MyDropdown.HoverContent
             appearance={{
               wrapperClassName: "max-h-[218px]",
@@ -50,14 +52,22 @@ export const Filter = () => {
               <Input
                 icon={{ left: "/icons/search.svg" }}
                 appearance={{ iconClassName: "text-neutral-700" }}
-                placeholder="Cari Transporter"
+                placeholder={t(
+                  "Filter.placeholderCariTransporter",
+                  {},
+                  "Cari Transporter"
+                )}
                 value={transporterSearchQuery}
                 onChange={(e) => setTransporterSearchQuery(e.target.value)}
               />
             </div>
             {filteredTransporters?.length === 0 ? (
               <div className="px-2.5 pb-5 pt-2 text-center text-xs font-medium">
-                Data Tidak Ditemukan
+                {t(
+                  "Filter.messageDataTidakDitemukan",
+                  {},
+                  "Data Tidak Ditemukan"
+                )}
               </div>
             ) : (
               filteredTransporters?.map((item) => (
@@ -83,7 +93,9 @@ export const Filter = () => {
           </MyDropdown.HoverContent>
         </MyDropdown.HoverRoot>
 
-        <MyDropdown.HoverRoot title="Status Armada">
+        <MyDropdown.HoverRoot
+          title={t("Filter.titleStatusArmada", {}, "Status Armada")}
+        >
           <MyDropdown.HoverContent
             appearance={{
               wrapperClassName: "max-h-[160px]",

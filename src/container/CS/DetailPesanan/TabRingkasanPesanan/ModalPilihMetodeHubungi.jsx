@@ -6,6 +6,7 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { ModalDetailKontak } from "./ModalDetailKontak";
 
@@ -15,6 +16,7 @@ import { ModalDetailKontak } from "./ModalDetailKontak";
  * @returns {JSX.Element}
  */
 export const ModalPilihMetodeHubungi = ({ mode = "shipper" }) => {
+  const { t } = useTranslation();
   return (
     <Modal>
       <ModalTrigger asChild>
@@ -22,7 +24,7 @@ export const ModalPilihMetodeHubungi = ({ mode = "shipper" }) => {
           variant="muattrans-primary"
           className="flex h-8 w-[105px] items-center justify-center rounded-full !p-0 text-sm font-semibold text-[#461B02]"
         >
-          Hubungi
+          {t("ModalPilihMetodeHubungi.buttonHubungi", {}, "Hubungi")}
         </Button>
       </ModalTrigger>
       <ModalContent className="w-[386px]">
@@ -32,10 +34,18 @@ export const ModalPilihMetodeHubungi = ({ mode = "shipper" }) => {
         <div className="flex flex-col items-center gap-6 px-6 py-9 text-center">
           <div className="flex flex-col items-center gap-2">
             <h2 className="text-sm font-bold leading-tight text-[#1B1B1B]">
-              Anda Ingin Menghubungi Via
+              {t(
+                "ModalPilihMetodeHubungi.titleAndaInginMenghubungiVia",
+                {},
+                "Anda Ingin Menghubungi Via"
+              )}
             </h2>
             <p className="self-stretch text-xs font-semibold leading-[14px] text-[#868686]">
-              Anda dapat memilih menghubungi melalui pilihan berikut
+              {t(
+                "ModalPilihMetodeHubungi.descriptionPilihanHubungi",
+                {},
+                "Anda dapat memilih menghubungi melalui pilihan berikut"
+              )}
             </p>
           </div>
 
@@ -51,10 +61,18 @@ export const ModalPilihMetodeHubungi = ({ mode = "shipper" }) => {
               />
               <div className="flex flex-col gap-1">
                 <span className="text-sm font-semibold leading-tight text-primary-700">
-                  No. Telepon / WhatsApp
+                  {t(
+                    "ModalPilihMetodeHubungi.labelNoTeleponWhatsApp",
+                    {},
+                    "No. Telepon / WhatsApp"
+                  )}
                 </span>
                 <span className="text-xs font-medium leading-[14px] text-[#868686]">
-                  Anda langsung terhubung dengan Whatsapp
+                  {t(
+                    "ModalPilihMetodeHubungi.descriptionTerhubungWhatsapp",
+                    {},
+                    "Anda langsung terhubung dengan Whatsapp"
+                  )}
                 </span>
               </div>
             </button>

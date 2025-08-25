@@ -1,4 +1,5 @@
 import { useClientHeight } from "@/hooks/use-client-height";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -194,6 +195,7 @@ export const TimelinePICData = ({
   className,
   isLast,
 }) => {
+  const { t } = useTranslation();
   const variantStyles = getVariant({ variant, index, activeIndex });
 
   const { ref: containerRef, height: containerHeight } = useClientHeight();
@@ -255,7 +257,7 @@ export const TimelinePICData = ({
               className="text-muat-trans-secondary-900"
             />
             <span className="text-xs font-medium text-neutral-600">
-              Detail Lokasi:
+              {t("TimelinePICData.labelDetailLokasi", {}, "Detail Lokasi:")}
             </span>
           </div>
           <span className="text-xs font-medium text-neutral-900">
@@ -268,7 +270,11 @@ export const TimelinePICData = ({
               className="text-muat-trans-secondary-900"
             />
             <span className="text-xs font-medium text-neutral-600">
-              Nama PIC Lokasi Muat:
+              {t(
+                "TimelinePICData.labelNamaPICLokasiMuat",
+                {},
+                "Nama PIC Lokasi Muat:"
+              )}
             </span>
           </div>
           <span className="text-xs font-medium text-neutral-900">
@@ -283,7 +289,11 @@ export const TimelinePICData = ({
               className="text-muat-trans-secondary-900"
             />
             <span className="text-xs font-medium text-neutral-600">
-              No. HP PIC Lokasi Muat:
+              {t(
+                "TimelinePICData.labelNoHPPICLokasiMuat",
+                {},
+                "No. HP PIC Lokasi Muat:"
+              )}
             </span>
           </div>
           <span className="text-xs font-medium text-neutral-900">
@@ -304,6 +314,7 @@ export const TimelineChangeRow = ({
   showPickupHeader = false,
   showDropoffHeader = false,
 }) => {
+  const { t } = useTranslation();
   const isChanged = before.fullAddress !== after.fullAddress;
   const showHeader = showPickupHeader || showDropoffHeader;
 
@@ -315,15 +326,17 @@ export const TimelineChangeRow = ({
       ref={innerRef}
       className={cn(
         "relative z-10 flex flex-col justify-center", // Add z-10 to ensure content is above the highlight
-        showHeader && "-mt-5"
+        showHeader && "-mt-[18px]"
       )}
     >
       {showHeader && (
         <div className="h-5 text-xs font-medium text-neutral-500">
-          {showPickupHeader ? "Lokasi Muat" : "Lokasi Bongkar"}
+          {showPickupHeader
+            ? t("TimelineChangeRow.headerLokasiMuat", {}, "Lokasi Muat")
+            : t("TimelineChangeRow.headerLokasiBongkar", {}, "Lokasi Bongkar")}
         </div>
       )}
-      <div className="flex min-h-[28px] items-center">
+      <div className="flex h-6 items-center">
         <p className="line-clamp-1 flex-1 break-all text-sm font-medium text-neutral-900">
           {location.fullAddress}
         </p>
@@ -337,7 +350,7 @@ export const TimelineChangeRow = ({
       className={cn(
         "relative grid grid-cols-[1fr_1px_1fr] gap-x-6 px-12",
         showPickupHeader && "pt-5",
-        isLastInGroup && !isLast && "pb-8"
+        isLastInGroup && !isLast && "pb-7"
       )}
     >
       {/* Absolute positioning for the highlight to ensure it covers the full dynamic height */}
@@ -357,7 +370,7 @@ export const TimelineChangeRow = ({
                 showPickupHeader && "top-[27px]"
               )}
             >
-              Rute Diubah
+              {t("TimelineChangeRow.labelRuteDiubah", {}, "Rute Diubah")}
             </span>
           )}
         </>

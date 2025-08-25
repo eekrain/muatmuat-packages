@@ -15,7 +15,7 @@ const OrderInfo = ({ className, title, value }) => {
   );
 };
 
-const OrderWithAdditionalCost = () => {
+const OrderWithAdditionalCost = ({ activeTab }) => {
   const info = [
     {
       title: "Telah Dihubungi Oleh :",
@@ -56,13 +56,13 @@ const OrderWithAdditionalCost = () => {
           </div>
           <div className="flex min-w-[230px] max-w-[230px] flex-col gap-y-3">
             <span className="text-xs font-bold">{idrFormat(900000)}</span>
-            {false ? (
+            {activeTab === "active" ? (
               <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
                 <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
                 <span>Lama Belum Dibayarkan : 2 Hari</span>
               </div>
             ) : null}
-            {true ? (
+            {activeTab === "completed" ? (
               <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
                 <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
                 <span>Tanggal Pembayaran : 04 Jan 2025 18:00 WIB</span>
@@ -97,7 +97,10 @@ const OrderWithAdditionalCost = () => {
             />
           </div>
         </div>
-        <Link href={`/laporan/tambahan-biaya/123/detail-tambahan-biaya`}>
+        {/* ID masih dummy */}
+        <Link
+          href={`/laporan/tambahan-biaya/2f8d1b39-ae1c-45c0-a1be-326431d64255/detail-tambahan-biaya`}
+        >
           <Button className="px-6" variant="muattrans-primary">
             Detail
           </Button>

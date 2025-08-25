@@ -35,7 +35,11 @@ const RingkasanPesananHeader = ({ data }) => {
             </span>
 
             <span className="text-xs font-medium leading-[1.2] text-neutral-600">
-              Jumlah Armada
+              {t(
+                "RingkasanPesananHeader.labelJumlahArmada",
+                {},
+                "Jumlah Armada"
+              )}
             </span>
 
             <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
@@ -77,7 +81,11 @@ const RingkasanPesananHeader = ({ data }) => {
             </div>
 
             <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
-              {data?.orderSummary?.truckCount} Unit
+              {t(
+                "RingkasanPesananHeader.textArmadaCount",
+                { count: data?.orderSummary?.truckCount },
+                "{count} Unit"
+              )}
             </span>
           </div>
         </div>

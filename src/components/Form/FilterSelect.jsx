@@ -51,7 +51,10 @@ export const FilterSelect = forwardRef(
                 className
               )}
               iconClassName={isActive && "!text-primary-700"}
-              textClassName={isActive && "!text-primary-700"}
+              textClassName={cn(
+                isActive && "!text-primary-700",
+                disabled && "text-neutral-600"
+              )}
             >
               <Select.Value placeholder={placeholder}>
                 {displayValueOverride !== null

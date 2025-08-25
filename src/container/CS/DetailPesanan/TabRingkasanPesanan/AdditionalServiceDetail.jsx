@@ -1,4 +1,5 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 /**
  * A reusable row component for displaying information with an icon.
@@ -31,6 +32,7 @@ const InfoRow = ({ iconSrc, children }) => (
  * }} props
  */
 export const DetailPicLokasiCard = ({ data }) => {
+  const { t } = useTranslation();
   const { address, addressDetail, picName, picPhone, expedition } = data;
 
   return (
@@ -52,15 +54,27 @@ export const DetailPicLokasiCard = ({ data }) => {
           </div>
           <div className="flex flex-col items-start gap-2 self-stretch">
             <InfoRow iconSrc="/icons/profile16.svg">
-              Nama Penerima :
+              {t(
+                "DetailPicLokasiCard.labelNamaPenerima",
+                {},
+                "Nama Penerima :"
+              )}
               <div className="text-xs font-semibold">{picName}</div>
             </InfoRow>
             <InfoRow iconSrc="/icons/contact.svg">
-              Nomor Handphone Penerima :
+              {t(
+                "DetailPicLokasiCard.labelNomorHandphonePenerima",
+                {},
+                "Nomor Handphone Penerima :"
+              )}
               <div className="text-xs font-semibold">{picPhone}</div>
             </InfoRow>
             <InfoRow iconSrc="/icons/transporter16.svg">
-              Ekspedisi Pengiriman :
+              {t(
+                "DetailPicLokasiCard.labelEkspedisiPengiriman",
+                {},
+                "Ekspedisi Pengiriman :"
+              )}
               <div className="text-xs font-semibold">{expedition}</div>
             </InfoRow>
           </div>
