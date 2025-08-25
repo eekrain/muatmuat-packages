@@ -315,7 +315,7 @@ export const TimelineChangeRow = ({
       ref={innerRef}
       className={cn(
         "relative z-10 flex flex-col justify-center", // Add z-10 to ensure content is above the highlight
-        showHeader && "-mt-5"
+        showHeader && "-mt-[18px]"
       )}
     >
       {showHeader && (
@@ -323,7 +323,7 @@ export const TimelineChangeRow = ({
           {showPickupHeader ? "Lokasi Muat" : "Lokasi Bongkar"}
         </div>
       )}
-      <div className="flex min-h-[28px] items-center">
+      <div className="flex h-6 items-center">
         <p className="line-clamp-1 flex-1 break-all text-sm font-medium text-neutral-900">
           {location.fullAddress}
         </p>
@@ -337,7 +337,7 @@ export const TimelineChangeRow = ({
       className={cn(
         "relative grid grid-cols-[1fr_1px_1fr] gap-x-6 px-12",
         showPickupHeader && "pt-5",
-        isLastInGroup && !isLast && "pb-8"
+        isLastInGroup && !isLast && "pb-7"
       )}
     >
       {/* Absolute positioning for the highlight to ensure it covers the full dynamic height */}
