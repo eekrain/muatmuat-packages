@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 
+import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
 import {
   BottomSheet,
   BottomSheetClose,
@@ -26,6 +27,7 @@ import TextArea from "@/components/TextArea/TextArea";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
+import WaitingSettlementModal from "@/container/Shipper/SewaArmada/Responsive/Home/WaitingSettemenetModal";
 import NoDeliveryOrder from "@/container/Shipper/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
 import { usePrevious } from "@/hooks/use-previous";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
@@ -44,6 +46,7 @@ import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
+import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 import OrderConfirmationBottomSheet from "./OrderConfirmationBottomSheet";
 
@@ -52,11 +55,61 @@ const InformasiPesananScreen = ({
   trucks,
   paymentMethods,
   calculatedPrice,
+  settlementAlertInfo,
 }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
   const authToken = useTokenStore((state) => state.accessToken);
   const router = useRouter();
+  const { setIsOpen } = useWaitingSettlementModalAction();
+
+  // Alert items logic similar to HomeScreen
+  const alertItems = useShallowMemo(() => {
+    if (!settlementAlertInfo) return [];
+
+    const listPesananUrl = [
+      "/daftarpesanan/pesananmenunggupembayaran",
+      "/daftarpesanan/pesananmenunggupelunasan",
+      "/daftarpesanan/butuhkonfirmasianda",
+      "/daftarpesanan/butuhkonfirmasianda",
+    ];
+
+    const alertItemsResult = settlementAlertInfo
+      .map((item, key) => {
+        if (!item.orderId || item.orderId.length === 0) {
+          return null;
+        }
+        if (key === 1) {
+          return {
+            label: item.alertText,
+            onClick: () => setIsOpen(true),
+          };
+        }
+        return {
+          label: item.alertText,
+          onClick: () =>
+            router.push(
+              item.orderId.length === 1
+                ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
+                : listPesananUrl[key]
+            ),
+        };
+      })
+      .filter(Boolean);
+
+    // Check if there are any confirmation alerts (alerts that need user action)
+    const hasConfirmationAlerts = alertItemsResult.length > 0;
+
+    // Add warning banner as an alert item if confirmation alerts are present
+    if (hasConfirmationAlerts) {
+      alertItemsResult.push({
+        label: "messageWarningPreparation", // Use translation key
+        isWarningBanner: true, // Flag to identify this as warning banner
+      });
+    }
+
+    return alertItemsResult;
+  }, [settlementAlertInfo, router, setIsOpen]);
 
   /* voucher state and logic - from HomeScreen */
   const token = `Bearer ${authToken}` || null;
@@ -121,6 +174,95 @@ const InformasiPesananScreen = ({
   // Get actions from Zustand store
   const { setField, setCargoPhotos, validateSecondForm } =
     useSewaArmadaActions();
+
+  // Enhanced truck and carrier selection with better error handling
+  const selectedCarrier = useShallowMemo(() => {
+    if (!carriers || !carrierId) {
+      console.log("❌ Missing carriers data or carrierId:", {
+        carriers: !!carriers,
+        carrierId,
+      });
+      return null;
+    }
+    const allCarriers = [
+      ...(carriers.recommendedCarriers || []),
+      ...(carriers.nonRecommendedCarriers || []),
+    ];
+    const carrier = allCarriers.find((c) => c.carrierId === carrierId);
+    if (!carrier) {
+      console.log("❌ Carrier not found:", {
+        carrierId,
+        availableIds: allCarriers.map((c) => c.carrierId),
+      });
+    }
+    return carrier;
+  }, [carriers, carrierId]);
+
+  const selectedTruck = useShallowMemo(() => {
+    if (!trucks || !truckTypeId) {
+      console.log("❌ Missing trucks data or truckTypeId:", {
+        trucks: !!trucks,
+        truckTypeId,
+      });
+      return null;
+    }
+    const allTrucks = [
+      ...(trucks.recommendedTrucks || []),
+      ...(trucks.nonRecommendedTrucks || []),
+    ];
+    const truck = allTrucks.find((t) => t.truckTypeId === truckTypeId);
+    if (!truck) {
+      console.log("❌ Truck not found:", {
+        truckTypeId,
+        availableIds: allTrucks.map((t) => t.truckTypeId),
+      });
+    }
+    return truck;
+  }, [trucks, truckTypeId]);
+
+  const selectedOpsiPembayaran = useShallowMemo(
+    () =>
+      paymentMethodId
+        ? paymentMethods
+            .flatMap((channel) => channel.methods || [])
+            .find((method) => method.id === paymentMethodId)
+        : null,
+    [paymentMethodId, paymentMethods]
+  );
+
+  // Debug useEffect for truck selection
+  useEffect(() => {
+    console.log("🚀 Form Values Debug:", {
+      carrierId,
+      truckTypeId,
+      truckCount,
+      distance,
+      distanceUnit,
+    });
+    console.log("📦 Available Data:", {
+      carriers: carriers ? "loaded" : "not loaded",
+      trucks: trucks ? "loaded" : "not loaded",
+      carriersCount: carriers
+        ? (carriers.recommendedCarriers?.length || 0) +
+          (carriers.nonRecommendedCarriers?.length || 0)
+        : 0,
+      trucksCount: trucks
+        ? (trucks.recommendedTrucks?.length || 0) +
+          (trucks.nonRecommendedTrucks?.length || 0)
+        : 0,
+    });
+    console.log("✅ Selected Items:", {
+      selectedCarrier: selectedCarrier ? selectedCarrier.name : "not found",
+      selectedTruck: selectedTruck ? selectedTruck.name : "not found",
+    });
+  }, [
+    carrierId,
+    truckTypeId,
+    carriers,
+    trucks,
+    selectedCarrier,
+    selectedTruck,
+  ]);
 
   // Voucher useEffect hooks and calculations
   useEffect(() => {
@@ -356,33 +498,7 @@ const InformasiPesananScreen = ({
     }
   };
 
-  const selectedCarrier = useShallowMemo(() => {
-    if (!carriers || !carrierId) return null;
-    const allCarriers = [
-      ...(carriers.recommendedCarriers || []),
-      ...(carriers.nonRecommendedCarriers || []),
-    ];
-    return allCarriers.find((c) => c.carrierId === carrierId);
-  }, [carriers, carrierId]);
-
-  const selectedTruck = useShallowMemo(() => {
-    if (!trucks || !truckTypeId) return null;
-    const allTrucks = [
-      ...(trucks.recommendedTrucks || []),
-      ...(trucks.nonRecommendedTrucks || []),
-    ];
-    return allTrucks.find((t) => t.truckTypeId === truckTypeId);
-  }, [trucks, truckTypeId]);
   console.log("selectedCarrier", selectedCarrier, selectedTruck);
-  const selectedOpsiPembayaran = useShallowMemo(
-    () =>
-      paymentMethodId
-        ? paymentMethods
-            .flatMap((channel) => channel.methods || [])
-            .find((method) => method.id === paymentMethodId)
-        : null,
-    [paymentMethodId, paymentMethods]
-  );
 
   return (
     <FormResponsiveLayout
@@ -391,43 +507,76 @@ const InformasiPesananScreen = ({
       }}
     >
       <div className="mb-[118px] flex flex-col gap-y-2 bg-neutral-200">
-        {/* Warning Banner */}
-        <div className="flex items-center gap-2.5 rounded-md bg-warning-100 p-3">
-          <IconComponent
-            src="/icons/warning20.svg"
-            width={20}
-            height={20}
-            className="icon-fill-secondary-400"
-          />
-          <div className="flex flex-1 items-center gap-1">
-            <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
-              {t("messageWarningPreparation")}
-            </p>
-          </div>
-        </div>
+        {/* Alert Multiline Responsive - Same as in HomeScreen */}
+        <AlertMultilineResponsive items={alertItems} className="w-full" />
 
         {/* Info Jasa Angkut */}
         <div className="flex items-center gap-3 bg-neutral-50 px-4 py-5">
           {/* Image Container */}
-          <LightboxProvider image={"/img/recommended1.png"}>
+          <LightboxProvider
+            image={
+              selectedTruck?.image ||
+              selectedCarrier?.image ||
+              "/img/recommended1.png"
+            }
+          >
             <LightboxPreview
-              image={"/img/recommended1.png"}
-              alt={"recommended1"}
+              image={
+                selectedTruck?.image ||
+                selectedCarrier?.image ||
+                "/img/recommended1.png"
+              }
+              alt={selectedTruck?.name || selectedCarrier?.name || "truck"}
               className="object-contain"
             />
           </LightboxProvider>
 
           {/* Info Text */}
           <div className="flex flex-1 flex-col gap-3">
-            <h3 className="text-sm font-semibold leading-[15.4px] text-neutral-900">
-              {`${selectedCarrier?.name} - ${selectedTruck?.name}`}
-            </h3>
-            <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
-              {t("labelKebutuhanUnit", { unit: truckCount })}
-            </p>
-            <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
-              {t("labelEstimasiJarak", { distance, unit: distanceUnit })}
-            </p>
+            {selectedCarrier && selectedTruck ? (
+              <>
+                <h3 className="text-sm font-semibold leading-[15.4px] text-neutral-900">
+                  {`${selectedCarrier.name} - ${selectedTruck.name}`}
+                </h3>
+                <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
+                  {t("labelKebutuhanUnit", { unit: truckCount })}
+                </p>
+                <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
+                  {distance && distanceUnit
+                    ? t("labelEstimasiJarak", { distance, unit: distanceUnit })
+                    : "Menghitung estimasi jarak..."}
+                </p>
+                {/* Add truck capacity if available */}
+                {selectedTruck?.capacity && (
+                  <p className="text-xs font-medium leading-[13.2px] text-neutral-600">
+                    Kapasitas: {selectedTruck.capacity}
+                  </p>
+                )}
+                {/* Add truck specifications if available */}
+                {selectedTruck?.specifications && (
+                  <p className="text-xs font-medium leading-[13.2px] text-neutral-600">
+                    {selectedTruck.specifications}
+                  </p>
+                )}
+              </>
+            ) : carrierId || truckTypeId ? (
+              // Loading state
+              <>
+                <div className="h-4 animate-pulse rounded bg-neutral-300"></div>
+                <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-300"></div>
+                <div className="h-4 w-1/2 animate-pulse rounded bg-neutral-300"></div>
+              </>
+            ) : (
+              // No selection state
+              <>
+                <h3 className="text-sm font-semibold leading-[15.4px] text-neutral-500">
+                  Belum ada armada dipilih
+                </h3>
+                <p className="text-sm font-medium leading-[15.4px] text-neutral-500">
+                  Silakan pilih armada terlebih dahulu
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -791,6 +940,8 @@ const InformasiPesananScreen = ({
           setOpen={setOrderConfirmationBottomsheetOpen}
           onValidateInformasiPesanan={handleValidateInformasiPesanan}
           onCreateOrder={handleCreateOrder}
+          selectedCarrier={selectedCarrier}
+          selectedTruck={selectedTruck}
         />
       </ResponsiveFooter>
 
@@ -911,6 +1062,7 @@ const InformasiPesananScreen = ({
           </div>
         </BottomSheetContent>
       </BottomSheet>
+      <WaitingSettlementModal />
     </FormResponsiveLayout>
   );
 };

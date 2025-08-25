@@ -199,6 +199,7 @@ const SewaArmadaResponsive = ({
             trucks={trucks}
             paymentMethods={paymentMethods}
             calculatedPrice={calculatedPrice}
+            settlementAlertInfo={settlementAlertInfo}
           />
         }
       />

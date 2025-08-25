@@ -109,7 +109,7 @@ const DetailBiayaBottomSheet = ({
             <div className="flex flex-col gap-4 border-b border-neutral-400 pb-6 pt-4">
               <CardPayment.Section title="Biaya Lainnya" className="gap-4">
                 <CardPayment.LineItem
-                  label="Admin Layanan"
+                  label="Biaya Admin Layanan"
                   value={idrFormat(transactionData.adminLayanan)}
                 />
                 <CardPayment.LineItem
