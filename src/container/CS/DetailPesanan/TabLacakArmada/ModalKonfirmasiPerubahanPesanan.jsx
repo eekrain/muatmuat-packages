@@ -1,6 +1,7 @@
 import Button from "@/components/Button/Button";
 import CardRiwayatPerubahan from "@/components/Card/CardRiwayatPerubahan";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const ModalKonfirmasiPerubahanPesanan = ({
   open,
@@ -9,6 +10,8 @@ export const ModalKonfirmasiPerubahanPesanan = ({
   onCancel,
   changes,
 }) => {
+  const { t } = useTranslation();
+
   if (!changes) return null;
 
   return (
@@ -16,12 +19,20 @@ export const ModalKonfirmasiPerubahanPesanan = ({
       <ModalContent className="w-[800px]">
         <div className="flex flex-col items-center gap-4 px-6 py-8">
           <h2 className="text-base font-bold text-neutral-900">
-            Informasi Perubahan Pesanan
+            {t(
+              "ModalKonfirmasiPerubahanPesanan.titleInformasiPerubahanPesanan",
+              {},
+              "Informasi Perubahan Pesanan"
+            )}
           </h2>
 
           <div className="rounded-lg border border-neutral-400 p-3">
             <CardRiwayatPerubahan.ItemPerubahanTransporter
-              title="Perubahan Transporter"
+              title={t(
+                "ModalKonfirmasiPerubahanPesanan.titlePerubahanTransporter",
+                {},
+                "Perubahan Transporter"
+              )}
               before={changes.oldTransporters}
               after={changes.newTransporters}
               blastCount={changes.blastCount}
@@ -38,14 +49,18 @@ export const ModalKonfirmasiPerubahanPesanan = ({
               className="min-w-[112px]"
               onClick={onCancel}
             >
-              Batal
+              {t("ModalKonfirmasiPerubahanPesanan.buttonBatal", {}, "Batal")}
             </Button>
             <Button
               variant="muattrans-primary"
               className="min-w-[156px]"
               onClick={onConfirm}
             >
-              Kirim Perubahan
+              {t(
+                "ModalKonfirmasiPerubahanPesanan.buttonKirimPerubahan",
+                {},
+                "Kirim Perubahan"
+              )}
             </Button>
           </div>
         </div>

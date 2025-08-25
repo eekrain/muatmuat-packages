@@ -21,7 +21,7 @@ export const ArmadaStatusItem = ({ item }) => {
           </BadgeStatusPesanan>
           {item?.sosStatus?.hasSOS && (
             <span className="flex h-6 items-center rounded-md bg-error-400 px-2 text-xs font-semibold text-error-50">
-              SOS
+              {t("ArmadaStatusItem.badgeSos", {}, "SOS")}
             </span>
           )}
         </div>
@@ -30,7 +30,11 @@ export const ArmadaStatusItem = ({ item }) => {
         <div className="flex items-center gap-2">
           <img
             src={item.truckImage}
-            alt={`Truk ${item.licensePlate}`}
+            alt={t(
+              "ArmadaStatusItem.altTruk",
+              { licensePlate: item.licensePlate },
+              "Truk {licensePlate}"
+            )}
             className="h-14 w-14 rounded-lg border border-neutral-500 object-cover"
           />
           <div className="flex flex-col gap-3">

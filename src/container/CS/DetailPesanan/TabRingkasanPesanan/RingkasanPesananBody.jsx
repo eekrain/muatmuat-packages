@@ -9,6 +9,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import { formatDate, formatTime } from "@/lib/utils/dateFormat";
@@ -37,6 +38,7 @@ const PICDetailItem = ({ icon, text, className = "" }) => (
 
 // Component untuk kartu lokasi individual
 const PICLocationCard = ({ locations = [], title }) => {
+  const { t } = useTranslation();
   return (
     <div className={"flex w-full flex-row gap-8"}>
       <div className="flex h-8 min-w-[178px] items-center">
@@ -61,8 +63,12 @@ const PICLocationCard = ({ locations = [], title }) => {
                   {/* Header lokasi */}
                   <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
                     {location.type === LocationTypeEnum.PICKUP
-                      ? "Lokasi Muat"
-                      : "Lokasi Bongkar"}
+                      ? t("PICLocationCard.textLokasiMuat", {}, "Lokasi Muat")
+                      : t(
+                          "PICLocationCard.textLokasiBongkar",
+                          {},
+                          "Lokasi Bongkar"
+                        )}
                   </span>
 
                   {/* Detail items */}
@@ -89,6 +95,7 @@ const PICLocationCard = ({ locations = [], title }) => {
 };
 
 const RingkasanPesananBody = ({ data }) => {
+  const { t } = useTranslation();
   const [isMainSectionExpanded, setIsMainSectionExpanded] = useState(false);
   const [isPicSectionExpanded, setIsPicSectionExpanded] = useState(false);
 
@@ -106,10 +113,6 @@ const RingkasanPesananBody = ({ data }) => {
   const dropoffLocations = data?.orderSummary?.locations?.filter(
     (location) => location.locationType === "DROPOFF"
   );
-
-  const totalWeightKg = data?.cargo
-    ?.reduce((sum, item) => sum + item.weight * 1000, 0)
-    .toLocaleString("id-ID");
 
   const displayedCargo = data?.orderSummary?.cargo?.cargos
     ?.slice(0, 3)
@@ -169,16 +172,30 @@ const RingkasanPesananBody = ({ data }) => {
               alt="Halal Indonesia"
             />
             <span className="mt-0.5 text-center text-xs font-semibold text-[#652672]">
-              Memerlukan pengiriman dengan sertifikasi halal logistik
+              {t(
+                "RingkasanPesananBody.messageHalalLogisticRequired",
+                {},
+                "Memerlukan pengiriman dengan sertifikasi halal logistik"
+              )}
             </span>
           </div>
         )}
         <h1 className="text-lg font-semibold leading-tight text-neutral-900">
-          Ringkasan Pesanan
+          {t(
+            "RingkasanPesananBody.titleRingkasanPesanan",
+            {},
+            "Ringkasan Pesanan"
+          )}
         </h1>
 
         {/* --- Always Visible Sections --- */}
-        <SectionRow label="Informasi Armada">
+        <SectionRow
+          label={t(
+            "RingkasanPesananBody.labelInformasiArmada",
+            {},
+            "Informasi Armada"
+          )}
+        >
           <div className="flex items-center gap-4">
             <LightboxProvider
               image={data?.orderSummary?.vehicle?.vehicleImage}
@@ -195,13 +212,19 @@ const RingkasanPesananBody = ({ data }) => {
                 {data?.orderSummary?.vehicle?.truckTypeName}
               </h3>
               <p className="mt-2 text-xs font-medium text-neutral-900">
-                Kebutuhan : {data?.orderSummary?.truckCount} Unit
+                {t(
+                  "RingkasanPesananBody.labelKebutuhan",
+                  { count: data?.orderSummary?.truckCount },
+                  "Kebutuhan : {count} Unit"
+                )}
               </p>
             </div>
           </div>
         </SectionRow>
 
-        <SectionRow label="Waktu Muat">
+        <SectionRow
+          label={t("RingkasanPesananBody.labelWaktuMuat", {}, "Waktu Muat")}
+        >
           <p className="text-xs font-medium text-neutral-900">
             {`${formatDate(data?.orderSummary?.loadTimeStart)} ${
               data?.orderSummary?.loadTimeEnd
@@ -215,11 +238,23 @@ const RingkasanPesananBody = ({ data }) => {
           </p>
         </SectionRow>
 
-        <SectionRow label="Rute Muat & Bongkar">
+        <SectionRow
+          label={t(
+            "RingkasanPesananBody.labelRuteMuatBongkar",
+            {},
+            "Rute Muat & Bongkar"
+          )}
+        >
           <div className="flex flex-col gap-3">
             <p className="text-xs font-medium text-neutral-900">
-              Estimasi {data?.orderSummary?.estimatedDistance}{" "}
-              {data?.orderSummary?.estimatedDistanceUnit}
+              {t(
+                "RingkasanPesananBody.textEstimasi",
+                {
+                  distance: data?.orderSummary?.estimatedDistance,
+                  unit: data?.orderSummary?.estimatedDistanceUnit,
+                },
+                "Estimasi {distance} {unit}"
+              )}
             </p>
             <MuatBongkarStepperWithModal
               pickupLocations={pickupLocations}
@@ -228,10 +263,25 @@ const RingkasanPesananBody = ({ data }) => {
           </div>
         </SectionRow>
 
-        <SectionRow label="Informasi Muatan">
+        <SectionRow
+          label={t(
+            "RingkasanPesananBody.labelInformasiMuatan",
+            {},
+            "Informasi Muatan"
+          )}
+        >
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium">
-              {`Total Berat : ${thousandSeparator(data?.orderSummary?.cargo?.totalWeight)} ${data?.orderSummary?.cargo?.totalWeightUnit}`}
+              {t(
+                "RingkasanPesananBody.labelTotalBerat",
+                {
+                  weight: thousandSeparator(
+                    data?.orderSummary?.cargo?.totalWeight
+                  ),
+                  unit: data?.orderSummary?.cargo?.totalWeightUnit,
+                },
+                "Total Berat : {weight} {unit}"
+              )}
             </span>
             <div className="flex flex-col gap-2">{displayedCargo}</div>
           </div>
@@ -247,13 +297,25 @@ const RingkasanPesananBody = ({ data }) => {
           >
             <div className="overflow-hidden">
               <div className="flex flex-col gap-6">
-                <SectionRow label="Deskripsi Muatan">
+                <SectionRow
+                  label={t(
+                    "RingkasanPesananBody.labelDeskripsiMuatan",
+                    {},
+                    "Deskripsi Muatan"
+                  )}
+                >
                   <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {data?.orderSummary?.cargo?.description}
                   </p>
                 </SectionRow>
 
-                <SectionRow label="Foto Muatan">
+                <SectionRow
+                  label={t(
+                    "RingkasanPesananBody.labelFotoMuatan",
+                    {},
+                    "Foto Muatan"
+                  )}
+                >
                   <LightboxProvider
                     images={data?.orderSummary?.cargo?.cargoPhotos || []}
                     title="Lampiran/Foto Muatan"
@@ -275,7 +337,13 @@ const RingkasanPesananBody = ({ data }) => {
                 </SectionRow>
 
                 {data?.orderSummary?.additionalServices.length > 0 ? (
-                  <SectionRow label="Layanan Tambahan">
+                  <SectionRow
+                    label={t(
+                      "RingkasanPesananBody.labelLayananTambahan",
+                      {},
+                      "Layanan Tambahan"
+                    )}
+                  >
                     <div className="flex flex-col gap-y-2">
                       {data?.orderSummary?.additionalServices.map(
                         (data, key) => (
@@ -303,7 +371,7 @@ const RingkasanPesananBody = ({ data }) => {
 
                 <div className="flex w-full items-center justify-between">
                   <h1 className="text-lg font-semibold leading-[21.6px] text-neutral-900">
-                    Detail PIC
+                    {t("RingkasanPesananBody.titleDetailPIC", {}, "Detail PIC")}
                   </h1>
                   <button
                     onClick={toggleExpanded}
@@ -330,13 +398,21 @@ const RingkasanPesananBody = ({ data }) => {
                     {/* Detail PIC Lokasi Muat Section */}
                     <PICLocationCard
                       locations={pickupLocations}
-                      title="Detail PIC Lokasi Muat"
+                      title={t(
+                        "RingkasanPesananBody.titleDetailPICLokasiMuat",
+                        {},
+                        "Detail PIC Lokasi Muat"
+                      )}
                     />
 
                     {/* Detail PIC Lokasi Bongkar Section */}
                     <PICLocationCard
                       locations={dropoffLocations}
-                      title="Detail PIC Lokasi Bongkar"
+                      title={t(
+                        "RingkasanPesananBody.titleDetailPICLokasiBongkar",
+                        {},
+                        "Detail PIC Lokasi Bongkar"
+                      )}
                     />
                   </div>
                 </div>
@@ -358,7 +434,13 @@ const RingkasanPesananBody = ({ data }) => {
               }`}
             />
             <span className="mt-0.5 text-xs font-semibold text-primary-700">
-              {isMainSectionExpanded ? "Sembunyikan" : "Lihat Selengkapnya"}
+              {isMainSectionExpanded
+                ? t("RingkasanPesananBody.buttonSembunyikan", {}, "Sembunyikan")
+                : t(
+                    "RingkasanPesananBody.buttonLihatSelengkapnya",
+                    {},
+                    "Lihat Selengkapnya"
+                  )}
             </span>
           </button>
         </div>

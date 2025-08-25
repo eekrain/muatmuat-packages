@@ -13,6 +13,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/Collapsible";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import { TimelineChangeRow } from "../Timeline";
@@ -48,6 +49,7 @@ const useRegisterItem = (timestamp) => {
 };
 
 const Root = ({ title = "Riwayat Aktivitas", children }) => {
+  const { t } = useTranslation();
   const [registeredItems, setRegisteredItems] = useState(new Set());
 
   const registerItem = useCallback((itemId) => {
@@ -62,6 +64,11 @@ const Root = ({ title = "Riwayat Aktivitas", children }) => {
     });
   }, []);
 
+  const translatedTitle =
+    title === "Riwayat Aktivitas"
+      ? t("CardRiwayatPerubahan.titleRiwayatAktivitas", {}, "Riwayat Aktivitas")
+      : title;
+
   return (
     <Context.Provider
       value={{
@@ -71,7 +78,9 @@ const Root = ({ title = "Riwayat Aktivitas", children }) => {
       }}
     >
       <div className="w-full rounded-xl bg-white p-6 shadow-md">
-        <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>
+        <h2 className="text-lg font-semibold text-neutral-900">
+          {translatedTitle}
+        </h2>
 
         <div className="relative mt-6 rounded-xl border border-neutral-400 p-4">
           <div className="absolute bottom-4 left-6 top-4 w-px border-l-2 border-dashed border-neutral-400" />
@@ -122,6 +131,13 @@ const ContentPerubahan = ({
   },
   footer,
 }) => {
+  const { t } = useTranslation();
+
+  const translatedTitle =
+    title === "Detail Perubahan"
+      ? t("CardRiwayatPerubahan.titleDetailPerubahan", {}, "Detail Perubahan")
+      : title;
+
   return (
     <Collapsible
       defaultOpen
@@ -130,10 +146,22 @@ const ContentPerubahan = ({
       <CollapsibleTrigger className="rounded-t-md bg-neutral-100 px-6 hover:no-underline">
         {({ open }) => (
           <>
-            <h3 className="font-semibold">{title}</h3>
+            <h3 className="font-semibold">{translatedTitle}</h3>
 
             <div className="flex items-center gap-2 text-xs font-medium text-primary-700">
-              <p>{open ? "Sembunyikan" : "Tampilkan Rincian"}</p>
+              <p>
+                {open
+                  ? t(
+                      "CardRiwayatPerubahan.actionSembunyikan",
+                      {},
+                      "Sembunyikan"
+                    )
+                  : t(
+                      "CardRiwayatPerubahan.actionTampilkanRincian",
+                      {},
+                      "Tampilkan Rincian"
+                    )}
+              </p>
               <IconComponent
                 src="/icons/chevron-down.svg"
                 className={`h-5 w-5 transition-transform duration-300 ${
@@ -212,29 +240,47 @@ const ChangeDetailColumn = ({ label, children }) => (
 );
 
 const ItemPerubahanDriver = ({ isFirst, timestamp, before, after }) => {
+  const { t } = useTranslation();
+
   return (
     <ChangeSection
       icon="/icons/card-perubahan/driver.svg"
-      title="Perubahan Driver"
+      title={t(
+        "CardRiwayatPerubahan.titlePerubahanDriver",
+        {},
+        "Perubahan Driver"
+      )}
       timestamp={timestamp}
       isFirst={isFirst}
     >
-      <ChangeDetailColumn label="Driver Awal">
+      <ChangeDetailColumn
+        label={t("CardRiwayatPerubahan.labelDriverAwal", {}, "Driver Awal")}
+      >
         <div className="flex items-center gap-3">
           <img
             src={before.picture}
-            alt={`Driver ${before.name}`}
+            alt={t(
+              "CardRiwayatPerubahan.altDriverImage",
+              { name: before.name },
+              "Driver {name}"
+            )}
             className="h-12 w-12 flex-shrink-0 rounded-lg border border-neutral-400 object-cover"
           />
           <p className="text-xs font-bold text-neutral-900">{before.name}</p>
         </div>
       </ChangeDetailColumn>
       <Separator />
-      <ChangeDetailColumn label="Driver Baru">
+      <ChangeDetailColumn
+        label={t("CardRiwayatPerubahan.labelDriverBaru", {}, "Driver Baru")}
+      >
         <div className="flex items-center gap-3">
           <img
             src={after.picture}
-            alt={`Driver ${after.name}`}
+            alt={t(
+              "CardRiwayatPerubahan.altDriverImage",
+              { name: after.name },
+              "Driver {name}"
+            )}
             className="h-12 w-12 flex-shrink-0 rounded-lg border border-neutral-400 object-cover"
           />
           <p className="text-xs font-bold text-neutral-900">{after.name}</p>
@@ -245,11 +291,17 @@ const ItemPerubahanDriver = ({ isFirst, timestamp, before, after }) => {
 };
 
 const ItemPerubahanArmada = ({ isFirst, timestamp, before, after }) => {
+  const { t } = useTranslation();
+
   const ArmadaInfo = ({ picture, plate, name }) => (
     <div className="flex items-center gap-3">
       <img
         src={picture}
-        alt={`Armada ${plate}`}
+        alt={t(
+          "CardRiwayatPerubahan.altArmadaImage",
+          { plate },
+          "Armada {plate}"
+        )}
         className="h-12 w-12 flex-shrink-0 rounded-lg border border-neutral-400 object-cover"
       />
       <div className="flex h-12 flex-col justify-between text-xs text-neutral-900">
@@ -270,11 +322,17 @@ const ItemPerubahanArmada = ({ isFirst, timestamp, before, after }) => {
   return (
     <ChangeSection
       icon="/icons/card-perubahan/armada.svg"
-      title="Perubahan Armada"
+      title={t(
+        "CardRiwayatPerubahan.titlePerubahanArmada",
+        {},
+        "Perubahan Armada"
+      )}
       timestamp={timestamp}
       isFirst={isFirst}
     >
-      <ChangeDetailColumn label="Armada Awal">
+      <ChangeDetailColumn
+        label={t("CardRiwayatPerubahan.labelArmadaAwal", {}, "Armada Awal")}
+      >
         <ArmadaInfo
           picture={before.picture}
           plate={before.plate}
@@ -282,7 +340,9 @@ const ItemPerubahanArmada = ({ isFirst, timestamp, before, after }) => {
         />
       </ChangeDetailColumn>
       <Separator />
-      <ChangeDetailColumn label="Armada Baru">
+      <ChangeDetailColumn
+        label={t("CardRiwayatPerubahan.labelArmadaBaru", {}, "Armada Baru")}
+      >
         <ArmadaInfo
           picture={after.picture}
           plate={after.plate}
@@ -293,36 +353,48 @@ const ItemPerubahanArmada = ({ isFirst, timestamp, before, after }) => {
   );
 };
 
-const TransporterInfo = ({ picture, name, units, phone }) => (
-  <div className="flex items-start gap-2 self-stretch">
-    <img
-      src={picture}
-      alt={`${name} logo`}
-      className="h-10 w-10 rounded-full border border-neutral-500 object-contain"
-    />
-    <div className="flex flex-col items-start justify-center gap-3">
-      <p className="text-xs font-bold text-neutral-900">{name}</p>
-      <div className="flex flex-col items-start gap-2">
-        <div className="flex items-center gap-1">
-          <IconComponent
-            src="/icons/transporter16.svg"
-            alt="unit icon"
-            className="h-4 w-4 text-muat-trans-secondary-900"
-          />
-          <p className="text-xs font-medium text-neutral-900">{units} Unit</p>
-        </div>
-        <div className="flex items-center gap-1">
-          <IconComponent
-            src="/icons/contact.svg"
-            alt="phone icon"
-            className="h-4 w-4 text-muat-trans-secondary-900"
-          />
-          <p className="text-xs font-medium text-neutral-900">{phone || "-"}</p>
+const TransporterInfo = ({ picture, name, units, phone }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex items-start gap-2 self-stretch">
+      <img
+        src={picture}
+        alt={t(
+          "CardRiwayatPerubahan.altTransporterLogo",
+          { name },
+          "{name} logo"
+        )}
+        className="h-10 w-10 rounded-full border border-neutral-500 object-contain"
+      />
+      <div className="flex flex-col items-start justify-center gap-3">
+        <p className="text-xs font-bold text-neutral-900">{name}</p>
+        <div className="flex flex-col items-start gap-2">
+          <div className="flex items-center gap-1">
+            <IconComponent
+              src="/icons/transporter16.svg"
+              alt="unit icon"
+              className="h-4 w-4 text-muat-trans-secondary-900"
+            />
+            <p className="text-xs font-medium text-neutral-900">
+              {t("CardRiwayatPerubahan.unitCount", { units }, "{units} Unit")}
+            </p>
+          </div>
+          <div className="flex items-center gap-1">
+            <IconComponent
+              src="/icons/contact.svg"
+              alt="phone icon"
+              className="h-4 w-4 text-muat-trans-secondary-900"
+            />
+            <p className="text-xs font-medium text-neutral-900">
+              {phone || "-"}
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ItemPerubahanTransporter = ({
   title = "Perubahan Transporter",
@@ -337,10 +409,21 @@ const ItemPerubahanTransporter = ({
     sectionContentClassName: "",
   },
 }) => {
+  const { t } = useTranslation();
+
+  const translatedTitle =
+    title === "Perubahan Transporter"
+      ? t(
+          "CardRiwayatPerubahan.titlePerubahanTransporter",
+          {},
+          "Perubahan Transporter"
+        )
+      : title;
+
   return (
     <ChangeSection
       icon="/icons/transporter16.svg"
-      title={title}
+      title={translatedTitle}
       timestamp={timestamp}
       isFirst={isFirst}
       className={className}
@@ -351,23 +434,40 @@ const ItemPerubahanTransporter = ({
         ),
       }}
     >
-      <ChangeDetailColumn label="Transporter Awal">
+      <ChangeDetailColumn
+        label={t(
+          "CardRiwayatPerubahan.labelTransporterAwal",
+          {},
+          "Transporter Awal"
+        )}
+      >
         {before.map((transporter) => (
           <TransporterInfo key={transporter.name} {...transporter} />
         ))}
       </ChangeDetailColumn>
       <Separator />
-      <ChangeDetailColumn label="Transporter Baru">
+      <ChangeDetailColumn
+        label={t(
+          "CardRiwayatPerubahan.labelTransporterBaru",
+          {},
+          "Transporter Baru"
+        )}
+      >
         {after.map((transporter) => (
           <TransporterInfo key={transporter.name} {...transporter} />
         ))}
 
         {blastCount > 0 && (
           <div className="flex flex-col items-start gap-3 self-stretch rounded-xl border border-neutral-400 p-3">
-            <h3 className="text-xs font-bold text-neutral-900">Blast Order</h3>
+            <h3 className="text-xs font-bold text-neutral-900">
+              {t("CardRiwayatPerubahan.titleBlastOrder", {}, "Blast Order")}
+            </h3>
             <p className="text-xs font-medium text-neutral-900">
-              {blastCount} armada akan dimasukkan ke daftar permintaan jasa
-              angkut agar dapat dilihat oleh seluruh transporter
+              {t(
+                "CardRiwayatPerubahan.descriptionBlastOrder",
+                { blastCount },
+                "{blastCount} armada akan dimasukkan ke daftar permintaan jasa angkut agar dapat dilihat oleh seluruh transporter"
+              )}
             </p>
           </div>
         )}
@@ -382,13 +482,19 @@ const ItemPesananDibatalkan = ({
   unit = 1,
   reason = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porta vitae risus quis egestas. Proin placerat euismod maximus. Proin fermentum scelerisque nisl, et accumsan elit.",
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
       {/* Top section with company details */}
       <div className="flex items-center gap-4 pb-3">
         <img
           src={picture}
-          alt={`${name} logo`}
+          alt={t(
+            "CardRiwayatPerubahan.altCompanyLogo",
+            { name },
+            "{name} logo"
+          )}
           className="box-border size-10 rounded-[32px] border border-neutral-500 object-cover"
         />
         <div className="flex flex-1 flex-col justify-center gap-3">
@@ -402,7 +508,7 @@ const ItemPesananDibatalkan = ({
               className="size-4 text-muat-trans-secondary-900"
             />
             <p className="text-xs font-medium leading-tight text-neutral-900">
-              {unit} Unit
+              {t("CardRiwayatPerubahan.unitCount", { unit }, "{unit} Unit")}
             </p>
           </div>
         </div>
@@ -414,7 +520,11 @@ const ItemPesananDibatalkan = ({
       {/* Bottom section with rejection reason */}
       <div className="flex flex-col gap-2 px-12 pt-3">
         <p className="text-xs font-medium leading-tight text-neutral-600">
-          Alasan Penolakan
+          {t(
+            "CardRiwayatPerubahan.labelAlasanPenolakan",
+            {},
+            "Alasan Penolakan"
+          )}
         </p>
         <p className="self-stretch text-xs font-medium leading-tight text-neutral-900">
           {reason}
@@ -444,6 +554,8 @@ const ItemPerubahanRute = ({
   className,
   appearance,
 }) => {
+  const { t } = useTranslation();
+
   const combinedLocations = useMemo(
     () => [
       ...before.pickups.map((before, i) => ({
@@ -463,7 +575,11 @@ const ItemPerubahanRute = ({
   return (
     <ChangeSection
       icon="/icons/transporter16.svg"
-      title="Perubahan Rute Muat & Bongkar"
+      title={t(
+        "CardRiwayatPerubahan.titlePerubahanRuteMuatBongkar",
+        {},
+        "Perubahan Rute Muat & Bongkar"
+      )}
       isFirst={isFirst}
       className={className}
       appearance={{
@@ -479,12 +595,24 @@ const ItemPerubahanRute = ({
         <div className="absolute left-1/2 top-0 z-20 h-full w-[0.75px] -translate-x-1/2 bg-neutral-400" />
         <div className="grid grid-cols-2 px-12 text-xs font-medium text-neutral-600">
           <div className="pb-2 pl-4">
-            Rute Awal :{" "}
-            <span className="text-neutral-900">Estimasi {before.distance}</span>
+            {t("CardRiwayatPerubahan.labelRuteAwal", {}, "Rute Awal")} :{" "}
+            <span className="text-neutral-900">
+              {t(
+                "CardRiwayatPerubahan.estimasiDistance",
+                { distance: before.distance },
+                "Estimasi {distance}"
+              )}
+            </span>
           </div>
           <div className="pb-2 pl-4">
-            Rute Baru :{" "}
-            <span className="text-neutral-900">Estimasi {after.distance}</span>
+            {t("CardRiwayatPerubahan.labelRuteBaru", {}, "Rute Baru")} :{" "}
+            <span className="text-neutral-900">
+              {t(
+                "CardRiwayatPerubahan.estimasiDistance",
+                { distance: after.distance },
+                "Estimasi {distance}"
+              )}
+            </span>
           </div>
         </div>
         <div className="relative flex flex-col">
@@ -518,8 +646,17 @@ const ItemPerubahanWaktu = ({
   className,
   appearance,
 }) => {
-  before = { label: "Waktu Muat Awal", ...before };
-  after = { label: "Waktu Muat Baru", ...after };
+  const { t } = useTranslation();
+
+  before = {
+    label: t("CardRiwayatPerubahan.labelWaktuMuatAwal", {}, "Waktu Muat Awal"),
+    ...before,
+  };
+  after = {
+    label: t("CardRiwayatPerubahan.labelWaktuMuatBaru", {}, "Waktu Muat Baru"),
+    ...after,
+  };
+
   const TimeInfo = ({ title, timestamp }) => (
     <div className="flex flex-1 flex-col gap-3">
       <p className="text-xs font-medium leading-tight text-neutral-600">
@@ -534,7 +671,11 @@ const ItemPerubahanWaktu = ({
   return (
     <ChangeSection
       icon="/icons/transporter16.svg"
-      title="Perubahan Rute Muat & Bongkar"
+      title={t(
+        "CardRiwayatPerubahan.titlePerubahanRuteMuatBongkar",
+        {},
+        "Perubahan Rute Muat & Bongkar"
+      )}
       isFirst={isFirst}
       className={className}
       appearance={{
