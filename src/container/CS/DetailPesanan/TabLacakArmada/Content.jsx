@@ -11,12 +11,14 @@ export const Content = () => {
   const { t } = useTranslation();
   const {
     data,
+    finalData,
     isEdit,
     assignments,
     handleAssignmentChange,
     availableTransporters,
     hasActiveFilters,
     hasActiveSearch,
+    hasNoSearchResults,
     filteredDataByFilters,
   } = useLacakArmadaContext();
 
@@ -29,18 +31,6 @@ export const Content = () => {
       filteredDataByFilters.every(
         (transporter) => !transporter.fleets || transporter.fleets.length === 0
       ));
-  const hasNoSearchResults =
-    hasActiveSearch &&
-    (!data ||
-      data.length === 0 ||
-      data.every(
-        (transporter) => !transporter.fleets || transporter.fleets.length === 0
-      )) &&
-    filteredDataByFilters &&
-    filteredDataByFilters.length > 0 &&
-    filteredDataByFilters.some(
-      (transporter) => transporter.fleets && transporter.fleets.length > 0
-    );
 
   if (!data || data.length === 0) {
     return (
@@ -125,7 +115,10 @@ export const Content = () => {
     );
   }
 
-  return data.map((transporter, transporterIndex) => {
+  // Use finalData for rendering to get proper search/filter results
+  const dataToRender = finalData || data || [];
+
+  return dataToRender.map((transporter, transporterIndex) => {
     const unassignedCount =
       transporter.fleetsOrdered - (transporter.fleets?.length || 0);
     const transporterKey = `${transporter.transporterId}-${transporterIndex}`;
