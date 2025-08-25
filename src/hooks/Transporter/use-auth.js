@@ -12,11 +12,14 @@ import { useUserActions, useUserStore } from "@/store/AuthStore/userStore";
 
 export const AuthenticationProvider = ({ children }) => {
   const isZustandHydrated = useTokenStore((state) => state.isHydrated);
+  const hasAccessToken = useTokenStore((state) => !!state.accessToken);
   const { setUser } = useUserActions();
 
   useEffect(() => {
     // Only run when Zustand is hydrated
     if (!isZustandHydrated) return;
+
+    if (!hasAccessToken) return;
 
     const handleAuth = async () => {
       try {

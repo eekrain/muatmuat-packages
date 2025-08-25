@@ -41,6 +41,11 @@ export const FooterDetailPesanan = ({
     (state) => state.formValues.paymentMethodId
   );
 
+  const { trigger: confirmDocumentReceived, isMutating: isConfirmingDocument } =
+    useSWRMutateHook(
+      params.orderId ? `v1/orders/${params.orderId}/document-received` : null,
+      "POST"
+    );
   // Find the selected payment method from the paymentMethods data
   const selectedPaymentMethod = paymentMethods
     ?.flatMap((category) => category.methods)

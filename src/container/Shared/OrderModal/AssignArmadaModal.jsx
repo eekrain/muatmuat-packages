@@ -372,7 +372,6 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                 variant="muattrans-primary"
                 onClick={handleSave}
                 disabled={isSubmitting || isLoading}
-                {...((isSubmitting || isLoading) && { loading: true })}
                 className="px-6"
               >
                 {t("AssignArmadaModal.save", {}, "Simpan")}

@@ -34,7 +34,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
         label: (
           <LabelLacakArmada
             fleetCount={dataOrderDetail?.fleets?.length || 0}
-            hasSOS={dataOrderDetail?.hasSOSAlert || false}
+            hasSOS={dataOrderDetail?.hasSOSAlert}
           />
         ),
       },

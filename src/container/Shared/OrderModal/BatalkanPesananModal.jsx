@@ -163,7 +163,6 @@ const BatalkanPesananModal = ({
               variant="muattrans-primary-secondary"
               onClick={handleConfirm}
               disabled={isSubmitting || isLoading}
-              {...((isSubmitting || isLoading) && { loading: true })}
               className={cn(
                 "h-8 text-sm font-semibold md:px-0",
                 "w-[127px] flex-none"
