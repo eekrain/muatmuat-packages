@@ -48,6 +48,7 @@ const ShipperGroupItem = ({
   onViewFleetStatus,
   openDropdowns,
   onToggleDropdown,
+  onHubungi,
 }) => {
   const [isOpen, setIsOpen] = useState(true); // Default to open
 
@@ -83,6 +84,21 @@ const ShipperGroupItem = ({
           <div className="flex flex-shrink-0 items-center gap-4">
             <Button
               variant="link"
+              onClick={(e) => {
+                e.stopPropagation();
+                onHubungi?.({
+                  showInitialChoice: false,
+                  transporterContacts: [],
+                  driverContacts: [],
+                  contacts: [
+                    {
+                      name: shipperData.shipperName,
+                      role: "",
+                      phone: shipperData.phoneNumber || "",
+                    },
+                  ],
+                });
+              }}
               className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
               iconLeft={
                 <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
@@ -128,6 +144,7 @@ const DaftarPesananAktifListItemByTransporter = ({
   onViewFleetStatus,
   openDropdowns,
   onToggleDropdown,
+  onHubungi,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen((prev) => !prev);
@@ -157,6 +174,21 @@ const DaftarPesananAktifListItemByTransporter = ({
         <div className="flex flex-shrink-0 items-center gap-4">
           <Button
             variant="link"
+            onClick={(e) => {
+              e.stopPropagation();
+              onHubungi?.({
+                showInitialChoice: false,
+                transporterContacts: [
+                  {
+                    name: transporterData.transporterName,
+                    role: "",
+                    phone: transporterData.phoneNumber || "",
+                  },
+                ],
+                driverContacts: [],
+                contacts: [],
+              });
+            }}
             className="flex items-center gap-1 p-0 text-xs font-medium text-primary-700 hover:text-primary-800"
             iconLeft={
               <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
@@ -187,6 +219,7 @@ const DaftarPesananAktifListItemByTransporter = ({
                 onViewFleetStatus={onViewFleetStatus}
                 openDropdowns={openDropdowns}
                 onToggleDropdown={onToggleDropdown}
+                onHubungi={onHubungi}
               />
             ))}
           </div>

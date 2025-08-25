@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { FilterSelect } from "@/components/Form/FilterSelect";
@@ -130,8 +131,15 @@ const DaftarPesananAktif = ({
     useState([]);
   const [orderChangeInfoModalOpen, setOrderChangeInfoModalOpen] =
     useState(false);
-  const [selectedOrderForChangeInfo, setSelectedOrderForChangeInfo] =
-    useState(null);
+
+  // Hubungi modal state
+  const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
+  const [hubungiModalProps, setHubungiModalProps] = useState({
+    showInitialChoice: false,
+    contacts: [],
+    transporterContacts: [],
+    driverContacts: [],
+  });
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -151,12 +159,15 @@ const DaftarPesananAktif = ({
   const { data, isLoading } = useGetActiveOrdersByOrdersWithParams({
     search: searchValue,
     status: getFilterStatus(),
+    sort: selectedSort,
   });
-  const { data: dataByTransporter, isLoading: isLoadingByTransporter } =
-    useGetActiveOrdersByTransporterWithParams({
+  const { data: dataByTransporter } = useGetActiveOrdersByTransporterWithParams(
+    {
       search: searchValue,
       status: getFilterStatus(),
-    });
+      sort: selectedSort,
+    }
+  );
 
   const handleOpenFleetModal = (order) => {
     setSelectedOrderForFleetCancel(order);
@@ -322,7 +333,6 @@ const DaftarPesananAktif = ({
         break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
         // Open OrderChangeInfoModal to show change details
-        setSelectedOrderForChangeInfo(row);
         setOrderChangeInfoModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
@@ -348,35 +358,6 @@ const DaftarPesananAktif = ({
   const availableStatuses = activeOrdersCount?.availableStatuses || {};
 
   // Dropdown options
-  const getStatusOptions = () => {
-    const urgentStatuses = [];
-
-    if (availableStatuses?.hasNeedChangeResponse) {
-      urgentStatuses.push({
-        value: "NEED_CHANGE_RESPONSE",
-        label: `Perlu Respon Perubahan (${availableStatuses?.totalNeedChangeResponse || 0})`,
-      });
-    }
-
-    if (availableStatuses?.hasNeedConfirmationReady) {
-      urgentStatuses.push({
-        value: "NEED_CONFIRMATION_READY",
-        label: `Perlu Konfirmasi Siap (${availableStatuses?.totalNeedConfirmationReady || 0})`,
-      });
-    }
-
-    if (availableStatuses?.hasNeedAssignVehicle) {
-      urgentStatuses.push({
-        value: "NEED_ASSIGN_VEHICLE",
-        label: `Perlu Assign Armada (${availableStatuses?.totalNeedAssignVehicle || 0})`,
-      });
-    }
-
-    return [
-      { value: "ALL_STATUS", label: "Semua Status (Default)" },
-      ...urgentStatuses,
-    ];
-  };
 
   const groupByOptions = [
     { value: "BY_PESANAN", label: "By Pesanan" },
@@ -391,19 +372,6 @@ const DaftarPesananAktif = ({
   ];
 
   // Get selected status count for notification dot
-  const getStatusUrgentCount = () => {
-    let total = 0;
-    if (availableStatuses?.hasNeedChangeResponse) {
-      total += availableStatuses?.totalNeedChangeResponse || 0;
-    }
-    if (availableStatuses?.hasNeedConfirmationReady) {
-      total += availableStatuses?.totalNeedConfirmationReady || 0;
-    }
-    if (availableStatuses?.hasNeedAssignVehicle) {
-      total += availableStatuses?.totalNeedAssignVehicle || 0;
-    }
-    return total;
-  };
 
   const isOrderZero = orders.length === 0;
 
@@ -423,6 +391,32 @@ const DaftarPesananAktif = ({
       setIsAlertOpen(true);
     }
   }, []);
+
+  // Open HubungiModal helper — caller should supply data arrays and whether to show initial choice
+  const openHubungiModal = ({
+    showInitialChoice = false,
+    contacts = [],
+    transporterContacts = [],
+    driverContacts = [],
+  } = {}) => {
+    setHubungiModalProps({
+      showInitialChoice,
+      contacts,
+      transporterContacts,
+      driverContacts,
+    });
+    setHubungiModalOpen(true);
+  };
+
+  const closeHubungiModal = () => {
+    setHubungiModalOpen(false);
+    setHubungiModalProps({
+      showInitialChoice: false,
+      contacts: [],
+      transporterContacts: [],
+      driverContacts: [],
+    });
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -650,6 +644,7 @@ const DaftarPesananAktif = ({
                           }
                           onActionClick={handleActionClick}
                           onViewFleetStatus={onViewFleetStatus}
+                          onHubungi={(props) => openHubungiModal(props)}
                         />
                       ))
                     : ordersByTransporters.map((order) => (
@@ -665,6 +660,7 @@ const DaftarPesananAktif = ({
                           }
                           onActionClick={handleActionClick}
                           onViewFleetStatus={onViewFleetStatus}
+                          onHubungi={(props) => openHubungiModal(props)}
                         />
                       ))}
                 </div>
@@ -795,13 +791,22 @@ const DaftarPesananAktif = ({
         isOpen={orderChangeInfoModalOpen}
         onClose={() => {
           setOrderChangeInfoModalOpen(false);
-          setSelectedOrderForChangeInfo(null);
         }}
         changeDetails={mockChangeDetails}
         isLoading={false}
         onHubungi={() => {
           // TODO: Implement contact functionality
         }}
+      />
+
+      {/* Hubungi Modal */}
+      <HubungiModal
+        isOpen={hubungiModalOpen}
+        onClose={closeHubungiModal}
+        showInitialChoice={hubungiModalProps.showInitialChoice}
+        contacts={hubungiModalProps.contacts}
+        transporterContacts={hubungiModalProps.transporterContacts}
+        driverContacts={hubungiModalProps.driverContacts}
       />
     </div>
   );
