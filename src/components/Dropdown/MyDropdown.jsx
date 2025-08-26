@@ -140,7 +140,7 @@ const HoverItem = React.forwardRef(
       <button
         onClick={onClick}
         className={cn(
-          "flex h-8 w-full items-center rounded px-2.5 text-left text-xs font-medium text-neutral-900 hover:bg-neutral-100 focus:outline-none focus-visible:bg-neutral-100",
+          "flex h-8 w-full flex-shrink-0 items-center rounded px-2.5 text-left text-xs font-medium text-neutral-900 hover:bg-neutral-100 focus:outline-none focus-visible:bg-neutral-100",
           className
         )}
       >
