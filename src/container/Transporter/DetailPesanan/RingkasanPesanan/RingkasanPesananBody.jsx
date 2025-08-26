@@ -99,7 +99,7 @@ const PICLocationCard = ({ locations = [], title }) => {
                   />
                   <PICDetailItem
                     icon="/icons/profile16.svg"
-                    text={location.picName}
+                    text={location.pic.name}
                   />
                 </div>
               </Fragment>

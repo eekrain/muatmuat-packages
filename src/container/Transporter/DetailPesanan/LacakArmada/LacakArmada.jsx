@@ -10,10 +10,14 @@ import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
 import CardLacakArmada from "./components/CardLacakArmada";
 import LacakArmadaHeader from "./components/LacakArmadaHeader";
 
-const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
+const LacakArmada = ({
+  dataOrderDetail,
+  onNavigateToRiwayat,
+  fleetTrackingData,
+}) => {
+  console.log(dataOrderDetail, "dataOrder");
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
-
   // Tentukan tab aktif berdasarkan status order
   const getInitialActiveTab = useCallback(() => {
     if (!dataOrderDetail?.orderStatus) return "aktif";
@@ -55,25 +59,30 @@ const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
   //   }
   // }, [activeTab]);
 
-  // Ambil data armada dari dataOrderDetail.fleets
+  // Ambil data armada dari API fleet tracking atau fallback ke dataOrderDetail.fleets
   const armadaList = useMemo(() => {
+    // Prioritas: gunakan data dari API jika tersedia, jika tidak gunakan data dari props
+    const fleetData =
+      fleetTrackingData?.fleetDetails || dataOrderDetail?.fleets;
+
     return (
-      dataOrderDetail?.fleets?.map((fleet, index) => ({
+      fleetData?.map((fleet, index) => ({
         id: fleet.id,
-        uniqueKey: `${fleet.id}-${fleet.licensePlate}-${index}`, // Add unique key for tracking
+        uniqueKey: `${fleet.id}-${fleet.licensePlate || fleet.licensePlate}-${index}`, // Add unique key for tracking
         plateNumber: fleet.licensePlate,
-        driverName: fleet.driver?.name,
-        driverAvatar: fleet.driver?.profileImage,
+        driverName: fleet.driverInfo?.name || fleet.driver?.name,
+        driverAvatar:
+          fleet.driverInfo?.profileImage || fleet.driver?.profileImage,
         vehicleImage: fleet.vehicleImage,
         hasSOSAlert: fleet.hasSOSAlert || false,
-        status: fleet.currentStatus || "SCHEDULED_FLEET", // Status dari fleet individual
+        status: fleet.fleetStatus || fleet.currentStatus || "SCHEDULED_FLEET", // Status dari fleet individual
         milestones: fleet.milestones || [], // Milestones dari fleet
         replacementFleet: fleet.replacementFleet || null, // Data armada pengganti
         replacementDriver: fleet.replacementDriver || null, // Data driver pengganti
         fleetChangeStatus: fleet.fleetChangeStatus || null, // Status perubahan armada
       })) || []
     );
-  }, [dataOrderDetail?.fleets]);
+  }, [fleetTrackingData?.fleetDetails, dataOrderDetail?.fleets]);
   // Kategorisasi armada berdasarkan status order
   const categorizeArmada = useCallback((armada) => {
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
@@ -154,8 +163,10 @@ const LacakArmada = ({ dataOrderDetail, onNavigateToRiwayat }) => {
   }, []);
 
   const handleDetailStatusClick = useCallback(() => {
-    router.push(`/daftar-pesanan/uuid/detail-pesanan/detail-status-armada`);
-  }, [router]);
+    router.push(
+      `/daftar-pesanan/${dataOrderDetail?.orderId}/detail-pesanan/detail-status-armada`
+    );
+  }, [router, dataOrderDetail?.orderId]);
   return (
     <Card className="rounded-xl border-none">
       <CardContent className="flex flex-col gap-y-6 p-6">
