@@ -13,7 +13,6 @@ import AssignArmadaModal from "@/container/Shared/OrderModal/AssignArmadaModal";
 import BatalkanArmadaModal from "@/container/Shared/OrderModal/BatalkanArmadaModal";
 import BatalkanPesananModal from "@/container/Shared/OrderModal/BatalkanPesananModal";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
-import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
 import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
@@ -27,6 +26,7 @@ import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
 import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmadaModal";
+import LihatArmadaModal from "../../components/LihatArmadaModal";
 import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
 import DaftarPesananAktifListItemByTransporter from "./components/DaftarPesananAktifListItemByTransporter";
