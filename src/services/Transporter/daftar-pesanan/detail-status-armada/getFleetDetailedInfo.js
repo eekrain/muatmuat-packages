@@ -1,6 +1,7 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
 const useMockData = false;
 
@@ -127,6 +128,143 @@ const mockAPIResult = {
 
 // Fetcher function
 
+// Fungsi untuk normalisasi data API ke format UI
+export const normalizeFleetDataToDriverFormat = (fleetData) => {
+  if (!fleetData) return null;
+
+  const { fleetInfo, driverInfo, routeInfo, statusHistory } = fleetData;
+
+  // Mapping status history ke format yang diharapkan UI
+  const normalizedStatusDefinitions = [];
+
+  // Group status history berdasarkan mainStatus
+  const statusGroups = {};
+  if (statusHistory && statusHistory.length > 0) {
+    statusHistory.forEach((status) => {
+      if (!statusGroups[status.mainStatus]) {
+        statusGroups[status.mainStatus] = [];
+      }
+      statusGroups[status.mainStatus].push(status);
+    });
+  }
+
+  // Convert ke format yang diharapkan UI
+  Object.keys(statusGroups).forEach((mainStatus) => {
+    const statuses = statusGroups[mainStatus];
+
+    if (mainStatus === "ON_DUTY") {
+      // Untuk ON_DUTY, buat struktur berdasarkan subStatus
+      const loadingStatuses = statuses.filter(
+        (s) =>
+          s.subStatus &&
+          (s.subStatus.includes("MUAT") || s.subStatus.includes("LOADING"))
+      );
+      const unloadingStatuses = statuses.filter(
+        (s) =>
+          s.subStatus &&
+          (s.subStatus.includes("BONGKAR") || s.subStatus.includes("UNLOADING"))
+      );
+      const documentStatuses = statuses.filter(
+        (s) => s.statusName === "PREPARE_DOCUMENT"
+      );
+
+      if (loadingStatuses.length > 0) {
+        normalizedStatusDefinitions.push({
+          mappedOrderStatus: OrderStatusEnum.LOADING,
+          children: loadingStatuses.map((status) => ({
+            statusCode: status.subStatus || status.statusName,
+            statusName: status.statusName,
+            date: status.timestamp,
+            requiresQRScan: false,
+            requiresPhoto: false,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [],
+              pods: [],
+            },
+          })),
+        });
+      }
+
+      if (unloadingStatuses.length > 0) {
+        normalizedStatusDefinitions.push({
+          mappedOrderStatus: OrderStatusEnum.UNLOADING,
+          children: unloadingStatuses.map((status) => ({
+            statusCode: status.subStatus || status.statusName,
+            statusName: status.statusName,
+            date: status.timestamp,
+            requiresQRScan: false,
+            requiresPhoto: false,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [],
+              pods: [],
+            },
+          })),
+        });
+      }
+
+      if (documentStatuses.length > 0) {
+        normalizedStatusDefinitions.push({
+          mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+          date: documentStatuses[0].timestamp,
+        });
+      }
+    }
+  });
+
+  // Tentukan status saat ini berdasarkan status history terbaru
+  const latestStatus =
+    statusHistory && statusHistory.length > 0
+      ? statusHistory[statusHistory.length - 1]
+      : null;
+  let currentOrderStatus = OrderStatusEnum.PREPARE_DOCUMENT;
+  let currentDriverStatus = "PREPARE_DOCUMENT";
+  let statusTitle = "Persiapan Dokumen";
+
+  if (latestStatus) {
+    if (
+      latestStatus.subStatus &&
+      (latestStatus.subStatus.includes("MUAT") ||
+        latestStatus.subStatus.includes("LOADING"))
+    ) {
+      currentOrderStatus = OrderStatusEnum.LOADING;
+      currentDriverStatus = latestStatus.subStatus;
+      statusTitle = latestStatus.statusName || latestStatus.subStatus;
+    } else if (
+      latestStatus.subStatus &&
+      (latestStatus.subStatus.includes("BONGKAR") ||
+        latestStatus.subStatus.includes("UNLOADING"))
+    ) {
+      currentOrderStatus = OrderStatusEnum.UNLOADING;
+      currentDriverStatus = latestStatus.subStatus;
+      statusTitle = latestStatus.statusName || latestStatus.subStatus;
+    } else if (latestStatus.statusName === "PREPARE_DOCUMENT") {
+      currentOrderStatus = OrderStatusEnum.PREPARE_DOCUMENT;
+      currentDriverStatus = "PREPARE_DOCUMENT";
+      statusTitle = "Persiapan Dokumen";
+    }
+  }
+
+  const driver = {
+    dataDriver: {
+      driverId: driverInfo?.id || "unknown",
+      name: driverInfo?.name || "Unknown Driver",
+      phoneNumber: driverInfo?.phoneNumber || "",
+      profileImage: driverInfo?.profileImage || "",
+      orderStatus: currentOrderStatus,
+      driverStatus: currentDriverStatus,
+      statusTitle: statusTitle,
+      licensePlate: fleetInfo?.licensePlate || "Unknown",
+    },
+    statusDefinitions: normalizedStatusDefinitions,
+  };
+
+  return {
+    drivers: [driver],
+  };
+};
+
 // Normalizer function to transform fleet detailed info to map format
 export const normalizeFleetDataForMap = (data) => {
   if (!data) return null;
@@ -188,7 +326,7 @@ export const normalizeFleetDataForMap = (data) => {
         needsResponseChange: false, // This should come from actual data
       },
       onClick: (marker) => {
-        console.log("Truck clicked:", marker);
+        // Handle truck marker click
       },
     });
   }
@@ -201,21 +339,39 @@ export const normalizeFleetDataForMap = (data) => {
 
   return { locationMarkers, locationPolyline, encodedTruckPolyline };
 };
-export const getFleetDetailedInfo = async (fleetId) => {
+export const getFleetDetailedInfo = async (fleetId, orderId) => {
   let result;
   if (useMockData) {
     result = mockAPIResult;
   } else {
+    // If orderId is not provided, use fleetId as orderId (fallback)
+    const queryOrderId = orderId || fleetId;
     result = await fetcherMuatrans.get(
-      `/v1/transporter/fleet/${fleetId}/detailed-info`
+      `/v1/transporter/fleet/${fleetId}/detailed-info`,
+      {
+        params: {
+          orderId: queryOrderId,
+        },
+      }
     );
   }
 
-  const data = normalizeFleetDataForMap(result?.data?.Data);
-  return data;
+  const rawData = result?.data;
+  const mapData = normalizeFleetDataForMap(rawData?.Data);
+  const driverData = normalizeFleetDataToDriverFormat(rawData?.Data);
+
+  return {
+    rawData: rawData,
+    mapData: mapData,
+    driverData: driverData,
+  };
 };
-// SWR hook for GET request
-export const useGetFleetDetailedInfo = (fleetId) =>
-  useSWR(fleetId ? `fleet-detailed-info/${fleetId}` : null, () =>
-    getFleetDetailedInfo(fleetId)
-  );
+// SWR hook for GET request (returns both raw and map data)
+export const useGetFleetDetailedInfo = (fleetId, orderId) => {
+  // Create a unique key for SWR caching
+  const key = fleetId
+    ? `fleet-detailed-info/${fleetId}${orderId ? `/${orderId}` : ""}`
+    : null;
+
+  return useSWR(key, () => getFleetDetailedInfo(fleetId, orderId));
+};

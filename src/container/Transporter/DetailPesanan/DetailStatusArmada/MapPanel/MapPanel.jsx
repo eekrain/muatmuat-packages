@@ -6,23 +6,14 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import { LegendButton } from "@/container/Shared/Map/components/LegendButton";
-import { useGetFleetDetailedInfo } from "@/services/Transporter/daftar-pesanan/detail-status-armada/getFleetDetailedInfo";
 
-export const MapPanel = () => {
+export const MapPanel = ({ fleetMapData }) => {
   const params = useParams();
   const containerRef = useRef(null);
   const [height, setHeight] = useState(0);
   const [showLicensePlate, setShowLicensePlate] = useState(false);
   const [mapZoom, setMapZoom] = useState(13);
   const [mapCenter, setMapCenter] = useState(null);
-  // For now, using driverId as fleetId - this should be updated based on actual URL structure
-  const {
-    data: dataTracking,
-    error,
-    isLoading,
-  } = useGetFleetDetailedInfo(params.uuid);
-
-  // Transform fleet detailed info to match MapWithPath expected format
 
   useEffect(() => {
     if (containerRef.current) {
@@ -31,10 +22,10 @@ export const MapPanel = () => {
   }, [containerRef]);
 
   useEffect(() => {
-    if (dataTracking?.locationPolyline?.[0]) {
-      setMapCenter(dataTracking.locationPolyline[0]);
+    if (fleetMapData[0]?.locationPolyline?.[0]) {
+      setMapCenter(fleetMapData[0].locationPolyline[0]);
     }
-  }, [dataTracking]);
+  }, [fleetMapData[0]]);
 
   const handleZoomIn = () => {
     setMapZoom((prev) => Math.min(prev + 1, 20));
@@ -45,20 +36,11 @@ export const MapPanel = () => {
   };
 
   const handleCenter = () => {
-    if (dataTracking?.locationPolyline?.[0]) {
-      setMapCenter(dataTracking.locationPolyline[0]);
+    if (fleetMapData[0]?.locationPolyline?.[0]) {
+      setMapCenter(fleetMapData[0].locationPolyline[0]);
       setMapZoom(13);
     }
   };
-  console.log("=== DEBUG MAP DATA ===");
-  console.log("dataTracking:", dataTracking);
-  console.log("locationMarkers:", dataTracking?.locationMarkers);
-  console.log("locationPolyline:", dataTracking?.locationPolyline);
-  console.log("mapCenter:", mapCenter);
-  console.log("height:", height);
-  console.log("isLoading:", isLoading);
-  console.log("error:", error);
-  console.log("=== END DEBUG ===");
 
   const mapControls = [
     {
@@ -83,13 +65,13 @@ export const MapPanel = () => {
       ref={containerRef}
       className="relative h-[596px] w-full flex-1 overflow-hidden rounded-r-[20px]"
     >
-      {dataTracking && height > 0 && (
+      {fleetMapData[0] && height > 0 && (
         <MapMonitoring
           apiKey="AIzaSyDw_9D9-4zTechHn1wMEILZqiBv51Q7jHU"
-          locationMarkers={dataTracking.locationMarkers}
-          locationPolyline={dataTracking.locationPolyline}
-          encodedTruckPolyline={dataTracking.encodedTruckPolyline}
-          center={mapCenter || dataTracking?.locationPolyline?.[0]}
+          locationMarkers={fleetMapData[0].locationMarkers}
+          locationPolyline={fleetMapData[0].locationPolyline}
+          encodedTruckPolyline={fleetMapData[0].encodedTruckPolyline}
+          center={mapCenter || fleetMapData[0]?.locationPolyline?.[0]}
           zoom={mapZoom}
           mapContainerStyle={{
             width: "100%",

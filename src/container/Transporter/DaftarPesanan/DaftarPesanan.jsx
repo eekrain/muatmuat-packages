@@ -323,7 +323,9 @@ const DaftarPesanan = ({
       sortable: true,
       render: (row, rowIndex) => {
         const statusConfig = getOrderStatusBadgeWithTranslation(
-          row.orderStatus,
+          row.orderStatus === "NEED_RESPONSE_CHANGE"
+            ? ORDER_STATUS.NEED_CHANGE_RESPONSE
+            : row.orderStatus,
           t
         );
         return (
@@ -350,7 +352,9 @@ const DaftarPesanan = ({
                   </p>
                 </InfoTooltip>
               ) : null}
-              {statusConfig.label}
+              {row.orderStatus === "NEED_RESPONSE_CHANGE"
+                ? getOrderStatusConfig(ORDER_STATUS.NEED_CHANGE_RESPONSE).label
+                : statusConfig.label}
             </div>
           </BadgeStatusPesanan>
         );
@@ -385,7 +389,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- END */}
-          {row.orderStatus === "NEED_CHANGE_RESPONSE" ? (
+          {row.orderStatus === "NEED_RESPONSE_CHANGE" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -597,12 +601,7 @@ const DaftarPesanan = ({
                     // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
                     // isn't one of the specific tab values
                     const isActiveAllTab =
-                      tab.value === "" &&
-                      queryParams.status !==
-                        ORDER_STATUS.NEED_CHANGE_RESPONSE &&
-                      queryParams.status !==
-                        ORDER_STATUS.NEED_CONFIRMATION_READY &&
-                      queryParams.status !== ORDER_STATUS.NEED_ASSIGN_FLEET;
+                      tab.value === "" && queryParams.status === "";
 
                     return (
                       <div
@@ -654,7 +653,13 @@ const DaftarPesanan = ({
                       },
                     }}
                   >
-                    {getOrderStatusConfig(t)[queryParams.status].label}
+                    {
+                      getOrderStatusConfig(t)[
+                        queryParams.status === "NEED_RESPONSE_CHANGE"
+                          ? ORDER_STATUS.NEED_CHANGE_RESPONSE
+                          : queryParams.status
+                      ].label
+                    }
                   </TagBubble>
                 </div>
               ) : null}
