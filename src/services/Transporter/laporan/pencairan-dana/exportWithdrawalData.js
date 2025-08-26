@@ -1,6 +1,6 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 export const mockExportWithdrawalData = {
   success: {

@@ -12,6 +12,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { useTranslation } from "@/hooks/use-translation";
+import { exportWithdrawalData } from "@/services/Transporter/laporan/pencairan-dana/exportWithdrawalData";
 import { useGetWithdrawalDetail } from "@/services/Transporter/laporan/pencairan-dana/getWithdrawalDetail";
 
 export default function DetailPencairanDanaPage({ params }) {
@@ -97,6 +98,37 @@ export default function DetailPencairanDanaPage({ params }) {
     setCurrentPage(1); // Reset to first page when changing per page
   };
 
+  const handleDownload = async () => {
+    try {
+      // Prepare export parameters for detail page
+      const exportParams = {
+        withdrawalId: id, // Pass the specific withdrawal ID
+        page: currentPage,
+        limit: perPage,
+      };
+
+      const result = await exportWithdrawalData(exportParams);
+
+      if (result.success) {
+        // Create a temporary link to download the file
+        const link = document.createElement("a");
+        link.href = result.data.Data.downloadUrl;
+        link.download = result.data.Data.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log("Download successful:", result.data.Data.fileName);
+      } else {
+        console.error("Export failed:", result.data.Message?.Text);
+        // You can add toast notification here if needed
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      // You can add toast notification here if needed
+    }
+  };
+
   return (
     <div className="mt-8">
       {/* Breadcrumb */}
@@ -129,7 +161,7 @@ export default function DetailPencairanDanaPage({ params }) {
             "Rincian Pencairan"
           )}
         </PageTitle>
-        <Button iconLeft={<Download size={16} />}>
+        <Button iconLeft={<Download size={16} />} onClick={handleDownload}>
           {t("DetailPencairanDanaPage.buttonDownload", {}, "Unduh")}
         </Button>
       </div>
