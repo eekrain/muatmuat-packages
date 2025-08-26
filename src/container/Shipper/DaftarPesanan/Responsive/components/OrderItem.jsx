@@ -100,7 +100,7 @@ const OrderItem = ({
       <div className="flex flex-col gap-y-4 bg-neutral-50 p-4">
         <div className="flex flex-col gap-y-2 border-b border-b-neutral-400 pb-4 text-xs leading-[1.1]">
           <h4 className="font-bold">{invoice}</h4>
-          <span className="font-medium">{`Muat: ${formatDate(loadTimeStart)}${loadTimeEnd ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
+          <span className="font-medium">{`Muat: ${formatDate(loadTimeStart, { padDay: true })}${loadTimeEnd ? ` s/d ${formatDate(loadTimeEnd, { padDay: true })}` : ""}`}</span>
         </div>
         <div className="flex flex-col gap-y-3">
           <TimelineContainer>
@@ -273,7 +273,7 @@ const OrderItem = ({
                     {t("messageLakukanPembayaranSebelum")}
                   </span>
                   <span className="font-semibold text-warning-900">
-                    {formatDate(paymentDeadline)}
+                    {formatDate(paymentDeadline, { padDay: true })}
                   </span>
                 </div>
               ) : latestStatus?.statusCode ===

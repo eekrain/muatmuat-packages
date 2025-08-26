@@ -1,451 +1,216 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import Card from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
-
-// Mock data berdasarkan gambar yang diberikan
-const contactHistoryData = [
-  {
-    id: 1,
-    csName: "CS Bertugas",
-    contactDate: "03 Okt 2024 18:00 WIB",
-    contactCount: 20,
-  },
-  {
-    id: 2,
-    csName: "CS Daffa Toldo",
-    contactDate: "02 Okt 2024 18:00 WIB",
-    contactCount: 19,
-  },
-  {
-    id: 3,
-    csName: "CS Christina Clara",
-    contactDate: "01 Okt 2024 18:00 WIB",
-    contactCount: 18,
-  },
-  {
-    id: 4,
-    csName: "CS Prima Arfandi",
-    contactDate: "01 Okt 2024 12:00 WIB",
-    contactCount: 17,
-  },
-  {
-    id: 5,
-    csName: "CS Nafalia Juwita",
-    contactDate: "01 Okt 2024 09:00 WIB",
-    contactCount: 16,
-  },
-  {
-    id: 6,
-    csName: "CS Daffa Toldo",
-    contactDate: "03 Okt 2024 18:00 WIB",
-    contactCount: 15,
-  },
-  {
-    id: 7,
-    csName: "CS Christina Clara",
-    contactDate: "02 Okt 2024 18:00 WIB",
-    contactCount: 14,
-  },
-  {
-    id: 8,
-    csName: "CS Prima Arfandi",
-    contactDate: "01 Okt 2024 18:00 WIB",
-    contactCount: 13,
-  },
-  {
-    id: 9,
-    csName: "CS Daffa Toldo",
-    contactDate: "01 Okt 2024 12:00 WIB",
-    contactCount: 12,
-  },
-  {
-    id: 10,
-    csName: "CS Nafalia Juwita",
-    contactDate: "01 Okt 2024 09:00 WIB",
-    contactCount: 11,
-  },
-];
+import Table from "@/components/Table/Table";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { formatDate } from "@/lib/utils/dateFormat";
+import { useGetContactHistory } from "@/services/CS/laporan/tambahan-biaya/detail-tambahan-biaya/getContactHistory";
 
 /**
  * Komponen DataTable untuk menampilkan riwayat menghubungi CS.
  * Termasuk fungsionalitas pencarian dan sorting.
  */
 const RiwayatHubungiTable = () => {
-  // 1. State untuk menyimpan nilai input pencarian dari pengguna.
-  const [searchValue, setSearchValue] = useState("");
-  const [sortConfig, setSortConfig] = useState(null);
-  const [hasError, setHasError] = useState(false);
-
-  // Safety check: pastikan contactHistoryData tersedia dan tidak undefined
-  const safeContactHistoryData = useMemo(() => {
-    try {
-      if (!contactHistoryData) {
-        console.warn(
-          "contactHistoryData is null or undefined, using empty array"
-        );
-        return [];
-      }
-      if (!Array.isArray(contactHistoryData)) {
-        console.warn("contactHistoryData is not an array, using empty array");
-        return [];
-      }
-      if (contactHistoryData.length === 0) {
-        console.warn("contactHistoryData is empty array");
-        return [];
-      }
-      return contactHistoryData.map((item, index) => ({
-        ...item,
-        id: item?.id || index,
-        csName: item?.csName || "Unknown CS",
-        contactDate: item?.contactDate || "Unknown Date",
-        contactCount: item?.contactCount || 0,
-      }));
-    } catch (error) {
-      console.error("Error processing contactHistoryData:", error);
-      setHasError(true);
-      return [];
-    }
-  }, []);
-
-  // Logika untuk mengurutkan data
-  const sortedData = useMemo(() => {
-    // Safety check: pastikan safeContactHistoryData adalah array dan tidak undefined
-    if (
-      !Array.isArray(safeContactHistoryData) ||
-      safeContactHistoryData.length === 0
-    ) {
-      return [];
-    }
-
-    try {
-      const sortableItems = [...safeContactHistoryData];
-      if (sortConfig !== null) {
-        sortableItems.sort((a, b) => {
-          // Safety check: pastikan a dan b ada dan memiliki key yang diminta
-          if (
-            !a ||
-            !b ||
-            a[sortConfig.key] === undefined ||
-            b[sortConfig.key] === undefined
-          ) {
-            return 0;
-          }
-
-          if (a[sortConfig.key] < b[sortConfig.key]) {
-            return sortConfig.direction === "ascending" ? -1 : 1;
-          }
-          if (a[sortConfig.key] > b[sortConfig.key]) {
-            return sortConfig.direction === "ascending" ? 1 : -1;
-          }
-          return 0;
-        });
-      }
-      return Array.isArray(sortableItems) ? sortableItems : [];
-    } catch (error) {
-      console.error("Error sorting data:", error);
-      return safeContactHistoryData || [];
-    }
-  }, [sortConfig, safeContactHistoryData]);
-
-  // 2. Logika untuk memfilter data berdasarkan nilai `searchValue`.
-  // useMemo digunakan agar proses filter tidak dijalankan ulang pada setiap render,
-  // kecuali jika `sortedData` atau `searchValue` berubah.
-  const filteredData = useMemo(() => {
-    try {
-      // Safety check: pastikan sortedData ada dan adalah array
-      if (!sortedData) {
-        console.warn("sortedData is null or undefined");
-        return [];
-      }
-
-      if (!Array.isArray(sortedData)) {
-        console.warn("sortedData is not an array:", typeof sortedData);
-        return [];
-      }
-
-      if (sortedData.length === 0) {
-        return [];
-      }
-
-      // Safety check untuk searchValue
-      const safeSearchValue =
-        searchValue && typeof searchValue === "string" ? searchValue : "";
-
-      // Jika input pencarian kosong, kembalikan semua data yang sudah diurutkan.
-      if (!safeSearchValue || safeSearchValue.trim() === "") {
-        return [...sortedData]; // Return copy to prevent mutations
-      }
-
-      // Jika ada input, filter data dengan maximum safety
-      const filteredResult = [];
-
-      for (let i = 0; i < sortedData.length; i++) {
-        try {
-          const item = sortedData[i];
-
-          // Safety check: pastikan item ada
-          if (!item) {
-            continue;
-          }
-
-          // Safety check: pastikan item.csName ada dan adalah string
-          if (!item.csName || typeof item.csName !== "string") {
-            continue;
-          }
-
-          // Perform case-insensitive search
-          const itemName = item.csName.toLowerCase();
-          const searchTerm = safeSearchValue.toLowerCase();
-
-          if (itemName.includes(searchTerm)) {
-            filteredResult.push(item);
-          }
-        } catch (itemError) {
-          console.error("Error processing item at index", i, ":", itemError);
-          continue;
-        }
-      }
-
-      return filteredResult;
-    } catch (error) {
-      console.error("Critical error in filteredData:", error);
-      setHasError(true);
-      return [];
-    }
-  }, [sortedData, searchValue]);
-
-  // Fungsi untuk menangani permintaan sorting
-  const requestSort = (key) => {
-    let direction = "ascending";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "ascending"
-    ) {
-      direction = "descending";
-    }
-    setSortConfig({ key, direction });
+  const defaultQueryParams = {
+    page: 1,
+    limit: 10,
+    search: "",
+    sort: "",
+    order: "",
   };
+  const [queryParams, setQueryParams] = useState(defaultQueryParams);
+  const [tempSearch, setTempSearch] = useState("");
+  const [hasNoContactHistories, setHasNoContactHistories] = useState(false);
 
-  // Komponen untuk header tabel yang bisa di-sort
-  const SortableHeader = ({ columnKey, title }) => (
-    <th
-      className="cursor-pointer p-4 text-left text-sm font-semibold text-neutral-500"
-      onClick={() => requestSort(columnKey)}
-    >
-      <div className="flex items-center gap-2">
-        {title}
-        <IconComponent
-          src="/icons/sort-gray.svg"
-          alt="Sort"
-          width={16}
-          height={16}
-        />
-      </div>
-    </th>
+  const queryString = useShallowMemo(() => {
+    const params = new URLSearchParams();
+
+    // Only add parameters with valid values
+    if (queryParams.page && queryParams.page > 0) {
+      params.append("page", queryParams.page);
+    }
+    if (queryParams.limit && queryParams.limit > 0) {
+      params.append("limit", queryParams.limit);
+    }
+    if (queryParams.search) {
+      params.append("search", queryParams.search);
+    }
+    if (queryParams.sort) {
+      params.append("sort", queryParams.sort);
+    }
+    if (queryParams.order) {
+      params.append("order", queryParams.order);
+    }
+    return params.toString();
+  }, [queryParams]);
+
+  const { data: { contactHistory = [], pagination = null } = {}, isLoading } =
+    useGetContactHistory(queryString);
+
+  useShallowCompareEffect(() => {
+    if (
+      !isLoading &&
+      contactHistory.length === 0 &&
+      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams)
+    ) {
+      setHasNoContactHistories(true);
+    }
+  }, [contactHistory, defaultQueryParams, queryParams, isLoading]);
+
+  const DataEmptyComponent = () => (
+    <DataNotFound
+      className="gap-5"
+      title="Keyword Tidak Ditemukan"
+      width={144}
+      height={122}
+    />
   );
 
+  const columns = [
+    {
+      key: "csName",
+      header: "CS Bertugas",
+      width: "484px",
+      className: "align-top !pl-6 !pr-3",
+      headerClassName: "pl-6 pr-3",
+      render: (row) => (
+        <span className="mt-1 text-xxs font-medium leading-[1.3]">
+          {row.cs_name}
+        </span>
+      ),
+    },
+    {
+      key: "contactedAt",
+      header: "CS Bertugas",
+      width: "472px",
+      className: "align-top !px-3",
+      headerClassName: "px-3",
+      render: (row) => (
+        <span className="mt-1 text-xxs font-medium leading-[1.3]">
+          {formatDate(row.contacted_at, { padDay: true })}
+        </span>
+      ),
+    },
+    {
+      key: "contactSequence",
+      header: "Hubungi Ke",
+      width: "276px",
+      className: "align-top !pr-6 !pl-3",
+      headerClassName: "pr-6 pl-3",
+      render: (row) => (
+        <span className="mt-1 text-xxs font-medium leading-[1.3]">
+          {`Hubungi Ke - ${row.contact_sequence}`}
+        </span>
+      ),
+    },
+  ];
+
+  const handleChangeQueryParams = (field, value) => {
+    setQueryParams((prevState) => {
+      // Reset to page 1 when changing filters
+      if (field !== "page") {
+        return { ...prevState, [field]: value, page: 1 };
+      }
+      return { ...prevState, [field]: value };
+    });
+  };
+
+  // Handle search
+  const handleSearch = (e) => {
+    if (e.key === "Enter" && tempSearch.length >= 3) {
+      handleChangeQueryParams("search", tempSearch);
+    }
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setTempSearch("");
+  };
+
+  // Generic function to handle sorting for any column
+  const handleSort = (columnName) => {
+    // If sort is empty or not the current column, set to current column and order to desc
+    if (queryParams.sort !== columnName) {
+      handleChangeQueryParams("sort", columnName);
+      handleChangeQueryParams("order", "desc");
+    }
+    // If sort is the current column and order is desc, change to asc
+    else if (queryParams.sort === columnName && queryParams.order === "desc") {
+      handleChangeQueryParams("order", "asc");
+    }
+    // If sort is the current column and order is asc, reset sort and order
+    else {
+      handleChangeQueryParams("sort", "");
+      handleChangeQueryParams("order", "");
+    }
+  };
+
   return (
-    <>
-      {hasError && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-700">
-            Terjadi kesalahan saat memuat data. Silakan refresh halaman.
-          </p>
-        </div>
-      )}
-      <Card className="rounded-lg border-0 p-6">
-        <div className="w-full md:w-1/4">
-          {/* 3. Komponen Input Search yang aman untuk pencarian. */}
-          {/* `value` diisi oleh state `searchValue`. */}
-          {/* `onChange` digunakan untuk memperbarui state `searchValue` setiap kali pengguna mengetik. */}
-          <Input
-            icon={{ left: "/icons/search.svg" }}
-            appearance={{
-              inputClassName: "pr-4 !text-[#1b1b1b]",
-            }}
-            value={searchValue || ""}
-            onChange={(e) => {
-              try {
-                // Maximum safety untuk event handling
-                if (!e) {
-                  console.warn("Event is null or undefined");
-                  return;
-                }
-
-                if (!e.target && !e.currentTarget) {
-                  console.warn("Event target is null or undefined");
-                  return;
-                }
-
-                // Ambil value dengan fallback
-                const target = e.target || e.currentTarget;
-                const value = target?.value;
-
-                if (typeof value !== "string") {
-                  console.warn("Input value is not a string:", typeof value);
-                  setSearchValue("");
-                  return;
-                }
-
-                setSearchValue(value);
-              } catch (error) {
-                console.error("Error in search input onChange:", error);
-                setSearchValue("");
-              }
-            }}
-            placeholder="Cari Nama/Perusahaan"
-          />
-        </div>
-        {(() => {
-          try {
-            // Triple safety check for rendering
-            const safeFilteredData = Array.isArray(filteredData)
-              ? filteredData
-              : [];
-            const hasData = safeFilteredData.length > 0;
-            const hasOriginalData =
-              Array.isArray(safeContactHistoryData) &&
-              safeContactHistoryData.length > 0;
-            const isSearching = searchValue && searchValue.trim() !== "";
-
-            // Jika tidak ada data sama sekali
-            if (!hasOriginalData) {
-              return (
-                <DataNotFound
-                  title="Belum Ada Riwayat Laporan"
-                  description="Belum ada riwayat laporan yang tercatat."
-                  type="data"
-                  className="h-full p-6"
-                />
-              );
-            }
-
-            // Jika sedang mencari tapi tidak ada hasil
-            if (isSearching && !hasData) {
-              return (
-                <DataNotFound
-                  title="Keyword Tidak Ditemukan"
-                  description={`Tidak ada data yang sesuai dengan pencarian "${searchValue}".`}
-                  type="search"
-                  className="h-full p-6"
-                />
-              );
-            }
-
-            // Jika ada data untuk ditampilkan
-            if (hasData) {
-              return (
-                <>
-                  {/* Search */}
-
-                  {/* Table */}
-                  <div className="mt-4 overflow-x-auto">
-                    <table className="min-w-full divide-y divide-neutral-200">
-                      <thead className="bg-neutral-50">
-                        <tr>
-                          <SortableHeader
-                            columnKey="csName"
-                            title="CS Bertugas"
-                          />
-                          <SortableHeader
-                            columnKey="contactDate"
-                            title="Tanggal Menghubungi"
-                          />
-                          <SortableHeader
-                            columnKey="contactCount"
-                            title="Hubungi Ke"
-                          />
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-neutral-200 bg-white">
-                        {/* Data yang ditampilkan di tabel adalah `filteredData`, bukan data asli. */}
-                        {safeFilteredData.map((item, index) => {
-                          try {
-                            // Safety check untuk setiap item
-                            if (!item) {
-                              return null;
-                            }
-
-                            const itemId = item.id || `item-${index}`;
-
-                            return (
-                              <tr key={itemId}>
-                                <td className="whitespace-nowrap p-4 text-start text-sm text-neutral-900">
-                                  {item.csName || "N/A"}
-                                </td>
-                                <td className="whitespace-nowrap p-4 text-start text-sm text-neutral-900">
-                                  {item.contactDate || "N/A"}
-                                </td>
-                                <td className="whitespace-nowrap p-4 text-start text-sm text-neutral-900">
-                                  {item.contactCount
-                                    ? `Hubungi Ke - ${item.contactCount}`
-                                    : "N/A"}
-                                </td>
-                              </tr>
-                            );
-                          } catch (itemError) {
-                            console.error(
-                              "Error rendering item:",
-                              itemError,
-                              item
-                            );
-                            return null;
-                          }
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              );
-            }
-
-            // Fallback untuk kondisi yang tidak terduga
-            return (
-              <DataNotFound
-                title="Belum Ada Riwayat Laporan"
-                description="Belum ada riwayat laporan yang tercatat."
-                type="data"
-                className="h-full p-6"
-              />
-            );
-          } catch (renderError) {
-            console.error("Error rendering table:", renderError);
-            return (
-              <div className="p-4 text-center text-red-600">
-                Terjadi kesalahan saat menampilkan data.
-              </div>
-            );
-          }
-        })()}
-      </Card>
-
-      {(() => {
-        try {
-          const safeFilteredData = Array.isArray(filteredData)
-            ? filteredData
-            : [];
-          const hasData = safeFilteredData.length > 0;
-
-          return hasData ? (
-            <Pagination
-              currentPage={1}
-              totalPages={15}
-              onPageChange={() => {}}
-              onPerPageChange={() => {}}
-              perPage={10}
+    <div className="flex flex-col gap-y-4">
+      <Card className="overflow-hidden border-none">
+        {hasNoContactHistories ? (
+          <div className="flex h-[280px] items-center justify-center">
+            <DataNotFound
+              type="data"
+              title="Belum Ada Riwayat Hubungi"
+              className="gap-3"
+              textClass="w-full"
+              width={96}
+              height={77}
             />
-          ) : null;
-        } catch (paginationError) {
-          console.error("Error rendering pagination:", paginationError);
-          return null;
-        }
-      })()}
-    </>
+          </div>
+        ) : (
+          <>
+            <div className="p-6 pt-5">
+              <Input
+                className="gap-0"
+                appearance={{ containerClassName: "w-[262px]" }}
+                placeholder="Cari CS Bertugas"
+                icon={{
+                  left: "/icons/search16.svg",
+                  right: tempSearch ? (
+                    <IconComponent
+                      src="/icons/silang16.svg"
+                      onClick={handleClearSearch}
+                    />
+                  ) : null,
+                }}
+                value={tempSearch}
+                onChange={({ target: { value } }) => setTempSearch(value)}
+                onKeyUp={handleSearch}
+              />
+            </div>
+            <Table
+              columns={columns}
+              data={contactHistory}
+              loading={isLoading}
+              onRowClick={undefined}
+              onSort={handleSort}
+              sortConfig={{
+                sort: queryParams.sort,
+                order: queryParams.order,
+              }}
+              emptyComponent={<DataEmptyComponent />}
+            />
+          </>
+        )}
+      </Card>
+      {contactHistory.length === 0 ? null : (
+        <Pagination
+          currentPage={pagination?.currentPage}
+          totalPages={pagination?.totalPages}
+          perPage={pagination?.itemsPerPage}
+          onPageChange={(value) => handleChangeQueryParams("page", value)}
+          onPerPageChange={(value) => handleChangeQueryParams("limit", value)}
+          className="py-0"
+        />
+      )}
+    </div>
   );
 };
 
