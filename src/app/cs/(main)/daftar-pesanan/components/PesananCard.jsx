@@ -32,8 +32,10 @@ import {
 import BadgeOrderType from "./BadgeOrderType";
 import CancelFleetModal from "./CancelFleetModal";
 import CancelReasonModal from "./CancelReasonModal";
+import CancellationDetailModal from "./CancellationDetailModal";
 import CargoInfo from "./CargoInfo";
 import DetailArchieveModal from "./DetailArchieveModal";
+import DetailReceiptModal from "./DetailReceiptModal";
 import FleetListModal from "./FleetListModal";
 import MuatBongkarStepperWithModal from "./MuatBongkarStepperWithModal";
 import OrderChangeInfoModal from "./OrderChangeInfoModal";
@@ -53,6 +55,9 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     confirmCancelOrder: false,
     confirmCancelFleet: false,
     uploadArchive: false,
+    detailArchive: false,
+    viewReceipt: false,
+    cancellationDetail: false,
   });
 
   const [modalData, setModalData] = useState({
@@ -156,7 +161,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
   };
 
   const handleViewCancellationReason = () => {
-    console.log("OPEN MODAL VIEW CANCELLATION ###BELUMMM");
+    openModal("cancellationDetail");
   };
 
   const handleUploadArchive = () => {
@@ -165,6 +170,10 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
 
   const handleViewArchive = () => {
     openModal("detailArchive");
+  };
+
+  const handleViewReceipt = () => {
+    openModal("viewReceipt");
   };
 
   const actionItems = useGetActionItems({
@@ -177,6 +186,7 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
     onViewCancellationReason: handleViewCancellationReason,
     onUploadArchive: handleUploadArchive,
     onViewArchive: handleViewArchive,
+    onViewReceipt: handleViewReceipt,
   });
 
   const handleActionClick = (action) => {
@@ -578,6 +588,18 @@ const PesananCard = ({ order, userRole, viewMode = "default" }) => {
         isOpen={modalState.detailArchive}
         onClose={() => closeModal("detailArchive")}
         order={order}
+        isLoading={isLoading}
+      />
+      <DetailReceiptModal
+        isOpen={modalState.viewReceipt}
+        onClose={() => closeModal("viewReceipt")}
+        order={order}
+        isLoading={isLoading}
+      />
+      <CancellationDetailModal
+        isOpen={modalState.cancellationDetail}
+        onClose={() => closeModal("cancellationDetail")}
+        cancellationData={null} // Will be replaced with actual data
         isLoading={isLoading}
       />
       <HubungiModal
