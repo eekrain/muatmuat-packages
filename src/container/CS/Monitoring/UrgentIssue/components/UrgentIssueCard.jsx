@@ -268,6 +268,12 @@ export const UrgentIssueCard = ({
             </span>{" "}
             {description}
           </div>
+          {isNegative && (
+            <div className="mt-1 text-xs font-medium text-primary-700">
+              2 Transporter Menolak Perubahan Armada
+            </div>
+          )}
+
           <div className="my-3 h-px w-full bg-neutral-400" />
           {/* Selesai - Lihat Detail */}
           {statusDisplay === "selesai" && !isDetailOpen && (

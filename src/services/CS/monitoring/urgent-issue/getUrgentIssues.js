@@ -73,7 +73,7 @@ export const mockUrgentIssueList = {
           issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
           description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
-          detected_at: "2025-01-15T09:15:00Z",
+          detected_at: "2025-08-26T16:30:00Z",
           processed_at: null,
           rejection_count: 2,
           contact_attempts: 3,
