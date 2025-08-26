@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
@@ -51,7 +51,7 @@ const HubungiModal = ({
   }, //for dev purpose change to [] for production
 }) => {
   const { t } = useTranslation();
-  const [modalView, setModalView] = useState("details"); // 'initial', 'options', 'details'
+  const [modalView, setModalView] = useState("initial"); // 'initial', 'options', 'details'
   const [showCopySuccess, setShowCopySuccess] = useState(false);
 
   const handleCopyPhone = (phoneNumber) => {
@@ -70,6 +70,19 @@ const HubungiModal = ({
     }
   };
 
+  // Ensure modalView resets to 'initial' when modal is closed
+  const handleModalOpenChange = (open) => {
+    if (!open) {
+      setModalView("initial");
+      if (typeof onClose === "function") onClose();
+    }
+  };
+
+  // Fallback: if parent toggles isOpen to false, reset modalView as well
+  useEffect(() => {
+    if (!isOpen) setModalView("initial");
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   // View 3: Contact Details
@@ -77,7 +90,7 @@ const HubungiModal = ({
     return (
       <Modal
         open={isOpen}
-        onOpenChange={onClose}
+        onOpenChange={handleModalOpenChange}
         withCloseButton={true}
         closeOnOutsideClick={true}
       >
@@ -263,7 +276,7 @@ const HubungiModal = ({
   return (
     <Modal
       open={isOpen}
-      onOpenChange={onClose}
+      onOpenChange={handleModalOpenChange}
       withCloseButton={true}
       closeOnOutsideClick={true}
     >

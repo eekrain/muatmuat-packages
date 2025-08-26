@@ -89,7 +89,7 @@ export const mockApiResultCsFleet = {
               carrierId: "carrier-2",
               name: "Bak Tertutup",
             },
-            status: "ON_DUTY",
+            statuDs: "ON_DUTY",
             isActive: true,
             hasSOSAlert: true,
             detailSOS: {

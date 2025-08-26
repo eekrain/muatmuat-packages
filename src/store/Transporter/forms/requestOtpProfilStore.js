@@ -5,32 +5,21 @@ import { fetcherMuatrans } from "@/lib/axios";
 import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
 import { zustandDevtools } from "@/lib/utils";
 
-// Utility function to format phone number to Indonesian format (62XXXXXXXXXX)
 const formatPhoneNumber = (phoneNumber) => {
   if (!phoneNumber) return phoneNumber;
-
-  // Remove all non-digit characters
   const cleanNumber = phoneNumber.replace(/\D/g, "");
-
-  // If starts with 0, replace with 62
   if (cleanNumber.startsWith("0")) {
     return `62${cleanNumber.substring(1)}`;
   }
-
-  // If starts with +62, remove the +
   if (cleanNumber.startsWith("62")) {
     return cleanNumber;
   }
-
-  // If starts with 8 (after removing 0), add 62
   if (cleanNumber.startsWith("8")) {
     return `62${cleanNumber}`;
   }
-
   return cleanNumber;
 };
 
-// Default form values - simplified to match Shipper pattern
 const defaultValues = {
   verificationMethod: null,
   verificationData: null,
@@ -59,6 +48,21 @@ export const useRequestOtpProfilStore = create(
                 [field]: value,
               },
             })),
+          initializeFromUrlParams: (params) => {
+            const expiresIn = params.get("expiresIn")
+              ? new Date(decodeURIComponent(params.get("expiresIn")))
+              : null;
+            set((state) => ({
+              formValues: {
+                ...state.formValues,
+                token: params.get("token"),
+                target: params.get("whatsapp"),
+                purpose: "FORGOT_PASSWORD",
+                otpType: "WHATSAPP",
+                expiresIn,
+              },
+            }));
+          },
           reset: () =>
             set({
               formValues: defaultValues,
@@ -76,7 +80,6 @@ export const useRequestOtpProfilStore = create(
             newTarget = null
           ) => {
             const formValues = get().formValues;
-
             try {
               const formattedTarget =
                 purpose === "CHANGE_EMAIL" ? target : formatPhoneNumber(target);
@@ -84,7 +87,6 @@ export const useRequestOtpProfilStore = create(
                 purpose === "CHANGE_EMAIL" && newTarget
                   ? newTarget
                   : formatPhoneNumber(newTarget);
-
               const requestData = {
                 target: formattedTarget,
                 otpType,
@@ -92,7 +94,6 @@ export const useRequestOtpProfilStore = create(
                 step,
                 ...(formattedNewTarget && { newTarget: formattedNewTarget }),
               };
-
               const response = await fetcherMuatrans
                 .post("/v1/transporter/auth/otp/generate", requestData)
                 .catch((error) => {
@@ -100,7 +101,6 @@ export const useRequestOtpProfilStore = create(
                     error?.response?.data?.Message?.Text || "Failed to send OTP"
                   );
                 });
-
               const data = response.data;
               if (
                 data?.Message?.Code === 200 ||
@@ -128,22 +128,45 @@ export const useRequestOtpProfilStore = create(
               throw new Error(error.message || "Failed to send OTP");
             }
           },
-
           verifyOtp: async (otp) => {
             const formValues = get().formValues;
             const { token, target, otpType, purpose } = formValues;
-
             if (!token || !target) {
               throw new Error("Missing required OTP data");
             }
-
-            // Check if purpose is EMAIL_VERIFICATION to use different fetcher and body structure
+            if (purpose === "FORGOT_PASSWORD") {
+              const response = await fetcherMuatrans
+                .post("/v1/transporter/auth/forgot-password/verify", {
+                  token,
+                  otpCode: otp,
+                })
+                .catch((error) => {
+                  const resMessage = error.response?.data?.Message?.Text;
+                  let errorMessage = "Gagal melakukan verifikasi OTP";
+                  if (resMessage?.includes("salah"))
+                    errorMessage = "messageIncorrectOtp";
+                  if (resMessage?.includes("expired"))
+                    errorMessage = "messageOtpCodeExpired";
+                  if (resMessage?.includes("berakhir"))
+                    errorMessage = "messageOtpVerifEndedNeedResend";
+                  throw new Error(errorMessage);
+                });
+              const data = response.data;
+              if (data?.Message?.Code === 200) {
+                set({
+                  formValues: {
+                    ...formValues,
+                    hasVerified: true,
+                    token: response.data.Data.verificationToken,
+                  },
+                });
+                return;
+              }
+              return;
+            }
             const isEmailVerification = purpose === "EMAIL_VERIFICATION";
-
             let response;
-
             if (isEmailVerification) {
-              // Use fetcherMuatransCS for EMAIL_VERIFICATION with different body structure
               response = await fetcherMuatransCS
                 .post("/v1/transporter/auth/verify-otp", {
                   phoneNumber: target,
@@ -151,7 +174,6 @@ export const useRequestOtpProfilStore = create(
                   token: token,
                 })
                 .catch((error) => {
-                  console.log(error);
                   const resMessage = error.response?.data?.Message?.Text;
                   let errorMessage = "Gagal melakukan verifikasi OTP";
                   if (resMessage?.includes("salah"))
@@ -163,11 +185,9 @@ export const useRequestOtpProfilStore = create(
                   throw new Error(errorMessage);
                 });
             } else {
-              // Use fetcherMuatrans for other purposes with original body structure
               if (!otpType) {
                 throw new Error("Missing required OTP data");
               }
-
               response = await fetcherMuatrans
                 .post("/v1/transporter/auth/otp/verify", {
                   token,
@@ -176,7 +196,6 @@ export const useRequestOtpProfilStore = create(
                   otpType,
                 })
                 .catch((error) => {
-                  console.log(error);
                   const resMessage = error.response?.data?.Message?.Text;
                   let errorMessage = "Gagal melakukan verifikasi OTP";
                   if (resMessage?.includes("salah"))
@@ -188,7 +207,6 @@ export const useRequestOtpProfilStore = create(
                   throw new Error(errorMessage);
                 });
             }
-
             const data = response.data;
             if (
               data?.Message?.Code === 200 ||
@@ -203,18 +221,12 @@ export const useRequestOtpProfilStore = create(
               });
             }
           },
-
           updateWhatsAppNumber: async (phoneNumber = null) => {
             const formValues = get().formValues;
             const { token, target, purpose } = formValues;
-
-            // Check if purpose is EMAIL_VERIFICATION to use different fetcher
             const isEmailVerification = purpose === "EMAIL_VERIFICATION";
-
             let response;
-
             if (isEmailVerification) {
-              // Use fetcherMuatransCS for EMAIL_VERIFICATION
               response = await fetcherMuatransCS
                 .put("/v1/transporter/auth/change-phone-number", {
                   phoneNumber: phoneNumber,
@@ -228,7 +240,6 @@ export const useRequestOtpProfilStore = create(
                   );
                 });
             } else {
-              // Use fetcherMuatrans for other purposes with formatted phone number
               const formattedPhoneNumber = formatPhoneNumber(target);
               response = await fetcherMuatrans
                 .put("/v1/transporter/profile/whatsapp", {
@@ -243,8 +254,6 @@ export const useRequestOtpProfilStore = create(
                   );
                 });
             }
-
-            // Update target with phoneNumber from response if available
             const data = response.data;
             if (data?.Data?.phoneNumber) {
               set({
@@ -254,10 +263,8 @@ export const useRequestOtpProfilStore = create(
                 },
               });
             }
-
             return data;
           },
-
           updateEmailAddress: async () => {
             const formValues = get().formValues;
             const { token, target } = formValues;
@@ -273,24 +280,17 @@ export const useRequestOtpProfilStore = create(
                     "Gagal mengupdate email"
                 );
               });
-
             return response.data;
           },
-
           resendOtp: async () => {
             const formValues = get().formValues;
             const { token, target, otpType, purpose } = formValues;
 
             try {
-              // Check if purpose is EMAIL_VERIFICATION to use different fetcher and body structure
               const isEmailVerification = purpose === "EMAIL_VERIFICATION";
-
               let response;
-              console.log(isEmailVerification, purpose, "active");
+
               if (isEmailVerification) {
-                // Use fetcherMuatransCS for EMAIL_VERIFICATION with different body structure
-                const formattedTarget = formatPhoneNumber(target);
-                console.log("active", token);
                 response = await fetcherMuatransCS
                   .post("v1/transporter/auth/resend-otp", {
                     phoneNumber: target,
@@ -302,24 +302,21 @@ export const useRequestOtpProfilStore = create(
                     if (
                       resMessage?.includes("rate limit") ||
                       resMessage?.includes("Tunggu")
-                    )
+                    ) {
                       errorMessage = "Tunggu 30 detik sebelum kirim ulang";
+                    }
                     throw new Error(errorMessage);
                   });
               } else {
-                // Use fetcherMuatrans for other purposes with original body structure
                 if (!otpType) {
                   throw new Error("Missing required OTP data");
                 }
-
                 const formattedTarget = formatPhoneNumber(target);
-
                 const requestData = {
                   otpId: token,
                   target: formattedTarget,
                   otpType,
                 };
-
                 response = await fetcherMuatrans
                   .post("/v1/transporter/auth/otp/resend", requestData)
                   .catch((error) => {
@@ -328,8 +325,9 @@ export const useRequestOtpProfilStore = create(
                     if (
                       resMessage?.includes("rate limit") ||
                       resMessage?.includes("Tunggu")
-                    )
+                    ) {
                       errorMessage = "Tunggu 30 detik sebelum kirim ulang";
+                    }
                     throw new Error(errorMessage);
                   });
               }
@@ -340,22 +338,26 @@ export const useRequestOtpProfilStore = create(
                 const expiresIn = otpData?.expiresIn
                   ? new Date(otpData.expiresIn)
                   : null;
+                const nextResendAt = otpData.nextResendAt
+                  ? new Date(otpData.nextResendAt)
+                  : null;
 
                 set({
                   formValues: {
                     ...formValues,
                     target: otpData.target || otpData.phoneNumber,
                     maskedTarget: otpData.maskedTarget,
-                    token: otpData.newOtpId || otpData.token, // Use newOtpId as token for resent OTP, fallback to token for EMAIL_VERIFICATION
+                    token: otpData.newOtpId || otpData.token,
                     otpType: otpData.otpType,
                     expiresIn,
-                    nextResendAt: otpData.nextResendAt
-                      ? new Date(otpData.nextResendAt)
-                      : null,
+                    nextResendAt,
                   },
                 });
-
                 return data;
+              } else {
+                throw new Error(
+                  data?.Message?.Text || "Gagal mengirim ulang OTP"
+                );
               }
             } catch (error) {
               throw new Error(error.message || "Gagal mengirim ulang OTP");
@@ -378,18 +380,15 @@ export const useRequestOtpProfilStore = create(
   )
 );
 
-// Selector hooks for specific parts of the state
 export const useRequestOtpProfilActions = () =>
   useRequestOtpProfilStore((state) => state.actions);
 
 export const useRequestOtpProfilExpiresIn = () =>
   useRequestOtpProfilStore((state) => state.formValues.expiresIn);
 
-// New hook to access formValues directly (similar to Shipper's pattern)
 export const useRequestOtpProfilFormValues = () =>
   useRequestOtpProfilStore((state) => state.formValues);
 
-// Export hooks with names compatible with OtpContainer.jsx
 export const useRequestOtpActions = () =>
   useRequestOtpProfilStore((state) => state.actions);
 

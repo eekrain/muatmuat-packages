@@ -12,6 +12,7 @@ import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
 import ImageArmada from "./components/ImageArmada";
@@ -60,12 +61,20 @@ const mockAvailableArmada = [
   },
 ];
 
-const validationSchema = v.object({
-  selectedArmada: v.pipe(
-    v.string(),
-    v.minLength(1, "Armada pengganti wajib dipilih")
-  ),
-});
+const createValidationSchema = (t) =>
+  v.object({
+    selectedArmada: v.pipe(
+      v.string(),
+      v.minLength(
+        1,
+        t(
+          "TerimaDanUbahArmadaModal.replacementFleetRequired",
+          {},
+          "Armada pengganti wajib dipilih"
+        )
+      )
+    ),
+  });
 
 const TerimaDanUbahArmadaModal = ({
   isOpen,
@@ -74,8 +83,11 @@ const TerimaDanUbahArmadaModal = ({
   armadaId,
   onSave,
 }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validationSchema = createValidationSchema(t);
 
   const {
     setValue,
@@ -119,7 +131,13 @@ const TerimaDanUbahArmadaModal = ({
 
       // TODO: Implement API call to save armada replacement
 
-      toast.success("Armada pengganti berhasil dipilih");
+      toast.success(
+        t(
+          "TerimaDanUbahArmadaModal.replacementFleetSelectedSuccess",
+          {},
+          "Armada pengganti berhasil dipilih"
+        )
+      );
 
       // Call parent callback with selected armada data
       onSave?.(selectedArmadaData);
@@ -128,7 +146,13 @@ const TerimaDanUbahArmadaModal = ({
       onClose();
     } catch (error) {
       console.error("Error selecting armada:", error);
-      toast.error("Gagal memilih armada pengganti. Silakan coba lagi.");
+      toast.error(
+        t(
+          "TerimaDanUbahArmadaModal.replacementFleetSelectError",
+          {},
+          "Gagal memilih armada pengganti. Silakan coba lagi."
+        )
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -145,7 +169,7 @@ const TerimaDanUbahArmadaModal = ({
     if (armada.isRecommended) {
       return (
         <span className="flex h-6 items-center justify-center rounded bg-success-400 px-2 text-xs font-semibold text-success-50">
-          Rekomendasi
+          {t("TerimaDanUbahArmadaModal.recommended", {}, "Rekomendasi")}
         </span>
       );
     }
@@ -153,7 +177,11 @@ const TerimaDanUbahArmadaModal = ({
     if (armada.status === "potential_overload") {
       return (
         <span className="flex h-6 items-center justify-center rounded bg-error-50 px-2 text-xs font-semibold text-error-400">
-          Potensi Overload
+          {t(
+            "TerimaDanUbahArmadaModal.potentialOverload",
+            {},
+            "Potensi Overload"
+          )}
         </span>
       );
     }
@@ -183,14 +211,18 @@ const TerimaDanUbahArmadaModal = ({
           {/* Header */}
           <div className="flex items-center justify-center px-6 pb-4 pt-6">
             <ModalTitle className="text-lg font-bold text-black">
-              Pilih Armada
+              {t("TerimaDanUbahArmadaModal.selectFleet", {}, "Pilih Armada")}
             </ModalTitle>
           </div>
 
           {/* Search */}
           <div className="px-6 pb-4">
             <Search
-              placeholder="Cari No. Polisi / Driver"
+              placeholder={t(
+                "TerimaDanUbahArmadaModal.searchPlaceholder",
+                {},
+                "Cari No. Polisi / Driver"
+              )}
               onSearch={(value) => setSearchValue(value)}
               containerClassName="w-full"
               inputClassName="text-sm"
@@ -285,7 +317,7 @@ const TerimaDanUbahArmadaModal = ({
               disabled={isSubmitting}
               className="h-10 w-24 text-sm"
             >
-              Batal
+              {t("TerimaDanUbahArmadaModal.cancel", {}, "Batal")}
             </Button>
             <Button
               variant="muattrans-primary"
@@ -293,7 +325,9 @@ const TerimaDanUbahArmadaModal = ({
               disabled={isSubmitting}
               className="h-10 w-24 text-sm"
             >
-              {isSubmitting ? "Menyimpan..." : "Simpan"}
+              {isSubmitting
+                ? t("TerimaDanUbahArmadaModal.saving", {}, "Menyimpan...")
+                : t("TerimaDanUbahArmadaModal.save", {}, "Simpan")}
             </Button>
           </div>
         </div>

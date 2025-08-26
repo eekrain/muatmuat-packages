@@ -155,7 +155,7 @@ const DaftarPesananPage = () => {
                 value="pesanan-aktif"
                 activeColor="primary-700"
                 className={"!text-base"}
-                onClick={() => router.push("/daftar-pesanan")}
+                onClick={() => router.push("/daftar-pesanan/pesanan-aktif")}
               >
                 {t("daftarPesanan.tabActive", {}, "Pesanan Aktif")}
               </TabsTriggerWithSeparator>
@@ -180,12 +180,12 @@ const DaftarPesananPage = () => {
                     disable={disablePeriodButton}
                   />
                 </div>
-                <Button
+                {/* <Button
                   variant="muattrans-primary-secondary"
                   disabled={disableUploadButton}
                 >
                   {t("daftarPesanan.buttonUploadReceipt", {}, "Unggah Resi")}
-                </Button>
+                </Button> */}
                 <Button
                   variant="muattrans-primary"
                   disabled={disableDownloadButton}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
@@ -18,6 +19,8 @@ const PermintaanAngkutDetail = ({
   onUnderstand,
   onAccept,
 }) => {
+  const { t } = useTranslation();
+
   // Fetch detail data from list
   const { data: listData, isLoading } = useGetTransportRequestList({});
   const detailData = listData?.requests?.find((r) => r.id === request?.id);
@@ -54,7 +57,14 @@ const PermintaanAngkutDetail = ({
   };
   const handleModalAccept = (acceptData) => {
     toast.success(
-      `Permintaan ${displayData?.orderCode} berhasil diterima dengan ${acceptData.truckCount} unit`
+      t(
+        "PermintaanAngkutDetail.toastSuccessRequestAccepted",
+        {
+          orderCode: displayData?.orderCode,
+          truckCount: acceptData.truckCount,
+        },
+        `Permintaan ${displayData?.orderCode} berhasil diterima dengan ${acceptData.truckCount} unit`
+      )
     );
     setShowAcceptModal(false);
     onBack();
@@ -63,7 +73,13 @@ const PermintaanAngkutDetail = ({
   // Understand handler
   const handleUnderstand = () => {
     toast.success(
-      `Permintaan ${displayData?.orderCode || request?.orderCode} berhasil ditutup`
+      t(
+        "PermintaanAngkutDetail.toastSuccessRequestClosed",
+        { orderCode: displayData?.orderCode || request?.orderCode },
+        `Permintaan ${
+          displayData?.orderCode || request?.orderCode
+        } berhasil ditutup`
+      )
     );
     if (onUnderstand) onUnderstand(displayData?.id || request?.id);
     onBack();
@@ -118,7 +134,11 @@ const PermintaanAngkutDetail = ({
             displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
           )}
         >
-          Detail Permintaan Jasa Angkut
+          {t(
+            "PermintaanAngkutDetail.titleDetailPermintaanJasaAngkut",
+            {},
+            "Detail Permintaan Jasa Angkut"
+          )}
         </h1>
         <button
           onClick={onBack}
@@ -152,7 +172,11 @@ const PermintaanAngkutDetail = ({
             <div className="flex w-full flex-col gap-3">
               <div className="flex w-full rounded-xl bg-error-50 p-2">
                 <span className="text-xs font-semibold text-error-400">
-                  Permintaan sudah diambil transporter lain
+                  {t(
+                    "PermintaanAngkutDetail.messageErrorRequestTaken",
+                    {},
+                    "Permintaan sudah diambil transporter lain"
+                  )}
                 </span>
               </div>
               <Button
@@ -160,7 +184,7 @@ const PermintaanAngkutDetail = ({
                 className="w-full py-3 text-[14px] font-semibold"
                 onClick={handleUnderstand}
               >
-                Mengerti
+                {t("PermintaanAngkutDetail.buttonUnderstand", {}, "Mengerti")}
                 <NotificationDot
                   position="absolute"
                   positionClasses="right-[1px] top-[-1px]"
@@ -177,14 +201,14 @@ const PermintaanAngkutDetail = ({
                 className="flex-1 py-2 text-[14px] font-semibold"
                 onClick={handleTolakClick}
               >
-                Tolak
+                {t("PermintaanAngkutDetail.buttonReject", {}, "Tolak")}
               </Button>
               <Button
                 variant="muattrans-primary"
                 className="flex-1 py-2 text-[14px] font-semibold"
                 onClick={handleAcceptClick}
               >
-                Terima
+                {t("PermintaanAngkutDetail.buttonAccept", {}, "Terima")}
               </Button>
             </>
           )}

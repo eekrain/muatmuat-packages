@@ -21,14 +21,8 @@ import RespondChangeFormModal from "./RespondChangeFormModal";
 // ===================================================================
 // KOMPONEN BARU: Diimplementasikan berdasarkan gaya LocationChangeRow
 // ===================================================================
-const LocationComparisonRow = ({
-  oldLoc,
-  newLoc,
-  index,
-  isLast,
-  type,
-  routeChangedText,
-}) => {
+const LocationComparisonRow = ({ oldLoc, newLoc, index, isLast, type }) => {
+  const { t } = useTranslation();
   const isChanged = oldLoc?.fullAddress !== newLoc?.fullAddress;
 
   // Warna untuk dot dan teks di dalamnya
@@ -91,7 +85,7 @@ const LocationComparisonRow = ({
           </p>
           {isChanged && (
             <span className="flex h-[14px] w-[54px] flex-shrink-0 items-center justify-center rounded bg-black text-[8px] font-semibold leading-[130%] text-white">
-              {routeChangedText}
+              {t("RespondChangeModal.routeChanged", {}, "Rute Diubah")}
             </span>
           )}
         </div>
@@ -194,7 +188,7 @@ const RespondChangeModal = ({
           <div className="flex items-center justify-center px-6 pt-6">
             <ModalTitle className="text-base font-bold leading-[120%] text-black">
               {t(
-                "RespondChangeModal.orderChangeInfo",
+                "RespondChangeModal.orderChangeInformation",
                 {},
                 "Informasi Perubahan Pesanan"
               )}
@@ -211,7 +205,7 @@ const RespondChangeModal = ({
               />
               <p className="text-xs font-medium leading-[120%] text-black">
                 {t(
-                  "RespondChangeModal.changeNotification",
+                  "RespondChangeModal.warningMessage",
                   {},
                   "Terdapat perubahan pesanan dari shipper, mohon pelajari perubahannya dan segera beri respon"
                 )}
@@ -361,14 +355,14 @@ const RespondChangeModal = ({
                           <div className="grid grid-cols-2">
                             <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
                               {t(
-                                "RespondChangeModal.loadLocation",
+                                "RespondChangeModal.pickupLocation",
                                 {},
                                 "Lokasi Muat"
                               )}
                             </p>
                             <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
                               {t(
-                                "RespondChangeModal.loadLocation",
+                                "RespondChangeModal.pickupLocation",
                                 {},
                                 "Lokasi Muat"
                               )}
@@ -395,14 +389,14 @@ const RespondChangeModal = ({
                             <div className="grid grid-cols-2 pt-2">
                               <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
                                 {t(
-                                  "RespondChangeModal.unloadLocation",
+                                  "RespondChangeModal.dropoffLocation",
                                   {},
                                   "Lokasi Bongkar"
                                 )}
                               </p>
                               <p className="ml-7 text-xs font-medium text-[#7B7B7B]">
                                 {t(
-                                  "RespondChangeModal.unloadLocation",
+                                  "RespondChangeModal.dropoffLocation",
                                   {},
                                   "Lokasi Bongkar"
                                 )}
@@ -443,7 +437,7 @@ const RespondChangeModal = ({
                           {t(
                             "RespondChangeModal.incomeAdjustmentTooltip",
                             {},
-                            "Penyesuaian pendapatan hanya estimasi.\nPendapatan yang kamu terima menyesuaikan\nrespon perubahan yang kamu kirimkan."
+                            "Penyesuaian pendapatan hanya estimasi. Pendapatan yang kamu terima menyesuaikan respon perubahan yang kamu kirimkan."
                           )}
                         </p>
                       </InfoTooltip>
@@ -471,7 +465,7 @@ const RespondChangeModal = ({
               <div className="flex h-[200px] items-center justify-center">
                 <p className="text-center text-gray-500">
                   {t(
-                    "RespondChangeModal.errorLoadingDetails",
+                    "RespondChangeModal.cannotLoadDetails",
                     {},
                     "Tidak dapat memuat detail perubahan"
                   )}
@@ -500,7 +494,7 @@ const RespondChangeModal = ({
                   className="w-[180px] text-sm md:h-[34px]"
                 >
                   {t(
-                    "RespondChangeModal.respondToChange",
+                    "RespondChangeModal.respondToChanges",
                     {},
                     "Respon Perubahan"
                   )}

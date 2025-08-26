@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { Fragment, memo, useState } from "react";
+import { Fragment, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { TagBubble } from "@/components/Badge/TagBubble";
@@ -120,7 +120,7 @@ const DaftarPesanan = ({
     setSelectedOrderForConfirm(null);
   };
 
-  const DataEmptyComponentBase = () => {
+  const DataEmptyComponent = () => {
     if (lastFilterField === "search") {
       return (
         <DataNotFound
@@ -157,7 +157,6 @@ const DaftarPesanan = ({
       );
     }
   };
-  const DataEmptyComponent = memo(DataEmptyComponentBase);
 
   // Define columns sesuai LDG-2 design
   // DIBACA: SEMENTARA PAKEK ROW INDEX CUMAN BUAT KLUARIN VARIASI DESIGN!!!

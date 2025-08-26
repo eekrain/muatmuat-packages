@@ -13,19 +13,29 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { getTrackingStatusBadgeWithTranslation } from "@/utils/Transporter/trackingStatus";
 
 import TerimaDanUbahArmadaModal from "./TerimaDanUbahArmadaModal";
 import ImageArmada from "./components/ImageArmada";
 
 // Validation schema
-const validationSchema = v.object({
-  selectedArmada: v.pipe(
-    v.array(v.string()),
-    v.minLength(1, "Pilih minimal 1 armada")
-  ),
-});
+const createValidationSchema = (t) =>
+  v.object({
+    selectedArmada: v.pipe(
+      v.array(v.string()),
+      v.minLength(
+        1,
+        t(
+          "AturResponMassalModal.selectMinimumOne",
+          {},
+          "Pilih minimal 1 armada"
+        )
+      )
+    ),
+  });
 
 const AturResponMassalModal = ({
   isOpen,
@@ -38,6 +48,7 @@ const AturResponMassalModal = ({
   existingReplacements = {}, // Pass existing replacement selections from parent
   existingSelections = [], // Pass existing selected armada from parent
 }) => {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
@@ -47,13 +58,9 @@ const AturResponMassalModal = ({
   const [replacementArmada, setReplacementArmada] =
     useState(existingReplacements);
 
-  const {
-    setValue,
-    watch,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({
+  const validationSchema = createValidationSchema(t);
+
+  const { setValue, watch, handleSubmit, reset } = useForm({
     resolver: valibotResolver(validationSchema),
     defaultValues: {
       selectedArmada: existingSelections,
@@ -146,42 +153,29 @@ const AturResponMassalModal = ({
         data.selectedArmada.includes(armada.id.toString())
       );
 
-      console.log("Selected armada for bulk response:", selectedArmadaData);
-      console.log("Replacement armada:", replacementArmada);
-
       // Call parent callback with selected armada, response type, and replacement armada
       onSave?.(selectedArmadaData, responseType, replacementArmada);
 
       // Don't show success toast here - let the parent handle feedback
       handleCancel();
-    } catch (error) {
-      console.error("Error setting bulk response:", error);
-      toast.error("Gagal mengatur respon. Silakan coba lagi.");
+    } catch {
+      toast.error(
+        t(
+          "AturResponMassalModal.setResponseError",
+          {},
+          "Gagal mengatur respon. Silakan coba lagi."
+        )
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleFormSubmit = handleSubmit(onSubmit, (errors) => {
-    console.log("Validation errors:", errors);
-    if (errors.selectedArmada) {
-      toast.error(errors.selectedArmada.message);
+  const handleFormSubmit = handleSubmit(onSubmit, (validationErrors) => {
+    if (validationErrors.selectedArmada) {
+      toast.error(validationErrors.selectedArmada.message);
     }
   });
-
-  // Get status badge styling
-  const getStatusBadge = (status) => {
-    const statusMap = {
-      "Armada Dijadwalkan": "primary",
-      "Menuju ke Lokasi Muat": "primary",
-      "Tiba di Lokasi Muat": "primary",
-      "Antri di Lokasi Muat": "primary",
-      "Sedang Muat": "primary",
-      "Menuju ke Lokasi Bongkar": "primary",
-      "Tiba di Lokasi Bongkar": "success",
-    };
-    return statusMap[status] || "primary";
-  };
 
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
@@ -216,11 +210,19 @@ const AturResponMassalModal = ({
               <Checkbox
                 checked={selectAll}
                 onChange={({ checked }) => handleSelectAll(checked)}
-                label="Pilih Semua Armada"
+                label={t(
+                  "AturResponMassalModal.selectAllFleet",
+                  {},
+                  "Pilih Semua Armada"
+                )}
                 className="text-sm font-medium"
               />
               <Search
-                placeholder="Cari No. Polisi / Nama Driver"
+                placeholder={t(
+                  "AturResponMassalModal.searchPlaceholder",
+                  {},
+                  "Cari No. Polisi / Nama Driver"
+                )}
                 onSearch={(value) => setSearchValue(value)}
                 containerClassName="w-[300px]"
                 inputClassName="text-sm"
@@ -276,10 +278,20 @@ const AturResponMassalModal = ({
                             </span>
                           </div>
                           <BadgeStatus
-                            variant={getStatusBadge(armada.status)}
+                            variant={
+                              getTrackingStatusBadgeWithTranslation(
+                                armada.status,
+                                t
+                              ).variant
+                            }
                             className="w-fit text-xs"
                           >
-                            {armada.status}
+                            {
+                              getTrackingStatusBadgeWithTranslation(
+                                armada.status,
+                                t
+                              ).label
+                            }
                           </BadgeStatus>
                         </div>
                       </div>
@@ -330,7 +342,11 @@ const AturResponMassalModal = ({
                                     }
                                     className="ml-auto text-xs font-medium text-primary-700"
                                   >
-                                    Ubah Armada
+                                    {t(
+                                      "AturResponMassalModal.changeFleet",
+                                      {},
+                                      "Ubah Armada"
+                                    )}
                                   </button>
                                 </div>
                               ) : (
@@ -341,7 +357,11 @@ const AturResponMassalModal = ({
                                   }
                                   className="h-8 px-3 text-xs"
                                 >
-                                  Pilih Armada
+                                  {t(
+                                    "AturResponMassalModal.selectFleet",
+                                    {},
+                                    "Pilih Armada"
+                                  )}
                                 </Button>
                               )}
                             </div>
@@ -357,7 +377,13 @@ const AturResponMassalModal = ({
           {/* Footer */}
           <div className="flex items-center justify-between px-6 pb-6">
             <span className="text-sm font-bold text-black">
-              Total Unit Dipilih : {selectedArmada.length}/{totalRequired} Unit
+              {t(
+                "AturResponMassalModal.totalSelected",
+                {},
+                "Total Unit Dipilih"
+              )}{" "}
+              : {selectedArmada.length}/{totalRequired}{" "}
+              {t("AturResponMassalModal.unit", {}, "Unit")}
             </span>
             <div className="flex items-center gap-3">
               <Button
@@ -366,7 +392,7 @@ const AturResponMassalModal = ({
                 disabled={isSubmitting}
                 className="h-10 w-24 text-sm"
               >
-                Batal
+                {t("AturResponMassalModal.cancel", {}, "Batal")}
               </Button>
               <Button
                 variant="muattrans-primary"
@@ -374,7 +400,9 @@ const AturResponMassalModal = ({
                 disabled={isSubmitting || selectedArmada.length === 0}
                 className="h-10 w-24 text-sm"
               >
-                {isSubmitting ? "Menyimpan..." : "Simpan"}
+                {isSubmitting
+                  ? t("AturResponMassalModal.saving", {}, "Menyimpan...")
+                  : t("AturResponMassalModal.save", {}, "Simpan")}
               </Button>
             </div>
           </div>

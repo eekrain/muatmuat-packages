@@ -8,6 +8,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ const TransportRequestCard = ({
   onShowDetail,
   onAccept,
 }) => {
+  const { t } = useTranslation();
   // Use the prop if provided, otherwise fall back to request.isSaved
   const [isSaved, setIsSaved] = useState(
     isBookmarked !== undefined ? isBookmarked : request.isSaved
@@ -46,13 +48,25 @@ const TransportRequestCard = ({
     router.push(`/monitoring?id=${request.id}`);
   };
 
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const handleReject = () => {
-    setShowRejectModal(true);
+  const [showTolakModal, setShowTolakModal] = useState(false);
+  const [tolakRequest, setTolakRequest] = useState(null);
+
+  const handleTolakClick = () => {
+    setTolakRequest(request); // simpan request yang akan ditolak
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", `/monitoring?id=${request.id}`);
+    }
+    setShowTolakModal(true);
   };
 
   const handleUnderstand = () => {
-    toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
+    toast.success(
+      t(
+        "TransportRequestCard.toastSuccessRequestClosed",
+        { orderCode: request.orderCode },
+        `Permintaan ${request.orderCode} berhasil ditutup`
+      )
+    );
     if (onUnderstand) onUnderstand(request.id);
   };
 
@@ -83,6 +97,43 @@ const TransportRequestCard = ({
     return `${weight.toLocaleString("id-ID")} ${unit}`;
   };
 
+  // Format time difference from createdAt
+  const formatTimeAgo = (dateString) => {
+    if (!dateString) return "-";
+    const now = new Date();
+    const created = new Date(dateString);
+    const diffMs = now - created;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay > 0) {
+      return t(
+        "TransportRequestCard.timeAgoDays",
+        { count: diffDay },
+        `${diffDay} Hari yang lalu`
+      );
+    } else if (diffHour > 0) {
+      return t(
+        "TransportRequestCard.timeAgoHours",
+        { count: diffHour },
+        `${diffHour} Jam yang lalu`
+      );
+    } else if (diffMin > 0) {
+      return t(
+        "TransportRequestCard.timeAgoMinutes",
+        { count: diffMin },
+        `${diffMin} Menit yang lalu`
+      );
+    } else {
+      return t(
+        "TransportRequestCard.timeAgoSeconds",
+        { count: diffSec },
+        `${diffSec} Detik yang lalu`
+      );
+    }
+  };
+
   return (
     <div className="relative">
       {/* Modal for accepting scheduled request */}
@@ -98,9 +149,14 @@ const TransportRequestCard = ({
       />
       {/* Modal for rejecting request */}
       <ModalTolakPermintaan
-        isOpen={showRejectModal}
-        onClose={() => setShowRejectModal(false)}
-        request={request}
+        isOpen={showTolakModal}
+        onClose={() => {
+          setShowTolakModal(false);
+          if (typeof window !== "undefined") {
+            window.history.replaceState(null, "", "/monitoring");
+          }
+        }}
+        request={tolakRequest}
       />
       <div
         className={cn(
@@ -114,10 +170,14 @@ const TransportRequestCard = ({
           <>
             <div className="flex h-[42px] items-center justify-between bg-muat-trans-primary-50 px-3 py-2">
               <span className="text-sm font-semibold text-neutral-900">
-                Permintaan Baru
+                {t(
+                  "TransportRequestCard.headerNewRequest",
+                  {},
+                  "Permintaan Baru"
+                )}
               </span>
               <span className="text-[12px] font-normal text-neutral-600">
-                {request.newRequestDuration}
+                {formatTimeAgo(request.createdAt)}
               </span>
             </div>
             <div className="border-b border-warning-400"></div>
@@ -139,7 +199,9 @@ const TransportRequestCard = ({
                       : "bg-primary-50 text-primary-700"
                 )}
               >
-                {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
+                {request.orderType === "INSTANT"
+                  ? t("TransportRequestCard.tagInstant", {}, "Instan")
+                  : t("TransportRequestCard.tagScheduled", {}, "Terjadwal")}
               </span>
 
               {/* Load Time Label */}
@@ -168,16 +230,32 @@ const TransportRequestCard = ({
                 let label = "";
                 let colorClass = "";
                 if (diffDays === 0) {
-                  label = "Muat Hari Ini";
+                  label = t(
+                    "TransportRequestCard.tagLoadToday",
+                    {},
+                    "Muat Hari Ini"
+                  );
                   colorClass = "bg-success-50 text-success-400";
                 } else if (diffDays === 1) {
-                  label = "Muat Besok";
+                  label = t(
+                    "TransportRequestCard.tagLoadTomorrow",
+                    {},
+                    "Muat Besok"
+                  );
                   colorClass = "bg-success-50 text-success-400";
                 } else if (diffDays >= 2 && diffDays <= 5) {
-                  label = `Muat ${diffDays} Hari`;
+                  label = t(
+                    "TransportRequestCard.tagLoadInDays",
+                    { count: diffDays },
+                    `Muat ${diffDays} Hari`
+                  );
                   colorClass = "bg-warning-100 text-warning-900";
                 } else if (diffDays > 5) {
-                  label = `Muat ${diffDays} Hari`;
+                  label = t(
+                    "TransportRequestCard.tagLoadInDays",
+                    { count: diffDays },
+                    `Muat ${diffDays} Hari`
+                  );
                   colorClass = "bg-primary-50 text-primary-700";
                 } else {
                   label = "-";
@@ -205,7 +283,11 @@ const TransportRequestCard = ({
                       : "bg-error-50 text-error-700"
                   )}
                 >
-                  Potensi Overload
+                  {t(
+                    "TransportRequestCard.tagPotentialOverload",
+                    {},
+                    "Potensi Overload"
+                  )}
                 </span>
               )}
 
@@ -215,6 +297,11 @@ const TransportRequestCard = ({
                   side="left"
                   align="center"
                   sideOffset={8}
+                  render={t(
+                    "TransportRequestCard.infoTooltipHalalLogistics",
+                    {},
+                    "Memerlukan pengiriman<br />dengan sertifikasi halal logistik"
+                  )}
                   trigger={
                     <div
                       className={cn(
@@ -231,11 +318,7 @@ const TransportRequestCard = ({
                       />
                     </div>
                   }
-                >
-                  Memerlukan pengiriman
-                  <br />
-                  dengan sertifikasi halal logistik
-                </InfoTooltip>
+                />
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -269,13 +352,21 @@ const TransportRequestCard = ({
                   {
                     fullAddress:
                       request.pickupLocations?.[0]?.fullAddress ||
-                      "Lokasi Muat",
+                      t(
+                        "TransportRequestCard.locationPickupFallback",
+                        {},
+                        "Lokasi Muat"
+                      ),
                     type: "pickup",
                   },
                   {
                     fullAddress:
                       request.dropoffLocations?.[0]?.fullAddress ||
-                      "Lokasi Bongkar",
+                      t(
+                        "TransportRequestCard.locationDropoffFallback",
+                        {},
+                        "Lokasi Bongkar"
+                      ),
                     type: "dropoff",
                   },
                 ].map((location, index) => (
@@ -303,7 +394,11 @@ const TransportRequestCard = ({
             </div>
             <div className="text-right">
               <div className="text-[12px] font-medium text-neutral-600">
-                Estimasi Jarak
+                {t(
+                  "TransportRequestCard.labelEstimatedDistance",
+                  {},
+                  "Estimasi Jarak"
+                )}
               </div>
               <div
                 className={cn(
@@ -330,12 +425,19 @@ const TransportRequestCard = ({
               />
               <div className="flex-1">
                 <div className="text-xs font-medium text-neutral-600">
-                  Informasi Muatan (Total :{" "}
-                  {formatWeight(
-                    request.cargos?.[0]?.weight || 0,
-                    request.cargos?.[0]?.weightUnit || "kg"
+                  {t(
+                    "TransportRequestCard.labelCargoInfoTotal",
+                    {
+                      weight: formatWeight(
+                        request.cargos?.[0]?.weight || 0,
+                        request.cargos?.[0]?.weightUnit || "kg"
+                      ),
+                    },
+                    `Informasi Muatan (Total : ${formatWeight(
+                      request.cargos?.[0]?.weight || 0,
+                      request.cargos?.[0]?.weightUnit || "kg"
+                    )})`
                   )}
-                  )
                 </div>
                 <div
                   className={cn(
@@ -357,13 +459,21 @@ const TransportRequestCard = ({
                               cursor: "pointer",
                             }}
                           >
-                            +{request.cargos.length - 1} lainnya
+                            {t(
+                              "TransportRequestCard.tooltipTriggerMoreItems",
+                              { count: request.cargos.length - 1 },
+                              `+${request.cargos.length - 1} lainnya`
+                            )}
                           </span>
                         }
                       >
                         <div className="text-sm">
                           <div className="mb-2 font-medium">
-                            Informasi Muatan
+                            {t(
+                              "TransportRequestCard.tooltipTitleCargoInfo",
+                              {},
+                              "Informasi Muatan"
+                            )}
                           </div>
                           <div className="space-y-1">
                             {request.cargos.slice(1).map((cargo, index) => (
@@ -396,7 +506,11 @@ const TransportRequestCard = ({
             />
             <div className="flex-1">
               <div className="text-xs font-medium text-neutral-600">
-                Kebutuhan Armada
+                {t(
+                  "TransportRequestCard.labelFleetRequirement",
+                  {},
+                  "Kebutuhan Armada"
+                )}
               </div>
               <div
                 className={cn(
@@ -404,8 +518,15 @@ const TransportRequestCard = ({
                   request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                 )}
               >
-                {request.truckCount} Unit ({request.truckTypeName} -{" "}
-                {request.carrierName})
+                {t(
+                  "TransportRequestCard.valueFleetRequirement",
+                  {
+                    count: request.truckCount,
+                    truckType: request.truckTypeName,
+                    carrier: request.carrierName,
+                  },
+                  `${request.truckCount} Unit (${request.truckTypeName} - ${request.carrierName})`
+                )}
               </div>
             </div>
           </div>
@@ -418,7 +539,7 @@ const TransportRequestCard = ({
             />
             <div className="flex-1">
               <div className="text-xs font-medium text-neutral-600">
-                Waktu Muat
+                {t("TransportRequestCard.labelLoadTime", {}, "Waktu Muat")}
               </div>
               <div
                 className={cn(
@@ -469,7 +590,11 @@ const TransportRequestCard = ({
                   <div className="h-6"></div> {/* Match message area spacing */}
                   <div className="flex h-8 flex-col justify-center">
                     <div className="text-[10px] font-normal text-neutral-600">
-                      Potensi Pendapatan
+                      {t(
+                        "TransportRequestCard.labelPotentialEarnings",
+                        {},
+                        "Potensi Pendapatan"
+                      )}
                     </div>
                     <div className="text-[12px] font-bold text-neutral-900">
                       {request.potentialEarnings ||
@@ -487,29 +612,33 @@ const TransportRequestCard = ({
                   className="h-8 w-[87px] rounded-[24px] px-4 text-[14px] font-semibold"
                   onClick={handleDetail}
                 >
-                  Detail
+                  {t("TransportRequestCard.buttonDetail", {}, "Detail")}
                 </Button>
                 {!isSuspended && (
                   <>
                     <Button
                       variant="muattrans-error-secondary"
                       className="h-8 w-[83px] rounded-[24px] px-4 text-[14px] font-semibold"
-                      onClick={handleReject}
+                      onClick={handleTolakClick}
                     >
-                      Tolak
+                      {t("TransportRequestCard.buttonReject", {}, "Tolak")}
                     </Button>
                     <Button
                       variant="muattrans-warning"
                       className="h-8 w-[92px] rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
                       onClick={handleAccept}
                     >
-                      Terima
+                      {t("TransportRequestCard.buttonAccept", {}, "Terima")}
                     </Button>
                   </>
                 )}
                 <div className="ml-auto text-right">
                   <div className="text-[10px] font-normal text-neutral-600">
-                    Potensi Pendapatan
+                    {t(
+                      "TransportRequestCard.labelPotentialEarnings",
+                      {},
+                      "Potensi Pendapatan"
+                    )}
                   </div>
                   <div className="text-[12px] font-bold text-primary-700">
                     {request.potentialEarnings ||
@@ -533,7 +662,11 @@ const TransportRequestCard = ({
               color: "#EE4343",
             }}
           >
-            Permintaan sudah diambil transporter lain
+            {t(
+              "TransportRequestCard.messageErrorRequestTaken",
+              {},
+              "Permintaan sudah diambil transporter lain"
+            )}
           </div>
 
           {/* Button positioned with 12px from message */}
@@ -545,7 +678,7 @@ const TransportRequestCard = ({
             }}
             onClick={handleUnderstand}
           >
-            Mengerti
+            {t("TransportRequestCard.buttonUnderstand", {}, "Mengerti")}
             <NotificationDot
               position="absolute"
               positionClasses="right-[1px] top-[-1px]"

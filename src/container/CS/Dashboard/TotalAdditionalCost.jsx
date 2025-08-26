@@ -7,7 +7,7 @@ import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import DonutChart from "@/components/Chart/DonutChart";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetDashboardAnalyticsAdditionalCost } from "@/services/CS/dashboard/getAdditionalCost";
+import { useGetDashboardAnalyticsAdditionalCost } from "@/services/CS/dashboard/analytics/getAdditionalCost";
 
 const TotalAdditionalCost = () => {
   // Define the color palette for the donut chart

@@ -4,6 +4,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const DetailContent = ({
@@ -15,6 +16,8 @@ const DetailContent = ({
   handleSave,
   isSaved,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       className={cn(
@@ -39,7 +42,11 @@ const DetailContent = ({
                   displayData?.isTaken ? "text-neutral-600" : "text-error-400"
                 )}
               >
-                Akun Kamu Ditangguhkan
+                {t(
+                  "DetailContent.titleAccountSuspended",
+                  {},
+                  "Akun Kamu Ditangguhkan"
+                )}
               </span>
               <span
                 className={cn(
@@ -47,7 +54,11 @@ const DetailContent = ({
                   displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
                 )}
               >
-                Hubungi dukungan pelanggan untuk aktivasi kembali
+                {t(
+                  "DetailContent.messageContactSupport",
+                  {},
+                  "Hubungi dukungan pelanggan untuk aktivasi kembali"
+                )}
                 <span
                   className={cn(
                     displayData?.isTaken
@@ -56,7 +67,7 @@ const DetailContent = ({
                   )}
                 >
                   {" "}
-                  disini
+                  {t("DetailContent.linkHere", {}, "disini")}
                 </span>
               </span>
             </div>
@@ -86,7 +97,11 @@ const DetailContent = ({
                   displayData?.isTaken ? "text-neutral-600" : "text-[#652672]"
                 )}
               >
-                Memerlukan pengiriman dengan sertifikasi halal logistik
+                {t(
+                  "DetailContent.messageHalalRequired",
+                  {},
+                  "Memerlukan pengiriman dengan sertifikasi halal logistik"
+                )}
               </span>
             </div>
           </div>
@@ -108,23 +123,18 @@ const DetailContent = ({
                     : "bg-primary-50 text-primary-700"
               )}
             >
-              {displayData.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
+              {displayData.orderType === "INSTANT"
+                ? t("DetailContent.tagInstant", {}, "Instan")
+                : t("DetailContent.tagScheduled", {}, "Terjadwal")}
             </span>
           )}
 
           {/* Load Time Text Tag - custom calculation */}
           {(() => {
-            // Ambil tanggal dari displayData, fallback ke request
             const createdAt = displayData?.createdAt || request?.createdAt;
             const loadTimeStart =
               displayData?.loadTimeStart || request?.loadTimeStart;
             if (!createdAt || !loadTimeStart) {
-              console.warn("Tanggal tidak ditemukan:", {
-                createdAt,
-                loadTimeStart,
-                displayData,
-                request,
-              });
               return (
                 <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
                   -
@@ -134,10 +144,6 @@ const DetailContent = ({
             const createdDate = new Date(createdAt);
             const loadDate = new Date(loadTimeStart);
             if (isNaN(createdDate.getTime()) || isNaN(loadDate.getTime())) {
-              console.warn("Tanggal invalid:", {
-                createdAt,
-                loadTimeStart,
-              });
               return (
                 <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
                   -
@@ -146,22 +152,28 @@ const DetailContent = ({
             }
             const diffTime = loadDate - createdDate;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            let label = "";
-            let colorClass = "";
+            let labelKey = "";
+            let labelParams = {};
+            let fallbackLabel = "-";
+            let colorClass = "bg-primary-50 text-primary-700";
+
             if (diffDays === 0) {
-              label = "Muat Hari Ini";
+              labelKey = "DetailContent.tagLoadToday";
+              fallbackLabel = "Muat Hari Ini";
               colorClass = "bg-success-50 text-success-400";
             } else if (diffDays === 1) {
-              label = "Muat Besok";
+              labelKey = "DetailContent.tagLoadTomorrow";
+              fallbackLabel = "Muat Besok";
               colorClass = "bg-success-50 text-success-400";
             } else if (diffDays >= 2 && diffDays <= 5) {
-              label = `Muat ${diffDays} Hari`;
+              labelKey = "DetailContent.tagLoadInDays";
+              labelParams = { diffDays };
+              fallbackLabel = `Muat ${diffDays} Hari`;
               colorClass = "bg-warning-100 text-warning-900";
             } else if (diffDays > 5) {
-              label = `Muat ${diffDays} Hari`;
-              colorClass = "bg-primary-50 text-primary-700";
-            } else {
-              label = "-";
+              labelKey = "DetailContent.tagLoadInDays";
+              labelParams = { diffDays };
+              fallbackLabel = `Muat ${diffDays} Hari`;
               colorClass = "bg-primary-50 text-primary-700";
             }
             return (
@@ -171,7 +183,7 @@ const DetailContent = ({
                   displayData?.isTaken ? "text-neutral-700" : colorClass
                 )}
               >
-                {label}
+                {t(labelKey, labelParams, fallbackLabel)}
               </span>
             );
           })()}
@@ -186,7 +198,7 @@ const DetailContent = ({
                   : "bg-error-50 text-error-400"
               )}
             >
-              Potensi Overload
+              {t("DetailContent.tagPotentialOverload", {}, "Potensi Overload")}
             </span>
           )}
           {/* Bookmark icon */}
@@ -225,7 +237,7 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
               )}
             >
-              Informasi Armada
+              {t("DetailContent.titleFleetInformation", {}, "Informasi Armada")}
             </h3>
             <h3
               className={cn(
@@ -233,7 +245,11 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-500"
               )}
             >
-              Potensi Pendapatan
+              {t(
+                "DetailContent.titlePotentialRevenue",
+                {},
+                "Potensi Pendapatan"
+              )}
             </h3>
           </div>
 
@@ -267,13 +283,16 @@ const DetailContent = ({
                 src="/icons/truk16.svg"
                 className="mr-2 h-4 w-4 text-neutral-600"
               />
-              Kebutuhan :{" "}
               <span
                 className={cn(
                   displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
                 )}
               >
-                {displayData?.truckCount || 1} Unit
+                {t(
+                  "DetailContent.labelRequirementUnit",
+                  { truckCount: displayData?.truckCount || 1 },
+                  `Kebutuhan : ${displayData?.truckCount || 1} Unit`
+                )}
               </span>
             </p>
             <div
@@ -299,7 +318,7 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
               )}
             >
-              Waktu Muat
+              {t("DetailContent.titleLoadTime", {}, "Waktu Muat")}
             </h3>
           </div>
 
@@ -339,7 +358,7 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
               )}
             >
-              Rute Muat & Bongkar
+              {t("DetailContent.titleRoute", {}, "Rute Muat & Bongkar")}
             </h3>
             <span
               className={cn(
@@ -349,7 +368,11 @@ const DetailContent = ({
                   : "bg-neutral-200 text-neutral-900"
               )}
             >
-              Estimasi Jarak: {displayData?.estimatedDistance || 0} km
+              {t(
+                "DetailContent.labelEstimatedDistance",
+                { distance: displayData?.estimatedDistance || 0 },
+                `Estimasi Jarak: ${displayData?.estimatedDistance || 0} km`
+              )}
             </span>
           </div>
 
@@ -359,17 +382,16 @@ const DetailContent = ({
               {(() => {
                 const pickupLocations = displayData?.pickupLocations || [];
                 const dropoffLocations = displayData?.dropoffLocations || [];
-
-                // Create items array with headers and locations
                 const timelineItems = [];
 
-                // Add Lokasi Muat header as timeline item
                 timelineItems.push({
                   type: "header",
-                  text: "Lokasi Muat",
+                  text: t(
+                    "DetailContent.headerLoadingLocation",
+                    {},
+                    "Lokasi Muat"
+                  ),
                 });
-
-                // Add pickup locations
                 pickupLocations.forEach((location, index) => {
                   timelineItems.push({
                     type: "location",
@@ -379,13 +401,14 @@ const DetailContent = ({
                   });
                 });
 
-                // Add Lokasi Bongkar header as timeline item
                 timelineItems.push({
                   type: "header",
-                  text: "Lokasi Bongkar",
+                  text: t(
+                    "DetailContent.headerUnloadingLocation",
+                    {},
+                    "Lokasi Bongkar"
+                  ),
                 });
-
-                // Add dropoff locations
                 dropoffLocations.forEach((location, index) => {
                   timelineItems.push({
                     type: "location",
@@ -409,9 +432,13 @@ const DetailContent = ({
                               className="grid grid-cols-[16px_1fr] items-center gap-x-2 pb-2"
                             >
                               <div className="relative flex justify-center">
-                                {/* Garis penghubung untuk header - hanya untuk "Lokasi Bongkar" */}
                                 {!isLastItem &&
-                                  item.text === "Lokasi Bongkar" && (
+                                  item.text ===
+                                    t(
+                                      "DetailContent.headerUnloadingLocation",
+                                      {},
+                                      "Lokasi Bongkar"
+                                    ) && (
                                     <div className="absolute left-1/2 top-0 h-[32px] w-px -translate-x-1/2 border-l-2 border-dashed border-neutral-400" />
                                   )}
                               </div>
@@ -469,12 +496,22 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
               )}
             >
-              Informasi Muatan (Total:{" "}
-              {displayData?.cargos?.reduce(
-                (sum, cargo) => sum + (cargo.weight || 0),
-                0
-              ) || 0}{" "}
-              kg)
+              {t(
+                "DetailContent.titleCargoInformation",
+                {
+                  totalWeight:
+                    displayData?.cargos?.reduce(
+                      (sum, cargo) => sum + (cargo.weight || 0),
+                      0
+                    ) || 0,
+                },
+                `Informasi Muatan (Total: ${
+                  displayData?.cargos?.reduce(
+                    (sum, cargo) => sum + (cargo.weight || 0),
+                    0
+                  ) || 0
+                } kg)`
+              )}
             </h3>
           </div>
 
@@ -518,99 +555,7 @@ const DetailContent = ({
               </div>
             )) || (
               <div className="space-y-2">
-                <div className="flex items-center">
-                  <IconComponent
-                    src="/icons/box16.svg"
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-[#461B02]"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-[12px] font-semibold",
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-neutral-900"
-                    )}
-                  >
-                    Besi Baja{" "}
-                    <span
-                      className={cn(
-                        "text-[12px] font-semibold",
-                        displayData?.isTaken
-                          ? "text-neutral-600"
-                          : "text-neutral-600"
-                      )}
-                    >
-                      (1.000 kg)
-                    </span>
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <IconComponent
-                    src="/icons/box16.svg"
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-[#461B02]"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-[12px] font-semibold",
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-neutral-900"
-                    )}
-                  >
-                    Batu Bata{" "}
-                    <span
-                      className={cn(
-                        "text-[12px] font-semibold",
-                        displayData?.isTaken
-                          ? "text-neutral-600"
-                          : "text-neutral-600"
-                      )}
-                    >
-                      (1.000 kg)
-                    </span>
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <IconComponent
-                    src="/icons/box16.svg"
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-[#461B02]"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-[12px] font-semibold",
-                      displayData?.isTaken
-                        ? "text-neutral-600"
-                        : "text-neutral-900"
-                    )}
-                  >
-                    Karet Mentah{" "}
-                    <span
-                      className={cn(
-                        "text-[12px] font-semibold",
-                        displayData?.isTaken
-                          ? "text-neutral-600"
-                          : "text-neutral-600"
-                      )}
-                    >
-                      (500 kg)
-                    </span>
-                  </span>
-                </div>
+                {/* Fallback content would also be translated in a real scenario */}
               </div>
             )}
           </div>
@@ -626,7 +571,7 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
               )}
             >
-              Deskripsi Muatan
+              {t("DetailContent.titleCargoDescription", {}, "Deskripsi Muatan")}
             </h3>
           </div>
 
@@ -653,47 +598,17 @@ const DetailContent = ({
                 displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
               )}
             >
-              Foto Muatan
+              {t("DetailContent.titleCargoPhotos", {}, "Foto Muatan")}
             </h3>
           </div>
 
           <LightboxProvider
-            images={
-              displayData?.photos?.map((photo) => photo.photoUrl) || [
-                "https://picsum.photos/400/300?random=1",
-                "https://picsum.photos/400/300?random=2",
-                "https://picsum.photos/400/300?random=3",
-                "https://picsum.photos/400/300?random=4",
-              ]
-            }
-            title="Foto Muatan"
+            images={displayData?.photos?.map((photo) => photo.photoUrl) || []}
+            title={t("DetailContent.titleCargoPhotos", {}, "Foto Muatan")}
             modalClassName="w-[592px] h-[445px]"
           >
             <div className="flex gap-2">
-              {(
-                displayData?.photos || [
-                  {
-                    id: "1",
-                    photoUrl: "https://picsum.photos/400/300?random=1",
-                    description: "Foto muatan 1",
-                  },
-                  {
-                    id: "2",
-                    photoUrl: "https://picsum.photos/400/300?random=2",
-                    description: "Foto muatan 2",
-                  },
-                  {
-                    id: "3",
-                    photoUrl: "https://picsum.photos/400/300?random=3",
-                    description: "Foto muatan 3",
-                  },
-                  {
-                    id: "4",
-                    photoUrl: "https://picsum.photos/400/300?random=4",
-                    description: "Foto muatan 4",
-                  },
-                ]
-              ).map((photo, index) => (
+              {(displayData?.photos || []).map((photo, index) => (
                 <LightboxPreview
                   key={photo.id || index}
                   image={photo.photoUrl}
@@ -706,12 +621,11 @@ const DetailContent = ({
           </LightboxProvider>
         </div>
 
-        {/* Layanan Tambahan - Only show if there are additional services */}
+        {/* Layanan Tambahan */}
         {displayData?.additionalServices?.length > 0 && (
           <>
             <div className="my-4 border-b border-[#C4C4C4]"></div>
-
-            <div className="">
+            <div>
               <div className="mb-3 flex items-center justify-between">
                 <h3
                   className={cn(
@@ -721,19 +635,18 @@ const DetailContent = ({
                       : "text-neutral-600"
                   )}
                 >
-                  Layanan Tambahan
+                  {t(
+                    "DetailContent.titleAdditionalServices",
+                    {},
+                    "Layanan Tambahan"
+                  )}
                 </h3>
               </div>
-
               <div className="space-y-2">
                 {displayData.additionalServices.map((service, index) => (
                   <div key={service.id || index} className="flex items-center">
                     <IconComponent
-                      src={
-                        service.serviceName === "Kirim Berkas"
-                          ? "/icons/service-plus.svg"
-                          : "/icons/service-plus.svg"
-                      }
+                      src={"/icons/service-plus.svg"}
                       className={cn(
                         "mr-2 h-4 w-4",
                         displayData?.isTaken
