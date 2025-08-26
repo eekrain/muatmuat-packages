@@ -219,6 +219,7 @@ export default function Page() {
       message: t(
         "AreaMuatPage.toastSuccessHapusProvinsi",
         {},
+        // eslint-disable-next-line no-undef
         `Berhasil menghapus provinsi ${province.province}`
       ),
       type: "success",
