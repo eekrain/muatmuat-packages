@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
 // Set to true to use mock data, false for actual API calls.
-const useMockData = true;
+const useMockData = false;
 
 // --- Mock Data ---
 // Mock data for SOS reports based on api-kontrak.md
@@ -78,10 +78,37 @@ export const fetcherSosReports = async (_cacheKey) => {
   try {
     // Perform the actual API call
     const result = await fetcherMuatrans.get(url);
-    return result?.data?.Data || {}; // Return the data or an empty object on failure
+
+    // Validate response structure
+    if (result?.data?.Message?.Code === 200) {
+      return result.data.Data || {};
+    } else {
+      const errorMsg =
+        result?.data?.Message?.Text || "Failed to fetch SOS reports";
+      throw new Error(errorMsg);
+    }
   } catch (error) {
-    console.error("Error fetching SOS reports:", error);
-    throw error; // Re-throw error for SWR to handle
+    // Handle different error types
+    if (error.response) {
+      const statusCode = error.response.status;
+      const errorMessage = error.response.data?.Message?.Text || "Server error";
+
+      if (statusCode === 401) {
+        throw new Error("Unauthorized - Please login again");
+      } else if (statusCode === 403) {
+        throw new Error("Forbidden - Access denied");
+      } else if (statusCode === 404) {
+        throw new Error("SOS reports not found");
+      } else if (statusCode >= 500) {
+        throw new Error("Server error - Please try again later");
+      } else {
+        throw new Error(errorMessage);
+      }
+    } else if (error.request) {
+      throw new Error("Network error - Please check your connection");
+    } else {
+      throw new Error(error.message || "An unexpected error occurred");
+    }
   }
 };
 
@@ -97,6 +124,7 @@ export const useGetSosReports = () => {
     fetcherSosReports,
     {
       revalidateOnFocus: false, // Optional: disable re-fetching on window focus
+      revalidateOnReconnect: true,
       refreshInterval: 300000, // Refresh every 5 minutes for real-time updates
     }
   );

@@ -125,7 +125,7 @@ export const getOrderContacts = async (orderId) => {
     });
   }
   const response = await fetcherMuatrans.get(
-    `/v1/cs-orders/${orderId}/contacts`
+    `/v1/cs/orders/${orderId}/contacts`
   );
   return response.data?.Data || null;
 };

@@ -13,6 +13,8 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+import { useGetPeriodFilterOptions } from "@/services/Transporter/alerts/getPeriodFilterOptions";
+import { filterReviews } from "@/services/Transporter/dashboard/real-time/ulasan/filterReviews";
 
 import Period from "../../components/Period";
 import TruncatedTooltip from "../../components/TruncatedTooltip";
@@ -28,6 +30,7 @@ const toYYYYMMDD = (date) => {
 
 const UlasanTable = () => {
   const { t } = useTranslation();
+  const { data: periodData } = useGetPeriodFilterOptions();
   const [tableData, setTableData] = useState({
     reviews: [],
     pagination: {
@@ -55,6 +58,12 @@ const UlasanTable = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [filterState, setFilterState] = useState({
+    filtersActive: false,
+    appliedFilters: [],
+    clearAllFilters: { visible: false, text: "Hapus Semua Filter" },
+  });
+  const [isApplyingFilter, setIsApplyingFilter] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -170,6 +179,75 @@ const UlasanTable = () => {
     setSelectedRows([]);
   };
 
+  const handleApplyAdvancedFilter = async () => {
+    if (activeTab !== "new") return; // Only apply filters on "new" tab
+
+    setIsApplyingFilter(true);
+    try {
+      const filterPayload = {};
+
+      // Add rating filter if selected
+      if (filters.rating?.length) {
+        filterPayload.rating = filters.rating.map((r) => r.id);
+      }
+
+      // Add period filter
+      if (period) {
+        if (period.iso_start_date && period.iso_end_date) {
+          filterPayload.period = "custom";
+          filterPayload.dateFrom = toYYYYMMDD(period.iso_start_date);
+          filterPayload.dateTo = toYYYYMMDD(period.iso_end_date);
+        } else if (typeof period.value === "number") {
+          if (period.value === 0) {
+            filterPayload.period = "today";
+          } else if (period.value === 7) {
+            filterPayload.period = "week";
+          } else if (period.value === 30) {
+            filterPayload.period = "month";
+          } else {
+            // For other custom periods, use custom dates
+            const today = new Date();
+            const fromDate = new Date();
+            fromDate.setDate(today.getDate() - period.value);
+            filterPayload.period = "custom";
+            filterPayload.dateFrom = toYYYYMMDD(fromDate);
+            filterPayload.dateTo = toYYYYMMDD(today);
+          }
+        }
+      }
+
+      const result = await filterReviews(filterPayload);
+
+      if (result.filterState) {
+        setFilterState(result.filterState);
+        toast.success(
+          t(
+            "UlasanTable.filterAppliedSuccess",
+            {},
+            "Filter berhasil diterapkan"
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error applying filter:", error);
+      toast.error(
+        t("UlasanTable.filterAppliedError", {}, "Gagal menerapkan filter")
+      );
+    } finally {
+      setIsApplyingFilter(false);
+    }
+  };
+
+  const handleClearAllFilters = () => {
+    setFilters({});
+    setPeriod(null);
+    setFilterState({
+      filtersActive: false,
+      appliedFilters: [],
+      clearAllFilters: { visible: false, text: "Hapus Semua Filter" },
+    });
+  };
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -236,7 +314,7 @@ const UlasanTable = () => {
                 <span className="text-[10px] text-neutral-600">/5</span>
               </p>
             </div>
-            <ExpandableReview text={row.review} limit={62} />
+            <ExpandableReview text={row.review} limit={62} reviewId={row.id} />
           </div>
         ),
       },
@@ -315,8 +393,30 @@ const UlasanTable = () => {
     [t]
   );
 
-  const periodOptions = useMemo(
-    () => [
+  const periodOptions = useMemo(() => {
+    if (periodData?.periodOptions) {
+      return [
+        {
+          name: t("UlasanTable.periodOptionAll", {}, "Semua Periode (Default)"),
+          value: "",
+        },
+        ...periodData.periodOptions.map((option) => {
+          // Map API values to existing component values
+          let mappedValue = option.value;
+          if (option.value === "today") mappedValue = 0;
+          else if (option.value === "week") mappedValue = 7;
+          else if (option.value === "month") mappedValue = 30;
+
+          return {
+            name: option.label,
+            value: mappedValue,
+          };
+        }),
+      ];
+    }
+
+    // Fallback options if API fails
+    return [
       {
         name: t("UlasanTable.periodOptionAll", {}, "Semua Periode (Default)"),
         value: "",
@@ -334,9 +434,8 @@ const UlasanTable = () => {
         name: t("UlasanTable.periodOptionLastYear", {}, "1 Tahun Terakhir"),
         value: 365,
       },
-    ],
-    [t]
-  );
+    ];
+  }, [periodData, t]);
 
   const displayOptions = {
     totalCount: tableData.pagination.totalItems,
@@ -404,6 +503,10 @@ const UlasanTable = () => {
         isPeriodActive={period && period.value !== ""}
         onSort={(sort, order) => setSortConfig({ sort, order })}
         onControlsStateChange={setControlsDisabled}
+        onApplyAdvancedFilter={handleApplyAdvancedFilter}
+        onClearAllFilters={handleClearAllFilters}
+        filterState={filterState}
+        isApplyingFilter={isApplyingFilter}
         searchPlaceholder={t(
           "UlasanTable.searchPlaceholder",
           {},

@@ -37,9 +37,17 @@ const LacakArmadaPage = () => {
       const fetchTrackingData = async () => {
         setIsLoading(true);
         try {
-          const res = await fetch(`/api/v1/cs/orders/MT25201/track-vehicle`); // ganti pakai orderId nantinya
+          const res = await fetch(
+            `/api/v1/cs/orders/${orderId}/fleet/tracking`
+          );
           const result = await res.json();
-          setTrackingData(result.Data);
+
+          if (result.Message?.Code === 200) {
+            const adaptedData = adaptFleetTrackingData(result.Data);
+            setTrackingData(adaptedData);
+          } else {
+            console.error("Fleet tracking error:", result.Message?.Text);
+          }
         } catch (error) {
           console.error("Failed to fetch tracking data:", error);
         } finally {
@@ -49,6 +57,76 @@ const LacakArmadaPage = () => {
       fetchTrackingData();
     }
   }, [orderId]);
+
+  const adaptFleetTrackingData = (fleetData) => {
+    if (!fleetData?.fleetTracking?.length) return null;
+
+    const vehicles = [];
+    const pickupLocations = [
+      { lat: -7.287, lng: 112.739, label: "Lokasi Muat" },
+    ];
+    const dropoffLocations = [
+      { lat: -7.275, lng: 112.631, label: "Lokasi Bongkar" },
+    ];
+
+    fleetData.fleetTracking.forEach((transporter) => {
+      transporter.fleets?.forEach((fleet) => {
+        vehicles.push({
+          id: fleet.fleetId,
+          licensePlate: fleet.licensePlate,
+          driverName: fleet.driverInfo?.driverName || "Unknown Driver",
+          status: getStatusDisplayName(fleet.orderStatus),
+          statusVariant: "primary",
+          icon: "/img/monitoring/truck/blue.png",
+          position: getVehiclePosition(fleet.fleetId),
+          heading: 45,
+          transporterName: transporter.companyName,
+          timeline: {
+            statusDefinitions:
+              fleet.stepStatus?.map((step) => ({
+                mappedOrderStatus: step.orderStatus,
+                date: new Date().toISOString(),
+                children: [
+                  {
+                    statusCode: step.orderStatus,
+                    statusName: step.statusName,
+                    date: new Date().toISOString(),
+                    requiresPhoto: false,
+                  },
+                ],
+              })) || [],
+          },
+        });
+      });
+    });
+
+    return {
+      orderCode: orderId,
+      vehicles,
+      pickupLocations,
+      dropoffLocations,
+      routePolyline: "encoded_polyline_string_here",
+    };
+  };
+
+  const getStatusDisplayName = (status) => {
+    const statusMap = {
+      LOADING: "Proses Muat",
+      UNLOADING: "Proses Bongkar",
+      SCHEDULED_FLEET: "Pesanan Terkonfirmasi",
+      COMPLETED: "Selesai",
+    };
+    return statusMap[status] || status;
+  };
+
+  const getVehiclePosition = (fleetId) => {
+    const positions = [
+      { lat: -7.2891, lng: 112.7351 },
+      { lat: -7.2952, lng: 112.7588 },
+      { lat: -7.28, lng: 112.74 },
+    ];
+    return positions[Math.floor(Math.random() * positions.length)];
+  };
 
   const mapMarkers = useMemo(() => {
     if (!trackingData) return [];
