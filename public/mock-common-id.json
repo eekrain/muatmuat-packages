@@ -2001,7 +2001,7 @@
   "ModalResponseChange.incomeAdjustmentTooltip": "Perubahan pendapatan berdasarkan perubahan rute dan waktu.",
   "ModalResponseChange.cancelButton": "Batal",
   "ModalResponseChange.respondButton": "Respon Perubahan",
-  "SosPopupNotification.newDriversNeedHelp": "Terdapat {sosCount} driver baru yang sedang membutuhkan bantuan",
+  "SosPopupNotification.newDriversNeedHelp": "Terdapat {count} driver baru yang sedang membutuhkan bantuan",
   "SosPopupNotification.title": "Notifikasi Bantuan Darurat (SOS)",
   "SosPopupNotification.driverNeedsHelp": "Driver Membutuhkan Bantuan!",
   "SosPopupNotification.closeButton": "Tutup",

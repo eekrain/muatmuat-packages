@@ -22,7 +22,7 @@ const RespondChangeFormModal = ({
   isOpen,
   onClose,
   orderData,
-  onBackClick,
+  onBackClick = () => {},
   formDaftarPesanan,
 }) => {
   const { t } = useTranslation();

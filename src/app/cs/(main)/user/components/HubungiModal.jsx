@@ -101,9 +101,10 @@ const HubungiModal = ({
         >
           <ModalHeader />
 
-          <div className="flex w-[386px] flex-col items-center justify-center gap-6 bg-white pb-9">
+          <div className="flex max-h-[479px] min-h-[439px] w-[386px] flex-col items-center justify-center gap-6 bg-white py-9">
             {/* --- Modal Title --- */}
-            <div className="w-full pt-9 text-center text-sm font-bold leading-[17px] text-black">
+
+            <div className="w-full text-center text-sm font-bold leading-[17px] text-black">
               {t(
                 "HubungiModal.contactTitle",
                 {},
@@ -112,7 +113,7 @@ const HubungiModal = ({
             </div>
 
             {/* --- Contacts List --- */}
-            <div className="flex w-full flex-col gap-6 px-12">
+            <div className="flex w-full flex-col gap-4 px-12">
               {[0, 1, 2].map((index) => {
                 const contact = contacts.pics[index] || {
                   name: "-",
@@ -123,7 +124,7 @@ const HubungiModal = ({
                 return (
                   <div
                     key={index}
-                    className="flex max-w-[286px] flex-row items-start gap-x-4"
+                    className="flex max-w-[286px] flex-row items-start gap-x-6"
                   >
                     {/* Label Column */}
                     <div className="w-[78px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
@@ -157,7 +158,7 @@ const HubungiModal = ({
                         {contact.phoneNumber && contact.phoneNumber !== "-" && (
                           <button
                             onClick={() => handleCopyPhone(contact.phoneNumber)}
-                            className="flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                            className="absolute right-0 flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
                           >
                             <span className="text-xs font-medium leading-[14px] text-primary-700">
                               {t("HubungiModal.copy", {}, "Salin")}
@@ -169,7 +170,7 @@ const HubungiModal = ({
                   </div>
                 );
               })}
-              <div className="flex max-w-[286px] flex-row items-start gap-x-4">
+              <div className="flex max-w-[286px] flex-row items-center gap-x-6">
                 {/* Label Column */}
                 <div className="w-[78px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
                   No Telepon Perusahaan
@@ -201,7 +202,7 @@ const HubungiModal = ({
                   </div>
                 </div>
               </div>
-              <div className="flex max-w-[286px] flex-row items-start gap-x-4">
+              <div className="flex max-w-[286px] flex-row items-start gap-x-6">
                 {/* Label Column */}
                 <div className="w-[78px] flex-shrink-0 text-sm font-semibold leading-[17px] text-black">
                   No. Darurat
@@ -243,7 +244,7 @@ const HubungiModal = ({
                               contacts.emergencyContact?.phoneNumber
                             )
                           }
-                          className="flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
+                          className="absolute right-0 flex flex-shrink-0 cursor-pointer items-start gap-2.5 rounded-full border border-primary-700 bg-white px-2 py-1 transition-colors hover:bg-blue-50"
                         >
                           <span className="text-xs font-medium leading-[14px] text-primary-700">
                             {t("HubungiModal.copy", {}, "Salin")}
@@ -257,8 +258,8 @@ const HubungiModal = ({
 
             {/* --- Copy Success Notification --- */}
             {showCopySuccess && (
-              <div className="flex flex-row items-center justify-center gap-1 rounded-md bg-[#E2F2FF] px-2 py-1">
-                <span className="text-xs font-semibold leading-tight text-primary-700">
+              <div className="mb-2 flex w-full flex-row items-center justify-center gap-1 rounded-md px-6">
+                <span className="flex h-6 w-[286px] items-center justify-center rounded-md bg-[#E2F2FF] text-center text-xs font-semibold leading-tight text-primary-700">
                   {t(
                     "HubungiModal.copySuccess",
                     {},
