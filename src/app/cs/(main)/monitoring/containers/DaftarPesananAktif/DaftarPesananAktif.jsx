@@ -104,32 +104,21 @@ const DaftarPesananAktif = ({
   const [selectedGroupBy, setSelectedGroupBy] = useState("BY_PESANAN");
   const [selectedSort, setSelectedSort] = useState("WAKTU_MUAT_TERDEKAT");
   const [openDropdowns, setOpenDropdowns] = useState({});
+
+  // modalState
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [assignArmadaModalOpen, setAssignArmadaModalOpen] = useState(false);
-  const [selectedOrderForArmada, setSelectedOrderForArmada] = useState(null);
   const [lihatArmadaModalOpen, setLihatArmadaModalOpen] = useState(false);
-  const [selectedOrderForViewFleet, setSelectedOrderForViewFleet] =
-    useState(null);
   const [confirmReadyModalOpen, setConfirmReadyModalOpen] = useState(false);
-  const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
   const [respondChangeModalOpen, setRespondChangeModalOpen] = useState(false);
-  const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
-  const [selectedOrderForCancel, setSelectedOrderForCancel] = useState(null);
   const [batalkanArmadaModalOpen, setBatalkanArmadaModalOpen] = useState(false);
-  const [selectedOrderForFleetCancel, setSelectedOrderForFleetCancel] =
-    useState(null);
   const [pilihArmadaBatalkanModalOpen, setPilihArmadaBatalkanModalOpen] =
     useState(false);
   const [batalkanPesananModalOpen, setBatalkanPesananModalOpen] =
     useState(false);
-  const [selectedOrderForCancelOrder, setSelectedOrderForCancelOrder] =
-    useState(null);
   const [ubahJumlahUnitModalOpen, setUbahJumlahUnitModalOpen] = useState(false);
-  const [selectedOrderForChangeUnit, setSelectedOrderForChangeUnit] =
-    useState(null);
   const [alasanPembatalanArmadaModalOpen, setAlasanPembatalanArmadaModalOpen] =
     useState(false);
-  const [selectedOrderForAlasanArmada, setSelectedOrderForAlasanArmada] =
-    useState(null);
   const [selectedFleetsForCancellation, setSelectedFleetsForCancellation] =
     useState([]);
   const [orderChangeInfoModalOpen, setOrderChangeInfoModalOpen] =
@@ -173,7 +162,7 @@ const DaftarPesananAktif = ({
   );
 
   const handleOpenFleetModal = (order) => {
-    setSelectedOrderForFleetCancel(order);
+    setSelectedOrder(order);
     setPilihArmadaBatalkanModalOpen(true);
   };
 
@@ -203,7 +192,7 @@ const DaftarPesananAktif = ({
 
   const handleCancelSelectedFleets = async (cancellationData) => {
     // Open AlasanPembatalanArmadaModal instead of directly calling API
-    setSelectedOrderForAlasanArmada(cancellationData.order);
+    setSelectedOrder(cancellationData.order);
     setSelectedFleetsForCancellation(cancellationData.selectedFleets);
     setAlasanPembatalanArmadaModalOpen(true);
     setPilihArmadaBatalkanModalOpen(false);
@@ -281,7 +270,7 @@ const DaftarPesananAktif = ({
       );
 
       // Open AssignArmadaModal after successful unit count change
-      setSelectedOrderForArmada({
+      setSelectedOrder({
         ...changeData.orderData,
         truckCount: changeData.newUnitCount, // Update with new unit count
       });
@@ -303,13 +292,13 @@ const DaftarPesananAktif = ({
         onTrackFleet?.(row);
         break;
       case ORDER_ACTIONS.VIEW_FLEET.type:
-        setSelectedOrderForViewFleet(row);
+        setSelectedOrder(row);
         setLihatArmadaModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
-        // console.log("Detail Pesanan", row);
-        if (row.sosStatus.hasSos) {
+        console.log("Detail Pesanan", row);
+        if (row.sosUnit > 0) {
           router.push(`/monitoring/riwayat-sos/${row.orderId}/detail-pesanan`);
           break;
         }
@@ -321,16 +310,16 @@ const DaftarPesananAktif = ({
         // console.log("Detail Armada", row);
         break;
       case ORDER_ACTIONS.CANCEL_ORDER.type:
-        setSelectedOrderForCancelOrder(row);
+        setSelectedOrder(row);
         setBatalkanPesananModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.ASSIGN_FLEET.type:
-        setSelectedOrderForArmada(row);
+        setSelectedOrder(row);
         setAssignArmadaModalOpen(true);
         break;
       case ORDER_ACTIONS.CHANGE_UNIT_COUNT.type:
-        setSelectedOrderForChangeUnit(row);
+        setSelectedOrder(row);
         setUbahJumlahUnitModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
@@ -340,12 +329,12 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CANCEL_FLEET.type:
-        setSelectedOrderForCancel(row);
+        setSelectedOrder(row);
         setBatalkanArmadaModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CONFIRM_READY.type:
-        setSelectedOrderForConfirm(row);
+        setSelectedOrder(row);
         setConfirmReadyModalOpen(true);
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
@@ -710,9 +699,9 @@ const DaftarPesananAktif = ({
         isOpen={assignArmadaModalOpen}
         onClose={() => {
           setAssignArmadaModalOpen(false);
-          setSelectedOrderForArmada(null);
+          setSelectedOrder(null);
         }}
-        orderData={selectedOrderForArmada}
+        orderData={selectedOrder}
       />
 
       {/* Confirm Ready Modal */}
@@ -720,18 +709,18 @@ const DaftarPesananAktif = ({
         isOpen={confirmReadyModalOpen}
         onClose={() => {
           setConfirmReadyModalOpen(false);
-          setSelectedOrderForConfirm(null);
+          setSelectedOrder(null);
         }}
-        orderData={selectedOrderForConfirm}
+        orderData={selectedOrder}
       />
 
       <LihatArmadaModal
         isOpen={lihatArmadaModalOpen}
         onClose={() => {
           setLihatArmadaModalOpen(false);
-          setSelectedOrderForViewFleet(null);
+          setSelectedOrder(null);
         }}
-        orderData={selectedOrderForViewFleet}
+        orderData={selectedOrder}
       />
 
       {/* Respond Change Modal */}
@@ -739,18 +728,18 @@ const DaftarPesananAktif = ({
         isOpen={respondChangeModalOpen}
         onClose={() => {
           setRespondChangeModalOpen(false);
-          setSelectedOrderForChange(null);
+          setSelectedOrder(null);
         }}
-        orderData={selectedOrderForChange}
+        orderData={selectedOrder}
       />
 
       <BatalkanArmadaModal
         isOpen={batalkanArmadaModalOpen}
         onClose={() => {
           setBatalkanArmadaModalOpen(false);
-          setSelectedOrderForCancel(null);
+          setSelectedOrder(null);
         }}
-        order={selectedOrderForCancel}
+        order={selectedOrder}
         onOpenFleetModal={handleOpenFleetModal}
       />
 
@@ -759,9 +748,9 @@ const DaftarPesananAktif = ({
         isOpen={batalkanPesananModalOpen}
         onClose={() => {
           setBatalkanPesananModalOpen(false);
-          setSelectedOrderForCancelOrder(null);
+          setSelectedOrder(null);
         }}
-        order={selectedOrderForCancelOrder}
+        order={selectedOrder}
         onOpenAlasanModal={handleOpenAlasanModal}
       />
 
@@ -769,11 +758,11 @@ const DaftarPesananAktif = ({
         isOpen={pilihArmadaBatalkanModalOpen}
         onClose={() => {
           setPilihArmadaBatalkanModalOpen(false);
-          setSelectedOrderForFleetCancel(null);
+          setSelectedOrder(null);
         }}
-        order={selectedOrderForFleetCancel}
+        order={selectedOrder}
         fleetList={
-          selectedOrderForFleetCancel?.fleets || [
+          selectedOrder?.fleets || [
             {
               id: 1,
               plateNumber: "AE 1111 LBA",
@@ -802,9 +791,9 @@ const DaftarPesananAktif = ({
         isOpen={ubahJumlahUnitModalOpen}
         onClose={() => {
           setUbahJumlahUnitModalOpen(false);
-          setSelectedOrderForChangeUnit(null);
+          setSelectedOrder(null);
         }}
-        orderData={selectedOrderForChangeUnit}
+        orderData={selectedOrder}
         onConfirm={handleChangeUnitCount}
       />
 
@@ -813,10 +802,10 @@ const DaftarPesananAktif = ({
         isOpen={alasanPembatalanArmadaModalOpen}
         onClose={() => {
           setAlasanPembatalanArmadaModalOpen(false);
-          setSelectedOrderForAlasanArmada(null);
+          setSelectedOrder(null);
           setSelectedFleetsForCancellation([]);
         }}
-        order={selectedOrderForAlasanArmada}
+        order={selectedOrder}
         selectedFleets={selectedFleetsForCancellation}
         onConfirm={handleCancelArmadaWithReason}
       />
