@@ -2546,7 +2546,7 @@
   "RespondChangeModal.errorLoadingDetails": "Tidak dapat memuat detail perubahan",
   "RespondChangeModal.cancel": "Batal",
   "RespondChangeModal.respondToChange": "Respon Perubahan",
-  "RespondChangeFormModal.successMessage": "Berhasil {responseLabels[data.selectedResponse]} untuk pesanan {orderData?.orderCode || \"MT001234\"}",
+  "RespondChangeFormModal.successMessage": "Berhasil {response} untuk pesanan {orderCode}",
   "RespondChangeFormModal.responseRequired": "Respon perubahan wajib diisi",
   "RespondChangeFormModal.fleetRequired": "Armada wajib dipilih",
   "RespondChangeFormModal.fleetRecommendationText": "jenis armada sesuai, jarak terdekat",
