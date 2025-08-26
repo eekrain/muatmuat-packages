@@ -2480,7 +2480,7 @@
   "RespondChangeModal.errorLoadingDetails": "Unable to load change details",
   "RespondChangeModal.cancel": "Cancel",
   "RespondChangeModal.respondToChange": "Respond to Change",
-  "RespondChangeFormModal.successMessage": "Successfully {response} for order {orderCode}",
+  "RespondChangeFormModal.successMessage": "Successfully sent change response for order {orderCode}",
   "RespondChangeFormModal.responseRequired": "Change response is required",
   "RespondChangeFormModal.fleetRequired": "Fleet must be selected",
   "RespondChangeFormModal.fleetRecommendationText": "suitable fleet type, closest distance",

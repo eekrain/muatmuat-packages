@@ -2480,7 +2480,7 @@
   "RespondChangeModal.errorLoadingDetails": "无法加载变更详情",
   "RespondChangeModal.cancel": "取消",
   "RespondChangeModal.respondToChange": "回应变更",
-  "RespondChangeFormModal.successMessage": "已成功为订单 {orderCode} {response}",
+  "RespondChangeFormModal.successMessage": "已成功发送订单 {orderCode} 的变更回应",
   "RespondChangeFormModal.responseRequired": "必须填写变更回应",
   "RespondChangeFormModal.fleetRequired": "必须选择车队",
   "RespondChangeFormModal.fleetRecommendationText": "合适的车队类型，距离最近",
