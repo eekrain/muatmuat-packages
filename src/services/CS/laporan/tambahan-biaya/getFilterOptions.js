@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false;
+const useMockData = true;
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {

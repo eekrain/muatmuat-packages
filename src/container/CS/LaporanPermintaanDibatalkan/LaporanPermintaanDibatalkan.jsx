@@ -13,7 +13,9 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import {
+  formatDate,
   formatDateToDDMonYYYY,
+  formatLoadTime,
   formatToYYYYMMDD,
 } from "@/lib/utils/dateFormat";
 
@@ -40,7 +42,7 @@ const LaporanPermintaanDibatalkan = ({
     return periodHistory.map((item) => ({
       name: item.displayText,
       value: item.displayText,
-      start_date: formatDateToDDMonYYYY(item.startate),
+      start_date: formatDateToDDMonYYYY(item.startDate),
       end_date: formatDateToDDMonYYYY(item.endDate),
     }));
   }, [periodHistory]);
@@ -53,7 +55,9 @@ const LaporanPermintaanDibatalkan = ({
       className: "align-top !pl-6 !pr-2.5",
       headerClassName: "pl-6 pr-2.5",
       render: (row) => (
-        <span className="mt-1 text-xs font-medium">13 Apr 2025 17:39 WIB</span>
+        <span className="mt-1 text-xs font-medium">
+          {formatDate(row.cancelledAt)}
+        </span>
       ),
     },
     {
@@ -63,7 +67,7 @@ const LaporanPermintaanDibatalkan = ({
       className: "align-top !px-2.5",
       headerClassName: "px-2.5",
       render: (row) => (
-        <span className="mt-1 text-xs font-medium">MT25A002A</span>
+        <span className="mt-1 text-xs font-medium">{row.orderCode}</span>
       ),
     },
     {
@@ -80,7 +84,7 @@ const LaporanPermintaanDibatalkan = ({
             </span>
           ) : null}
           <span className="text-xs font-medium">
-            13 Apr 2025 17:39 WIB s/d 18:00 WIB
+            {formatLoadTime(row.loadTimeStart, row.loadTimeEnd)}
           </span>
         </div>
       ),
@@ -159,20 +163,25 @@ const LaporanPermintaanDibatalkan = ({
         const armadaItems = [
           {
             icons: "/icons/transporter14.svg",
-            value: "1 Unit",
+            value: `${row.unit} Unit`,
           },
           {
             isDot: true,
           },
           {
             icons: "/icons/estimasi-kapasitas14.svg",
-            value: "1.000 kg",
+            value: row.cargo,
+            // value: "1.000 kg",
           },
         ];
         return (
           <div className="mt-0.5 flex flex-col gap-y-2">
-            <span className="text-xs font-semibold">Colt Diesel Engkel</span>
-            <span className="text-xxs font-medium leading-[1.3]">Box</span>
+            <span className="line-clamp-1 text-xs font-semibold">
+              {row.truckTypeName}
+            </span>
+            <span className="line-clamp-1 text-xxs font-medium leading-[1.3]">
+              {row.truckCarrier}
+            </span>
             <div className="flex items-center gap-x-2">
               {armadaItems.map((item, key) => (
                 <Fragment key={key}>
@@ -205,7 +214,9 @@ const LaporanPermintaanDibatalkan = ({
       headerClassName: "px-2.5",
       className: "align-top !px-2.5",
       sortable: false,
-      render: (row) => <span className="text-xs font-medium">10</span>,
+      render: (row) => (
+        <span className="text-xs font-medium">{row.requestCount}</span>
+      ),
     },
     {
       key: "action",
@@ -227,7 +238,7 @@ const LaporanPermintaanDibatalkan = ({
   ];
 
   const DataEmptyComponent = () => {
-    if (lastFilterField !== "search") {
+    if (lastFilterField === "search") {
       return (
         <DataNotFound
           className="gap-5"
@@ -360,7 +371,6 @@ const LaporanPermintaanDibatalkan = ({
           </Button>
         </div>
       </div>
-      {/* <CancelledOrderTable /> */}
       <Card className="border-none">
         {hasNoOrders ? (
           <div className="flex h-[280px] items-center justify-center">
@@ -404,7 +414,7 @@ const LaporanPermintaanDibatalkan = ({
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${orders?.length} Permintaan Dibatalkan`}
+                  {`Total : ${orders.length} Permintaan Dibatalkan`}
                 </span>
               </div>
             </div>
