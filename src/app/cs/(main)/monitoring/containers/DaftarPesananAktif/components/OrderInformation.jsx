@@ -12,6 +12,7 @@ import {
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import {
   ORDER_STATUS,
@@ -21,7 +22,7 @@ import {
 import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 
 // Helper function copied from parent file
-const formatInformasiMuatan = (informasiMuatan = []) => {
+const formatInformasiMuatan = (informasiMuatan = [], t) => {
   if (!informasiMuatan || informasiMuatan.length === 0) {
     return { displayText: "-", hasMore: false, remainingItems: [] };
   }
@@ -39,7 +40,11 @@ const formatInformasiMuatan = (informasiMuatan = []) => {
   const remainingItems = informasiMuatan.slice(1);
 
   return {
-    displayText: `${firstItem}, +${remainingCount} lainnya`,
+    displayText: t(
+      "OrderInformation.moreItems",
+      { firstItem, count: remainingCount },
+      `${firstItem}, +${remainingCount} lainnya`
+    ),
     hasMore: true,
     remainingItems,
   };
@@ -53,7 +58,8 @@ const OrderInformation = ({
   onViewFleetStatus,
   className,
 }) => {
-  const { dateLabel, timeRange, dateColor } = formatMuatTime(row);
+  const { t } = useTranslation();
+  const { dateLabel, timeRange, dateColor } = formatMuatTime(row, t);
   const statusBadge = getOrderStatusBadge(row.orderStatus);
   const config = getOrderStatusActions(row.orderStatus, row);
 
@@ -72,7 +78,7 @@ const OrderInformation = ({
     sosCount: row.sosUnit || 0,
   };
 
-  const muatanInfo = formatInformasiMuatan(informasiMuatan);
+  const muatanInfo = formatInformasiMuatan(informasiMuatan, t);
 
   const handleActionClick = (actionType) => {
     // Mirror previous behavior: close dropdown for certain actions
@@ -95,8 +101,11 @@ const OrderInformation = ({
               appearance={{ iconClassName: "text-primary-700 mr-1 size-3.5" }}
             >
               <p className="max-w-[312px]">
-                Armada kamu telah tercatat untuk pesanan ini, harap menunggu
-                maks. 1 jam untuk konfirmasi dari Shipper
+                {t(
+                  "OrderInformation.waitingConfirmationTooltip",
+                  {},
+                  "Armada kamu telah tercatat untuk pesanan ini, harap menunggu maks. 1 jam untuk konfirmasi dari Shipper"
+                )}
               </p>
             </InfoTooltip>
           )}
@@ -107,9 +116,11 @@ const OrderInformation = ({
               appearance={{ iconClassName: "text-error-400 mr-1 size-3.5" }}
             >
               <p className="max-w-[312px]">
-                Pesanan belum di konfirmasi siap, mohon segera melakukan
-                pengecekan kesiapan armada dan konfirmasi siap sebelum waktu
-                muat
+                {t(
+                  "OrderInformation.needConfirmationTooltip",
+                  {},
+                  "Pesanan belum di konfirmasi siap, mohon segera melakukan pengecekan kesiapan armada dan konfirmasi siap sebelum waktu muat"
+                )}
               </p>
             </InfoTooltip>
           )}
@@ -120,8 +131,11 @@ const OrderInformation = ({
               appearance={{ iconClassName: "text-warning-900 mr-1 size-3.5" }}
             >
               <p className="max-w-[312px]">
-                Terdapat perubahan pesanan dari Shipper, mohon pelajari
-                perubahannya dan segera beri respon
+                {t(
+                  "OrderInformation.changeResponseTooltip",
+                  {},
+                  "Terdapat perubahan pesanan dari Shipper, mohon pelajari perubahannya dan segera beri respon"
+                )}
               </p>
             </InfoTooltip>
           )}
@@ -132,9 +146,11 @@ const OrderInformation = ({
               appearance={{ iconClassName: "text-warning-900 mr-1 size-3.5" }}
             >
               <p className="max-w-[312px]">
-                Pesanan ini belum memiliki armada yang ditugaskan. Silakan
-                lakukan Assign Armada secepatnya agar jadwal muat dan pengiriman
-                berjalan sesuai rencana.
+                {t(
+                  "OrderInformation.needAssignFleetTooltip",
+                  {},
+                  "Pesanan ini belum memiliki armada yang ditugaskan. Silakan lakukan Assign Armada secepatnya agar jadwal muat dan pengiriman berjalan sesuai rencana."
+                )}
               </p>
             </InfoTooltip>
           )}
@@ -182,7 +198,9 @@ const OrderInformation = ({
               src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
               className="h-4 w-4 text-gray-600"
             />
-            <span className="text-xxs font-medium">{totalUnits} Unit</span>
+            <span className="text-xxs font-medium">
+              {totalUnits} {t("OrderInformation.unit", {}, "Unit")}
+            </span>
           </div>
           <span className="hidden text-gray-300 lg:block">•</span>
           <div className="flex max-w-[118px] items-center gap-1">
@@ -197,7 +215,8 @@ const OrderInformation = ({
                   <InfoTooltip
                     trigger={
                       <span className="cursor-pointer text-primary-700 hover:text-primary-800">
-                        +{muatanInfo.remainingItems.length} lainnya
+                        +{muatanInfo.remainingItems.length}{" "}
+                        {t("OrderInformation.others", {}, "lainnya")}
                       </span>
                     }
                     side="top"
@@ -205,7 +224,11 @@ const OrderInformation = ({
                   >
                     <div className="max-w-[312px]">
                       <div className="mb-2 font-semibold text-black">
-                        Informasi Muatan
+                        {t(
+                          "OrderInformation.cargoInfo",
+                          {},
+                          "Informasi Muatan"
+                        )}
                       </div>
                       <ol className="list-inside list-decimal space-y-1">
                         {muatanInfo.remainingItems.map((item, index) => (
@@ -237,7 +260,7 @@ const OrderInformation = ({
                 onClick={() => {}}
                 className="h-auto p-0 text-xs font-medium"
               >
-                Lihat SOS
+                {t("OrderInformation.viewSOS", {}, "Lihat SOS")}
               </Button>
             </div>
           )}
@@ -250,7 +273,7 @@ const OrderInformation = ({
           className="w-full p-2 text-center"
         >
           {row.orderStatus === ORDER_STATUS.LOADING
-            ? `${statusBadge.label} : ${row.truckCount || 0} Unit`
+            ? `${statusBadge.label} : ${row.truckCount || 0} ${t("OrderInformation.unit", {}, "Unit")}`
             : statusBadge.label}
         </BadgeStatus>
         {row.orderStatus === ORDER_STATUS.LOADING && (
@@ -259,7 +282,7 @@ const OrderInformation = ({
             onClick={() => onViewFleetStatus?.(row)}
             className="self-start text-xs font-semibold"
           >
-            Lihat Status Lainnya
+            {t("OrderInformation.viewOtherStatus", {}, "Lihat Status Lainnya")}
           </Button>
         )}
       </div>
