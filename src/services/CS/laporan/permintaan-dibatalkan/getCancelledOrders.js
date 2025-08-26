@@ -2,7 +2,22 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false;
+const useMockData = true;
+
+// Helper function to generate a random date within a range
+const getRandomDate = (start, end) => {
+  const date = new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+  return `${date.toISOString().slice(0, 19)}Z`;
+};
+
+// Helper function to add hours to a date
+const addHours = (date, hours) => {
+  const newDate = new Date(date);
+  newDate.setHours(newDate.getHours() + hours);
+  return `${newDate.toISOString().slice(0, 19)}Z`;
+};
 
 // Mock API result for development/testing
 export const mockAPIResult = {
@@ -12,14 +27,46 @@ export const mockAPIResult = {
       Text: "Data berhasil diambil",
     },
     Data: {
-      orders: [
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
+      orders: Array.from({ length: 10 }).map((_, i) => {
+        const orderCode = `MT20240100${String(i + 1).padStart(2, "0")}`;
+        const cancelledAt = getRandomDate(
+          new Date(2024, 0, 15, 10, 30, 0),
+          new Date()
+        );
+        const orderType = i % 2 === 0 ? "INSTANT" : "SCHEDULED";
+        const loadTimeStart = getRandomDate(
+          new Date(2024, 0, 15, 8, 0, 0),
+          new Date(2024, 0, 15, 16, 0, 0)
+        );
+        const loadTimeEnd = addHours(
+          new Date(loadTimeStart),
+          Math.floor(Math.random() * 8) + 1
+        ); // 1 to 8 hours later
+        const truckTypeNames = [
+          "Colt Diesel Engkel",
+          "Tractor Head 4x2 dan Medium Semi Trailer 20ft ",
+          "Wingbox",
+        ];
+        const truckCarriers = [
+          "Box",
+          "Skeletal Container Jumbo 45 ft  (3 As)",
+          "Lossbak",
+        ];
+        const truckTypeName =
+          truckTypeNames[Math.floor(Math.random() * truckTypeNames.length)];
+        const truckCarrier =
+          truckCarriers[Math.floor(Math.random() * truckCarriers.length)];
+        const unit = Math.floor(Math.random() * 20) + 1; // 1 to 20
+        const cargo = `${Math.floor(Math.random() * 5000) + 100} kg`; // 100 to 5100 kg
+        const requestCount = Math.floor(Math.random() * 5) + 1; // 1 to 5
+        console.log("cancelledAt", cancelledAt);
+        return {
+          id: `uuid-${i + 1}`,
+          orderCode,
+          cancelledAt,
+          orderType,
+          loadTimeStart,
+          loadTimeEnd,
           pickupLocations: [
             {
               fullAddress: "Jl. Sudirman No. 1",
@@ -34,316 +81,19 @@ export const mockAPIResult = {
               city: "Jakarta Pusat",
             },
           ],
-          truckTypeName: "Pickup",
+          truckTypeName,
           truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
+          truckCarrier,
+          unit,
+          cargo,
+          requestCount,
           hasMultipleLocations: true,
           shipper: {
             companyName: "PT Maju Jaya",
             fullName: "John Doe",
           },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-        {
-          id: "uuid",
-          orderCode: "MT2024010001",
-          cancelledAt: "2024-01-15T10:30:00Z",
-          orderType: "INSTANT",
-          loadTimeStart: "2024-01-15T08:00:00Z",
-          loadTimeEnd: "2024-01-15T12:00:00Z",
-          pickupLocations: [
-            {
-              fullAddress: "Jl. Sudirman No. 1",
-              district: "Menteng",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              fullAddress: "Jl. Thamrin No. 2",
-              district: "Tanah Abang",
-              city: "Jakarta Pusat",
-            },
-          ],
-          truckTypeName: "Pickup",
-          truckHead: "Cdd",
-          truckCarrier: "Box",
-          unit: 10,
-          cargo: "1000 kg",
-          requestCount: 2,
-          hasMultipleLocations: true,
-          shipper: {
-            companyName: "PT Maju Jaya",
-            fullName: "John Doe",
-          },
-        },
-      ],
+        };
+      }),
       pagination: {
         currentPage: 1,
         totalPages: 1,
