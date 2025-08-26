@@ -1,5 +1,6 @@
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import Loading from "@/components/Loading/LoadingStatic";
+import { TabsContent } from "@/components/Tabs/Tabs";
 import { useGetDocumentStatus } from "@/services/CS/monitoring/detail-pesanan-cs/getDocumentStatus";
 
 import {
@@ -71,41 +72,43 @@ export const TabStatusDokumen = ({ orderId }) => {
   const { documentStatus, shipments = [], additionalService } = documentData;
 
   return (
-    <div className="flex w-full flex-col gap-6">
-      {/* Document Status Overview */}
-      {documentStatus && (
-        <DocumentStatusOverview documentStatus={documentStatus} />
-      )}
+    <TabsContent className="flex flex-col gap-y-4" value="status-dokumen">
+      <div className="flex w-full flex-col gap-6">
+        {/* Document Status Overview */}
+        {documentStatus && (
+          <DocumentStatusOverview documentStatus={documentStatus} />
+        )}
 
-      {/* Shipment Details */}
-      {shipments.length > 0 && (
-        <div className="flex flex-col gap-4">
-          <h2 className="text-base font-bold text-neutral-900">
-            Riwayat Pengiriman ({shipments.length})
-          </h2>
-          {shipments.map((shipment, index) => (
-            <ShipmentDetailCard
-              key={shipment.shipmentId || index}
-              shipment={shipment}
-            />
-          ))}
+        {/* Shipment Details */}
+        {shipments.length > 0 && (
+          <div className="flex flex-col gap-4">
+            <h2 className="text-base font-bold text-neutral-900">
+              Riwayat Pengiriman ({shipments.length})
+            </h2>
+            {shipments.map((shipment, index) => (
+              <ShipmentDetailCard
+                key={shipment.shipmentId || index}
+                shipment={shipment}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Additional Service */}
+        {additionalService && (
+          <AdditionalServiceCard additionalService={additionalService} />
+        )}
+
+        {/* Refresh Button */}
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={handleRefresh}
+            className="rounded-lg bg-blue-50 px-6 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
+          >
+            Refresh Data
+          </button>
         </div>
-      )}
-
-      {/* Additional Service */}
-      {additionalService && (
-        <AdditionalServiceCard additionalService={additionalService} />
-      )}
-
-      {/* Refresh Button */}
-      <div className="flex justify-center pt-4">
-        <button
-          onClick={handleRefresh}
-          className="rounded-lg bg-blue-50 px-6 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
-        >
-          Refresh Data
-        </button>
       </div>
-    </div>
+    </TabsContent>
   );
 };
