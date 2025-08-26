@@ -488,24 +488,6 @@ const DaftarPesananAktif = ({
               {/* Status Urgent Dropdown */}
               <div className="relative">
                 <div className="relative">
-                  {/* <FilterSelect
-                    value={selectedStatusFilter}
-                    onChange={setSelectedStatusFilter}
-                    placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
-                    options={getStatusOptions()}
-                    // showNotificationDot={getStatusUrgentCount() > 0}
-                    // notificationCount={getStatusUrgentCount()}
-                    className="max-w-[150px] hover:border-primary-700"
-                    disabled={isSearchNotFound || getStatusUrgentCount() === 0}
-                    showNotificationDotWithoutNumber={
-                      getStatusUrgentCount() > 0
-                    }
-                    onFocus={() => {
-                      if (!isExpanded) {
-                        onToggleExpand();
-                      }
-                    }}
-                  /> */}
                   <UrgentStatusFilter
                     availableStatuses={availableStatuses}
                     value={selectedStatusFilter}
