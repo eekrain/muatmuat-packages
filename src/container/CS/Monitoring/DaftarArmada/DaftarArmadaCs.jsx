@@ -2,22 +2,29 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Loader2, X } from "lucide-react";
+import { AlertTriangle, Loader2, SlidersHorizontal, X } from "lucide-react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
+import Button from "@/components/Button/Button";
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardFleet from "@/components/Card/CardFleet";
+import CustomDropdown from "@/components/CustomDropdown";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/Popover/Popover";
 import Search from "@/components/Search/Search";
 import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
-import FilterPopoverArmada from "@/container/Transporter/Monitoring/DaftarArmada/components/FilterPopoverArmada";
 import ModalResponseChange from "@/container/Transporter/Monitoring/DaftarArmada/components/ModalResponseChange";
 import SosPopupNotification from "@/container/Transporter/Monitoring/DaftarArmada/components/SosPopupNotification";
 import { useGetFleetList } from "@/services/CS/monitoring/getCsFleetList";
+import { useGetListSOSData } from "@/services/CS/monitoring/sos/getListSOSData";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
 
@@ -75,8 +82,6 @@ const DaftarArmadaCs = ({
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'ready' | 'sos'
-  const [truckStatusFilter, setTruckStatusFilter] = useState([]);
-  const [orderStatusFilter, setOrderStatusFilter] = useState([]);
   const [showSosNotification, setShowSosNotification] = useState(false);
   const [showResponseChangeModal, setShowResponseChangeModal] = useState(false);
   const [selectedFleetForResponse, setSelectedFleetForResponse] =
@@ -84,8 +89,46 @@ const DaftarArmadaCs = ({
   const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
-  const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
-  const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
+
+  // State management for filters
+  const [filterValues, setFilterValues] = useState({
+    transporter: [],
+    truck: [],
+    order: [],
+  });
+  const [tempFilterValues, setTempFilterValues] = useState({
+    transporter: [],
+    truck: [],
+    order: [],
+  });
+  const [draftFilterValues, setDraftFilterValues] = useState({
+    transporter: [],
+    truck: [],
+    order: [],
+  });
+
+  // Sync temporary values when popover opens
+  useEffect(() => {
+    if (isFilterPopoverOpen) {
+      // Use draft values if they exist, otherwise use current filter values
+      if (
+        draftFilterValues.transporter.length > 0 ||
+        draftFilterValues.truck.length > 0 ||
+        draftFilterValues.order.length > 0
+      ) {
+        setTempFilterValues(draftFilterValues);
+      } else {
+        setTempFilterValues(filterValues);
+      }
+    }
+  }, [isFilterPopoverOpen, filterValues, draftFilterValues]);
+
+  // Check if any filter is active
+  const isFilterActive = useMemo(() => {
+    return Object.values(filterValues).some((value) =>
+      Array.isArray(value) ? value.length > 0 : Boolean(value)
+    );
+  }, [filterValues]);
 
   const {
     data: fleetData,
@@ -94,24 +137,33 @@ const DaftarArmadaCs = ({
     mutate: refetchFleets,
   } = useGetFleetList({
     search: searchTerm,
-    // This hook call correctly sends the param for 'ready' and 'undefined' for 'all' and 'sos',
-    // which fetches the necessary data for client-side filtering.
     has_fleet_status: activeTab === "ready" ? "READY_FOR_ORDER" : undefined,
-    truckStatus: truckStatusFilter,
-    orderStatus: orderStatusFilter,
+    truckStatus: filterValues.truck,
+    transporterIds: filterValues.transporter,
+    orderStatus: filterValues.order,
   });
 
-  // Get all data for total counts (without status filtering)
   const { data: allFleetData } = useGetFleetList({
     search: searchTerm,
-    truckStatus: truckStatusFilter,
-    orderStatus: orderStatusFilter,
+    transporterIds: filterValues.transporter,
+    truckStatus: filterValues.truck,
+    orderStatus: filterValues.order,
   });
 
+  // --- FIX STARTS HERE ---
+  // Declare transporters from API data first
   const transporters = fleetData?.transporters || [];
   const allTransporters = allFleetData?.transporters || [];
 
-  // Calculate total fleets from all data
+  // Now you can safely use allTransporters
+  const transporterOptions = useMemo(() => {
+    return (allTransporters || []).map((transporter) => ({
+      name: transporter.companyName,
+      value: transporter.id,
+    }));
+  }, [allTransporters]);
+  // --- FIX ENDS HERE ---
+
   const totalFleets = useMemo(() => {
     return allTransporters.reduce(
       (total, t) => total + (t.fleets?.length || 0),
@@ -129,7 +181,6 @@ const DaftarArmadaCs = ({
     }, 0);
   }, [allTransporters]);
 
-  // **NEW**: Calculate SOS count from all transporters data
   const sosCount = useMemo(() => {
     return allTransporters.reduce((total, transporter) => {
       const sosFleets =
@@ -140,14 +191,37 @@ const DaftarArmadaCs = ({
 
   const filterCounts = allFleetData?.filterOptions || {};
 
+  // Bring countdown data from SOSCSContainer: fetch active SOS list and build lookup
+  const { data: sosData } = useGetListSOSData({ limit: 50 });
+  const activeSosItems = useMemo(() => {
+    if (!sosData?.Data?.sos) return [];
+    return sosData.Data.sos;
+  }, [sosData]);
+  const sosCountdownByPlate = useMemo(() => {
+    const map = new Map();
+    activeSosItems.forEach((item) => {
+      const plate = item?.fleet?.licensePlate || item?.licensePlate;
+      const minutes =
+        item?.countdownMinutes ?? item?.detailSOS?.countdownMinutes ?? null;
+      if (plate && minutes !== null && minutes !== undefined) {
+        map.set(plate, minutes);
+      }
+    });
+    return map;
+  }, [activeSosItems]);
+
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
 
-  // **UPDATED**: Process transporters and apply client-side filtering for the active tab
   const processedTransporters = useMemo(() => {
     return transporters
       .map((transporter) => {
-        const filteredFleets = (transporter.fleets || []).filter((fleet) => {
-          // Search filter applies to all tabs
+        const uniqueFleets = new Map();
+        (transporter.fleets || []).forEach((fleet) =>
+          uniqueFleets.set(fleet.fleetId, fleet)
+        );
+        const deDupedFleets = Array.from(uniqueFleets.values());
+
+        const filteredFleets = deDupedFleets.filter((fleet) => {
           const searchMatch =
             fleet.licensePlate
               ?.toLowerCase()
@@ -161,15 +235,12 @@ const DaftarArmadaCs = ({
 
           if (!searchMatch) return false;
 
-          // Tab-specific filters
           if (activeTab === "sos") {
             return fleet.hasSOSAlert;
           }
           if (activeTab === "ready") {
             return fleet.status === "READY_FOR_ORDER";
           }
-
-          // 'all' tab doesn't need extra filtering
           return true;
         });
 
@@ -178,7 +249,7 @@ const DaftarArmadaCs = ({
           fleets: filteredFleets,
         };
       })
-      .filter((transporter) => transporter.fleets.length > 0); // Only show transporters with matching fleets
+      .filter((transporter) => transporter.fleets.length > 0);
   }, [transporters, searchTerm, activeTab]);
 
   const handleAcknowledge = async (fleet) => {
@@ -196,7 +267,6 @@ const DaftarArmadaCs = ({
     if (latestSosAlert) setShowSosNotification(true);
   }, [latestSosAlert]);
 
-  // **NEW**: Auto-switch to 'all' tab if SOS count becomes zero
   useEffect(() => {
     if (sosCount === 0 && activeTab === "sos") {
       setActiveTab("all");
@@ -234,14 +304,6 @@ const DaftarArmadaCs = ({
     setSelectedFleet(null);
   };
 
-  const handleApplyFilter = (truckStatuses, orderStatuses) => {
-    setTruckStatusFilter(truckStatuses);
-    setOrderStatusFilter(orderStatuses);
-    setSelectedTruckStatuses(truckStatuses);
-    setSelectedOrderStatuses(orderStatuses);
-    setIsFilterPopoverOpen(false);
-  };
-
   const handleFleetCardClick = (fleet) => {
     if (onFleetClick) onFleetClick(fleet);
     if (onFleetSelect) onFleetSelect(fleet.fleetId);
@@ -251,6 +313,20 @@ const DaftarArmadaCs = ({
     setSelectedTransporter(transporter);
     setIsHubungiModalOpen(true);
   };
+
+  const truckStatusOptions = useMemo(() => {
+    return (filterCounts.truckStatus || []).map((item) => ({
+      name: `${item.status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())} (${item.count})`,
+      value: item.status,
+    }));
+  }, [filterCounts.truckStatus]);
+
+  const orderStatusOptions = useMemo(() => {
+    return (filterCounts.orderStatus || []).map((item) => ({
+      name: `${item.status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())} (${item.count})`,
+      value: item.status,
+    }));
+  }, [filterCounts.orderStatus]);
 
   return (
     <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">
@@ -282,22 +358,146 @@ const DaftarArmadaCs = ({
             defaultValue={searchTerm}
             className="w-full"
           />
-          <FilterPopoverArmada
-            onApplyFilter={handleApplyFilter}
-            filterCounts={filterCounts}
-            isPopoverOpen={isFilterPopoverOpen}
+          <Popover
+            open={isFilterPopoverOpen}
             onOpenChange={setIsFilterPopoverOpen}
-            isFilterActive={
-              selectedTruckStatuses.length > 0 ||
-              selectedOrderStatuses.length > 0
-            }
-            currentTruckFilters={selectedTruckStatuses}
-            currentOrderFilters={selectedOrderStatuses}
-          />
+          >
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                disabled={totalFleets === 0}
+                className={`flex h-8 items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold transition-colors ${
+                  totalFleets === 0
+                    ? "cursor-not-allowed border-neutral-500 bg-neutral-200 text-neutral-500" // Style disabled
+                    : isFilterActive
+                      ? "border-primary-700 text-primary-700 hover:border-primary-700 hover:bg-gray-50" // Style saat aktif
+                      : "border-neutral-600 text-neutral-600 hover:border-primary-700 hover:bg-gray-50" // Style default
+                }`}
+              >
+                <SlidersHorizontal
+                  className={`h-4 w-4 ${
+                    totalFleets === 0
+                      ? "text-neutral-500"
+                      : isFilterActive
+                        ? "text-primary-700"
+                        : "text-neutral-600"
+                  }`}
+                />
+                Filter
+                {isFilterActive && totalFleets > 0 && (
+                  <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+                    {Object.values(filterValues).reduce(
+                      (count, value) =>
+                        count +
+                        (Array.isArray(value) ? value.length : value ? 1 : 0),
+                      0
+                    )}
+                  </span>
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-[300px] rounded-xl border-0 bg-white p-0 shadow-lg"
+              side="right"
+              align="start"
+              alignOffset={-4}
+              sideOffset={12}
+            >
+              <div
+                className="absolute"
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderStyle: "solid",
+                  borderWidth: "8px 10px 8px 0",
+                  borderColor: "transparent white transparent transparent",
+                  left: "-9px",
+                  top: "12px",
+                  filter: "drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.1))",
+                }}
+              />
+
+              <div className="flex flex-col">
+                <div className="flex items-center justify-between px-6 py-4">
+                  <h3 className="text-base font-bold text-black">
+                    Filter Armada
+                  </h3>
+                  <button
+                    onClick={() => setIsFilterPopoverOpen(false)}
+                    className="text-neutral-400 hover:text-neutral-600"
+                  >
+                    <IconComponent
+                      src="/icons/silang.svg"
+                      width={16}
+                      height={16}
+                      className="h-4 w-4"
+                    />
+                  </button>
+                </div>
+                {/* Transporter Filter Section */}
+                <div className="px-6 pb-4">
+                  <label className="mb-3 block text-sm font-medium">
+                    Transporter
+                  </label>
+                  <CustomDropdown
+                    className="w-[250px]"
+                    options={transporterOptions}
+                    placeholder="Semua Transporter"
+                    searchPlaceholder="Cari Transporter"
+                    isMultipleSelected={true}
+                    defaultValue={tempFilterValues.transporter
+                      .map((id) =>
+                        transporterOptions.find((opt) => opt.value === id)
+                      )
+                      .filter(Boolean)}
+                    onSelected={(selected) => {
+                      const transporterIds = selected.map((item) => item.value);
+                      setTempFilterValues((prev) => ({
+                        ...prev,
+                        transporter: transporterIds,
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-3 border-t border-gray-300 px-6 py-4">
+                  <Button
+                    variant="muattrans-primary-secondary"
+                    size="small"
+                    onClick={() => {
+                      const initialFilters = {
+                        transporter: [],
+                        truck: [],
+                        order: [],
+                      };
+                      setTempFilterValues(initialFilters);
+                      setDraftFilterValues(initialFilters);
+                      setFilterValues(initialFilters);
+                      setSearchTerm("");
+                    }}
+                    className="min-w-[112px]"
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    variant="muattrans-primary"
+                    size="small"
+                    onClick={() => {
+                      setFilterValues(tempFilterValues);
+                      setDraftFilterValues(tempFilterValues);
+                      setIsFilterPopoverOpen(false);
+                    }}
+                    className="min-w-[115px]"
+                  >
+                    Tampilkan
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
-      {/* **NEW & UPDATED**: filter tabs */}
+      {/* Filter tabs */}
       <div className="flex flex-wrap gap-2 px-4 pb-3">
         {sosCount > 0 && (
           <button
@@ -357,16 +557,13 @@ const DaftarArmadaCs = ({
             {searchTerm ||
             activeTab === "ready" ||
             activeTab === "sos" ||
-            selectedTruckStatuses.length > 0 ||
-            selectedOrderStatuses.length > 0 ? (
-              // Search/filter results empty
+            isFilterActive ? (
               <DataNotFound
                 type="search"
                 title="Data Armada Tidak Ditemukan"
                 message="Coba ubah kata kunci atau filter pencarian Anda."
               />
             ) : (
-              // First time - no data at all
               <DataNotFound type="data">
                 <div className="flex flex-col items-center gap-2">
                   <p className="text-center text-base font-semibold leading-tight text-neutral-600">
@@ -384,9 +581,25 @@ const DaftarArmadaCs = ({
             {processedTransporters.map((transporter) => (
               <Card
                 key={transporter.id}
-                className="border-neutral-400 p-0 !shadow-none"
+                className={`${activeTab === "sos" ? "border-red-500" : "border-neutral-400"} p-0 !shadow-none`}
               >
-                <CardHeader className="border-neutral-400 !p-0">
+                {activeTab === "sos" && (
+                  <CardHeader className="border-t-none rounded-t-md bg-red-500 p-1">
+                    <div className="flex items-center justify-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-white" />
+                      <p className="text-center text-xs font-semibold text-white">
+                        Laporan belum diproses Transporter
+                      </p>
+                    </div>
+                  </CardHeader>
+                )}
+                <CardHeader
+                  className={`!p-0 ${
+                    activeTab === "sos"
+                      ? "border-red-500 bg-[#FFE9ED]"
+                      : "border-neutral-400"
+                  }`}
+                >
                   <div className="flex items-center justify-between p-4">
                     <div className="flex items-center gap-3">
                       <AvatarDriver
@@ -397,67 +610,133 @@ const DaftarArmadaCs = ({
                         }}
                       />
                       <div>
-                        <h3 className="text-base font-bold">
-                          {transporter.companyName}
-                        </h3>
-                        <div className="flex items-center gap-1 pt-2 text-xs text-neutral-700">
-                          <ImageComponent
-                            src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                            width={16}
-                            height={16}
-                            alt="truck icon"
-                          />
-                          <span>{transporter.fleets.length} Armada</span>
-                          <li className="flex list-none items-center gap-1 pl-[26px]">
-                            <IconComponent
-                              src="/icons/ellipse-7.svg"
-                              height={3}
-                              width={2}
-                              alt="list-bullet"
-                            />
-                            <button
-                              onClick={() =>
-                                handleOpenHubungiModal(transporter)
-                              }
-                              className="flex items-center gap-1 text-sm font-medium text-primary-700"
-                            >
-                              <IconComponent
-                                src="/icons/call-blue.svg"
+                        {activeTab === "sos" ? (
+                          <>
+                            <h3 className="text-base font-bold">
+                              {transporter.companyName}
+                            </h3>
+                            <div className="flex items-center gap-1 pt-2 text-xs text-neutral-700">
+                              <button
+                                onClick={() =>
+                                  handleOpenHubungiModal(transporter)
+                                }
+                                className="flex items-center gap-1 text-sm font-medium text-primary-700"
+                              >
+                                <IconComponent
+                                  src="/icons/call-blue.svg"
+                                  width={16}
+                                  height={16}
+                                  alt="call icon"
+                                />
+                                <span>Hubungi</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <h3 className="text-base font-bold">
+                              {transporter.companyName}
+                            </h3>
+                            <div className="flex items-center gap-1 pt-2 text-xs text-neutral-700">
+                              <ImageComponent
+                                src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
                                 width={16}
                                 height={16}
-                                alt="call icon"
+                                alt="truck icon"
                               />
-                              <span>Hubungi</span>
-                            </button>
-                          </li>
-                        </div>
+                              <span>{transporter.fleets.length} Armada</span>
+                              <li className="flex list-none items-center gap-1 pl-[26px]">
+                                <IconComponent
+                                  src="/icons/ellipse-7.svg"
+                                  height={3}
+                                  width={2}
+                                  alt="list-bullet"
+                                />
+                                <button
+                                  onClick={() =>
+                                    handleOpenHubungiModal(transporter)
+                                  }
+                                  className="flex items-center gap-1 text-sm font-medium text-primary-700"
+                                >
+                                  <IconComponent
+                                    src="/icons/call-blue.svg"
+                                    width={16}
+                                    height={16}
+                                    alt="call icon"
+                                  />
+                                  <span>Hubungi</span>
+                                </button>
+                              </li>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
+                    {activeTab === "sos" &&
+                      (() => {
+                        // Prefer live data from SOS list using license plate mapping
+                        const firstFleet = (transporter.fleets || [])[0];
+                        const plate = firstFleet?.licensePlate;
+                        const minutesFromLookup = plate
+                          ? sosCountdownByPlate.get(plate)
+                          : undefined;
+                        const minutesFallback = (transporter.fleets || [])
+                          .map(
+                            (f) =>
+                              f?.detailSOS?.countdownMinutes ??
+                              f?.countdownMinutes
+                          )
+                          .find((v) => v !== undefined && v !== null);
+                        const minutes =
+                          minutesFromLookup !== undefined &&
+                          minutesFromLookup !== null
+                            ? minutesFromLookup
+                            : minutesFallback;
+
+                        const content =
+                          minutes !== undefined && minutes !== null
+                            ? minutes < 0
+                              ? `- ${Math.abs(minutes)}:${String(
+                                  Math.floor((Math.abs(minutes) % 1) * 60)
+                                ).padStart(2, "0")}`
+                              : `${Math.floor(minutes)}:${String(
+                                  Math.floor((minutes % 1) * 60)
+                                ).padStart(2, "0")}`
+                            : "N/A";
+
+                        return (
+                          <div className="rounded-lg border border-red-500 bg-white px-3 py-1">
+                            <span className="text-sm font-medium text-red-500">
+                              {content}
+                            </span>
+                          </div>
+                        );
+                      })()}
                   </div>
                 </CardHeader>
                 <CardContent className="border-neutral-400 !p-0 !pt-3">
                   <div className="space-y-3 px-4 pb-4">
                     {transporter.fleets.map((fleet) => (
-                      <div
-                        key={fleet.fleetId}
-                        onClick={() => handleFleetCardClick(fleet)}
-                        className="cursor-pointer"
-                      >
-                        <CardFleet
-                          fleet={fleet}
-                          isExpanded={expandedId === fleet.fleetId}
-                          onToggleExpand={() => toggleExpanded(fleet.fleetId)}
-                          onOpenDriverModal={() => handleOpenDriverModal(fleet)}
-                          onOpenResponseChangeModal={() =>
-                            handleOpenResponseChangeModal(fleet)
-                          }
-                          onOpenRiwayatSOS={onOpenRiwayatSOS}
-                          isSOS={
-                            fleet.hasSOSAlert &&
-                            fleet.detailSOS?.sosStatus === "NEW"
-                          }
-                          onAcknowledge={() => handleAcknowledge(fleet)}
-                        />
+                      <div key={fleet.fleetId} className="cursor-pointer">
+                        <div onClick={() => handleFleetCardClick(fleet)}>
+                          <CardFleet
+                            fleet={fleet}
+                            isExpanded={expandedId === fleet.fleetId}
+                            onToggleExpand={() => toggleExpanded(fleet.fleetId)}
+                            onOpenDriverModal={() =>
+                              handleOpenDriverModal(fleet)
+                            }
+                            onOpenResponseChangeModal={() =>
+                              handleOpenResponseChangeModal(fleet)
+                            }
+                            onOpenRiwayatSOS={onOpenRiwayatSOS}
+                            isSOS={
+                              fleet.hasSOSAlert &&
+                              fleet.detailSOS?.sosStatus === "NEW"
+                            }
+                            onAcknowledge={() => handleAcknowledge(fleet)}
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -491,13 +770,13 @@ const DaftarArmadaCs = ({
       )}
       <SosPopupNotification
         isOpen={showSosNotification}
-        sosCount={sosCount} // **UPDATED**: Pass correct sosCount
+        sosCount={sosCount}
         onClose={() => {
           setShowSosNotification(false);
           acknowledgeSosAlert();
         }}
         onConfirm={() => {
-          setActiveTab("sos"); // **UPDATED**: Go to 'sos' tab
+          setActiveTab("sos");
           setShowSosNotification(false);
           acknowledgeSosAlert();
         }}
