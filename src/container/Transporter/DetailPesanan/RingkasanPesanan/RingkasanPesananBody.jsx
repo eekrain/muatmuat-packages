@@ -99,7 +99,7 @@ const PICLocationCard = ({ locations = [], title }) => {
                   />
                   <PICDetailItem
                     icon="/icons/profile16.svg"
-                    text={location.pic.name}
+                    text={location.pic?.name || "N/A"}
                   />
                 </div>
               </Fragment>
@@ -180,7 +180,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
             alt="Muatan Icon"
           />
           <p className="text-xs font-medium text-neutral-900">
-            {item.name}
+            {item?.name || "Unnamed Item"}
             <span className="text-neutral-600">
               {` (${formattedWeight} kg)${dimensionText}`}
             </span>
