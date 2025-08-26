@@ -29,24 +29,35 @@ const months = [
 // Memoized Period Dropdown Component
 const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
   const { t } = useTranslation();
+  const { viewType, availablePeriods, isLoadingPeriods } =
+    useAgendaNavigatorStore();
+
+  // Use store data if available, otherwise fallback to props
+  const actualAvailableMonths = useMemo(() => {
+    if (availablePeriods?.availableMonths) {
+      return availablePeriods.availableMonths;
+    }
+    return availableMonths;
+  }, [availablePeriods?.availableMonths, availableMonths]);
+
   const availableYears = useMemo(() => {
-    if (!availableMonths) return [];
-    return Object.keys(availableMonths).sort(
+    if (!actualAvailableMonths) return [];
+    return Object.keys(actualAvailableMonths).sort(
       (a, b) => parseInt(b) - parseInt(a)
     );
-  }, [availableMonths]);
+  }, [actualAvailableMonths]);
 
   const getAvailableMonthsForYear = useCallback(
     (year) => {
-      const temp = availableMonths?.[year];
-      console.log("🚀 ~ temp:", temp);
+      const temp = actualAvailableMonths?.[year];
+      console.log("🚀 ~ Available months for year", year, ":", temp);
       if (!temp) return [];
       return temp.map((monthNum) => ({
         id: monthNum,
         label: months[monthNum - 1],
       }));
     },
-    [availableMonths]
+    [actualAvailableMonths]
   );
 
   const handleMonthClick = useCallback(
@@ -55,6 +66,21 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
     },
     [onMonthClick]
   );
+
+  if (isLoadingPeriods) {
+    return (
+      <div className="flex items-center gap-1 text-xs text-neutral-500">
+        <IconComponent
+          src="/icons/agenda/chevron-down.svg"
+          width={12}
+          height={12}
+        />
+        <span>
+          {t("CalendarHeader1.labelMemuatPeriode", {}, "Memuat Periode...")}
+        </span>
+      </div>
+    );
+  }
 
   if (!availableYears.length) {
     return (
@@ -143,41 +169,37 @@ const getStatusFiltersData = (t) => [
 
 const getArmadaFiltersData = (t) => [
   {
-    id: "coltDieselEngkel",
-    label: t(
-      "CalendarHeader1.armadaColtDieselEngkelBox",
-      {},
-      "Colt Diesel Engkel - Box"
-    ),
-    count: 5,
+    id: "cdd-box",
+    label: t("CalendarHeader1.armadaCddBox", {}, "CDD - box"),
+    count: 2,
   },
   {
-    id: "tronton",
+    id: "tronton-box",
     label: t("CalendarHeader1.armadaTrontonBox", {}, "Tronton - Box"),
-    count: 5,
+    count: 2,
   },
   {
-    id: "coltDieselEngkelEngkel",
-    label: t(
-      "CalendarHeader1.armadaColtDieselEngkelEngkel",
-      {},
-      "Colt Diesel Engkel - Engkel"
-    ),
-    count: 5,
-  },
-  {
-    id: "pickup",
+    id: "pickup-box",
     label: t("CalendarHeader1.armadaPickupBox", {}, "Pickup - Box"),
-    count: 5,
+    count: 2,
   },
   {
-    id: "coltDieselDouble",
+    id: "colt-diesel-double-box",
     label: t(
       "CalendarHeader1.armadaColtDieselDoubleBox",
       {},
       "Colt Diesel Double - Box"
     ),
-    count: 5,
+    count: 2,
+  },
+  {
+    id: "colt-diesel-engkel-engkel",
+    label: t(
+      "CalendarHeader1.armadaColtDieselEngkelEngkel",
+      {},
+      "Colt Diesel Engkel - Engkel"
+    ),
+    count: 1,
   },
 ];
 
@@ -573,6 +595,8 @@ export const CalendarHeader1 = memo(
     availablePeriods,
   }) => {
     const { t } = useTranslation();
+    const { viewType, availablePeriods: storeAvailablePeriods } =
+      useAgendaNavigatorStore();
     const {
       displayMonthYear,
       prevMonth,
@@ -584,6 +608,14 @@ export const CalendarHeader1 = memo(
       todayDate,
       isTodayNotInView,
     } = useDateNavigator();
+
+    // Use store data if available, otherwise fallback to props
+    const actualAvailablePeriods = useMemo(() => {
+      if (storeAvailablePeriods) {
+        return storeAvailablePeriods;
+      }
+      return availablePeriods;
+    }, [storeAvailablePeriods, availablePeriods]);
 
     return (
       <div className="relative flex h-[56px] w-full justify-between border-b">
@@ -599,7 +631,7 @@ export const CalendarHeader1 = memo(
           nextMonth={nextMonth}
           canPrevMonth={canPrevMonth}
           canNextMonth={canNextMonth}
-          availableMonths={availablePeriods?.availableMonths}
+          availableMonths={actualAvailablePeriods?.availableMonths}
           setMonth={setMonth}
         />
         <div className="flex h-full items-center justify-end p-3">

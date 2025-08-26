@@ -675,7 +675,7 @@ const getFilteredMockData = (params = {}) => {
  * @returns {Promise<Object>} - Data agenda schedule
  */
 export const getAgendaSchedules = async (params = {}) => {
-  const useMockData = true; // Set to false to use real API
+  const useMockData = false; // Set to false to use real API
 
   if (useMockData) {
     // Simulate API delay
@@ -683,7 +683,7 @@ export const getAgendaSchedules = async (params = {}) => {
     return getFilteredMockData(params);
   }
 
-  // Build query parameters
+  // Build query parameters according to API contract
   const queryParams = new URLSearchParams();
 
   if (params.page) queryParams.append("page", params.page.toString());

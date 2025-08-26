@@ -29,4 +29,17 @@ export const toast = {
       duration,
     });
   },
+
+  /**
+   * Trigger an info toast
+   * @param {string} message - The message to display
+   * @param {number} [duration=6000] - Duration in milliseconds
+   */
+  info: (message, duration = 6000) => {
+    useToastStore.getState().actions.addToast({
+      message,
+      type: "info",
+      duration,
+    });
+  },
 };

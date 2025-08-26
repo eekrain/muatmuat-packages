@@ -12,116 +12,63 @@ export const mockAPIResult = {
     Data: {
       suggestions: [
         {
+          type: "LICENSE_PLATE",
           value: "B1234ABC",
-          label: "B1234ABC - CDD - box",
-          type: "license_plate",
+          label: "B 1234 ABC - Box Truck",
+          fleetID: "uuid-1",
+          matchCount: 3,
         },
         {
+          type: "LICENSE_PLATE",
           value: "B5678DEF",
-          label: "B5678DEF - Tronton - Box",
-          type: "license_plate",
+          label: "B 5678 DEF - Tronton - Box",
+          fleetID: "uuid-2",
+          matchCount: 2,
         },
         {
+          type: "LICENSE_PLATE",
           value: "B9999XYZ",
-          label: "B9999XYZ - Pickup - Box",
-          type: "license_plate",
+          label: "B 9999 XYZ - Pickup - Box",
+          fleetID: "uuid-3",
+          matchCount: 1,
         },
         {
-          value: "B7777GHI",
-          label: "B7777GHI - Colt Diesel Double - Box",
-          type: "license_plate",
-        },
-        {
-          value: "B5555JKL",
-          label: "B5555JKL - Colt Diesel Engkel - Engkel",
-          type: "license_plate",
-        },
-        {
-          value: "B4444MNO",
-          label: "B4444MNO - CDD - box",
-          type: "license_plate",
-        },
-        {
-          value: "B3333PQR",
-          label: "B3333PQR - Tronton - Box",
-          type: "license_plate",
-        },
-        {
-          value: "B2222STU",
-          label: "B2222STU - Pickup - Box",
-          type: "license_plate",
-        },
-        {
-          value: "B1111VWX",
-          label: "B1111VWX - Colt Diesel Double - Box",
-          type: "license_plate",
-        },
-        {
+          type: "DRIVER_NAME",
           value: "John Doe",
           label: "John Doe - Driver",
-          type: "driver_name",
+          driverID: "driver-1",
+          matchCount: 2,
         },
         {
+          type: "DRIVER_NAME",
           value: "Jane Smith",
           label: "Jane Smith - Driver",
-          type: "driver_name",
+          driverID: "driver-2",
+          matchCount: 1,
         },
         {
+          type: "DRIVER_NAME",
           value: "Rudi Santoso",
           label: "Rudi Santoso - Driver",
-          type: "driver_name",
+          driverID: "driver-3",
+          matchCount: 1,
         },
         {
-          value: "Ahmad Rahman",
-          label: "Ahmad Rahman - Driver",
-          type: "driver_name",
-        },
-        {
-          value: "Budi Prasetyo",
-          label: "Budi Prasetyo - Driver",
-          type: "driver_name",
-        },
-        {
-          value: "Siti Nurhaliza",
-          label: "Siti Nurhaliza - Driver",
-          type: "driver_name",
-        },
-        {
-          value: "Ahmad Hidayat",
-          label: "Ahmad Hidayat - Driver",
-          type: "driver_name",
-        },
-        {
-          value: "Dewi Sartika",
-          label: "Dewi Sartika - Driver",
-          type: "driver_name",
-        },
-        {
-          value: "Rizki Pratama",
-          label: "Rizki Pratama - Driver",
-          type: "driver_name",
-        },
-        {
-          value: "Ahmad Kurniawan",
-          label: "Ahmad Kurniawan - Driver (SOS)",
-          type: "driver_name",
-        },
-        {
+          type: "LICENSE_PLATE",
           value: "B0000SOS",
-          label: "B0000SOS - CDD - box (SOS)",
-          type: "license_plate",
+          label: "B 0000 SOS - CDD - box (SOS)",
+          fleetID: "uuid-sos",
+          matchCount: 1,
         },
         {
-          value: "Budi Santoso",
-          label: "Budi Santoso - Driver (Konflik)",
-          type: "driver_name",
-        },
-        {
+          type: "LICENSE_PLATE",
           value: "B9999KONFLIK",
-          label: "B9999KONFLIK - Tronton - Box (Konflik)",
-          type: "license_plate",
+          label: "B 9999 KONFLIK - Tronton - Box (Konflik)",
+          fleetID: "uuid-konflik",
+          matchCount: 1,
         },
       ],
+      cacheHit: true,
     },
     Type: "GET_SEARCH_SUGGESTIONS",
   },
@@ -129,27 +76,27 @@ export const mockAPIResult = {
 
 /**
  * Mengambil saran pencarian berdasarkan keyword dan view type
- * @param {string} keyword - Keyword pencarian
+ * @param {string} query - Keyword pencarian (min 2 karakter)
  * @param {string} viewType - Jenis tampilan: "armada" atau "driver"
  * @param {number} limit - Jumlah maksimal saran (default: 5)
  * @returns {Promise<Object>} - Data saran pencarian
  */
 export const getSearchSuggestions = async (
-  keyword,
+  query,
   viewType = "armada",
   limit = 5
 ) => {
-  const useMockData = true; // Set to true to use mock data since search-suggestions API returns 400 Bad Request
+  const useMockData = false; // Set to false to hit real API
 
   if (useMockData) {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Filter mock data based on keyword
+    // Filter mock data based on query
     const filteredSuggestions = mockAPIResult.data.Data.suggestions.filter(
       (suggestion) =>
-        suggestion.value.toLowerCase().includes(keyword.toLowerCase()) ||
-        suggestion.label.toLowerCase().includes(keyword.toLowerCase())
+        suggestion.value.toLowerCase().includes(query.toLowerCase()) ||
+        suggestion.label.toLowerCase().includes(query.toLowerCase())
     );
 
     return {
@@ -158,16 +105,16 @@ export const getSearchSuggestions = async (
     };
   }
 
-  // Build query parameters - try different parameter names
+  // Build query parameters according to API contract
   const queryParams = new URLSearchParams();
-  queryParams.append("search", keyword); // Try using "search" instead of "q"
-  queryParams.append("type", viewType); // Try using "type" instead of "viewType"
-  queryParams.append("max", limit.toString()); // Try using "max" instead of "limit"
+  queryParams.append("query", query); // Use "query" as per API contract
+  queryParams.append("view_type", viewType); // Use "view_type" as per API contract
+  queryParams.append("limit", limit.toString()); // Use "limit" as per API contract
 
   const url = `/v1/transporter/agenda-schedules/search-suggestions?${queryParams.toString()}`;
   console.log("🌐 Making REAL API call to:", url);
   console.log("📡 Search Suggestions Parameters:", {
-    keyword,
+    query,
     viewType,
     limit,
   });
@@ -260,21 +207,21 @@ export const getSearchSuggestions = async (
 
 /**
  * SWR hook untuk mengambil saran pencarian
- * @param {string} keyword - Keyword pencarian
+ * @param {string} query - Keyword pencarian (min 2 karakter)
  * @param {string} viewType - Jenis tampilan: "armada" atau "driver"
  * @param {number} limit - Jumlah maksimal saran
  * @returns {Object} - SWR result dengan data saran pencarian
  */
 export const useGetSearchSuggestions = (
-  keyword,
+  query,
   viewType = "armada",
   limit = 5
 ) => {
   const { data, error, isLoading, mutate } = useSWR(
-    keyword && keyword.trim().length > 0
-      ? `search-suggestions/${keyword}/${viewType}/${limit}`
+    query && query.trim().length >= 2
+      ? `search-suggestions/${query}/${viewType}/${limit}`
       : null,
-    () => getSearchSuggestions(keyword, viewType, limit),
+    () => getSearchSuggestions(query, viewType, limit),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
