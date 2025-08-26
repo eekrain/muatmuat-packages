@@ -7,7 +7,6 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
-import { useFlexibleCountdown } from "@/hooks/use-countdown";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -22,6 +21,7 @@ export const UrgentIssueCard = ({
   statusTab,
   isDetailOpen,
   onToggleDetail,
+  meta,
 }) => {
   const {
     id,
@@ -50,10 +50,9 @@ export const UrgentIssueCard = ({
     updateParams.body
   );
   const isCountDown = true;
-  const { formatted, isNegative } = useFlexibleCountdown(
-    new Date(), // start time
-    360 // durasi 6 menit (dalam detik)
-  );
+  // Show alert if this card's id is in overdue_issues from meta
+  const isNegative =
+    Array.isArray(meta?.overdue_issues) && meta.overdue_issues.includes(id);
 
   // The rest of your component logic can now safely assume 't' is a function.
   let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
@@ -131,6 +130,7 @@ export const UrgentIssueCard = ({
 
   // Tampilkan data issues yang kedua dan seterusnya
   const groupIssues = issues.slice(1);
+  // ...existing code...
 
   return (
     <>
@@ -227,7 +227,7 @@ export const UrgentIssueCard = ({
                 variant={isNegative ? "outlineWarning" : "outlineSecondary"}
                 className="w-max text-sm font-semibold"
               >
-                {isNegative ? `-${formatted}` : formatted}
+                {/* {isNegative ? `-${formatted}` : formatted} */}
               </BadgeStatus>
             )}
           </div>
@@ -415,7 +415,7 @@ export const UrgentIssueCard = ({
                       }
                       className="w-max text-sm font-semibold"
                     >
-                      {isNegative ? `-${formatted}` : formatted}
+                      {/* {isNegative ? `-${formatted}` : formatted} */}
                     </BadgeStatus>
                   )}
                 </div>
@@ -634,45 +634,6 @@ export const UrgentIssueCard = ({
             classname: "!w-[112px]",
           }}
         />
-
-        {/* <Modal
-          open={hubungiModalOpen === "contact"}
-          onOpenChange={setHubungiModalOpen}
-        >
-          <ModalContent className="w-modal-big" type="muattrans">
-            <ModalHeader
-              size="small"
-              onClose={() => setHubungiModalOpen(null)}
-            />
-            <div className="space-y-2 px-6 pb-6 pt-9 text-center">
-              <p className="text-sm font-bold text-black">
-                Anda Ingin Menghubungi Via
-              </p>
-              <p className="text-xs font-semibold leading-tight text-[#868686]">
-                Anda dapat memilih menghubungi melalui pilihan berikut
-              </p>
-            </div>
-            <div
-              className="mx-auto mb-9 flex w-max cursor-pointer items-center justify-start gap-4 rounded-md border border-[#EBEBEB] px-6 py-4 text-left"
-              onClick={() => setShowHubungiModal(true)}
-            >
-              <IconComponent
-                src="/icons/call20.svg"
-                width={24}
-                height={24}
-                className="mr-2 inline-block text-primary-700"
-              />
-              <div>
-                <p className="text-sm font-semibold text-primary-700">
-                  No. Telepon/Whatsapp
-                </p>
-                <p className="text-xs font-medium text-[#868686]">
-                  Anda langsung terhubung dengan Whatsapp
-                </p>
-              </div>
-            </div>
-          </ModalContent>
-        </Modal> */}
 
         {/* HubungiModal integration */}
         <HubungiModal

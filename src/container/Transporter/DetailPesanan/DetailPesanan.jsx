@@ -12,6 +12,7 @@ import DetailPesananHeader from "@/container/Transporter/DetailPesanan/DetailPes
 import LacakArmada from "@/container/Transporter/DetailPesanan/LacakArmada/LacakArmada";
 import RingkasanPesanan from "@/container/Transporter/DetailPesanan/RingkasanPesanan/RingkasanPesanan";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useGetFleetTracking } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getFleetTracking";
 import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getOrderDetail";
 
 import LabelLacakArmada from "./LacakArmada/components/LabelLacakArmada";
@@ -22,6 +23,9 @@ const DetailPesanan = ({ breadcrumbData }) => {
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
 
   const { data: dataOrderDetail } = useGetOrderDetail(params.uuid);
+  // Fetch fleet tracking data from API
+  const { data: fleetTrackingData, error: fleetTrackingError } =
+    useGetFleetTracking(params.uuid);
 
   const tabItems = useShallowMemo(() => {
     return [
@@ -33,7 +37,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
         value: "lacak-armada",
         label: (
           <LabelLacakArmada
-            fleetCount={dataOrderDetail?.fleets?.length || 0}
+            fleetCount={fleetTrackingData?.totalFleet || 0}
             hasSOS={dataOrderDetail?.hasSOSAlert}
           />
         ),
@@ -43,7 +47,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
         label: "Riwayat Perubahan",
       },
     ];
-  }, [dataOrderDetail?.fleets?.length, dataOrderDetail?.hasSOSAlert]);
+  }, [fleetTrackingData?.totalFleet, dataOrderDetail?.hasSOSAlert]);
 
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
@@ -83,6 +87,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
           <LacakArmada
             dataOrderDetail={dataOrderDetail}
             onNavigateToRiwayat={() => setActiveTab("riwayat-perubahan")}
+            fleetTrackingData={fleetTrackingData}
           />
         </TabsContent>
         <TabsContent
