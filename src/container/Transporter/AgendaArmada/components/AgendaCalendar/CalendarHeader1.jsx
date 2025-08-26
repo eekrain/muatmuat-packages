@@ -37,8 +37,10 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
 
   const getAvailableMonthsForYear = useCallback(
     (year) => {
-      if (!availableMonths?.[year]) return [];
-      return availableMonths[year].map((monthNum) => ({
+      const temp = availableMonths?.[year];
+      console.log("🚀 ~ temp:", temp);
+      if (!temp) return [];
+      return temp.map((monthNum) => ({
         id: monthNum,
         label: months[monthNum - 1],
       }));
@@ -70,36 +72,24 @@ const PeriodDropdown = memo(({ availableMonths, onMonthClick }) => {
 
   return (
     <MyDropdown.Root>
-      <MyDropdown.Trigger>
-        <div className="flex cursor-pointer items-center gap-1 text-xxs font-semibold text-primary-700 hover:text-primary-800">
-          <IconComponent
-            src="/icons/agenda/chevron-down.svg"
-            width={12}
-            height={12}
-          />
-          <span>
-            {t("CalendarHeader1.labelUbahPeriode", {}, "Ubah Periode")}
-          </span>
-        </div>
+      <MyDropdown.Trigger asChild>
+        <button className="flex cursor-pointer items-center gap-1 text-xxs font-semibold text-primary-700 hover:text-primary-800">
+          {t("CalendarHeader1.labelUbahPeriode", {}, "Ubah Periode")}
+        </button>
       </MyDropdown.Trigger>
       <MyDropdown.Content>
         {availableYears.map((year) => (
-          <MyDropdown.HoverRoot
-            key={year}
-            subContent={
-              <MyDropdown.HoverContent>
-                {getAvailableMonthsForYear(year).map((month) => (
-                  <MyDropdown.HoverItem
-                    key={month.id}
-                    onClick={() => handleMonthClick(year, month.id)}
-                  >
-                    {month.label}
-                  </MyDropdown.HoverItem>
-                ))}
-              </MyDropdown.HoverContent>
-            }
-          >
-            {year}
+          <MyDropdown.HoverRoot key={year} title={year}>
+            <MyDropdown.HoverContent>
+              {getAvailableMonthsForYear(year).map((month) => (
+                <MyDropdown.HoverItem
+                  key={month.id}
+                  onClick={() => handleMonthClick(year, month.id)}
+                >
+                  {month.label}
+                </MyDropdown.HoverItem>
+              ))}
+            </MyDropdown.HoverContent>
           </MyDropdown.HoverRoot>
         ))}
       </MyDropdown.Content>
