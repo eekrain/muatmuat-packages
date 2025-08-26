@@ -17,13 +17,13 @@ import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
 import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
-import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrdersByOrdersWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByOrders";
 import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByTransporter";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
-import { getOrderActions } from "@/utils/Transporter/orderStatus";
+import { useGetCsActiveOrdersUrgentStatusCounts } from "@/services/CS/monitoring/daftar-pesanan-active/getCsActiveOrdersUrgentStatusCounts";
+import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
 import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmadaModal";
@@ -95,8 +95,9 @@ const DaftarPesananAktif = ({
   onOnboardingShown,
 }) => {
   const router = useRouter();
-  const { t } = useTranslation();
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
+  const { data: urgentStatusCountsData } =
+    useGetCsActiveOrdersUrgentStatusCounts();
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatusFilter, setSelectedStatusFilter] =
     useState("ALL_STATUS");
@@ -297,7 +298,6 @@ const DaftarPesananAktif = ({
 
   // Handle action button clicks based on action type
   const handleActionClick = (actionType, row) => {
-    const ORDER_ACTIONS = getOrderActions(t);
     switch (actionType) {
       case ORDER_ACTIONS.TRACK_FLEET.type:
         onTrackFleet?.(row);
@@ -358,7 +358,56 @@ const DaftarPesananAktif = ({
   const orders = data?.Data?.orders || [];
   const ordersByTransporters = dataByTransporter?.Data?.transporters || [];
   const totalActiveOrders = activeOrdersCount?.totalActiveOrders || 0;
-  const availableStatuses = activeOrdersCount?.availableStatuses || {};
+  // Build availableStatuses expected by UrgentStatusFilter from the urgent-status-counts API
+  const availableStatusesFromUrgent = (() => {
+    const statusCounts = urgentStatusCountsData?.Data?.statusCounts || [];
+    const findItem = (key) =>
+      statusCounts.find((s) => s.status === key) || null;
+    const toNumber = (v) => (typeof v === "number" ? v : Number(v) || 0);
+
+    const assignItem = findItem("assign_armada");
+    const confirmItem = findItem("konfirmasi_siap");
+    const changeItem = findItem("respon_perubahan");
+
+    const totalNeedAssignVehicle = toNumber(assignItem?.count);
+    const totalNeedConfirmationReady = toNumber(confirmItem?.count);
+    const totalNeedChangeResponse = toNumber(changeItem?.count);
+
+    const total =
+      totalNeedAssignVehicle +
+      totalNeedConfirmationReady +
+      totalNeedChangeResponse;
+
+    // Separation of concerns:
+    // - hasNeed* controls whether the option appears (based on count > 0)
+    // - *IsUrgent controls whether the red dot should be shown (from API isUrgent)
+    const assignIsUrgent = !!assignItem?.isUrgent;
+    const confirmIsUrgent = !!confirmItem?.isUrgent;
+    const changeIsUrgent = !!changeItem?.isUrgent;
+
+    const hasNeedAssignVehicle = totalNeedAssignVehicle > 0;
+    const hasNeedConfirmationReady = totalNeedConfirmationReady > 0;
+    const hasNeedChangeResponse = totalNeedChangeResponse > 0;
+
+    return {
+      totalNeedAssignVehicle,
+      totalNeedConfirmationReady,
+      totalNeedChangeResponse,
+      hasNeedAssignVehicle,
+      hasNeedConfirmationReady,
+      hasNeedChangeResponse,
+      assignIsUrgent,
+      confirmIsUrgent,
+      changeIsUrgent,
+      totalCount: urgentStatusCountsData?.Data?.totalUrgentCount ?? total,
+    };
+  })();
+
+  // Prefer urgent-based statuses when available, otherwise fall back to activeOrdersCount availableStatuses
+  const availableStatuses =
+    (urgentStatusCountsData && availableStatusesFromUrgent) ||
+    activeOrdersCount?.availableStatuses ||
+    {};
 
   // Dropdown options
 
@@ -535,142 +584,143 @@ const DaftarPesananAktif = ({
         )}
       </div>
 
-      {isAlertOpen && (
-        <div className="flex w-full items-center justify-between bg-[#FFECB4] px-4 py-1 text-xs">
-          <div className="flex w-full flex-grow items-center">
-            <IconComponent
-              src="/icons/warning20.svg"
-              className="mr-1 size-4 shrink-0 text-warning-900"
-            />
-            <div className="text-black">
-              Transporter{" "}
-              <span className="font-bold">
-                PT Prima Transport dan 2 lainnya
-              </span>{" "}
-              telah melakukan pembatalan pesanan.
-            </div>
-            <Button variant="link" className="ml-1 text-xs">
-              Lihat Pesanan
-            </Button>
-          </div>
-          <Button
-            onClick={() => {
-              setIsAlertOpen(false);
-            }}
-            variant="link"
-            className="ml-1 text-xs"
-          >
-            <IconComponent src="/icons/close20.svg" className="size-4" />
-          </Button>
-        </div>
-      )}
-
       {/* Content */}
       {isExpanded && (
-        <div className="flex-1 overflow-hidden">
-          {/* Check if there are no active orders */}
-          {!isLoading && isFirstTimer ? (
-            <div className="flex h-full items-center justify-center p-4">
-              <DataNotFound className="h-full gap-y-5 pb-10" type="data">
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-center text-base font-semibold leading-tight text-neutral-600">
-                    Oops, daftar pesananmu masih kosong
-                  </p>
-                  <p className="text-center text-xs font-medium leading-tight text-neutral-600">
-                    Mohon bersabar untuk menanti permintaan baru
-                  </p>
+        <>
+          {isAlertOpen && (
+            <div className="flex w-full items-center justify-between bg-[#FFECB4] px-4 py-1 text-xs">
+              <div className="flex w-full flex-grow items-center">
+                <IconComponent
+                  src="/icons/warning20.svg"
+                  className="mr-1 size-4 shrink-0 text-warning-900"
+                />
+                <div className="text-black">
+                  Transporter{" "}
+                  <span className="font-bold">
+                    PT Prima Transport dan 2 lainnya
+                  </span>{" "}
+                  telah melakukan pembatalan pesanan.
                 </div>
-              </DataNotFound>
-            </div>
-          ) : (
-            <div className="h-full overflow-auto">
-              {isLoading ? (
-                <div className="flex h-full items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-base font-semibold text-neutral-600">
-                      Loading...
-                    </p>
-                  </div>
-                </div>
-              ) : isSearchNotFound ? (
-                <div className="flex h-full flex-grow flex-col items-center justify-center">
-                  <DataNotFound
-                    type="search"
-                    className="text-center text-neutral-600"
-                  >
-                    <p className="text-base font-semibold">
-                      Keyword Tidak Ditemukan
-                    </p>
-                  </DataNotFound>
-                </div>
-              ) : isFilterNotFound ? (
-                <div className="flex h-full flex-grow flex-col items-center justify-center">
-                  <DataNotFound
-                    type="data"
-                    className="text-center text-neutral-600"
-                  >
-                    <p className="text-base font-semibold">
-                      Data Tidak Ditemukan.
-                    </p>
-                    <p className="mt-1 text-xs font-medium">
-                      Mohon coba hapus beberapa filter
-                    </p>
-                  </DataNotFound>
-                </div>
-              ) : isOrderZero ? (
-                <div className="flex h-full flex-grow flex-col items-center justify-center">
-                  <DataNotFound
-                    type="data"
-                    className="text-center text-neutral-600"
-                  >
-                    <p className="font-semibold">
-                      Oops, daftar pesanan masih kosong
-                    </p>
-                    <p className="mt-3 text-xs font-medium">
-                      Belum ada Transporter yang menerima permintaan
-                    </p>
-                  </DataNotFound>
-                </div>
-              ) : (
-                <div className="flex flex-col">
-                  {selectedGroupBy === "BY_PESANAN"
-                    ? orders.map((order) => (
-                        <DaftarPesananAktifListItem
-                          key={order.orderId}
-                          row={order}
-                          isOpen={openDropdowns[order.orderId]}
-                          onToggleDropdown={(id, isOpen) =>
-                            setOpenDropdowns((prev) => ({
-                              ...prev,
-                              [id]: isOpen,
-                            }))
-                          }
-                          onActionClick={handleActionClick}
-                          onViewFleetStatus={onViewFleetStatus}
-                          onHubungi={(props) => openHubungiModal(props)}
-                        />
-                      ))
-                    : ordersByTransporters.map((order) => (
-                        <DaftarPesananAktifListItemByTransporter
-                          key={order.id}
-                          transporterData={order}
-                          openDropdowns={openDropdowns}
-                          onToggleDropdown={(id, isOpen) =>
-                            setOpenDropdowns((prev) => ({
-                              ...prev,
-                              [id]: isOpen,
-                            }))
-                          }
-                          onActionClick={handleActionClick}
-                          onViewFleetStatus={onViewFleetStatus}
-                          onHubungi={(props) => openHubungiModal(props)}
-                        />
-                      ))}
-                </div>
-              )}
+                <Button variant="link" className="ml-1 text-xs">
+                  Lihat Pesanan
+                </Button>
+              </div>
+              <Button
+                onClick={() => {
+                  setIsAlertOpen(false);
+                }}
+                variant="link"
+                className="ml-1 text-xs"
+              >
+                <IconComponent src="/icons/close20.svg" className="size-4" />
+              </Button>
             </div>
           )}
-        </div>
+          <div className="flex-1 overflow-hidden">
+            {/* Check if there are no active orders */}
+            {!isLoading && isFirstTimer ? (
+              <div className="flex h-full items-center justify-center p-4">
+                <DataNotFound className="h-full gap-y-5 pb-10" type="data">
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-center text-base font-semibold leading-tight text-neutral-600">
+                      Oops, daftar pesananmu masih kosong
+                    </p>
+                    <p className="text-center text-xs font-medium leading-tight text-neutral-600">
+                      Mohon bersabar untuk menanti permintaan baru
+                    </p>
+                  </div>
+                </DataNotFound>
+              </div>
+            ) : (
+              <div className="h-full overflow-auto">
+                {isLoading ? (
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-base font-semibold text-neutral-600">
+                        Loading...
+                      </p>
+                    </div>
+                  </div>
+                ) : isSearchNotFound ? (
+                  <div className="flex h-full flex-grow flex-col items-center justify-center">
+                    <DataNotFound
+                      type="search"
+                      className="text-center text-neutral-600"
+                    >
+                      <p className="text-base font-semibold">
+                        Keyword Tidak Ditemukan
+                      </p>
+                    </DataNotFound>
+                  </div>
+                ) : isFilterNotFound ? (
+                  <div className="flex h-full flex-grow flex-col items-center justify-center">
+                    <DataNotFound
+                      type="data"
+                      className="text-center text-neutral-600"
+                    >
+                      <p className="text-base font-semibold">
+                        Data Tidak Ditemukan.
+                      </p>
+                      <p className="mt-1 text-xs font-medium">
+                        Mohon coba hapus beberapa filter
+                      </p>
+                    </DataNotFound>
+                  </div>
+                ) : isOrderZero ? (
+                  <div className="flex h-full flex-grow flex-col items-center justify-center">
+                    <DataNotFound
+                      type="data"
+                      className="text-center text-neutral-600"
+                    >
+                      <p className="font-semibold">
+                        Oops, daftar pesanan masih kosong
+                      </p>
+                      <p className="mt-3 text-xs font-medium">
+                        Belum ada Transporter yang menerima permintaan
+                      </p>
+                    </DataNotFound>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    {selectedGroupBy === "BY_PESANAN"
+                      ? orders.map((order) => (
+                          <DaftarPesananAktifListItem
+                            key={order.orderId}
+                            row={order}
+                            isOpen={openDropdowns[order.orderId]}
+                            onToggleDropdown={(id, isOpen) =>
+                              setOpenDropdowns((prev) => ({
+                                ...prev,
+                                [id]: isOpen,
+                              }))
+                            }
+                            onActionClick={handleActionClick}
+                            onViewFleetStatus={onViewFleetStatus}
+                            onHubungi={(props) => openHubungiModal(props)}
+                          />
+                        ))
+                      : ordersByTransporters.map((order) => (
+                          <DaftarPesananAktifListItemByTransporter
+                            key={order.id}
+                            transporterData={order}
+                            openDropdowns={openDropdowns}
+                            onToggleDropdown={(id, isOpen) =>
+                              setOpenDropdowns((prev) => ({
+                                ...prev,
+                                [id]: isOpen,
+                              }))
+                            }
+                            onActionClick={handleActionClick}
+                            onViewFleetStatus={onViewFleetStatus}
+                            onHubungi={(props) => openHubungiModal(props)}
+                          />
+                        ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* Assign Armada Modal */}
