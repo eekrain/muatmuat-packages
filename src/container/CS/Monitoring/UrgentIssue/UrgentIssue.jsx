@@ -4,6 +4,8 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
+import { useGetCompletedIssueList } from "@/services/CS/monitoring/urgent-issue/getCompletedIssue";
+import { useGetProcessingIssueList } from "@/services/CS/monitoring/urgent-issue/getProccessingIssue";
 import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useGetUrgentIssueList } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
@@ -82,6 +84,14 @@ const RequestList = ({
             countdown: item.countdown,
             orderCode: item.orderCode,
             orderId: item.order_id,
+            detectedAt:
+              item.issues && item.issues[0]
+                ? item.issues[0].detected_at
+                : item.detected_at,
+            completedAt:
+              item.issues && item.issues[0]
+                ? item.issues[0].completed_at
+                : item.completed_at,
           }}
           statusTab={status}
           isDetailOpen={openDetails.includes(item.id)}
@@ -103,6 +113,30 @@ const UrgentIssue = () => {
   const [data, setData] = useState([]);
   const { data: urgentIssueData, isLoading: isUrgentIssueLoading } =
     useGetUrgentIssueCount();
+  // Gunakan data dari getProccessingIssue.js jika tab proses aktif
+  const {
+    items: processingItems,
+    meta: processingMeta,
+    isLoading: isProcessingLoading,
+  } = useGetProcessingIssueList({
+    page: currentPage,
+    limit: 10,
+    sort: "detectedAt",
+    sortDirection: "desc",
+  });
+
+  // Untuk tab selesai, ambil dari getCompletedIssue.js
+  const {
+    items: completedItems,
+    meta: completedMeta,
+    isLoading: isCompletedLoading,
+  } = useGetCompletedIssueList({
+    page: currentPage,
+    limit: 10,
+    sort: "detectedAt",
+    sortDirection: "desc",
+  });
+
   const { items, meta, isLoading } = useGetUrgentIssueList({
     status: statusMap[activeTab],
     page: currentPage,
@@ -120,10 +154,21 @@ const UrgentIssue = () => {
 
   // Update data ketika items berubah
   useEffect(() => {
-    if (!items) return;
-
-    setData((prev) => (currentPage === 1 ? items : [...prev, ...items]));
-  }, [items, currentPage]);
+    if (activeTab === "proses") {
+      if (!processingItems) return;
+      setData((prev) =>
+        currentPage === 1 ? processingItems : [...prev, ...processingItems]
+      );
+    } else if (activeTab === "selesai") {
+      if (!completedItems) return;
+      setData((prev) =>
+        currentPage === 1 ? completedItems : [...prev, ...completedItems]
+      );
+    } else {
+      if (!items) return;
+      setData((prev) => (currentPage === 1 ? items : [...prev, ...items]));
+    }
+  }, [items, processingItems, currentPage, activeTab]);
 
   const toggleDetail = (id) => {
     setOpenDetails((prev) => {
@@ -219,13 +264,27 @@ const UrgentIssue = () => {
     },
   };
 
+  // Pilih meta dan isLoading sesuai tab aktif
+  const currentMeta =
+    activeTab === "proses"
+      ? processingMeta
+      : activeTab === "selesai"
+        ? completedMeta
+        : meta;
+  const currentLoading =
+    activeTab === "proses"
+      ? isProcessingLoading
+      : activeTab === "selesai"
+        ? isCompletedLoading
+        : isLoading;
+
   return (
     <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col">
       <div className="flex-shrink-0 bg-white px-4 py-6">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
           {t("UrgentIssue.titleUrgentIssueReport", {}, "Laporan Urgent Issue")}
         </h1>
-        {meta?.overdue_count > 0 && (
+        {currentMeta?.overdue_count > 0 && (
           <div
             className={cn(
               "mb-4 flex items-center gap-1 rounded-xl bg-error-50 p-2"
@@ -234,8 +293,8 @@ const UrgentIssue = () => {
             <IconComponent src="/icons/warning-red.svg" className="h-4 w-4" />
             <div className="flex flex-col">
               <span className={cn("text-xs font-semibold text-error-400")}>
-                {meta?.overdue_count ?? 0} Laporan Urgent Issue Melewati Batas
-                Waktu
+                {currentMeta?.overdue_count ?? 0} Laporan Urgent Issue Melewati
+                Batas Waktu
               </span>
               <span className="text-[10px] font-medium text-neutral-900">
                 {t(
@@ -307,11 +366,11 @@ const UrgentIssue = () => {
       <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
         <RequestList
           requests={data}
-          isLoading={isLoading}
+          isLoading={currentLoading}
           status={activeTab}
           openDetails={openDetails}
           toggleDetail={toggleDetail}
-          meta={meta}
+          meta={currentMeta}
         />
       </div>
     </div>
