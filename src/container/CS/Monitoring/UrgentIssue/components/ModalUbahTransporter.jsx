@@ -7,10 +7,13 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { ModalFooter, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useTranslation } from "@/hooks/use-translation";
+import { toast } from "@/lib/toast";
 import { useGetAvailableTransporter } from "@/services/CS/monitoring/urgent-issue/getAvailableTransporter";
 import { useGetTransporterVehicles } from "@/services/CS/monitoring/urgent-issue/getTransporterVehicles";
 
@@ -115,9 +118,13 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
   const [showArmadaAlert, setShowArmadaAlert] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy] = useState("recommendation"); // 'recommendation', 'distance', 'name'
+  const [showBatalkanModal, setShowBatalkanModal] = useState(false);
+  const [showAlasanModal, setShowAlasanModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500); // Debounce 500ms
+  const [catatan, setCatatan] = useState("");
+  const [catatanError, setCatatanError] = useState("");
 
   // 1. Menggunakan hook untuk mengambil data transporter
   const {
@@ -303,36 +310,17 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
             </Button>
           </div>
         </div>
-        <ConfirmationModal
-          isOpen={showConfirmModal}
-          setIsOpen={setShowConfirmModal}
-          title={{ text: "Batalkan Armada", className: "" }}
-          withCancel={false}
-          description={{
-            text: "Maaf, kamu belum memiliki akses. Pembatalan Armada maupun Pesanan hanya bisa dilakukan oleh akses sebagai GM.",
-          }}
-          confirm={{ text: "Oke", onClick: () => setShowConfirmModal(false) }}
-        />
-        {/* <ConfirmationModal
-          isOpen={showConfirmModal}
-          setIsOpen={setShowConfirmModal}
-          title={{ text: "Batalkan Armada", className: "" }}
-          description={{
-            text: "Apakah kamu yakin ingin membatalkan armada dengan No. Polisi L 1111 AA dari Transporter PT Siba Surya?",
-          }}
-          cancel={{ text: "Kembali" }}
-          confirm={{
-            text: "Ya, Batalkan",
-            onClick: () => setShowConfirmModal(false),
-          }}
-        /> */}
       </div>
     );
   }
 
   // Tampilan utama
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 ${
+        showBatalkanModal || showAlasanModal ? "hidden" : ""
+      }`}
+    >
       <div className="relative w-[600px] rounded-xl bg-white py-6 shadow-lg">
         {/* ... Header Modal ... */}
         <div className="mb-4 flex items-center justify-center">
@@ -464,9 +452,114 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
             </p>
           )}
           <div className="flex justify-between">
-            <Button variant="muattrans-error-secondary" onClick={onClose}>
+            <Button
+              variant="muattrans-error-secondary"
+              onClick={() => setShowBatalkanModal(true)}
+            >
               Batalkan Armada
             </Button>
+            {/* <ConfirmationModal
+          isOpen={showConfirmModal}
+          setIsOpen={setShowConfirmModal}
+          title={{ text: "Batalkan Armada", className: "" }}
+          withCancel={false}
+          description={{
+            text: "Maaf, kamu belum memiliki akses. Pembatalan Armada maupun Pesanan hanya bisa dilakukan oleh akses sebagai GM.",
+          }}
+          confirm={{ text: "Oke", onClick: () => setShowConfirmModal(false) }}
+        /> */}
+            <ConfirmationModal
+              isOpen={showBatalkanModal}
+              setIsOpen={setShowBatalkanModal}
+              title={{ text: "Batalkan Armada", className: "" }}
+              description={{
+                text: "Apakah kamu yakin ingin membatalkan armada dengan No. Polisi L 1111 AA dari Transporter PT Siba Surya?",
+              }}
+              cancel={{ text: "Kembali" }}
+              confirm={{
+                text: "Ya, Batalkan",
+                onClick: () => {
+                  setShowBatalkanModal(false);
+                  setShowAlasanModal(true);
+                },
+              }}
+            />
+            <Modal open={showAlasanModal} onOpenChange={setShowAlasanModal}>
+              <ModalContent
+                className="w-[486px] p-0"
+                appearance={{
+                  backgroudClassname: "",
+                  closeButtonClassname: "",
+                }}
+              >
+                <ModalHeader className=""></ModalHeader>
+                <div className="px-6 pt-7">
+                  <ModalTitle className="text-4 mb-4 text-left font-bold">
+                    Masukkan Alasan Pembatalan*
+                  </ModalTitle>
+                  <div className="">
+                    <Input
+                      placeholder={"Masukkan alasan pembatalan"}
+                      maxLength={80}
+                      value={catatan}
+                      onChange={(e) => {
+                        setCatatan(e.target.value);
+                        if (catatanError) setCatatanError("");
+                      }}
+                      errorMessage={catatanError}
+                      appearance={
+                        catatanError
+                          ? {
+                              inputClassName: "border-error-400 text-error-400",
+                            }
+                          : {}
+                      }
+                    />
+                    <div
+                      className={`relative flex w-full items-center justify-end text-xs ${
+                        catatanError ? "-top-3.5 pt-0" : "pt-2"
+                      }`}
+                    >
+                      <span
+                        className={
+                          catatanError
+                            ? "font-medium text-error-400"
+                            : "text-neutral-500"
+                        }
+                      >
+                        {catatan.length}/80
+                      </span>
+                    </div>
+                  </div>
+                  <ModalFooter>
+                    <Button
+                      variant="muattrans-primary-secondary"
+                      onClick={() => setShowAlasanModal(false)}
+                    >
+                      Batal
+                    </Button>
+                    <Button
+                      variant="muattrans-primary"
+                      onClick={() => {
+                        if (!catatan.trim()) {
+                          setCatatanError("Alasan pembatalan wajib diisi");
+                        } else {
+                          setCatatanError("");
+                          toast.success(
+                            `Armada ${issueData?.vehicle?.plate_number || "-"} dari transporter ${issueData?.transporter?.name || "-"} pada Pesanan ${issueData?.orderCode || "-"} berhasil dibatalkan`
+                          );
+                          setShowAlasanModal(false);
+                          onClose();
+                          // TODO: handle submit logic here
+                        }
+                      }}
+                    >
+                      Simpan
+                    </Button>
+                  </ModalFooter>
+                </div>
+              </ModalContent>
+            </Modal>
             <div className="flex gap-3">
               <Button
                 onClick={onClose}
