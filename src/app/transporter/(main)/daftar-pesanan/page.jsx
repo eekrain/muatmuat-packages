@@ -22,6 +22,7 @@ const DaftarPesananPage = () => {
     limit: 10,
     status: "",
     search: "",
+    period: "ALL_PERIODS",
     startDate: null,
     endDate: null,
     sort: "",
@@ -45,9 +46,9 @@ const DaftarPesananPage = () => {
     if (queryParams.status && queryParams.status !== "") {
       params.append("status", queryParams.status);
     }
-    // Add period parameter based on current period value
-    if (currentPeriodValue !== null && currentPeriodValue !== undefined) {
-      params.append("period", currentPeriodValue);
+    // Handle period parameter
+    if (queryParams.period) {
+      params.append("period", queryParams.period);
     }
     // Handle dates - both can be provided individually
     if (queryParams.startDate) {
