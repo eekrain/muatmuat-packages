@@ -214,15 +214,6 @@ export default function Page() {
       }
       console.error("Remove province failed:", error);
     }
-    setAlert({
-      show: true,
-      message: t(
-        "AreaMuatPage.toastSuccessHapusProvinsi",
-        {},
-        `Berhasil menghapus provinsi ${province.province}`
-      ),
-      type: "success",
-    });
   };
 
   const handleAddProvince = () => {
