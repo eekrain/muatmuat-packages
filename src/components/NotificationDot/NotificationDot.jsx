@@ -21,7 +21,7 @@ const notificationDotVariants = cva("rounded-full", {
       gray: "bg-gray-500",
       primary: "bg-primary-500",
       success: "bg-success-500",
-      warning: "bg-warning-500",
+      warning: "bg-warning-900",
       error: "bg-error-500",
     },
   },

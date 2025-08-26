@@ -363,9 +363,9 @@ export const MapMonitoring = ({
         {showTruck &&
           processedMarkers
             .filter((marker) => marker.fleet)
-            .map((marker) => (
+            .map((marker, index) => (
               <OverlayViewF
-                key={marker.title}
+                key={`${marker.title}-${index}`}
                 position={marker.position}
                 mapPaneName="floatPane"
                 getPixelPositionOffset={getPixelPositionOffset}

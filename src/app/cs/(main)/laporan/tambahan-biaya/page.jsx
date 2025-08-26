@@ -7,6 +7,7 @@ import LaporanTambahanBiaya from "@/container/CS/LaporanTambahanBiaya/LaporanTam
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useGetAdditionalCostReports } from "@/services/CS/laporan/tambahan-biaya/getAdditionalCostReports";
 import { useGetFilterOptions } from "@/services/CS/laporan/tambahan-biaya/getFilterOptions";
 import { useGetPeriodHistory } from "@/services/CS/laporan/tambahan-biaya/getPeriodHistory";
@@ -78,6 +79,20 @@ const Page = () => {
   const { data: filterOptions = null } = useGetFilterOptions(
     filterOptionsQueryString
   );
+  const { trigger: savePeriodHistory, isMutating: isUploadingLogo } =
+    useSWRMutateHook(
+      "v1/cs/additional-cost-reports/period-history",
+      "POST",
+      undefined,
+      undefined,
+      {
+        onSuccess: (data) => {
+          if (data.Data) {
+            refetchPeriodHistory();
+          }
+        },
+      }
+    );
 
   useShallowCompareEffect(() => {
     if (tab) {
@@ -109,6 +124,11 @@ const Page = () => {
     setLastFilterField(field);
   };
 
+  const handleSavePeriodHistory = (startDate, endDate) => {
+    // nunggu nanti API nya udh bener
+    // savePeriodHistory({ startDate, endDate });
+  };
+
   if (!mounted) return null;
 
   return (
@@ -126,6 +146,7 @@ const Page = () => {
       currentPeriodValue={currentPeriodValue}
       setCurrentPeriodValue={setCurrentPeriodValue}
       onChangeQueryParams={handleChangeQueryParams}
+      onSavePeriodHistory={handleSavePeriodHistory}
     />
   );
 };

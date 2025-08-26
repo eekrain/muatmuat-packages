@@ -97,7 +97,8 @@ const Page = () => {
   };
 
   const handleSavePeriodHistory = (startDate, endDate) => {
-    savePeriodHistory({ startDate, endDate });
+    // nunggu nanti API nya udh bener
+    // savePeriodHistory({ startDate, endDate });
   };
 
   if (!mounted) return null;

@@ -859,6 +859,7 @@ export const fetcherActiveOrders = async (cacheKey) => {
     const params = new URLSearchParams(queryString);
     const searchTerm = params.get("search")?.toLowerCase() || "";
     const statusFilter = params.get("status") || "";
+    const hasLocationChange = params.get("hasLocationChange") === "true";
 
     let filteredOrders = [...apiResultActiveOrders.Data.orders];
 
@@ -922,6 +923,13 @@ export const fetcherActiveOrders = async (cacheKey) => {
       const mappedStatus = statusMap[statusFilter] || statusFilter;
       filteredOrders = filteredOrders.filter(
         (order) => order.orderStatus === mappedStatus
+      );
+    }
+
+    // Apply location change filter
+    if (hasLocationChange) {
+      filteredOrders = filteredOrders.filter(
+        (order) => order.hasChangeRequest === true
       );
     }
 

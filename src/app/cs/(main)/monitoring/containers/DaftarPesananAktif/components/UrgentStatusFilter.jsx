@@ -27,6 +27,10 @@ import { cn } from "@/lib/utils";
 
 // src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
 
+// src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
+
+// src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
+
 /**
  * @description A small visual component for the blinking red dot indicator.
  */
@@ -65,25 +69,26 @@ export const UrgentStatusFilter = ({
       },
     ];
 
-    if (statuses.hasNeedChangeResponse) {
+    // Always include options when their counts > 0. showDot depends on the per-status *IsUrgent flag.
+    if (statuses.totalNeedChangeResponse > 0) {
       opts.push({
         value: "NEED_CHANGE_RESPONSE",
         label: `Perlu Respon Perubahan (${statuses.totalNeedChangeResponse || 0})`,
-        showDot: true,
+        showDot: !!statuses.changeIsUrgent,
       });
     }
-    if (statuses.hasNeedConfirmationReady) {
+    if (statuses.totalNeedConfirmationReady > 0) {
       opts.push({
         value: "NEED_CONFIRMATION_READY",
         label: `Perlu Konfirmasi Siap (${statuses.totalNeedConfirmationReady || 0})`,
-        showDot: true,
+        showDot: !!statuses.confirmIsUrgent,
       });
     }
-    if (statuses.hasNeedAssignVehicle) {
+    if (statuses.totalNeedAssignVehicle > 0) {
       opts.push({
         value: "NEED_ASSIGN_VEHICLE",
         label: `Perlu Assign Armada (${statuses.totalNeedAssignVehicle || 0})`,
-        showDot: true,
+        showDot: !!statuses.assignIsUrgent,
       });
     }
 
@@ -105,7 +110,7 @@ export const UrgentStatusFilter = ({
     const selectedOption = options.find((opt) => opt.value === value);
     // Return the label without the count, e.g., "Perlu Respon Perubahan"
     return selectedOption ? selectedOption.label : value;
-  }, [value, options, totalCount]);
+  }, [value, options]);
 
   const isDisabled = disabled || totalCount === 0;
 

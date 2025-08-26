@@ -134,7 +134,7 @@ export default function Page() {
     { name: "Atur Area Muat" },
   ];
 
-  const handleRemoveProvince = (province) => {
+  const handleRemoveProvince = async (provinceId) => {
     const selectedProvinces = provinceData.filter((p) =>
       p.kota.some((c) => c.isSelected)
     );
@@ -149,19 +149,63 @@ export default function Page() {
       return;
     }
 
+    // Find the province name for the alert message
+    const provinceToRemove = provinceData.find(
+      (p) => p.provinceId === provinceId
+    );
+    const provinceName = provinceToRemove?.provinceName || "provinsi ini";
+
+    // Update local state first
     const updatedData = provinceData.map((p) =>
-      p.provinceId === province.id
+      p.provinceId === provinceId
         ? { ...p, kota: p.kota.map((c) => ({ ...c, isSelected: false })) }
         : p
     );
 
     setProvinceData(updatedData);
 
-    setAlert({
-      show: true,
-      message: `Berhasil menghapus provinsi ${province.province}`,
-      type: "success",
-    });
+    // Prepare payload for API call
+    const payload = {
+      transporterID: transporterId,
+      confirmation: true,
+      replaceExisting: true,
+      areas: updatedData
+        .filter((prov) => prov.kota.some((city) => city.isSelected))
+        .map((prov) => ({
+          areaName: prov.provinceName,
+          city: prov.kota
+            .filter((city) => city.isSelected)
+            .map((city) => ({
+              id: city.cityId,
+              name: city.cityName,
+            })),
+          province: prov.provinceName,
+          provinceId: prov.provinceId,
+          isActive: true,
+        })),
+    };
+
+    try {
+      // Save to server
+      await saveAreaMuat(payload);
+
+      setAlert({
+        show: true,
+        message: `Berhasil menghapus provinsi ${provinceName}`,
+        type: "success",
+      });
+    } catch (error) {
+      // Revert local state if save fails
+      setProvinceData(provinceData);
+
+      const apiErrors = error?.response?.data?.Data?.errors;
+      if (apiErrors && apiErrors.length > 0) {
+        apiErrors.forEach((err) => toast.error(err.message));
+      } else {
+        toast.error("Gagal menghapus provinsi. Silakan coba lagi.");
+      }
+      console.error("Remove province failed:", error);
+    }
   };
 
   const handleAddProvince = () => {

@@ -158,6 +158,13 @@ const RespondChangeModal = ({
       (l) => l.locationType === "DROPOFF"
     ) || [];
 
+  // Get translated text for route changed
+  const routeChangedText = t(
+    "RespondChangeModal.routeChanged",
+    {},
+    "Rute Diubah"
+  );
+
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent
@@ -373,6 +380,7 @@ const RespondChangeModal = ({
                                 newDropoffs.length === 0
                               }
                               type="pickup"
+                              routeChangedText={routeChangedText}
                             />
                           ))}
 
@@ -404,6 +412,7 @@ const RespondChangeModal = ({
                               index={idx}
                               isLast={idx === newDropoffs.length - 1}
                               type="dropoff"
+                              routeChangedText={routeChangedText}
                             />
                           ))}
                         </div>

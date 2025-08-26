@@ -19,7 +19,6 @@ export function InfoTooltip({
   },
   children,
   render,
-  open,
 }) {
   // console.log(
   //   "🔍 ~ InfoTooltip ~ src/components/Form/InfoTooltip.jsx:23 ~ appearance:",

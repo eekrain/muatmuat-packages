@@ -100,7 +100,7 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
                 {marker.fleet?.licensePlate || marker.title}
               </span>
               <p className="text-neutral-200">
-                PT Truk Jaya Abadi Selalu Selamanya
+                {marker.fleet?.transporterName}
               </p>
             </div>
           )}

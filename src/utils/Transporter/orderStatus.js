@@ -65,6 +65,10 @@ export const getOrderActions = (t) => ({
     type: "CONFIRM_READY",
     label: t("OrderActions.confirmReady", {}, "Konfirmasi Siap"),
   },
+  VIEW_CHANGE: {
+    type: "VIEW_CHANGE",
+    label: t("OrderActions.viewChange", {}, "Lihat Perubahan"),
+  },
 });
 
 // Deprecated: Use getOrderActions instead

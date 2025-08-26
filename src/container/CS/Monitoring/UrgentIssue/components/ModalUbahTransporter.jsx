@@ -106,7 +106,7 @@ const TransporterVehicles = ({
   );
 };
 
-const ModalUbahTransporter = ({ open, onClose, issueId }) => {
+const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState(null);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
@@ -191,20 +191,22 @@ const ModalUbahTransporter = ({ open, onClose, issueId }) => {
                 </div>
                 <div className="mb-4 flex items-center gap-3">
                   <img
-                    src={selectedTransporter?.logo || "/logo-placeholder.png"}
+                    src={
+                      issueData?.transporter?.logo || "/logo-placeholder.png"
+                    }
                     alt="Logo"
                     className="h-12 w-12 rounded-full border"
                   />
                   <div>
                     <div className="mb-2 text-xs font-bold text-neutral-900">
-                      {selectedTransporter?.name || "-"}
+                      {issueData?.transporter?.name || "-"}
                     </div>
                     <div className="flex items-center gap-1 text-xs font-medium text-neutral-900">
                       <IconComponent
                         src="/icons/phone16.svg"
                         className="h-4 w-4"
                       />
-                      {selectedTransporter?.phone || "-"}
+                      {issueData?.transporter?.phone || "-"}
                     </div>
                   </div>
                 </div>

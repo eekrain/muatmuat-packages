@@ -95,7 +95,6 @@ const DaftarPesananAktifListItem = ({
                   <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
                 }
                 onClick={(e) => {
-                  alert("HELLO");
                   e.stopPropagation();
                   onHubungi?.({
                     showInitialChoice: false,
