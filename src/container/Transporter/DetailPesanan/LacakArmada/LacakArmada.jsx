@@ -15,13 +15,12 @@ const LacakArmada = ({
   onNavigateToRiwayat,
   fleetTrackingData,
 }) => {
-  console.log(dataOrderDetail, "dataOrder");
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   // Tentukan tab aktif berdasarkan status order
   const getInitialActiveTab = useCallback(() => {
     if (!dataOrderDetail?.orderStatus) return "aktif";
-
+    console.log(fleetTrackingData, "orderStatus");
     // Status yang masuk kategori "riwayat" (pesanan selesai/dibatalkan)
     const riwayatStatuses = [
       TRACKING_STATUS.COMPLETED,
@@ -163,10 +162,22 @@ const LacakArmada = ({
   }, []);
 
   const handleDetailStatusClick = useCallback(() => {
-    router.push(
-      `/daftar-pesanan/${dataOrderDetail?.orderId}/detail-pesanan/detail-status-armada`
-    );
-  }, [router, dataOrderDetail?.orderId]);
+    // Extract fleet IDs from fleetTrackingData
+    const fleetIds =
+      fleetTrackingData?.fleetDetails?.map((fleet) => fleet.id) || [];
+
+    // Create query parameters for fleet IDs
+    const queryParams = new URLSearchParams();
+    if (fleetIds.length > 0) {
+      queryParams.set("fleetIds", fleetIds.join(","));
+    }
+
+    const queryString = queryParams.toString();
+    const url = `/daftar-pesanan/${dataOrderDetail?.orderId}/detail-pesanan/detail-status-armada${queryString ? `?${queryString}` : ""}`;
+
+    router.push(url);
+  }, [router, dataOrderDetail?.orderId, fleetTrackingData?.fleetDetails]);
+
   return (
     <Card className="rounded-xl border-none">
       <CardContent className="flex flex-col gap-y-6 p-6">
