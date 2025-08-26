@@ -2459,7 +2459,7 @@
   "DriverAktif.confirmYes": "Ya",
   "DriverAktif.confirmNo": "Tidak",
   "CardLacakArmada.fleetCancelError": "Gagal menyiapkan permintaan pembatalan",
-  "AlertPerubahanLokasi.changeMessage": "Terdapat perubahan lokasi muat dan jam muat pada {changeCount} pesanan.",
+  "AlertPerubahanLokasi.changeMessage": "Terdapat perubahan lokasi muat dan jam muat pada {count} pesanan.",
   "AlertPerubahanLokasi.viewOrders": "Lihat Pesanan",
   "AlertPerubahanLokasi.backToDefault": "Kembali Ke Default",
   "RespondChangeModal.routeChanged": "Rute Diubah",

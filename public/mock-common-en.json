@@ -2459,7 +2459,7 @@
   "DriverAktif.confirmYes": "Yes",
   "DriverAktif.confirmNo": "No",
   "CardLacakArmada.fleetCancelError": "Failed to prepare cancellation request",
-  "AlertPerubahanLokasi.changeMessage": "There are changes to loading location and loading time on {changeCount} orders.",
+  "AlertPerubahanLokasi.changeMessage": "There are changes to loading location and loading time on {count} orders.",
   "AlertPerubahanLokasi.viewOrders": "View Orders",
   "AlertPerubahanLokasi.backToDefault": "Back to Default",
   "RespondChangeModal.routeChanged": "Route Changed",
