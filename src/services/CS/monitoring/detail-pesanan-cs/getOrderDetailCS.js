@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { CSOrderStatusEnum } from "@/lib/constants/CS/detailpesanan/detailpesanan-cs.enum";
 
-const useMockData = false; // cs detailpesanan
+const useMockData = true; // cs detailpesanan
 
 const mockApiResult = {
   data: {

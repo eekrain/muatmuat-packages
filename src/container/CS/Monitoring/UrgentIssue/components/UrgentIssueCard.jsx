@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import CheckBoxGroup from "./CheckboxGroup";
+import ModalTransporterMenolakPerubahan from "./ModalTransporterMenolakPerubahan";
 import ModalUbahTransporter from "./ModalUbahTransporter";
 
 export const UrgentIssueCard = ({
@@ -47,6 +48,12 @@ export const UrgentIssueCard = ({
   const [showGroupSection, setShowGroupSection] = useState(false);
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
   const [remainingTime, setRemainingTime] = useState(countdown);
+  const [showTransporterMenolakModal, setShowTransporterMenolakModal] =
+    useState(false);
+
+  const openTransporterMenolakModal = useCallback(() => {
+    setShowTransporterMenolakModal(true);
+  }, []);
 
   const { message, isError } = useUpdateUrgentIssueStatus(
     updateParams.id,
@@ -145,7 +152,17 @@ export const UrgentIssueCard = ({
   };
 
   const issues = data?.issues || [];
-  const groupIssues = issues.slice(1);
+  const mainIssue = data;
+  // Sort groupIssues: overdue issues first
+  let groupIssues = issues.slice(1);
+  if (Array.isArray(meta?.overdue_issues)) {
+    groupIssues = groupIssues.slice().sort((a, b) => {
+      const aIsNegative = meta.overdue_issues.includes(a.id);
+      const bIsNegative = meta.overdue_issues.includes(b.id);
+      if (aIsNegative === bIsNegative) return 0;
+      return aIsNegative ? -1 : 1;
+    });
+  }
 
   const formatTime = (totalSeconds) => {
     if (!totalSeconds || totalSeconds <= 0) {
@@ -236,7 +253,13 @@ export const UrgentIssueCard = ({
               {statusDisplay !== "selesai" && (
                 <NotificationDot
                   size="md"
-                  color={status === "PROCESSING" ? "orange" : "red"}
+                  color={
+                    statusDisplay === "baru"
+                      ? "red"
+                      : statusDisplay === "diproses"
+                        ? "orange"
+                        : "red"
+                  }
                 />
               )}
               <span className="text-xs font-bold text-neutral-900">
@@ -249,13 +272,21 @@ export const UrgentIssueCard = ({
                       : issue_type}
               </span>
             </div>
-            {isCountDown && (
-              <BadgeStatus
-                variant={isNegative ? "outlineWarning" : "outlineSecondary"}
-                className="w-max text-sm font-semibold"
-              >
-                {isNegative ? `-${formatted}` : formatted}
-              </BadgeStatus>
+            {(statusDisplay === "baru" || statusDisplay === "diproses") &&
+              isCountDown && (
+                <BadgeStatus
+                  variant={isNegative ? "outlineWarning" : "outlineSecondary"}
+                  className="w-max text-sm font-semibold"
+                >
+                  {isNegative ? `-${formatted}` : formatted}
+                </BadgeStatus>
+              )}
+
+            {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
+            {statusDisplay === "selesai" && (
+              <div className="text-xs font-medium text-neutral-600">
+                {detectedAt ? formatDate(detectedAt) : "-"}
+              </div>
             )}
           </div>
           <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
@@ -268,6 +299,24 @@ export const UrgentIssueCard = ({
             </span>{" "}
             {description}
           </div>
+          {isNegative && (
+            <div
+              className="mt-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
+              onClick={openTransporterMenolakModal}
+            >
+              {data?.rejection_count} Transporter Menolak Perubahan Armada
+            </div>
+          )}
+
+          {showTransporterMenolakModal && (
+            <ModalTransporterMenolakPerubahan
+              // transporter={data?.transporter}
+              // detail={data?.detail}
+              // latestNote={data?.latestNote}
+              onClose={() => setShowTransporterMenolakModal(false)}
+            />
+          )}
+
           <div className="my-3 h-px w-full bg-neutral-400" />
           {/* Selesai - Lihat Detail */}
           {statusDisplay === "selesai" && !isDetailOpen && (

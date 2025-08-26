@@ -73,9 +73,9 @@ export const mockUrgentIssueList = {
           issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
           description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
-          detected_at: "2025-01-15T09:15:00Z",
+          detected_at: "2025-08-26T16:30:00Z",
           processed_at: null,
-          rejection_count: 2,
+          rejection_count: 5,
           contact_attempts: 3,
           last_contact_at: "2025-01-15T10:00:00Z",
           has_rejection_history: true,
@@ -458,12 +458,22 @@ export const getUrgentIssueList = async (cacheKey) => {
         );
       });
 
+      // Sort so that items with id in overdue_issues are at the top
+      const overdueIds =
+        (mockUrgentIssueList.meta && mockUrgentIssueList.meta.overdue_issues) ||
+        [];
+      const sortedItems = filteredItems.slice().sort((a, b) => {
+        const aIsOverdue = overdueIds.includes(a.id);
+        const bIsOverdue = overdueIds.includes(b.id);
+        if (aIsOverdue === bIsOverdue) return 0;
+        return aIsOverdue ? -1 : 1;
+      });
       result = {
         ...mockUrgentIssueList,
         data: {
-          items: filteredItems,
+          items: sortedItems,
           pagination: {
-            total: filteredItems.length,
+            total: sortedItems.length,
             page: 1,
             limit: 10,
             total_pages: 1,
