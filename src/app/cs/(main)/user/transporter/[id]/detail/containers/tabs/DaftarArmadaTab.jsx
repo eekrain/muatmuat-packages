@@ -310,8 +310,7 @@ const DaftarArmadaTab = ({ transporterId }) => {
   const hasSearch = searchValue.trim().length > 0;
   const hasFilters = Object.keys(filters).length > 0;
   const hasData = transformedData.length > 0;
-  const originalDataExists =
-    !isLoading && (hasData || (!hasSearch && !hasFilters));
+  const originalDataExists = !isLoading && hasData && !hasSearch && !hasFilters;
 
   const showNoDataState =
     !isLoading && !originalDataExists && !hasSearch && !hasFilters;
