@@ -10,6 +10,8 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { Modal } from "@/components/Modal";
+import { ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
@@ -138,15 +140,12 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
     }, 0)
     .toLocaleString("id-ID");
 
-  const displayedCargo = dataOrderDetail?.cargo
-    ?.slice(0, 3)
-    .map((item, index) => {
+  const renderCargoItems = (cargoList) =>
+    cargoList?.map((item, index) => {
       let convertedWeight = item.weight;
       if (item.weightUnit === "ton") {
         convertedWeight = item.weight * 1000; // Convert tons to kg
       } else if (item.weightUnit === "liter") {
-        // Assuming 1 liter of water is approximately 1 kg for simplicity, or adjust based on specific cargo density if available
-        // For now, treating liter as kg as per common practice if no density is specified.
         convertedWeight = item.weight; // Treat liter as kg if no specific conversion factor is given
       }
       const formattedWeight = convertedWeight.toLocaleString("id-ID");
@@ -190,6 +189,8 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
         </div>
       );
     });
+
+  const displayedCargo = renderCargoItems(dataOrderDetail?.cargo?.slice(0, 3));
 
   return (
     <Card className="rounded-xl border-none">
@@ -263,6 +264,27 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
               {`Total Berat : ${totalWeightKg} kg`}
             </span>
             <div className="flex flex-col gap-2">{displayedCargo}</div>
+
+            <Modal closeOnOutsideClick>
+              {dataOrderDetail?.cargo?.length >= 4 ? (
+                <ModalTrigger>
+                  <button className="text-start text-xs font-medium leading-[14.4px] text-primary-700">
+                    Lihat Informasi Muatan Lainnya
+                  </button>
+                </ModalTrigger>
+              ) : null}
+              <ModalContent>
+                <div className="flex flex-col gap-y-3 p-6">
+                  {/* Header */}
+                  <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                    Informasi Muatan
+                  </h2>
+                  <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
+                    {renderCargoItems(dataOrderDetail.cargo)}
+                  </div>
+                </div>
+              </ModalContent>
+            </Modal>
           </div>
         </SectionRow>
 
