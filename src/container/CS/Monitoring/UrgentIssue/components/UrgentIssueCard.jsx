@@ -442,7 +442,7 @@ export const UrgentIssueCard = ({
                       }
                       className="w-max text-sm font-semibold"
                     >
-                      {/* {isNegative ? `-${formatted}` : formatted} */}
+                      {isNegative ? `-${formatted}` : formatted}
                     </BadgeStatus>
                   )}
                 </div>
