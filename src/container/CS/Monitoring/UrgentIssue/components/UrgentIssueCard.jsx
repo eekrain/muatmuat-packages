@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import CheckBoxGroup from "./CheckboxGroup";
+import ModalTransporterMenolakPerubahan from "./ModalTransporterMenolakPerubahan";
 import ModalUbahTransporter from "./ModalUbahTransporter";
 
 export const UrgentIssueCard = ({
@@ -47,6 +48,12 @@ export const UrgentIssueCard = ({
   const [showGroupSection, setShowGroupSection] = useState(false);
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
   const [remainingTime, setRemainingTime] = useState(countdown);
+  const [showTransporterMenolakModal, setShowTransporterMenolakModal] =
+    useState(false);
+
+  const openTransporterMenolakModal = useCallback(() => {
+    setShowTransporterMenolakModal(true);
+  }, []);
 
   const { message, isError } = useUpdateUrgentIssueStatus(
     updateParams.id,
@@ -269,9 +276,21 @@ export const UrgentIssueCard = ({
             {description}
           </div>
           {isNegative && (
-            <div className="mt-1 text-xs font-medium text-primary-700">
+            <div
+              className="mt-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
+              onClick={openTransporterMenolakModal}
+            >
               2 Transporter Menolak Perubahan Armada
             </div>
+          )}
+
+          {showTransporterMenolakModal && (
+            <ModalTransporterMenolakPerubahan
+              // transporter={data?.transporter}
+              // detail={data?.detail}
+              // latestNote={data?.latestNote}
+              onClose={() => setShowTransporterMenolakModal(false)}
+            />
           )}
 
           <div className="my-3 h-px w-full bg-neutral-400" />
