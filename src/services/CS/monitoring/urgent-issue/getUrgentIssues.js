@@ -1,3 +1,4 @@
+import { meta } from "@eslint/js";
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
@@ -22,300 +23,331 @@ export const mockUrgentIssueCount = {
 };
 
 export const mockUrgentIssueList = {
-  data: {
-    Message: {
-      Code: 200,
-      Text: "Successfully retrieved urgent issue list",
-    },
-    Data: {
-      items: [
+  success: true,
+  data: [
+    {
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      order_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      orderCode: "MT32343",
+      countdown: 2000, // in seconds
+      transporter: {
+        id: "tr001",
+        name: "CV Moga Jaya Abadi",
+        logo: "https://api.muatrans.com/logos/tr001.png",
+        phone: "021-12345678",
+      },
+      orderLocations: {
+        pickupLocations: [
+          {
+            id: "ploc001",
+            sequence: 1,
+            latitude: -6.1751,
+            longitude: 106.865,
+            district: "Gambir",
+            city: "Jakarta Pusat",
+          },
+        ],
+        dropoffLocations: [
+          {
+            id: "dloc001",
+            sequence: 1,
+            latitude: -6.2297,
+            longitude: 106.6894,
+            district: "Tangerang",
+            city: "Kota Tangerang",
+          },
+        ],
+      },
+      issues: [
         {
-          id: "ui-001",
-          issue_type: "LATE_TO_LOAD",
-          typeName: "Potensi Driver Terlambat",
+          vehicle: {
+            id: "vh001",
+            plate_number: "B 1234 XYZ",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
-          statusName: "Baru",
-          description:
-            "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status. ",
-          orderId: "order-001",
-          transporter: {
-            id: "tr001",
-            name: "PT Transport Sejahtera",
-            logo: "https://api.muatrans.com/logos/tr001.png",
-            phone: "021-12345678",
-          },
-          timer: {
-            duration_seconds: 7200,
-            remaining_seconds: 900,
-            is_overtime: false,
-            display_format: "00:15:00",
-          },
-          orderCode: "MT25A002A",
-          vehicleId: "vehicle-001",
-          vehiclePlateNumber: "L 1111 AA",
-          estimatedTime: "30 menit lagi",
-          detectedAt: "2025-01-14T08:30:00Z",
-          processedAt: null,
-          completedAt: null,
-          location: {
-            latitude: -7.2575,
-            longitude: 112.7521,
-          },
+          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
         },
         {
-          id: "ui-002",
-          issue_type: "LATE_TO_LOAD",
-          typeName: "Armada Tidak Menuju Lokasi",
+          vehicle: {
+            id: "vh002",
+            plate_number: "B 1234 ABC",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_MOVING", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
-          statusName: "Baru",
-          description:
-            "terdeteksi tidak melakukan pergerakan menuju ke lokasi muat. Pastikan armada tiba dalam 30 menit. ",
-          orderId: "order-001",
-          transporter: {
-            id: "tr001",
-            name: "CV Moga Jaya Abadi",
-            logo: "https://api.muatrans.com/logos/tr001.png",
-            phone: "021-12345678",
-          },
-          orderCode: "MT25A002A",
-          vehicleId: "vehicle-001",
-          vehiclePlateNumber: "L 1111 AA",
-          estimatedTime: "30 menit lagi",
-          detectedAt: "2025-01-14T08:30:00Z",
-          processedAt: null,
-          completedAt: null,
-          location: {
-            latitude: -7.2575,
-            longitude: 112.7521,
-          },
+          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
         },
         {
-          id: "ui-003",
-          issue_type: "LATE_TO_LOAD",
-          typeName: "Armada Tidak Siap Untuk Muat",
+          vehicle: {
+            id: "vh003",
+            plate_number: "B 1234 IND",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_READY", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
-          statusName: "Baru",
-          description:
-            "ada muatan untuk besok, namun sedang “nonaktif”. Segera periksa ketersediaan armada dan driver. ",
-          orderId: "order-001",
-          transporter: {
-            id: "tr001",
-            name: "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Tbk",
-            logo: "https://api.muatrans.com/logos/tr001.png",
-            phone: "021-12345678",
-          },
-          orderCode: "MT25A002A",
-          vehicleId: "vehicle-001",
-          vehiclePlateNumber: "L 1111 AA",
-          estimatedTime: "30 menit lagi",
-          detectedAt: "2025-01-14T08:30:00Z",
-          processedAt: null,
-          completedAt: null,
-          location: {
-            latitude: -7.2575,
-            longitude: 112.7521,
-          },
-        },
-        {
-          id: "ui-002",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "PROCESSING",
-          statusName: "Diproses",
-          description:
-            "Armada sudah bergerak namun estimasi waktu tiba masih melebihi jadwal muat.",
-          orderId: "order-002",
-          orderCode: "MT25A002B",
-          vehicleId: "vehicle-002",
-          vehiclePlateNumber: "B 2222 BB",
-          estimatedTime: "15 menit lagi",
-          detectedAt: "2025-01-14T09:00:00Z",
-          processedAt: "2025-01-14T09:10:00Z",
-          completedAt: null,
-          location: {
-            latitude: -6.2,
-            longitude: 106.816666,
-          },
-        },
-        {
-          id: "ui-003",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-004",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-005",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-006",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-007",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-008",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-009",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
-        },
-        {
-          id: "ui-010",
-          type: "POTENTIAL_DRIVER_LATE",
-          typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
-          description:
-            "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
-          orderId: "order-003",
-          orderCode: "MT25A002C",
-          vehicleId: "vehicle-003",
-          vehiclePlateNumber: "D 3333 CC",
-          estimatedTime: "Selesai",
-          detectedAt: "2025-01-13T08:30:00Z",
-          processedAt: "2025-01-13T09:00:00Z",
-          completedAt: "2025-01-13T10:00:00Z",
-          location: {
-            latitude: -6.914744,
-            longitude: 107.60981,
-          },
+          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
         },
       ],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 3,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false,
-      },
     },
-    Type: "URGENT_ISSUE_LIST",
+    {
+      id: "123e4567-e89b-12d3-a456-426614174002",
+      order_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      orderCode: "MT32343",
+      countdown: 2000, // in seconds
+      transporter: {
+        id: "tr001",
+        name: "PT Siba Surya",
+        logo: "https://api.muatrans.com/logos/tr001.png",
+        phone: "021-12345678",
+      },
+      orderLocations: {
+        pickupLocations: [
+          {
+            id: "ploc001",
+            sequence: 1,
+            latitude: -6.1751,
+            longitude: 106.865,
+            district: "Gambir",
+            city: "Jakarta Pusat",
+          },
+        ],
+        dropoffLocations: [
+          {
+            id: "dloc001",
+            sequence: 1,
+            latitude: -6.2297,
+            longitude: 106.6894,
+            district: "Tangerang",
+            city: "Kota Tangerang",
+          },
+        ],
+      },
+      issues: [
+        {
+          vehicle: {
+            id: "vh001",
+            plate_number: "B 1234 XYZ",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_MOVING", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          status: "NEW",
+          description:
+            "Armada B 1234 XYZ sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
+        },
+        {
+          vehicle: {
+            id: "vh002",
+            plate_number: "B 1234 ABC",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_MOVING", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          status: "NEW",
+          description:
+            "Armada B 1234 XYZ sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
+        },
+        {
+          vehicle: {
+            id: "vh003",
+            plate_number: "B 1234 IND",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_READY", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          status: "NEW",
+          description:
+            "Armada B 1234 XYZ sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
+        },
+      ],
+    },
+    {
+      id: "123e4567-e89b-12d3-a456-426614174003",
+      order_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      orderCode: "MT32343",
+      countdown: 2000, // in seconds
+      transporter: {
+        id: "tr001",
+        name: "PT Batavia Prosperindo Angkut Teknologi Indonesi Trans Tbk",
+        logo: "https://api.muatrans.com/logos/tr001.png",
+        phone: "021-12345678",
+      },
+      orderLocations: {
+        pickupLocations: [
+          {
+            id: "ploc001",
+            sequence: 1,
+            latitude: -6.1751,
+            longitude: 106.865,
+            district: "Gambir",
+            city: "Jakarta Pusat",
+          },
+        ],
+        dropoffLocations: [
+          {
+            id: "dloc001",
+            sequence: 1,
+            latitude: -6.2297,
+            longitude: 106.6894,
+            district: "Tangerang",
+            city: "Kota Tangerang",
+          },
+        ],
+      },
+      issues: [
+        {
+          vehicle: {
+            id: "vh001",
+            plate_number: "B 1234 XYZ",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_READY", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          status: "NEW",
+          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
+        },
+        {
+          vehicle: {
+            id: "vh002",
+            plate_number: "B 1234 ABC",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_MOVING", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          status: "NEW",
+          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
+        },
+        {
+          vehicle: {
+            id: "vh003",
+            plate_number: "B 1234 IND",
+            driver_name: "Ahmad Supardi",
+            location: {
+              latitude: -6.2088,
+              longitude: 106.8456,
+              address: "Jl. Sudirman No. 1, Jakarta",
+            },
+            polylineEncode: "encoded_polyline_string_here",
+          },
+          issue_type: "FLEET_NOT_READY", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          status: "NEW",
+          description:
+            "Armada B 1234 XYZ sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          detected_at: "2025-01-15T09:15:00Z",
+          processed_at: null,
+          rejection_count: 2,
+          contact_attempts: 3,
+          last_contact_at: "2025-01-15T10:00:00Z",
+          has_rejection_history: true,
+        },
+      ],
+    },
+    // You can add more items here to simulate a full list
+  ],
+  pagination: {
+    total: 15,
+    page: 1,
+    limit: 10,
+    total_pages: 2,
+    has_next: true,
+    has_prev: false,
+  },
+  meta: {
+    overdue_count: 3,
+    overdue_issues: ["uuid1", "uuid2", "uuid3"],
   },
 };
 
@@ -417,28 +449,29 @@ export const getUrgentIssueList = async (cacheKey) => {
       result = mockUrgentIssueListError;
     } else {
       // Filter mock data berdasarkan status yang diminta
-      const filteredItems = mockUrgentIssueList.data.Data.items.filter(
-        (item) => {
-          if (!status) return true; // Jika tidak ada status, return semua
-          return item.status.toLowerCase() === status.toLowerCase();
-        }
-      );
+      const filteredItems = mockUrgentIssueList.data.filter((item) => {
+        if (!status) return true;
+        // Cek status pada issues[0].status
+        const issueStatus =
+          item.issues && item.issues[0] ? item.issues[0].status : undefined;
+        return (
+          issueStatus && issueStatus.toLowerCase() === status.toLowerCase()
+        );
+      });
 
       result = {
         ...mockUrgentIssueList,
         data: {
-          ...mockUrgentIssueList.data,
-          Data: {
-            ...mockUrgentIssueList.data.Data,
-            items: filteredItems,
-            pagination: {
-              ...mockUrgentIssueList.data.Data.pagination,
-              total: filteredItems.length,
-              totalPages: Math.ceil(filteredItems.length / 10),
-              hasNext: false,
-              hasPrev: false,
-            },
+          items: filteredItems,
+          pagination: {
+            total: filteredItems.length,
+            page: 1,
+            limit: 10,
+            total_pages: 1,
+            has_next: false,
+            has_prev: false,
           },
+          meta: mockUrgentIssueList.meta || {},
         },
       };
     }
@@ -448,8 +481,9 @@ export const getUrgentIssueList = async (cacheKey) => {
   }
 
   return {
-    items: result?.data?.Data?.items || [],
-    pagination: result?.data?.Data?.pagination || {},
+    items: result?.data?.items || [],
+    pagination: result?.data?.pagination || {},
+    meta: result?.data?.meta || {},
     message: result?.data?.Message,
     type: result?.data?.Type,
     raw: result,
@@ -481,6 +515,7 @@ export const useGetUrgentIssueList = (params) => {
   return {
     items: data?.items || [],
     pagination: data?.pagination || {},
+    meta: data?.meta || {},
     message: data?.message,
     type: data?.type,
     raw: data?.raw,

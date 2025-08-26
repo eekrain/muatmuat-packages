@@ -2459,7 +2459,7 @@
   "DriverAktif.confirmYes": "Yes",
   "DriverAktif.confirmNo": "No",
   "CardLacakArmada.fleetCancelError": "Failed to prepare cancellation request",
-  "AlertPerubahanLokasi.changeMessage": "There are changes to loading location and loading time on {changeCount} orders.",
+  "AlertPerubahanLokasi.changeMessage": "There are changes to loading location and loading time on {count} orders.",
   "AlertPerubahanLokasi.viewOrders": "View Orders",
   "AlertPerubahanLokasi.backToDefault": "Back to Default",
   "RespondChangeModal.routeChanged": "Route Changed",
@@ -2722,5 +2722,12 @@
   "ModalTerimaPermintaanInstant.buttonAccept": "Accept",
   "ModalTerimaPermintaanInstant.titleNotification": "Notification",
   "ModalTerimaPermintaanInstant.buttonContactCS": "Contact Customer Service",
-  "ModalTerimaPermintaanInstant.buttonOK": "OK"
+  "ModalTerimaPermintaanInstant.buttonOK": "OK",
+  "FleetSelector.placeholder": "Select Fleet",
+  "FleetSelector.searchPlaceholder": "Search License Plate / Driver",
+  "FleetSelector.noFleetAvailable": "No replacement fleet available yet.",
+  "FleetSelector.addSuitableFleet": "Add suitable fleet to display replacement fleet options.",
+  "FleetSelector.dataNotFound": "Data Not Found",
+  "FleetSelector.recommendation": "Recommended",
+  "FleetSelector.potentialOverload": "Potential Overload"
 }

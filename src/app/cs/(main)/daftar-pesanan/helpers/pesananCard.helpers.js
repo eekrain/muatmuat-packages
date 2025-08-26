@@ -79,6 +79,7 @@ export const useGetActionItems = ({
   onViewCancellationReason,
   onUploadArchive,
   onViewArchive,
+  onViewReceipt,
 }) => {
   const { t } = useTranslation();
   return useMemo(() => {
@@ -95,7 +96,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
@@ -112,7 +113,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         if (hasMultipleUnits) {
           actions.push({
@@ -132,7 +133,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
@@ -158,7 +159,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
@@ -175,7 +176,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         if (hasMultipleUnits) {
           actions.push({
@@ -204,7 +205,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         actions.push({
           label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
@@ -231,7 +232,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         break;
       case ORDER_STATUS.DOKUMEN_SEDANG_DISIAPKAN:
@@ -261,6 +262,7 @@ export const useGetActionItems = ({
               {},
               "Lihat Resi Pengiriman"
             ),
+            onClick: onViewReceipt,
           });
         } else {
           actions.push({
@@ -274,7 +276,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         break;
       case ORDER_STATUS.PROSES_PENGIRIMAN_DOKUMEN:
@@ -303,6 +305,7 @@ export const useGetActionItems = ({
             {},
             "Lihat Resi Pengiriman"
           ),
+          onClick: onViewReceipt,
         });
         actions.push({
           label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
@@ -311,7 +314,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         break;
       case ORDER_STATUS.SELESAI:
@@ -331,11 +334,12 @@ export const useGetActionItems = ({
             {},
             "Lihat Resi Pengiriman"
           ),
+          onClick: onViewReceipt,
         });
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         break;
       case ORDER_STATUS.DIBATALKAN_SHIPPER:
@@ -352,14 +356,14 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
         break;
       default:
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/daftar-pesanan/${order.id}`,
+          href: `/monitoring/daftar-pesanan-aktif/${order.id}/detail-pesanan`,
         });
     }
     return actions;
@@ -378,6 +382,7 @@ export const useGetActionItems = ({
     onViewCancellationReason,
     onViewArchive,
     onUploadArchive,
+    onViewReceipt,
   ]);
 };
 
