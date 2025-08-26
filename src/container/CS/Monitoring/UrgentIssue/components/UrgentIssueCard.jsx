@@ -25,7 +25,6 @@ export const UrgentIssueCard = ({
 }) => {
   const {
     id,
-    typeName,
     detectedAt,
     vehiclePlateNumber,
     description,
@@ -33,6 +32,7 @@ export const UrgentIssueCard = ({
     status,
     completedAt,
     orderId,
+    issue_type,
   } = data || {};
 
   const { t } = useTranslation();
@@ -41,6 +41,7 @@ export const UrgentIssueCard = ({
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
+  const [selectedIssueData, setSelectedIssueData] = useState(null);
   const [showGroupSection, setShowGroupSection] = useState(false);
   // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
@@ -123,6 +124,14 @@ export const UrgentIssueCard = ({
     alert("Testing click vehicle");
   };
 
+  const issues = data?.issues || [];
+
+  // Tampilkan data issues yang pertama
+  const mainIssue = issues[0];
+
+  // Tampilkan data issues yang kedua dan seterusnya
+  const groupIssues = issues.slice(1);
+
   return (
     <>
       <div
@@ -204,7 +213,13 @@ export const UrgentIssueCard = ({
                 />
               )}
               <span className="text-xs font-bold text-neutral-900">
-                {typeName}
+                {issue_type === "FLEET_NOT_READY"
+                  ? "Armada Tidak Siap Untuk Muat"
+                  : issue_type === "FLEET_NOT_MOVING"
+                    ? "Armada Tidak Bergerak Menuju Lokasi"
+                    : issue_type === "POTENTIAL_DRIVER_LATE"
+                      ? "Potensi Driver Terlambat Muat"
+                      : issue_type}
               </span>
             </div>
             {isCountDown && (
@@ -222,14 +237,9 @@ export const UrgentIssueCard = ({
               onClick={() => handleClickVehiclePlateNumber()}
               className="font-medium text-primary-700 hover:cursor-pointer"
             >
-              {vehiclePlateNumber || "-"}
+              {data?.vehicle?.plate_number || vehiclePlateNumber || "-"}
             </span>{" "}
-            {description ||
-              t(
-                "UrgentIssueCard.descriptionMustArriveSoon",
-                {},
-                "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status."
-              )}
+            {description}
           </div>
           <div className="my-3 h-px w-full bg-neutral-400" />
           {/* Selesai - Lihat Detail */}
@@ -365,7 +375,10 @@ export const UrgentIssueCard = ({
               </div>
               <Button
                 type="button"
-                onClick={() => setModalUbahTransporter(true)}
+                onClick={() => {
+                  setModalUbahTransporter(true);
+                  setSelectedIssueData(data);
+                }}
                 variant="muattrans-primary-secondary"
               >
                 Ubah Transporter
@@ -373,251 +386,164 @@ export const UrgentIssueCard = ({
             </div>
           )}
         </div>
-        {showGroupSection && (
+        {showGroupSection && groupIssues.length > 0 && (
           <>
-            <div className="border-b border-neutral-400 p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {statusDisplay !== "selesai" && (
-                    <NotificationDot
-                      size="md"
-                      color={status === "PROCESSING" ? "orange" : "red"}
-                    />
-                  )}
-                  <span className="text-xs font-bold text-neutral-900">
-                    {typeName}
-                  </span>
-                </div>
-                {isCountDown && (
-                  <BadgeStatus
-                    variant={isNegative ? "outlineWarning" : "outlineSecondary"}
-                    className="w-max text-sm font-semibold"
-                  >
-                    {isNegative ? `-${formatted}` : formatted}
-                  </BadgeStatus>
-                )}
-              </div>
-              <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
-                Armada{" "}
-                <span
-                  onClick={() => handleClickVehiclePlateNumber()}
-                  className="font-medium text-primary-700 hover:cursor-pointer"
-                >
-                  {vehiclePlateNumber || "-"}
-                </span>{" "}
-                {description ||
-                  "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status."}
-              </div>
-              <div className="my-3 h-px w-full bg-neutral-400" />
-              {/* Selesai - Lihat Detail */}
-              {statusDisplay === "selesai" && !isDetailOpen && (
+            {groupIssues.map((issue, idx) => (
+              <div key={idx} className="border-b border-neutral-400 p-4 md:p-5">
                 <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
-                    onClick={onToggleDetail}
-                  >
-                    {t("UrgentIssueCard.buttonViewDetails", {}, "Lihat Detail")}
-                    <IconComponent
-                      src="/icons/chevron-down.svg"
-                      alt="chevron up"
-                      width={16}
-                      height={16}
-                      className="text-primary-700"
-                    />
-                  </button>
-                  <BadgeStatus variant="success" className="w-max text-xs">
-                    Selesai
-                  </BadgeStatus>
-                </div>
-              )}
-              {/* Selesai - Detail */}
-              {statusDisplay === "selesai" && isDetailOpen && (
-                <div>
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div className="flex min-w-[140px] items-center gap-2">
-                      <IconComponent
-                        src="/icons/document.svg"
-                        alt="download"
-                        width={20}
-                        height={20}
-                      />
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs font-medium text-neutral-500">
-                          No. Pesanan
-                        </span>
-                        <span
-                          onClick={() => handleClickOrder(orderId)}
-                          className="text-xs font-medium text-primary-700 hover:cursor-pointer"
-                        >
-                          {orderCode || "-"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex min-w-[170px] items-center gap-2">
-                      <IconComponent
-                        src="/icons/calendar16.svg"
-                        alt="calendar"
-                        width={20}
-                        height={20}
-                      />
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs font-medium text-neutral-500">
-                          Tanggal Laporan Masuk
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-neutral-900">
-                            {formatDate(detectedAt)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <IconComponent
-                      src="/icons/calendar16.svg"
-                      alt="calendar"
-                      width={20}
-                      height={20}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-medium text-neutral-500">
-                        Tanggal Laporan Diproses
-                      </span>
-                      <span className="text-xs font-semibold text-neutral-900">
-                        {formatDate(completedAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
-                      onClick={onToggleDetail}
-                    >
-                      Sembunyikan
-                      <IconComponent
-                        src="/icons/chevron-up.svg"
-                        alt="chevron up"
-                        width={16}
-                        height={16}
-                        className="text-primary-700"
-                      />
-                    </button>
-                    <BadgeStatus variant="success" className="w-max text-xs">
-                      Selesai
-                    </BadgeStatus>
-                  </div>
-                </div>
-              )}
-              {/* Baru & Proses */}
-              {statusDisplay !== "selesai" && (
-                <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-2">
-                    <IconComponent
-                      src="/icons/document.svg"
-                      alt="download"
-                      width={16}
-                      height={16}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-medium text-neutral-500">
-                        No. Pesanan
-                      </span>
-                      <span
-                        onClick={() => handleClickOrder(orderId)}
-                        className="text-xs font-medium text-primary-700 hover:cursor-pointer"
-                      >
-                        {orderCode || "-"}
-                      </span>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (statusDisplay === "baru") {
-                        setIsConfirmProccess(true);
-                      } else if (statusDisplay === "diproses") {
-                        setIsConfirmCompleted(true);
-                      }
-                    }}
-                    variant="muattrans-primary-secondary"
-                  >
-                    {t(
-                      "UrgentIssueCard.buttonChangeTransporter",
-                      {},
-                      "Ubah Transporter"
+                    {statusDisplay !== "selesai" && (
+                      <NotificationDot
+                        size="md"
+                        color={status === "PROCESSING" ? "orange" : "red"}
+                      />
                     )}
-                  </Button>
-                </div>
-              )}
-            </div>
-            <div className="border-b border-neutral-400 p-4 md:p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {statusDisplay !== "selesai" && (
-                    <NotificationDot
-                      size="md"
-                      color={status === "PROCESSING" ? "orange" : "red"}
-                    />
+                    <span className="text-xs font-bold text-neutral-900">
+                      {issue_type === "FLEET_NOT_READY"
+                        ? "Armada Tidak Siap Untuk Muat"
+                        : issue_type === "FLEET_NOT_MOVING"
+                          ? "Armada Tidak Bergerak Menuju Lokasi"
+                          : issue_type === "POTENTIAL_DRIVER_LATE"
+                            ? "Potensi Driver Terlambat Muat"
+                            : issue_type}
+                    </span>
+                  </div>
+                  {isCountDown && (
+                    <BadgeStatus
+                      variant={
+                        isNegative ? "outlineWarning" : "outlineSecondary"
+                      }
+                      className="w-max text-sm font-semibold"
+                    >
+                      {isNegative ? `-${formatted}` : formatted}
+                    </BadgeStatus>
                   )}
-                  <span className="text-xs font-bold text-neutral-900">
-                    {typeName}
-                  </span>
                 </div>
-                {isCountDown && (
-                  <BadgeStatus
-                    variant={isNegative ? "outlineWarning" : "outlineSecondary"}
-                    className="w-max text-sm font-semibold"
+                <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
+                  Armada{" "}
+                  <span
+                    onClick={() => handleClickVehiclePlateNumber()}
+                    className="font-medium text-primary-700 hover:cursor-pointer"
                   >
-                    {isNegative ? `-${formatted}` : formatted}
-                  </BadgeStatus>
+                    {data?.vehicle?.plate_number || vehiclePlateNumber || "-"}
+                  </span>{" "}
+                  {description}
+                </div>
+                <div className="my-3 h-px w-full bg-neutral-400" />
+                {/* Selesai - Lihat Detail */}
+                {statusDisplay === "selesai" && !isDetailOpen && (
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
+                      onClick={onToggleDetail}
+                    >
+                      {t(
+                        "UrgentIssueCard.buttonViewDetails",
+                        {},
+                        "Lihat Detail"
+                      )}
+                      <IconComponent
+                        src="/icons/chevron-down.svg"
+                        alt="chevron up"
+                        width={16}
+                        height={16}
+                        className="text-primary-700"
+                      />
+                    </button>
+                    <BadgeStatus variant="success" className="w-max text-xs">
+                      Selesai
+                    </BadgeStatus>
+                  </div>
                 )}
-              </div>
-              <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
-                Armada{" "}
-                <span
-                  onClick={() => handleClickVehiclePlateNumber()}
-                  className="font-medium text-primary-700 hover:cursor-pointer"
-                >
-                  {vehiclePlateNumber || "-"}
-                </span>{" "}
-                {description ||
-                  "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status."}
-              </div>
-              <div className="my-3 h-px w-full bg-neutral-400" />
-              {/* Selesai - Lihat Detail */}
-              {statusDisplay === "selesai" && !isDetailOpen && (
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
-                    onClick={onToggleDetail}
-                  >
-                    Lihat Detail
-                    <IconComponent
-                      src="/icons/chevron-down.svg"
-                      alt="chevron up"
-                      width={16}
-                      height={16}
-                      className="text-primary-700"
-                    />
-                  </button>
-                  <BadgeStatus variant="success" className="w-max text-xs">
-                    Selesai
-                  </BadgeStatus>
-                </div>
-              )}
-              {/* Selesai - Detail */}
-              {statusDisplay === "selesai" && isDetailOpen && (
-                <div>
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div className="flex min-w-[140px] items-center gap-2">
+                {/* Selesai - Detail */}
+                {statusDisplay === "selesai" && isDetailOpen && (
+                  <div>
+                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                      <div className="flex min-w-[140px] items-center gap-2">
+                        <IconComponent
+                          src="/icons/document.svg"
+                          alt="download"
+                          width={20}
+                          height={20}
+                        />
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs font-medium text-neutral-500">
+                            No. Pesanan
+                          </span>
+                          <span
+                            onClick={() => handleClickOrder(orderId)}
+                            className="text-xs font-medium text-primary-700 hover:cursor-pointer"
+                          >
+                            {orderCode || "-"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex min-w-[170px] items-center gap-2">
+                        <IconComponent
+                          src="/icons/calendar16.svg"
+                          alt="calendar"
+                          width={20}
+                          height={20}
+                        />
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs font-medium text-neutral-500">
+                            Tanggal Laporan Masuk
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-neutral-900">
+                              {formatDate(detectedAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <IconComponent
+                        src="/icons/calendar16.svg"
+                        alt="calendar"
+                        width={20}
+                        height={20}
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-medium text-neutral-500">
+                          Tanggal Laporan Diproses
+                        </span>
+                        <span className="text-xs font-semibold text-neutral-900">
+                          {formatDate(completedAt)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
+                        onClick={onToggleDetail}
+                      >
+                        Sembunyikan
+                        <IconComponent
+                          src="/icons/chevron-up.svg"
+                          alt="chevron up"
+                          width={16}
+                          height={16}
+                          className="text-primary-700"
+                        />
+                      </button>
+                      <BadgeStatus variant="success" className="w-max text-xs">
+                        Selesai
+                      </BadgeStatus>
+                    </div>
+                  </div>
+                )}
+                {/* Baru & Proses */}
+                {statusDisplay !== "selesai" && (
+                  <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-2">
                       <IconComponent
                         src="/icons/document.svg"
                         alt="download"
-                        width={20}
-                        height={20}
+                        width={16}
+                        height={16}
                       />
                       <div className="flex flex-col gap-1">
                         <span className="text-xs font-medium text-neutral-500">
@@ -631,100 +557,27 @@ export const UrgentIssueCard = ({
                         </span>
                       </div>
                     </div>
-                    <div className="flex min-w-[170px] items-center gap-2">
-                      <IconComponent
-                        src="/icons/calendar16.svg"
-                        alt="calendar"
-                        width={20}
-                        height={20}
-                      />
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs font-medium text-neutral-500">
-                          Tanggal Laporan Masuk
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-neutral-900">
-                            {formatDate(detectedAt)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <IconComponent
-                      src="/icons/calendar16.svg"
-                      alt="calendar"
-                      width={20}
-                      height={20}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-medium text-neutral-500">
-                        Tanggal Laporan Diproses
-                      </span>
-                      <span className="text-xs font-semibold text-neutral-900">
-                        {formatDate(completedAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <button
+                    <Button
                       type="button"
-                      className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
-                      onClick={onToggleDetail}
+                      onClick={() => {
+                        if (statusDisplay === "baru") {
+                          setIsConfirmProccess(true);
+                        } else if (statusDisplay === "diproses") {
+                          setIsConfirmCompleted(true);
+                        }
+                      }}
+                      variant="muattrans-primary-secondary"
                     >
-                      Sembunyikan
-                      <IconComponent
-                        src="/icons/chevron-up.svg"
-                        alt="chevron up"
-                        width={16}
-                        height={16}
-                        className="text-primary-700"
-                      />
-                    </button>
-                    <BadgeStatus variant="success" className="w-max text-xs">
-                      Selesai
-                    </BadgeStatus>
+                      {t(
+                        "UrgentIssueCard.buttonChangeTransporter",
+                        {},
+                        "Ubah Transporter"
+                      )}
+                    </Button>
                   </div>
-                </div>
-              )}
-              {/* Baru & Proses */}
-              {statusDisplay !== "selesai" && (
-                <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
-                  <div className="flex items-center gap-2">
-                    <IconComponent
-                      src="/icons/document.svg"
-                      alt="download"
-                      width={16}
-                      height={16}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-medium text-neutral-500">
-                        No. Pesanan
-                      </span>
-                      <span
-                        onClick={() => handleClickOrder(orderId)}
-                        className="text-xs font-medium text-primary-700 hover:cursor-pointer"
-                      >
-                        {orderCode || "-"}
-                      </span>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (statusDisplay === "baru") {
-                        setIsConfirmProccess(true);
-                      } else if (statusDisplay === "diproses") {
-                        setIsConfirmCompleted(true);
-                      }
-                    }}
-                    variant="muattrans-primary-secondary"
-                  >
-                    Ubah Transporter
-                  </Button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ))}
           </>
         )}
 
@@ -831,6 +684,7 @@ export const UrgentIssueCard = ({
         <ModalUbahTransporter
           open={modalUbahTransporter}
           onClose={() => setModalUbahTransporter(false)}
+          issueData={selectedIssueData}
         />
       </div>
     </>

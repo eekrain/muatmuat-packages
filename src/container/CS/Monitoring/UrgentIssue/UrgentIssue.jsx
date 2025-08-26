@@ -69,7 +69,19 @@ const RequestList = ({
       {requests.map((item) => (
         <UrgentIssueCard
           key={item.id}
-          data={item}
+          data={{
+            ...item,
+            ...(item.issues && item.issues[0] ? item.issues[0] : {}),
+            vehicle:
+              item.issues && item.issues[0]
+                ? item.issues[0].vehicle
+                : undefined,
+            transporter: item.transporter,
+            orderLocations: item.orderLocations,
+            countdown: item.countdown,
+            orderCode: item.orderCode,
+            orderId: item.order_id,
+          }}
           statusTab={status}
           isDetailOpen={openDetails.includes(item.id)}
           onToggleDetail={() => toggleDetail(item.id)}
@@ -89,8 +101,7 @@ const UrgentIssue = () => {
   const [data, setData] = useState([]);
   const { data: urgentIssueData, isLoading: isUrgentIssueLoading } =
     useGetUrgentIssueCount();
-  console.log(urgentIssueData, "urgentIssueData");
-  const { items, isLoading } = useGetUrgentIssueList({
+  const { items, meta, isLoading } = useGetUrgentIssueList({
     status: statusMap[activeTab],
     page: currentPage,
     limit: 10,
@@ -220,12 +231,8 @@ const UrgentIssue = () => {
           <IconComponent src="/icons/warning-red.svg" className="h-4 w-4" />
           <div className="flex flex-col">
             <span className={cn("text-xs font-semibold text-error-400")}>
-              {t(
-                "UrgentIssue.alertOverdueReports",
-                {},
-                "{count} Laporan Urgent Issue Melewati Batas Waktu",
-                { count: 2 }
-              )}
+              {meta?.overdue_count ?? 0} Laporan Urgent Issue Melewati Batas
+              Waktu
             </span>
             <span className="text-[10px] font-medium text-neutral-900">
               {t(
