@@ -17,8 +17,8 @@ import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepper
 import Table from "@/components/Table/Table";
 import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 // Assuming path, adjust if necessary
-import RespondChangeFormModal from "@/container/Shared/OrderModal/RespondChangeFormModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
@@ -671,12 +671,10 @@ const DaftarPesanan = ({
       )}
 
       {/* Respond Change Modal */}
-      <RespondChangeFormModal
+      <RespondChangeModal
         isOpen={isRespondModalOpen}
         onClose={handleCloseRespondModal}
-        onBackClick={handleBackFromRespondModal}
         orderData={selectedOrderForChange}
-        fromDaftarPesanan={true}
       />
 
       {/* Confirmation Modal for Respond Change */}
