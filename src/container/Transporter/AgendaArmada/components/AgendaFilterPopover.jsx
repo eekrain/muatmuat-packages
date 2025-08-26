@@ -84,7 +84,7 @@ const CloseButton = ({ className }) => (
     )}
     aria-label="Close"
   >
-    <IconComponent src="/icons/close.svg" className="h-5 w-5" />
+    <IconComponent src="/icons/close20.svg" className="h-5 w-5" />
   </PopoverClose>
 );
 

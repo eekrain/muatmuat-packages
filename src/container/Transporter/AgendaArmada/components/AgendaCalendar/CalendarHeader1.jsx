@@ -4,6 +4,7 @@ import Button from "@/components/Button/Button";
 import MyDropdown from "@/components/Dropdown/MyDropdown";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetAgendaFilterOptions } from "@/services/Transporter/agenda-armada-driver/getAgendaFilterOptions";
 
 import { AgendaAutocomplete } from "../AgendaAutocomplete";
 import { AgendaFilterPopover } from "../AgendaFilterPopover";
@@ -189,9 +190,37 @@ const SearchSection = memo(
     const { filterAgendaStatus, setFilterAgendaStatus } =
       useAgendaNavigatorStore();
 
-    // Use the predefined status filters data instead of generating from STATUS_CODES
-    const statusFilterOptions = getStatusFiltersData(t);
-    const armadaFilterOptions = getArmadaFiltersData(t);
+    // Get filter options from API
+    const { data: filterOptionsData, isLoading: isLoadingFilterOptions } =
+      useGetAgendaFilterOptions(viewType);
+
+    // Transform API data to match component expectations
+    const statusFilterOptions = useMemo(() => {
+      if (!filterOptionsData?.statusOptions) {
+        return getStatusFiltersData(t); // Fallback to static data
+      }
+
+      return filterOptionsData.statusOptions.map((option) => ({
+        id: option.value,
+        label: option.label,
+        count: option.count,
+        color: {
+          className: `bg-[${option.color}] border border-gray-300`,
+        },
+      }));
+    }, [filterOptionsData?.statusOptions, t, viewType]);
+
+    const armadaFilterOptions = useMemo(() => {
+      if (!filterOptionsData?.truckTypeOptions) {
+        return getArmadaFiltersData(t); // Fallback to static data
+      }
+
+      return filterOptionsData.truckTypeOptions.map((option) => ({
+        id: option.id,
+        label: option.name,
+        count: option.count,
+      }));
+    }, [filterOptionsData?.truckTypeOptions, t, viewType]);
 
     // Check if any filters are active (not all enabled, which is the default state)
     const hasActiveFilters = useMemo(() => {
@@ -206,7 +235,7 @@ const SearchSection = memo(
         filterAgendaStatus.length > 0 &&
         filterAgendaStatus.length < totalStatusFilters
       );
-    }, [filterAgendaStatus, statusFilterOptions]);
+    }, [filterAgendaStatus, statusFilterOptions, viewType]);
 
     // Filter button style based on active filters
     const filterButtonClass = useMemo(() => {
@@ -216,11 +245,11 @@ const SearchSection = memo(
         ? "border-primary-700"
         : "border-[#7B7B7B]";
       return `${baseClass} ${borderClass}`;
-    }, [hasActiveFilters]);
+    }, [hasActiveFilters, viewType]);
 
     const filterTextClass = useMemo(() => {
       return hasActiveFilters ? "text-primary-700" : "text-[#7B7B7B]";
-    }, [hasActiveFilters]);
+    }, [hasActiveFilters, viewType]);
 
     // Convert filterAgendaStatus array to filter format expected by popover
     const filtersFromStore = useMemo(() => {
@@ -235,21 +264,26 @@ const SearchSection = memo(
         }
       });
 
+      // Create dynamic armada filters based on API data
+      const armadaFilters = {};
+      if (viewType === "armada" && armadaFilterOptions.length > 0) {
+        armadaFilterOptions.forEach((option) => {
+          armadaFilters[option.id] = true; // Default to all enabled
+        });
+      }
+
       return {
         status: statusFilters,
-        ...(viewType === "armada"
-          ? {
-              armada: {
-                coltDieselEngkel: true,
-                tronton: true,
-                coltDieselEngkelEngkel: true,
-                pickup: true,
-                coltDieselDouble: true,
-              },
-            }
+        ...(viewType === "armada" && Object.keys(armadaFilters).length > 0
+          ? { armada: armadaFilters }
           : {}),
       };
-    }, [filterAgendaStatus, statusFilterOptions]);
+    }, [
+      filterAgendaStatus,
+      statusFilterOptions,
+      viewType,
+      armadaFilterOptions,
+    ]);
 
     // Update filter state
     const [filters, setFilters] = useState(filtersFromStore);
@@ -257,7 +291,7 @@ const SearchSection = memo(
     // Sync filters when store changes
     useEffect(() => {
       setFilters(filtersFromStore);
-    }, [filtersFromStore]);
+    }, [filtersFromStore, viewType]);
 
     const handleApplyFilters = useCallback(() => {
       // Extract active status filters and update store
@@ -279,34 +313,41 @@ const SearchSection = memo(
       setFilterAgendaStatus,
       onFilterChange,
       statusFilterOptions,
+      viewType,
     ]);
 
-    const handleFiltersChange = useCallback((category, id) => {
-      if (typeof category === "object") {
-        // If category is the entire filters object (from reset)
-        setFilters(category);
-      } else {
-        // If category and id are individual properties
-        setFilters((prevFilters) => ({
-          ...prevFilters,
-          [category]: {
-            ...prevFilters[category],
-            [id]: !prevFilters[category][id],
-          },
-        }));
-      }
-    }, []);
+    const handleFiltersChange = useCallback(
+      (category, id) => {
+        if (typeof category === "object") {
+          // If category is the entire filters object (from reset)
+          setFilters(category);
+        } else {
+          // If category and id are individual properties
+          setFilters((prevFilters) => ({
+            ...prevFilters,
+            [category]: {
+              ...prevFilters[category],
+              [id]: !prevFilters[category][id],
+            },
+          }));
+        }
+      },
+      [viewType]
+    );
 
-    const handleSelect = (_item) => {
-      // Selection is handled by the store integration
-    };
+    const handleSelect = useCallback(
+      (_item) => {
+        // Selection is handled by the store integration
+      },
+      [viewType]
+    );
 
     return (
       <div className="flex h-full items-center gap-3 p-3">
         <AgendaAutocomplete.Root
           useStoreSearch={true} // Enable store integration
           useApiSuggestions={true} // Enable API suggestions
-          viewType="armada" // Search for vehicles and drivers
+          viewType={viewType} // Search for vehicles and drivers
           limit={10} // Show up to 10 suggestions
           onSelect={handleSelect}
         >
@@ -336,11 +377,12 @@ const SearchSection = memo(
         </AgendaAutocomplete.Root>
 
         <AgendaFilterPopover.Root
+          key={viewType} // Force re-render when viewType changes
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onApplyFilters={handleApplyFilters}
         >
-          <AgendaFilterPopover.Trigger>
+          <AgendaFilterPopover.Trigger key={`${viewType}-trigger`}>
             {/* Filter button with conditional styling */}
             <button className={filterButtonClass}>
               <span
@@ -356,46 +398,75 @@ const SearchSection = memo(
           </AgendaFilterPopover.Trigger>
 
           <AgendaFilterPopover.Content>
-            <AgendaFilterPopover.CloseButton />
+            <AgendaFilterPopover.CloseButton key={`${viewType}-close`} />
 
-            <AgendaFilterPopover.Section
-              title={t("CalendarHeader1.sectionTitleStatus", {}, "Status")}
-            >
-              {statusFilterOptions.map((item) => (
-                <AgendaFilterPopover.CheckboxItem
-                  key={item.id}
-                  {...item}
-                  category="status"
-                />
-              ))}
-            </AgendaFilterPopover.Section>
-
-            {viewType === "armada" && (
-              <AgendaFilterPopover.Section
-                title={t(
-                  "CalendarHeader1.sectionTitleJenisArmada",
-                  {},
-                  "Jenis Armada"
-                )}
+            {isLoadingFilterOptions ? (
+              <div
+                key={`${viewType}-loading`}
+                className="flex items-center justify-center py-8"
               >
-                {armadaFilterOptions.map((item) => (
-                  <AgendaFilterPopover.CheckboxItem
-                    key={item.id}
-                    {...item}
-                    category="armada"
+                <div className="flex flex-col items-center gap-2">
+                  <img
+                    src="/img/loading-animation.webp"
+                    width={40}
+                    height={40}
+                    alt={t("CalendarHeader1.altLoading", {}, "loading")}
                   />
-                ))}
-              </AgendaFilterPopover.Section>
+                  <div className="text-xs text-gray-600">
+                    {t(
+                      "CalendarHeader1.labelMemuatFilter",
+                      {},
+                      "Memuat filter..."
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div key={`${viewType}-content-wrapper`}>
+                <AgendaFilterPopover.Section
+                  key={`${viewType}-status-section`}
+                  title={t("CalendarHeader1.sectionTitleStatus", {}, "Status")}
+                >
+                  {statusFilterOptions.map((item) => (
+                    <AgendaFilterPopover.CheckboxItem
+                      key={`${viewType}-${item.id}`}
+                      {...item}
+                      category="status"
+                    />
+                  ))}
+                </AgendaFilterPopover.Section>
+
+                {viewType === "armada" && (
+                  <AgendaFilterPopover.Section
+                    key={`${viewType}-armada-section`}
+                    title={t(
+                      "CalendarHeader1.sectionTitleJenisArmada",
+                      {},
+                      "Jenis Armada"
+                    )}
+                  >
+                    {armadaFilterOptions.map((item) => (
+                      <AgendaFilterPopover.CheckboxItem
+                        key={`${viewType}-${item.id}`}
+                        {...item}
+                        category="armada"
+                      />
+                    ))}
+                  </AgendaFilterPopover.Section>
+                )}
+              </div>
             )}
 
-            <AgendaFilterPopover.Footer>
-              <AgendaFilterPopover.ResetButton>
-                {t("CalendarHeader1.buttonReset", {}, "Reset")}
-              </AgendaFilterPopover.ResetButton>
-              <AgendaFilterPopover.ApplyButton>
-                {t("CalendarHeader1.buttonTampilkan", {}, "Tampilkan")}
-              </AgendaFilterPopover.ApplyButton>
-            </AgendaFilterPopover.Footer>
+            {!isLoadingFilterOptions && (
+              <AgendaFilterPopover.Footer key={`${viewType}-footer`}>
+                <AgendaFilterPopover.ResetButton>
+                  {t("CalendarHeader1.buttonReset", {}, "Reset")}
+                </AgendaFilterPopover.ResetButton>
+                <AgendaFilterPopover.ApplyButton>
+                  {t("CalendarHeader1.buttonTampilkan", {}, "Tampilkan")}
+                </AgendaFilterPopover.ApplyButton>
+              </AgendaFilterPopover.Footer>
+            )}
           </AgendaFilterPopover.Content>
         </AgendaFilterPopover.Root>
       </div>

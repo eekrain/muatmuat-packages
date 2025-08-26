@@ -56,7 +56,7 @@ const LaporanPermintaanDibatalkan = ({
       headerClassName: "pl-6 pr-2.5",
       render: (row) => (
         <span className="mt-1 text-xs font-medium">
-          {formatDate(row.cancelledAt)}
+          {formatDate(row.cancelledAt, { padDay: true })}
         </span>
       ),
     },
@@ -398,7 +398,7 @@ const LaporanPermintaanDibatalkan = ({
                     className="gap-0"
                     disabled={orders.length === 0 && !queryParams.search}
                     appearance={{ containerClassName: "w-[262px]" }}
-                    placeholder="Cari Permintaan "
+                    placeholder="Cari Permintaan"
                     icon={{
                       left: "/icons/search16.svg",
                       right: tempSearch ? (

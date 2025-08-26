@@ -120,7 +120,7 @@ const OrderConfirmationBottomSheet = ({
               <h4 className="text-sm leading-[15.4px]">
                 {t("labelWaktuMuat")}
               </h4>
-              <span className="text-xs leading-[13.2px]">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
+              <span className="text-xs leading-[13.2px]">{`${formatDate(loadTimeStart, { padDay: true })}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd, { padDay: true })}` : ""}`}</span>
             </OrderSummarySection>
             <OrderSummarySection className="gap-y-4 text-neutral-900">
               <div className="flex items-center justify-between">
