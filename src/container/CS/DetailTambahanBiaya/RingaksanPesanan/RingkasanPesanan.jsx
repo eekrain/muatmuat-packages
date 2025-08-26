@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import RingkasanPesananBody from "@/container/CS/DetailTambahanBiaya//RingaksanPesanan/RIngkasanPesananBody";
 // Assuming this is the correct import path
 // Assuming lucide-react for icons
 import OrderInformation from "@/container/CS/DetailTambahanBiaya/RingaksanPesanan/OrderInformation";
@@ -7,8 +8,6 @@ import PaymentDetail from "@/container/CS/DetailTambahanBiaya/RingaksanPesanan/P
 import ShipperContactedInformation from "@/container/CS/DetailTambahanBiaya/RingaksanPesanan/ShipperContactedInformation";
 import { ORDER_STATUS } from "@/utils/CS/orderStatus";
 import { TRACKING_STATUS } from "@/utils/Transporter/trackingStatus";
-
-import RingkasanPesananBody from "./RIngkasanPesananBody";
 
 // Mock data to populate the component, making it easier to manage
 const orderSummaryData = {
