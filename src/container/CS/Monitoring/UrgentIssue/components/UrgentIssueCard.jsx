@@ -7,7 +7,6 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
-import { useFlexibleCountdown } from "@/hooks/use-countdown";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -22,6 +21,7 @@ export const UrgentIssueCard = ({
   statusTab,
   isDetailOpen,
   onToggleDetail,
+  meta,
 }) => {
   const {
     id,
@@ -33,8 +33,10 @@ export const UrgentIssueCard = ({
     completedAt,
     orderId,
     issue_type,
+    countdown,
   } = data || {};
 
+  // =================== ALL HOOKS AT THE TOP ===================
   const { t } = useTranslation();
   const router = useRouter();
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
@@ -43,26 +45,13 @@ export const UrgentIssueCard = ({
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
   const [selectedIssueData, setSelectedIssueData] = useState(null);
   const [showGroupSection, setShowGroupSection] = useState(false);
-  // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
+  const [remainingTime, setRemainingTime] = useState(countdown);
+
   const { message, isError } = useUpdateUrgentIssueStatus(
     updateParams.id,
     updateParams.body
   );
-  const isCountDown = true;
-  const { formatted, isNegative } = useFlexibleCountdown(
-    new Date(), // start time
-    360 // durasi 6 menit (dalam detik)
-  );
-
-  // The rest of your component logic can now safely assume 't' is a function.
-  let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
-  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
-    statusDisplay = t("UrgentIssueCard.statusProcessing", {}, "diproses");
-  }
-  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
-    statusDisplay = t("UrgentIssueCard.statusCompleted", {}, "selesai");
-  }
 
   useEffect(() => {
     if (!updateParams.id || !updateParams.body) return;
@@ -87,9 +76,40 @@ export const UrgentIssueCard = ({
     }
   }, [message, isError, updateParams, orderCode]);
 
-  // Early return setelah semua hooks
+  useEffect(() => {
+    if (!countdown || countdown <= 0) {
+      setRemainingTime(0);
+      return;
+    }
+    setRemainingTime(countdown);
+    const timerId = setInterval(() => {
+      setRemainingTime((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timerId);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [countdown]);
+  // ==========================================================
+
+  // Early return after all hooks are called
   if (typeof t !== "function") {
-    return null; // Or return a loading spinner, e.g., <p>Loading...</p>
+    return null;
+  }
+
+  const isCountDown = true;
+  const isNegative =
+    Array.isArray(meta?.overdue_issues) && meta.overdue_issues.includes(id);
+
+  let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
+  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
+    statusDisplay = t("UrgentIssueCard.statusProcessing", {}, "diproses");
+  }
+  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
+    statusDisplay = t("UrgentIssueCard.statusCompleted", {}, "selesai");
   }
 
   const handleClickOrder = (orderId) => {
@@ -125,12 +145,19 @@ export const UrgentIssueCard = ({
   };
 
   const issues = data?.issues || [];
-
-  // Tampilkan data issues yang pertama
-  const mainIssue = issues[0];
-
-  // Tampilkan data issues yang kedua dan seterusnya
   const groupIssues = issues.slice(1);
+
+  const formatTime = (totalSeconds) => {
+    if (!totalSeconds || totalSeconds <= 0) {
+      return "00:00";
+    }
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+    return `${formattedMinutes}:${formattedSeconds}`;
+  };
+  const formatted = formatTime(remainingTime);
 
   return (
     <>
@@ -415,7 +442,7 @@ export const UrgentIssueCard = ({
                       }
                       className="w-max text-sm font-semibold"
                     >
-                      {isNegative ? `-${formatted}` : formatted}
+                      {/* {isNegative ? `-${formatted}` : formatted} */}
                     </BadgeStatus>
                   )}
                 </div>
@@ -634,45 +661,6 @@ export const UrgentIssueCard = ({
             classname: "!w-[112px]",
           }}
         />
-
-        {/* <Modal
-          open={hubungiModalOpen === "contact"}
-          onOpenChange={setHubungiModalOpen}
-        >
-          <ModalContent className="w-modal-big" type="muattrans">
-            <ModalHeader
-              size="small"
-              onClose={() => setHubungiModalOpen(null)}
-            />
-            <div className="space-y-2 px-6 pb-6 pt-9 text-center">
-              <p className="text-sm font-bold text-black">
-                Anda Ingin Menghubungi Via
-              </p>
-              <p className="text-xs font-semibold leading-tight text-[#868686]">
-                Anda dapat memilih menghubungi melalui pilihan berikut
-              </p>
-            </div>
-            <div
-              className="mx-auto mb-9 flex w-max cursor-pointer items-center justify-start gap-4 rounded-md border border-[#EBEBEB] px-6 py-4 text-left"
-              onClick={() => setShowHubungiModal(true)}
-            >
-              <IconComponent
-                src="/icons/call20.svg"
-                width={24}
-                height={24}
-                className="mr-2 inline-block text-primary-700"
-              />
-              <div>
-                <p className="text-sm font-semibold text-primary-700">
-                  No. Telepon/Whatsapp
-                </p>
-                <p className="text-xs font-medium text-[#868686]">
-                  Anda langsung terhubung dengan Whatsapp
-                </p>
-              </div>
-            </div>
-          </ModalContent>
-        </Modal> */}
 
         {/* HubungiModal integration */}
         <HubungiModal

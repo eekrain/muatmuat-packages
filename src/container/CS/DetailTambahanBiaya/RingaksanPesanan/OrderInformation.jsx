@@ -1,14 +1,13 @@
 import Image from "next/image";
 import { Fragment, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import InfoItem from "@/container/CS/DetailTambahanBiaya/components/InfoItem";
 import { ORDER_STATUS } from "@/utils/CS/orderStatus";
-
-import ContactModal from "../components/ContactModal";
 
 // --- Helper Components ---
 
@@ -19,6 +18,36 @@ const ContactDetail = ({ icon, name, phone, address, fleet }) => {
     { icon: "/icons/phone16.svg", value: phone },
     { icon: "/icons/marker-outline.svg", value: address },
   ];
+
+  const dummyContact = {
+    pics: [
+      {
+        name: "Alexander", // [dbm_mt_transporter.picName] (PIC 1 - existing)
+        position: "", // [dbm_mt_transporter.picPosition] (PIC 1 - existing)
+        phoneNumber: "0821-2345-6869-90", // [dbm_mt_transporter.picPhone] (PIC 1 - existing),
+        Level: 1,
+      },
+      {
+        name: "Alexander krisna indra candra", // [dbm_mt_transporter.picName2]
+        position: "", // [dbm_mt_transporter.picPosition2]
+        phoneNumber: "0821-2345-8686", // [dbm_mt_transporter.picPhone2],
+        Level: 2,
+      },
+      {
+        name: "", // [dbm_mt_transporter.picName3]
+        position: "", // [dbm_mt_transporter.picPosition3]
+        phoneNumber: "", // [dbm_mt_transporter.picPhone3],
+        Level: 3,
+      },
+    ],
+    emergencyContact: {
+      name: "Candra Ariansyah", // [dbm_mt_user.fullName]
+      position: "", // Default value
+      phoneNumber: "0821-2345-8686", // [dbm_mt_user.phoneNumber]
+    },
+    companyContact: "0821-2345-8686",
+  };
+
   return (
     <>
       <div className="flex items-center gap-x-2">
@@ -59,7 +88,11 @@ const ContactDetail = ({ icon, name, phone, address, fleet }) => {
           </Button>
         )}
       </div>
-      <ContactModal isOpen={isContactModalOpen} setOpen={setContactModalOpen} />
+      <HubungiModal
+        isOpen={isContactModalOpen}
+        onClose={() => setContactModalOpen(false)}
+        contacts={dummyContact}
+      />
     </>
   );
 };

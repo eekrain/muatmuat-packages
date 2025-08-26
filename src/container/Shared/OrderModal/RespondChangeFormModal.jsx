@@ -9,6 +9,7 @@ import * as v from "valibot";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useTranslation } from "@/hooks/use-translation";
@@ -26,6 +27,7 @@ const RespondChangeFormModal = ({
 }) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
   // Create validation schema with translated messages
   const FormSchema = v.pipe(
@@ -75,6 +77,9 @@ const RespondChangeFormModal = ({
 
   const selectedResponse = watch("selectedResponse");
   const selectedFleet = watch("selectedFleet");
+
+  // Check if form has been modified
+  const isFormModified = selectedResponse !== "" || selectedFleet !== "";
 
   // Mock fleet options based on the image
   const fleetOptions = [
@@ -153,12 +158,30 @@ const RespondChangeFormModal = ({
   const handleClose = () => {
     reset();
     setIsLoading(false);
+    setShowExitConfirmation(false);
     onClose?.();
+  };
+
+  const handleCloseAttempt = () => {
+    if (isFormModified && !isLoading) {
+      setShowExitConfirmation(true);
+    } else {
+      handleClose();
+    }
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitConfirmation(false);
+    handleClose();
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
   };
 
   const handleOpenChange = (open) => {
     if (!open) {
-      handleClose();
+      handleCloseAttempt();
     }
   };
 
@@ -208,7 +231,7 @@ const RespondChangeFormModal = ({
         <div className="relative flex flex-col">
           {/* Close button */}
           <button
-            onClick={onClose}
+            onClick={handleCloseAttempt}
             className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white"
           >
             <IconComponent
@@ -380,7 +403,12 @@ const RespondChangeFormModal = ({
             <Button
               variant="muattrans-primary-secondary"
               onClick={() => {
-                handleClose(), onBackClick();
+                if (isFormModified && !isLoading) {
+                  setShowExitConfirmation(true);
+                } else {
+                  handleClose();
+                  onBackClick();
+                }
               }}
               disabled={isLoading}
               className="w-[112px]"
@@ -400,6 +428,35 @@ const RespondChangeFormModal = ({
           </div>
         </div>
       </ModalContent>
+
+      {/* Confirmation Modal for Exit */}
+      <ConfirmationModal
+        isOpen={showExitConfirmation}
+        setIsOpen={setShowExitConfirmation}
+        description={{
+          text: t(
+            "RespondChangeFormModal.confirmExitDescription",
+            {},
+            "Apakah kamu yakin ingin menutup modal? Data yang telah diisi tidak akan disimpan"
+          ),
+        }}
+        confirm={{
+          text: t("RespondChangeFormModal.confirmExit", {}, "Ya, Tutup"),
+          onClick: handleConfirmExit,
+          confirmClassname: "w-[112px]",
+        }}
+        cancel={{
+          text: t("RespondChangeFormModal.cancelExit", {}, "Batal"),
+          onClick: handleCancelExit,
+          cancelClassname: "w-[112px]",
+        }}
+      >
+        {t(
+          "RespondChangeFormModal.confirmExitMessage",
+          {},
+          "Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin menutup modal ini?"
+        )}
+      </ConfirmationModal>
     </Modal>
   );
 };

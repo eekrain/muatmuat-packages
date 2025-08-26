@@ -40,7 +40,7 @@ import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArm
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/CS/getFleetCount";
-import { useGetCsFleetLocations } from "@/services/CS/monitoring/getCsFleetLocation";
+import { useGetCSMapsLocations } from "@/services/CS/maps/getCsMapsLocations";
 import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
@@ -53,7 +53,7 @@ const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
-  const { data: fleetLocationsData } = useGetCsFleetLocations();
+  const { data: fleetLocationsData } = useGetCSMapsLocations();
   const { data: urgentIssueData } = useGetUrgentIssueCount();
   const { addToast } = useToastActions();
 
@@ -145,7 +145,6 @@ const Page = () => {
   // Mock notification counts - replace with actual API data
   const requestCount = 100; // Replace with actual count from API
   const urgentCount = urgentIssueData?.total_active || 0;
-  console.log(urgentIssueData, "urgentCount");
   // handleTruckClick is now imported from useMonitoringHandlers hook
 
   // Handle fleet click from list - focus map on selected fleet
@@ -353,6 +352,10 @@ const Page = () => {
       setHasFleet(true);
     }
   }, [fleetData]);
+
+  useEffect(() => {
+    console.log("fleetLocationsData", fleetLocationsData);
+  }, [fleetLocationsData]);
 
   return (
     <>

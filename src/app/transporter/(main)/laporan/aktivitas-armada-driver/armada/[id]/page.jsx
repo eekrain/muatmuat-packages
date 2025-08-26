@@ -19,9 +19,11 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetDetailData } from "@/services/Transporter/laporan/aktivitas/getArmadaDetailData";
 
 export default function DetailArmadaPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
@@ -36,29 +38,41 @@ export default function DetailArmadaPage() {
   const [hasInitialData, setHasInitialData] = useState(false);
   const [breadcrumbData, setBreadcrumbData] = useState([]);
 
-  const defaultBreadcrumbData = [
-    { name: "Laporan Aktivitas", href: "/laporan/aktivitas-armada-driver" },
-    { name: "Aktivitas Armada", href: "/laporan/aktivitas-armada-driver" },
-    { name: "Detail Aktivitas" },
-  ];
-
-  const breadcrumbDataDashboard = [
-    { name: "Dashboard Analytics", href: "/dashboard/analytics" },
-    {
-      name: "Laporan Ringkasan Pengiriman",
-      href: "/dashboard/analytics/laporan",
-    },
-    { name: "Aktivitas Armada" },
-  ];
-
   useEffect(() => {
+    const defaultBreadcrumbData = [
+      {
+        name: t("breadcrumbs.activityReport", "Laporan Aktivitas"),
+        href: "/laporan/aktivitas-armada-driver",
+      },
+      {
+        name: t("breadcrumbs.fleetActivity", "Aktivitas Armada"),
+        href: "/laporan/aktivitas-armada-driver",
+      },
+      { name: t("breadcrumbs.activityDetail", "Detail Aktivitas") },
+    ];
+
+    const breadcrumbDataDashboard = [
+      {
+        name: t("breadcrumbs.dashboardAnalytics", "Dashboard Analytics"),
+        href: "/dashboard/analytics",
+      },
+      {
+        name: t(
+          "breadcrumbs.deliverySummaryReport",
+          "Laporan Ringkasan Pengiriman"
+        ),
+        href: "/dashboard/analytics/laporan",
+      },
+      { name: t("breadcrumbs.fleetActivity", "Aktivitas Armada") },
+    ];
+
     const from = searchParams.get("from");
     if (from === "dashboard") {
       setBreadcrumbData(breadcrumbDataDashboard);
     } else {
       setBreadcrumbData(defaultBreadcrumbData);
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   // Helper function to get startDate and endDate from the period
   const getPeriodDates = () => {
@@ -132,7 +146,7 @@ export default function DetailArmadaPage() {
   // Table columns for activities
   const columns = [
     {
-      header: "Kode Pesanan",
+      header: t("DetailFleetPage.table.orderCode", "Kode Pesanan"),
       key: "invoiceNumber",
       sortable: true,
       width: "170px",
@@ -152,7 +166,7 @@ export default function DetailArmadaPage() {
       },
     },
     {
-      header: "Rute Pesanan",
+      header: t("DetailFleetPage.table.orderRoute", "Rute Pesanan"),
       key: "orderInfo",
       sortable: false,
       width: "280px",
@@ -161,7 +175,8 @@ export default function DetailArmadaPage() {
         <div className="space-y-2">
           {row.orderInfo?.estimatedDistance && (
             <div className="text-xs font-medium">
-              Estimasi: {row.orderInfo.estimatedDistance} km
+              {t("DetailFleetPage.table.estimation", "Estimasi")}:{" "}
+              {row.orderInfo.estimatedDistance} km
             </div>
           )}
           <MuatBongkarStepper
@@ -178,7 +193,7 @@ export default function DetailArmadaPage() {
       ),
     },
     {
-      header: "Nama Driver",
+      header: t("DetailFleetPage.table.driverName", "Nama Driver"),
       key: "driverName",
       sortable: true,
       width: "170px",
@@ -191,7 +206,7 @@ export default function DetailArmadaPage() {
       },
     },
     {
-      header: "Tanggal Muat",
+      header: t("DetailFleetPage.table.loadDate", "Tanggal Muat"),
       key: "loadingTime",
       sortable: true,
       width: "150px",
@@ -208,7 +223,7 @@ export default function DetailArmadaPage() {
       },
     },
     {
-      header: "Tanggal Bongkar",
+      header: t("DetailFleetPage.table.unloadDate", "Tanggal Bongkar"),
       key: "unloadingTime",
       sortable: true,
       width: "150px",
@@ -225,7 +240,7 @@ export default function DetailArmadaPage() {
       },
     },
     {
-      header: "Status",
+      header: t("DetailFleetPage.table.status", "Status"),
       key: "status",
       sortable: true,
       width: "180px",
@@ -234,7 +249,7 @@ export default function DetailArmadaPage() {
         getStatusBadge(row.orderInfo?.status, row.orderInfo?.status),
     },
     {
-      header: "Action",
+      header: t("DetailFleetPage.table.action", "Action"),
       key: "action",
       sortable: false,
       width: "100px",
@@ -247,7 +262,7 @@ export default function DetailArmadaPage() {
             // TODO: Implement detail activity navigation
           }}
         >
-          Detail
+          {t("DetailFleetPage.buttonDetail", "Detail")}
         </Button>
       ),
     },
@@ -256,19 +271,19 @@ export default function DetailArmadaPage() {
   // Period configuration with startDate and endDate
   const periodOptions = [
     {
-      name: "Semua Periode (Default)",
+      name: t("periods.all", "Semua Periode (Default)"),
       value: "",
       format: "day",
     },
     {
-      name: "Hari Ini",
+      name: t("periods.today", "Hari Ini"),
       value: 0,
       format: "day",
       startDate: new Date().toISOString().split("T")[0], // YYYY-MM-DD
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "1 Minggu Terakhir",
+      name: t("periods.last7Days", "1 Minggu Terakhir"),
       value: 7,
       format: "day",
       startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -277,7 +292,7 @@ export default function DetailArmadaPage() {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "30 Hari Terakhir",
+      name: t("periods.last30Days", "30 Hari Terakhir"),
       value: 30,
       format: "month",
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -286,7 +301,7 @@ export default function DetailArmadaPage() {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "90 Hari Terakhir",
+      name: t("periods.last90Days", "90 Hari Terakhir"),
       value: 90,
       format: "month",
       startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
@@ -295,7 +310,7 @@ export default function DetailArmadaPage() {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "1 Tahun Terakhir",
+      name: t("periods.lastYear", "1 Tahun Terakhir"),
       value: 365,
       format: "year",
       startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
@@ -383,43 +398,43 @@ export default function DetailArmadaPage() {
     if (status === "LOADING") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-      displayStatus = "Sedang Muat";
+      displayStatus = t("status.loading", "Sedang Muat");
     } else if (status === "COMPLETED") {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
-      displayStatus = "Selesai";
+      displayStatus = t("status.completed", "Selesai");
     } else if (status === "PENDING") {
       bgColor = "bg-yellow-100";
       textColor = "text-yellow-900";
-      displayStatus = "Menunggu";
+      displayStatus = t("status.pending", "Menunggu");
     } else if (status === "CANCELLED") {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
-      displayStatus = "Dibatalkan";
+      displayStatus = t("status.cancelled", "Dibatalkan");
     } else if (status === "ON_DUTY") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-      displayStatus = "Bertugas";
+      displayStatus = t("status.onDuty", "Bertugas");
     } else if (status === "READY_FOR_ORDER") {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
-      displayStatus = "Siap Menerima Order";
+      displayStatus = t("status.readyForOrder", "Siap Menerima Order");
     } else if (status === "NOT_PAIRED") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-600";
-      displayStatus = "Belum Dipasangkan";
+      displayStatus = t("status.notPaired", "Belum Dipasangkan");
     } else if (status === "INACTIVE") {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
-      displayStatus = "Nonaktif";
+      displayStatus = t("status.inactive", "Nonaktif");
     } else if (status === "WAITING_PAYMENT_1") {
       bgColor = "bg-orange-100";
       textColor = "text-orange-900";
-      displayStatus = "Menunggu Pembayaran";
+      displayStatus = t("status.waitingPayment", "Menunggu Pembayaran");
     } else if (status === null || status === "") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-500";
-      displayStatus = "Tidak Ada Status";
+      displayStatus = t("status.noStatus", "Tidak Ada Status");
     }
 
     return (
@@ -451,10 +466,10 @@ export default function DetailArmadaPage() {
         {/* Title and Download Button in one row */}
         <div className="flex items-center justify-between">
           <PageTitle className={`mt-3`} onClick={handleBack}>
-            Detail Aktivitas
+            {t("DetailFleetPage.titleActivityDetails", "Detail Aktivitas")}
           </PageTitle>
           <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
-            Unduh
+            {t("DetailFleetPage.buttonDownload", "Unduh")}
           </Button>
         </div>
       </div>
@@ -469,7 +484,7 @@ export default function DetailArmadaPage() {
               <div className="flex-shrink-0">
                 <LightboxProvider
                   image={armadaData.image}
-                  title="Gambar Armada"
+                  title={t("DetailFleetPage.fleetImageTitle", "Gambar Armada")}
                 >
                   <LightboxPreview
                     image={armadaData.image}
@@ -524,7 +539,10 @@ export default function DetailArmadaPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Search
-                placeholder="Cari Kode Pesanan, Rute atau lainnya"
+                placeholder={t(
+                  "DetailFleetPage.searchPlaceholder",
+                  "Cari Kode Pesanan, Rute atau lainnya"
+                )}
                 onSearch={handleSearch}
                 containerClassName="w-80"
               />
@@ -536,7 +554,13 @@ export default function DetailArmadaPage() {
               />
             </div>
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {activitiesData.length} Aktivitas
+              {t(
+                "DetailFleetPage.totalActivities",
+                `Total : ${activitiesData.length} Aktivitas`,
+                {
+                  count: activitiesData.length,
+                }
+              )}
             </div>
           </div>
         </CardContent>
@@ -555,8 +579,14 @@ export default function DetailArmadaPage() {
                 <div className="px-6 py-8">
                   <DataNotFound
                     type="search"
-                    title="Data tidak ditemukan"
-                    description="Coba ubah kata kunci pencarian atau filter periode"
+                    title={t(
+                      "DetailFleetPage.dataNotFound",
+                      "Data tidak ditemukan"
+                    )}
+                    description={t(
+                      "DetailFleetPage.dataNotFoundDesc",
+                      "Coba ubah kata kunci pencarian atau filter periode"
+                    )}
                     className="gap-y-3"
                   />
                 </div>
@@ -566,12 +596,18 @@ export default function DetailArmadaPage() {
             <div className="flex h-64 flex-col items-center justify-center px-6 py-12">
               <DataNotFound
                 type="data"
-                title="Belum ada Aktivitas Armada"
+                title={t(
+                  "DetailFleetPage.emptyFleetActivities",
+                  "Belum ada Aktivitas Armada"
+                )}
                 className="gap-y-3"
               />
               <div className="mt-2 text-center">
                 <p className="text-sm font-medium text-neutral-500">
-                  Pastikan Armada aktif dan siap menerima pesanan.
+                  {t(
+                    "DetailFleetPage.emptyFleetActivitiesDesc",
+                    "Pastikan Armada aktif dan siap menerima pesanan."
+                  )}
                 </p>
               </div>
             </div>
@@ -581,6 +617,22 @@ export default function DetailArmadaPage() {
               data={activitiesData}
               onSort={handleSort}
               sortConfig={sortConfig}
+              emptyComponent={
+                <div className="px-6 py-8">
+                  <DataNotFound
+                    type="search"
+                    title={t(
+                      "DetailFleetPage.dataNotFound",
+                      "Data tidak ditemukan"
+                    )}
+                    description={t(
+                      "DetailFleetPage.dataNotFoundDesc",
+                      "Coba ubah kata kunci pencarian atau filter periode"
+                    )}
+                    className="gap-y-3"
+                  />
+                </div>
+              }
             />
           )}
         </CardContent>
