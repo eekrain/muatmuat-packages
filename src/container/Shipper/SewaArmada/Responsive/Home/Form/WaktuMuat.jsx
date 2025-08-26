@@ -271,7 +271,7 @@ const WaktuMuatBottomsheet = ({
           <span className="text-sm font-semibold leading-[15.4px]">
             {loadTimeStart ? (
               <span className="text-neutral-900">
-                {formatDate(loadTimeStart)}
+                {formatDate(loadTimeStart, { padDay: true })}
               </span>
             ) : (
               <span className="text-neutral-600">
@@ -306,7 +306,7 @@ const WaktuMuatBottomsheet = ({
               <span className="text-sm font-semibold leading-[15.4px]">
                 {loadTimeEnd ? (
                   <span className="text-neutral-900">
-                    {formatDate(loadTimeEnd)}
+                    {formatDate(loadTimeEnd, { padDay: true })}
                   </span>
                 ) : (
                   <span className="text-neutral-600">

@@ -366,11 +366,13 @@ const PesananTable = ({
                           {/* Tanggal Muat */}
                           <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <span className="text-xs font-medium text-neutral-900">
-                              {`${formatDate(order.loadTimeStart)}${order.loadTimeEnd ? " s/d" : ""}`}
+                              {`${formatDate(order.loadTimeStart, { padDay: true })}${order.loadTimeEnd ? " s/d" : ""}`}
                               {order.loadTimeEnd ? (
                                 <>
                                   <br />
-                                  {formatDate(order.loadTimeEnd)}
+                                  {formatDate(order.loadTimeEnd, {
+                                    padDay: true,
+                                  })}
                                 </>
                               ) : null}
                             </span>
@@ -658,7 +660,7 @@ const PesananTable = ({
                                       ? t("messageLakukanPembayaranSebelum")
                                       : t("messageLakukanPelunasanSebelum")}
                                     <span className="font-bold">
-                                      {` ${formatDate(order.paymentDeadline)}`}
+                                      {` ${formatDate(order.paymentDeadline, { padDay: true })}`}
                                     </span>
                                   </span>
                                 </div>
