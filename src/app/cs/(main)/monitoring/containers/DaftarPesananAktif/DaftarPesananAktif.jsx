@@ -18,6 +18,10 @@ import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import {
+  transformContactsForHubungiModal,
+  useGetOrderContacts,
+} from "@/services/CS/active-orders/getOrderContacts";
 import { useGetActiveOrdersByOrdersWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByOrders";
 import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByTransporter";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
@@ -132,8 +136,14 @@ const DaftarPesananAktif = ({
     transporterContacts: [],
     driverContacts: [],
   });
+  const [selectedOrderForContacts, setSelectedOrderForContacts] =
+    useState(null);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  // Fetch contacts data when orderId is selected
+  const { data: contactsData, isLoading: isContactsLoading } =
+    useGetOrderContacts(selectedOrderForContacts?.orderId);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
@@ -433,24 +443,21 @@ const DaftarPesananAktif = ({
     }
   }, []);
 
-  // Open HubungiModal helper — caller should supply data arrays and whether to show initial choice
-  const openHubungiModal = ({
-    showInitialChoice = false,
-    contacts = [],
-    transporterContacts = [],
-    driverContacts = [],
-  } = {}) => {
-    setHubungiModalProps({
-      showInitialChoice,
-      contacts,
-      transporterContacts,
-      driverContacts,
-    });
+  // Open HubungiModal helper — caller should supply order data for contact fetching
+  const openHubungiModal = (orderData) => {
+    if (!orderData || !orderData.orderId) {
+      console.error("Order data or orderId is required for contact fetching");
+      return;
+    }
+
+    // Set the selected order to trigger API call
+    setSelectedOrderForContacts(orderData);
     setHubungiModalOpen(true);
   };
 
   const closeHubungiModal = () => {
     setHubungiModalOpen(false);
+    setSelectedOrderForContacts(null);
     setHubungiModalProps({
       showInitialChoice: false,
       contacts: [],
@@ -458,6 +465,22 @@ const DaftarPesananAktif = ({
       driverContacts: [],
     });
   };
+
+  // Update modal props when contacts data is loaded
+  useEffect(() => {
+    if (contactsData && hubungiModalOpen) {
+      const transformedContacts =
+        transformContactsForHubungiModal(contactsData);
+      if (transformedContacts) {
+        setHubungiModalProps({
+          showInitialChoice: false,
+          contacts: transformedContacts,
+          transporterContacts: [],
+          driverContacts: [],
+        });
+      }
+    }
+  }, [contactsData, hubungiModalOpen]);
 
   return (
     <div className="flex h-full flex-col">
@@ -667,7 +690,7 @@ const DaftarPesananAktif = ({
                             }
                             onActionClick={handleActionClick}
                             onViewFleetStatus={onViewFleetStatus}
-                            onHubungi={(props) => openHubungiModal(props)}
+                            onHubungi={() => openHubungiModal(order)}
                           />
                         ))
                       : ordersByTransporters.map((order) => (
@@ -683,7 +706,9 @@ const DaftarPesananAktif = ({
                             }
                             onActionClick={handleActionClick}
                             onViewFleetStatus={onViewFleetStatus}
-                            onHubungi={(props) => openHubungiModal(props)}
+                            onHubungi={(orderData) =>
+                              openHubungiModal(orderData)
+                            }
                           />
                         ))}
                   </div>
@@ -819,7 +844,10 @@ const DaftarPesananAktif = ({
         changeDetails={mockChangeDetails}
         isLoading={false}
         onHubungi={() => {
-          // TODO: Implement contact functionality
+          // Pass the selected order data for contact fetching
+          if (selectedOrder) {
+            openHubungiModal(selectedOrder);
+          }
         }}
       />
 
@@ -828,7 +856,7 @@ const DaftarPesananAktif = ({
         isOpen={hubungiModalOpen}
         onClose={closeHubungiModal}
         showInitialChoice={hubungiModalProps.showInitialChoice}
-        contacts={hubungiModalProps.contacts}
+        contacts={isContactsLoading ? [] : hubungiModalProps.contacts}
         transporterContacts={hubungiModalProps.transporterContacts}
         driverContacts={hubungiModalProps.driverContacts}
       />

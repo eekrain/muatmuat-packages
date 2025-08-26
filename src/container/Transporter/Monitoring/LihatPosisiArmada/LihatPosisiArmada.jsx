@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import { useGetOrdersMultiFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getOrdersMultiFleetTracking";
 import { getTrackingStatusBadgeWithTranslation } from "@/utils/Transporter/trackingStatus";
 
+import FleetChange from "./FleetChange";
+
 const LihatPosisiArmada = ({ onClose, orderId }) => {
   const { t } = useTranslation();
   const [expandedVehicles, setExpandedVehicles] = useState({});
@@ -248,6 +250,8 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                 )}
               </div>
             ))}
+
+            <FleetChange />
           </div>
         )}
       </div>

@@ -9,7 +9,7 @@ export const mockAPIResult = {
   data: {
     Message: {
       Code: 200,
-      Text: "OK",
+      Text: "Order list retrieved successfully",
     },
     Data: {
       isFirstTimer: false,
@@ -17,12 +17,13 @@ export const mockAPIResult = {
         {
           id: "c7415f7f-48f6-4de2-8950-0035e2c61b4d",
           orderCode: "MT25AA453",
+          orderType: "INSTANT",
           loadTimeStart: "2025-08-09T08:40:00.000Z",
           loadTimeEnd: "2025-08-09T10:40:00.000Z",
           carrierName: "Box",
           truckTypeName: "Medium Truk 4 x 2 (Rigid)",
           orderStatus: "WAITING_PAYMENT_2",
-          totalPrice: "455785.00",
+          totalPrice: 455785.0,
           pickupLocation:
             "Graha Airi, Jalan Kedung Doro, RT.001/RW.06, Kedungdoro, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -38,12 +39,13 @@ export const mockAPIResult = {
         {
           id: "366807f6-cbe8-4754-9c7a-0ff97e924c66",
           orderCode: "MT25AA448",
+          orderType: "SCHEDULED",
           loadTimeStart: "2025-08-09T13:12:00.000Z",
           loadTimeEnd: "2025-08-09T17:12:00.000Z",
           carrierName: "Bak Terbuka",
           truckTypeName: "Medium Truk 4 x 2 (Rigid)",
           orderStatus: "WAITING_PAYMENT_2",
-          totalPrice: "433868.00",
+          totalPrice: 433868.0,
           pickupLocation:
             "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -59,12 +61,13 @@ export const mockAPIResult = {
         {
           id: "66e50c08-7612-4b5f-8b29-5a7d67946cdc",
           orderCode: "MT25AA435",
+          orderType: "INSTANT",
           loadTimeStart: "2025-08-07T10:14:00.000Z",
           loadTimeEnd: null,
           carrierName: "Bak Terbuka",
           truckTypeName: "Medium Truk 4 x 2 (Rigid)",
           orderStatus: "PREPARE_FLEET",
-          totalPrice: "226868.00",
+          totalPrice: 226868.0,
           pickupLocation:
             "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -80,12 +83,13 @@ export const mockAPIResult = {
         {
           id: "db2ebc46-2f72-4349-83cd-498cfb4270a7",
           orderCode: "MT25AA289",
+          orderType: "SCHEDULED",
           loadTimeStart: "2025-08-02T11:41:00.000Z",
           loadTimeEnd: null,
           carrierName: "Bak Terbuka",
           truckTypeName: "Medium Truk 4 x 2 (Rigid)",
           orderStatus: "PREPARE_FLEET",
-          totalPrice: "437888.00",
+          totalPrice: 437888.0,
           pickupLocation:
             "Pakuwon City Mall 3 and Bella Apartment, Jl. Mutiara I No, RT.000/RW.00, Kejawaan Putih Tamba, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -101,12 +105,13 @@ export const mockAPIResult = {
         {
           id: "be47fbfb-b9db-42fb-9126-4ea4d20f92bf",
           orderCode: "MT25AA191",
+          orderType: "INSTANT",
           loadTimeStart: "2025-07-30T13:23:00.000Z",
           loadTimeEnd: null,
           carrierName: "Box 40ft",
           truckTypeName: "Tractor Head 4 x 2",
           orderStatus: "WAITING_PAYMENT_2",
-          totalPrice: "806406.00",
+          totalPrice: 806406.0,
           pickupLocation:
             "Pakuwon City Mall 3 and Bella Apartment, Jl. Mutiara I No, RT.000/RW.00, Kejawaan Putih Tamba, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -122,12 +127,13 @@ export const mockAPIResult = {
         {
           id: "28c4c896-5435-41d8-a0a2-1e6cd7c02058",
           orderCode: "MT25AA146",
+          orderType: "SCHEDULED",
           loadTimeStart: "2025-07-27T09:31:00.000Z",
           loadTimeEnd: null,
           carrierName: "Dropside 30ft(2AS)",
           truckTypeName: "Tractor Head 6 x 4",
           orderStatus: "WAITING_PAYMENT_2",
-          totalPrice: "1460785.00",
+          totalPrice: 1460785.0,
           pickupLocation:
             "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -143,12 +149,13 @@ export const mockAPIResult = {
         {
           id: "0a22e45e-25b7-459d-b826-7c618d47250e",
           orderCode: "MT25AA104",
+          orderType: "INSTANT",
           loadTimeStart: "2025-07-23T19:21:00.000Z",
           loadTimeEnd: "2025-07-23T21:22:00.000Z",
           carrierName: "Box",
           truckTypeName: "Colt Diesel Double",
           orderStatus: "PREPARE_FLEET",
-          totalPrice: "510353.00",
+          totalPrice: 510353.0,
           pickupLocation:
             "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -164,12 +171,13 @@ export const mockAPIResult = {
         {
           id: "c649ee80-8941-41ef-a753-777c329972bc",
           orderCode: "MT25AA088",
+          orderType: "SCHEDULED",
           loadTimeStart: "2025-07-22T16:31:00.000Z",
           loadTimeEnd: "2025-07-22T18:34:00.000Z",
           carrierName: "Box 40ft",
           truckTypeName: "Tractor Head 4 x 2",
           orderStatus: "PREPARE_FLEET",
-          totalPrice: "807708.00",
+          totalPrice: 807708.0,
           pickupLocation:
             "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -185,12 +193,13 @@ export const mockAPIResult = {
         {
           id: "1c2a62bc-d4ba-46d6-91ff-ecb9c3eab2b3",
           orderCode: "MT25AA085",
+          orderType: "INSTANT",
           loadTimeStart: "2025-07-23T13:35:00.000Z",
           loadTimeEnd: "2025-07-23T16:43:00.000Z",
           carrierName: "Bak Terbuka",
           truckTypeName: "Medium Truk 4 x 2 (Rigid)",
           orderStatus: "WAITING_PAYMENT_2",
-          totalPrice: "1114472.00",
+          totalPrice: 1114472.0,
           pickupLocation:
             "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:
@@ -206,12 +215,13 @@ export const mockAPIResult = {
         {
           id: "661e5850-d7fa-482a-ab9e-b76c15e66998",
           orderCode: "MT25AA032",
+          orderType: "SCHEDULED",
           loadTimeStart: "2025-07-20T14:17:00.000Z",
           loadTimeEnd: "2025-07-20T18:17:00.000Z",
           carrierName: "Bak Terbuka",
           truckTypeName: "Medium Truk 4 x 2 (Rigid)",
           orderStatus: "WAITING_PAYMENT_2",
-          totalPrice: "447258.00",
+          totalPrice: 447258.0,
           pickupLocation:
             "DKV ISTTS, Jalan Ngagel Jaya Tengah, Baratajaya, Surabaya, Jawa Timur, Indonesia",
           dropoffLocation:

@@ -2459,7 +2459,7 @@
   "DriverAktif.confirmYes": "是",
   "DriverAktif.confirmNo": "否",
   "CardLacakArmada.fleetCancelError": "准备取消请求失败",
-  "AlertPerubahanLokasi.changeMessage": "有 {changeCount} 个订单的装货地点和装货时间发生了变化。",
+  "AlertPerubahanLokasi.changeMessage": "有 {count} 个订单的装货地点和装货时间发生了变化。",
   "AlertPerubahanLokasi.viewOrders": "查看订单",
   "AlertPerubahanLokasi.backToDefault": "返回默认",
   "RespondChangeModal.routeChanged": "路线已更改",
@@ -2758,5 +2758,12 @@
   "ModalTolakPermintaan.buttonReject": "拒绝",
   "ModalTolakPermintaan.titleNotification": "通知",
   "ModalTolakPermintaan.buttonContactCS": "联系客服",
-  "ModalTolakPermintaan.buttonOK": "好的"
+  "ModalTolakPermintaan.buttonOK": "好的",
+  "FleetSelector.placeholder": "选择车队",
+  "FleetSelector.searchPlaceholder": "搜索车牌号 / 司机",
+  "FleetSelector.noFleetAvailable": "暂无可用的替代车队。",
+  "FleetSelector.addSuitableFleet": "添加合适的车队以显示替代车队选项。",
+  "FleetSelector.dataNotFound": "未找到数据",
+  "FleetSelector.recommendation": "推荐",
+  "FleetSelector.potentialOverload": "潜在超载"
 }

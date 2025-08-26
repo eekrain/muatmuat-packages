@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Search from "@/components/Search/Search";
 import { Select } from "@/components/Select";
+import { useTranslation } from "@/hooks/use-translation";
 
 const FleetSelector = ({
   value,
@@ -14,6 +15,7 @@ const FleetSelector = ({
   fleetOptions = [],
   className = "",
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Filter fleet options based on search term
@@ -42,18 +44,23 @@ const FleetSelector = ({
       >
         <Select.Trigger
           placeholder={placeholder}
-          className={`h-10 w-full text-sm ${className}`}
+          className={`h-8 w-full text-xs ${className}`}
           isError={isError}
         >
           <Select.Value>
-            {getSelectedFleetDisplay() || placeholder}
+            {getSelectedFleetDisplay() ||
+              t("FleetSelector.placeholder", {}, "Pilih Armada")}
           </Select.Value>
         </Select.Trigger>
         <Select.Content maxHeight="330px" className="overflow-hidden">
           {/* Search Component */}
           <div className="sticky top-0 z-10 bg-white p-3">
             <Search
-              placeholder="Cari No. Polisi / Driver"
+              placeholder={t(
+                "FleetSelector.searchPlaceholder",
+                {},
+                "Cari No. Polisi / Driver"
+              )}
               onSearch={setSearchTerm}
               autoSearch={true}
               containerClassName="w-full"
@@ -66,13 +73,22 @@ const FleetSelector = ({
             {/* Case: No data from the backend */}
             {fleetOptions.length === 0 ? (
               <div className="font-meduim py-5 text-center text-xs text-neutral-900">
-                Belum ada armada pengganti yang tersedia. <br /> Tambahkan
-                armada yang sesuai untuk dapat menampilkan armada pengganti.
+                {t(
+                  "FleetSelector.noFleetAvailable",
+                  {},
+                  "Belum ada armada pengganti yang tersedia."
+                )}{" "}
+                <br />{" "}
+                {t(
+                  "FleetSelector.addSuitableFleet",
+                  {},
+                  "Tambahkan armada yang sesuai untuk dapat menampilkan armada pengganti."
+                )}
               </div>
             ) : // Case: No matching results after filtering
             filteredFleetOptions.length === 0 ? (
               <div className="p-4 text-center text-xs text-neutral-900">
-                Data Tidak Ditemukan
+                {t("FleetSelector.dataNotFound", {}, "Data Tidak Ditemukan")}
               </div>
             ) : (
               // Case: Display filtered results
@@ -91,7 +107,7 @@ const FleetSelector = ({
                     </div>
                     {fleet.isRecommended && (
                       <div className="text-xs font-bold text-success-400">
-                        Rekomendasi{" "}
+                        {t("FleetSelector.recommendation", {}, "Rekomendasi")}{" "}
                         <span className="font-semibold">
                           ({fleet.recommendationText})
                         </span>
@@ -99,7 +115,11 @@ const FleetSelector = ({
                     )}
                     {fleet.hasOverload && (
                       <span className="text-xxs font-semibold text-error-400">
-                        Potensi Overload
+                        {t(
+                          "FleetSelector.potentialOverload",
+                          {},
+                          "Potensi Overload"
+                        )}
                       </span>
                     )}
                   </div>

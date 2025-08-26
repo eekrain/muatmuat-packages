@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 export const mockAPIResult = {
   data: {
@@ -36,5 +36,8 @@ export const getOrdersCountByStatus = async (url) => {
   };
 };
 
-export const useGetOrdersCountByStatus = () =>
-  useSWR("v1/transporter/orders/count-by-status", getOrdersCountByStatus);
+export const useGetOrdersCountByStatus = (userId) =>
+  useSWR(
+    userId ? `v1/transporter/orders/count-by-status?userId=${userId}` : null,
+    getOrdersCountByStatus
+  );

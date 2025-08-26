@@ -6,7 +6,6 @@ import DaftarPesanan from "@/container/Transporter/DaftarPesanan/DaftarPesanan";
 import useDevice from "@/hooks/use-device";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
-import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
 import { useGetOrderList } from "@/services/Transporter/daftar-pesanan/getOrderList";
 import { useGetOrdersCountByStatus } from "@/services/Transporter/daftar-pesanan/getOrdersCountByStatus";
 import {
@@ -46,6 +45,10 @@ const DaftarPesananPage = () => {
     if (queryParams.status && queryParams.status !== "") {
       params.append("status", queryParams.status);
     }
+    // Add period parameter based on current period value
+    if (currentPeriodValue !== null && currentPeriodValue !== undefined) {
+      params.append("period", currentPeriodValue);
+    }
     // Handle dates - both can be provided individually
     if (queryParams.startDate) {
       params.append("startDate", queryParams.startDate);
@@ -53,7 +56,7 @@ const DaftarPesananPage = () => {
     if (queryParams.endDate) {
       params.append("endDate", queryParams.endDate);
     }
-    if (queryParams.search) {
+    if (queryParams.search && queryParams.search.trim() !== "") {
       params.append("search", queryParams.search);
     }
     if (queryParams.sort) {
@@ -63,57 +66,54 @@ const DaftarPesananPage = () => {
       params.append("order", queryParams.order);
     }
     return params.toString();
-  }, [queryParams]);
+  }, [queryParams, currentPeriodValue]);
 
   const {
     data: { isFirstTimer = true, orders = [], pagination = {} } = {},
     isLoading,
   } = useGetOrderList(queryString);
-  const { data: { statusCounts = {} } = {} } = useGetOrdersCountByStatus();
+  // TODO: Replace with actual userId from auth context/store
+  const userId = "user-id-placeholder"; // This should come from authentication context
+  const { data: { statusCounts = {} } = {} } =
+    useGetOrdersCountByStatus(userId);
 
-  const recentSelections = useShallowMemo(() => {
-    return [
-      {
-        start_date: "2025-08-01",
-        end_date: "2025-08-31",
-        searched_at: "2025-01-20T10:00:00Z",
-      },
-      {
-        start_date: "2025-06-02",
-        end_date: "2025-08-03",
-        searched_at: "2025-01-20T10:00:00Z",
-      },
-      {
-        start_date: "2025-06-04",
-        end_date: "2025-08-12",
-        searched_at: "2025-01-20T10:00:00Z",
-      },
-    ].map((item) => ({
-      name: `${formatDateToDDMonYYYY(item.start_date)} - ${formatDateToDDMonYYYY(item.end_date)}`,
-      value: `${formatDateToDDMonYYYY(item.start_date)} - ${formatDateToDDMonYYYY(item.end_date)}`,
-      start_date: formatDateToDDMonYYYY(item.start_date),
-      end_date: formatDateToDDMonYYYY(item.end_date),
-    }));
-  }, []);
+  const recentSelections = [
+    {
+      label: t("AppMuatpartsAnalisaProdukHariIni"),
+      value: 0,
+    },
+    {
+      label: t("AppMuatpartsAnalisaProduk1MingguTerakhir"),
+      value: 7,
+    },
+    {
+      label: t("AppMuatpartsAnalisaProduk30HariTerakhir"),
+      value: 30,
+    },
+    {
+      label: t("AppMuatpartsAnalisaProduk90HariTerakhir"),
+      value: 90,
+    },
+  ];
 
   // Tab options sesuai design
   const tabOptions = useShallowMemo(() => {
     return [
       { label: "Semua", value: "", count: statusCounts?.all },
       {
-        label: `Perlu Respon Perubahan${statusCounts?.needsChangeResponse > 0 ? ` (${statusCounts?.needsChangeResponse})` : ""}`,
+        label: `Perlu Respon Perubahan${statusCounts?.NEED_RESPONSE_CHANGE > 0 ? ` (${statusCounts?.NEED_RESPONSE_CHANGE})` : ""}`,
         value: ORDER_STATUS.NEED_CHANGE_RESPONSE,
-        count: statusCounts?.needsChangeResponse,
+        count: statusCounts?.NEED_RESPONSE_CHANGE,
       },
       {
-        label: `Perlu Konfirmasi Siap${statusCounts?.needsReadyConfirmation > 0 ? ` (${statusCounts?.needsReadyConfirmation})` : ""}`,
+        label: `Perlu Konfirmasi Siap${statusCounts?.NEED_CONFIRMATION_READY > 0 ? ` (${statusCounts?.NEED_CONFIRMATION_READY})` : ""}`,
         value: ORDER_STATUS.NEED_CONFIRMATION_READY,
-        count: statusCounts?.needsReadyConfirmation,
+        count: statusCounts?.NEED_CONFIRMATION_READY,
       },
       {
-        label: `Perlu Assign Armada${statusCounts?.needsFleetAssignment > 0 ? ` (${statusCounts?.needsFleetAssignment})` : ""}`,
+        label: `Perlu Assign Armada${statusCounts?.NEED_ASSIGN_FLEET > 0 ? ` (${statusCounts?.NEED_ASSIGN_FLEET})` : ""}`,
         value: ORDER_STATUS.NEED_ASSIGN_FLEET,
-        count: statusCounts?.needsFleetAssignment,
+        count: statusCounts?.NEED_ASSIGN_FLEET,
       },
     ];
   }, [statusCounts]);
