@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
@@ -8,7 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Select } from "@/components/Select";
 import { useTranslation } from "@/hooks/use-translation";
 import { ChangeFleetTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
-import { useGetAlternativeFleet } from "@/services/Transporter/agenda-armada-driver/getAlternativeFleet";
+import { useGetAlternativeFleetOptions } from "@/services/Transporter/agenda-armada-driver/getAlternativeFleetOptions";
 
 import CardDetail from "./CardDetail";
 import { getDynamicDates } from "./getDynamicDates";
@@ -23,6 +23,8 @@ const statusStyles = {
 
 const ChangeFleet = ({
   cardData,
+  conflictsData,
+  isLoadingConflicts = false,
   conflictingSchedules = [
     {
       // First schedule: starts at day 1, ends at day 3 (middle)
@@ -56,8 +58,78 @@ const ChangeFleet = ({
     },
   ],
 }) => {
-  const conflictId = "f1e2d3c4-b5a6-7890-1234-56789abcdef0"; // Use a valid mock id
-  const { data: alternativeFleetData } = useGetAlternativeFleet(conflictId);
+  const { t } = useTranslation();
+  const { dateRange } = useDateNavigator();
+  const [showCompatibleOnly, setShowCompatibleOnly] = useState(false);
+  const [selectedFleet, setSelectedFleet] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  const [dateOffset, setDateOffset] = useState(0);
+
+  // Use conflicts data from API if available, otherwise use default conflictingSchedules
+  const actualConflictingSchedules = useMemo(() => {
+    if (conflictsData?.conflicts?.length > 0) {
+      // Extract both primary and conflicting schedules from the conflict data
+      const schedules = [];
+      conflictsData.conflicts.forEach((conflict) => {
+        // Add primary schedule
+        if (conflict.primarySchedule) {
+          schedules.push({
+            id: `${conflict.id}-primary`,
+            fleetID:
+              conflict.primarySchedule.fleetID ||
+              conflict.primarySchedule.fleetLicensePlate,
+            agendaStatus: conflict.primarySchedule.agendaStatus || "BERTUGAS",
+            firstDestinationName:
+              conflict.primarySchedule.loadingName || "Unknown",
+            lastDestinationName:
+              conflict.primarySchedule.unloadingName || "Unknown",
+            scheduled: 2, // Default values for display
+            additional: 1,
+            position: 0,
+            estimatedTotalDistanceKm:
+              conflict.primarySchedule.estimatedDistanceKm || 0,
+            hasSosIssue: false,
+            driverName: conflict.primarySchedule.driverName || "Unknown Driver",
+            licensePlate:
+              conflict.primarySchedule.fleetLicensePlate || "Unknown",
+          });
+        }
+        // Add conflicting schedule
+        if (conflict.conflictingSchedule) {
+          schedules.push({
+            id: `${conflict.id}-conflicting`,
+            fleetID:
+              conflict.conflictingSchedule.fleetID ||
+              conflict.conflictingSchedule.fleetLicensePlate,
+            agendaStatus:
+              conflict.conflictingSchedule.agendaStatus || "BERTUGAS",
+            firstDestinationName:
+              conflict.conflictingSchedule.loadingName || "Unknown",
+            lastDestinationName:
+              conflict.conflictingSchedule.unloadingName || "Unknown",
+            scheduled: 2, // Default values for display
+            additional: 1,
+            position: 2, // Position it in the middle to show conflict
+            estimatedTotalDistanceKm:
+              conflict.conflictingSchedule.estimatedDistanceKm || 0,
+            hasSosIssue: false,
+            driverName:
+              conflict.conflictingSchedule.driverName || "Unknown Driver",
+            licensePlate:
+              conflict.conflictingSchedule.fleetLicensePlate || "Unknown",
+          });
+        }
+      });
+      return schedules;
+    }
+    return conflictingSchedules;
+  }, [conflictsData, conflictingSchedules]);
+
+  const conflictId = conflictsData?.conflicts?.[0]?.id || "conflict-456"; // Use first conflict ID from API
+  const { data: alternativeFleetData } = useGetAlternativeFleetOptions(
+    conflictId,
+    searchValue
+  );
   const availableFleets = (alternativeFleetData?.alternatives || []).map(
     (item) => {
       let statusKey = "TERSEDIA";
@@ -87,27 +159,17 @@ const ChangeFleet = ({
       };
     }
   );
-  const { t } = useTranslation();
-  const { dateRange } = useDateNavigator();
-  const [showCompatibleOnly, setShowCompatibleOnly] = useState(false);
-
-  // Mock fleet data - replace with actual data from API
-
-  const [selectedFleet, setSelectedFleet] = useState("");
 
   // Set default selectedFleet when availableFleets is loaded
   useEffect(() => {
     if (!selectedFleet && availableFleets.length > 0) {
       // Try to match the fleetID from the first conflicting schedule
-      const defaultFleetId = conflictingSchedules[0]?.fleetID;
+      const defaultFleetId = actualConflictingSchedules[0]?.fleetID;
       const found = availableFleets.find((f) => f.id === defaultFleetId);
       setSelectedFleet(found ? found.id : availableFleets[0].id);
     }
-  }, [availableFleets, selectedFleet]);
+  }, [availableFleets, selectedFleet, actualConflictingSchedules]);
 
-  const [searchValue, setSearchValue] = useState("");
-
-  const [dateOffset, setDateOffset] = useState(0);
   const scheduleContainerWidth = 860;
   const scheduledDays = cardData?.scheduled || 1;
   const days = cardData?.additional || 0;
@@ -349,14 +411,20 @@ const ChangeFleet = ({
           <CardDetail
             key={`conflict-card-1`}
             cellWidth={cellWidth}
-            statusCode={conflictingSchedules[0].agendaStatus}
-            firstDestinationName={conflictingSchedules[0].firstDestinationName}
-            lastDestinationName={conflictingSchedules[0].lastDestinationName}
-            scheduled={conflictingSchedules[0].scheduled}
-            additional={conflictingSchedules[0].additional}
-            position={conflictingSchedules[0].position}
-            distanceRemaining={conflictingSchedules[0].estimatedTotalDistanceKm}
-            hasSosIssue={conflictingSchedules[0].hasSosIssue}
+            statusCode={actualConflictingSchedules[0]?.agendaStatus}
+            firstDestinationName={
+              actualConflictingSchedules[0]?.firstDestinationName
+            }
+            lastDestinationName={
+              actualConflictingSchedules[0]?.lastDestinationName
+            }
+            scheduled={actualConflictingSchedules[0]?.scheduled}
+            additional={actualConflictingSchedules[0]?.additional}
+            position={actualConflictingSchedules[0]?.position}
+            distanceRemaining={
+              actualConflictingSchedules[0]?.estimatedTotalDistanceKm
+            }
+            hasSosIssue={actualConflictingSchedules[0]?.hasSosIssue}
           />
         </div>
         <div className="relative grid h-[68px] grid-cols-5 overflow-visible border-r">
@@ -372,14 +440,20 @@ const ChangeFleet = ({
           <CardDetail
             key={`conflict-card-2`}
             cellWidth={cellWidth}
-            statusCode={conflictingSchedules[1].agendaStatus}
-            firstDestinationName={conflictingSchedules[1].firstDestinationName}
-            lastDestinationName={conflictingSchedules[1].lastDestinationName}
-            scheduled={conflictingSchedules[1].scheduled}
-            additional={conflictingSchedules[1].additional}
-            position={conflictingSchedules[1].position}
-            distanceRemaining={conflictingSchedules[1].estimatedTotalDistanceKm}
-            hasSosIssue={conflictingSchedules[1].hasSosIssue}
+            statusCode={actualConflictingSchedules[1]?.agendaStatus}
+            firstDestinationName={
+              actualConflictingSchedules[1]?.firstDestinationName
+            }
+            lastDestinationName={
+              actualConflictingSchedules[1]?.lastDestinationName
+            }
+            scheduled={actualConflictingSchedules[1]?.scheduled}
+            additional={actualConflictingSchedules[1]?.additional}
+            position={actualConflictingSchedules[1]?.position}
+            distanceRemaining={
+              actualConflictingSchedules[1]?.estimatedTotalDistanceKm
+            }
+            hasSosIssue={actualConflictingSchedules[1]?.hasSosIssue}
           />
         </div>
       </div>

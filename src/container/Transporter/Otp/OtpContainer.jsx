@@ -19,8 +19,8 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useCancelEmailVerification } from "@/services/auth/cancelEmailVerification";
-import { useVerifyOtp } from "@/services/auth/verifyOtp";
+import { useCancelEmailVerification } from "@/services/Transporter/auth/cancelEmailVerification";
+import { useVerifyOtp } from "@/services/Transporter/auth/verifyOtp";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useRequestOtpActions,

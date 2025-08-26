@@ -38,8 +38,22 @@ export const useDateNavigator = (options = {}) => {
   // This effect is the reactive "glue" that triggers a refetch whenever
   // the date range, search, or filters change.
   useEffect(() => {
+    console.log("🔄 useDateNavigator effect triggered:", {
+      isInitialized,
+      status,
+      search,
+      filterAgendaStatus,
+      timestamp: new Date().toLocaleTimeString(),
+    });
+
     if (isInitialized && status === "idle") {
+      console.log("✅ Calling fetchSchedules from useDateNavigator");
       fetchSchedules();
+    } else {
+      console.log("❌ Not calling fetchSchedules:", {
+        isInitialized,
+        status,
+      });
     }
   }, [
     isInitialized,

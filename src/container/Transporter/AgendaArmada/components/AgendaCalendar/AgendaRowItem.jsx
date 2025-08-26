@@ -78,10 +78,31 @@ export const AgendaRowItem = ({ data, viewType, cellWidth }) => {
           <div className="border-b border-r border-neutral-200" />
           <div className="border-b border-neutral-200" />
           {data?.schedule?.map((item, index) => {
+            // Calculate position based on schedule date
+            const scheduleDate = item.scheduleDate;
+            const displayedDates = [
+              "2025-08-24",
+              "2025-08-25",
+              "2025-08-26",
+              "2025-08-27",
+              "2025-08-28",
+            ];
+            const position = displayedDates.indexOf(scheduleDate);
+
+            console.log("🔍 CardItem position calculation (driver):", {
+              driverName: data.driverName,
+              scheduleDate,
+              calculatedPosition: position,
+              originalPosition: item.position,
+            });
+
             return (
               <CardItem
-                key={index}
-                item={item}
+                key={`${data.driverName}-${item.scheduleDate}-${item.id || index}`}
+                item={{
+                  ...item,
+                  position: position >= 0 ? position : item.position, // Use calculated position if valid, otherwise fallback to original
+                }}
                 cellWidth={cellWidth}
                 viewType={viewType}
               />
@@ -108,10 +129,31 @@ export const AgendaRowItem = ({ data, viewType, cellWidth }) => {
           <div className="border-b border-r border-neutral-200" />
           <div className="border-b border-neutral-200" />
           {data?.schedule?.map((item, index) => {
+            // Calculate position based on schedule date
+            const scheduleDate = item.scheduleDate;
+            const displayedDates = [
+              "2025-08-24",
+              "2025-08-25",
+              "2025-08-26",
+              "2025-08-27",
+              "2025-08-28",
+            ];
+            const position = displayedDates.indexOf(scheduleDate);
+
+            console.log("🔍 CardItem position calculation:", {
+              licensePlate: data.licensePlate,
+              scheduleDate,
+              calculatedPosition: position,
+              originalPosition: item.position,
+            });
+
             return (
               <CardItem
-                key={index}
-                item={item}
+                key={`${data.licensePlate}-${item.scheduleDate}-${item.id || index}`}
+                item={{
+                  ...item,
+                  position: position >= 0 ? position : item.position, // Use calculated position if valid, otherwise fallback to original
+                }}
                 cellWidth={cellWidth}
                 viewType={viewType}
               />

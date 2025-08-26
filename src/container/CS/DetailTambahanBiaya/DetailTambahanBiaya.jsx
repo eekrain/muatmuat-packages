@@ -19,10 +19,6 @@ const DetailTambahanBiaya = ({ breadcrumbData, report = {} }) => {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
-  const [isPicExpanded, setIsPicExpanded] = useState(false);
-  const [isPaymentDetailExpanded, setIsPaymentDetailExpanded] = useState(true);
-  const [isModalOverloadMuatanOpen, setIsModalOverloadMuatanOpen] =
-    useState(true);
 
   // Extract data from report prop with fallbacks
   const {
@@ -91,9 +87,7 @@ const DetailTambahanBiaya = ({ breadcrumbData, report = {} }) => {
         </TabsContent>
 
         <TabsContent value="riwayat-hubungi">
-          <div className="mt-6 text-center">
-            <RiwayatHubungiTable />
-          </div>
+          <RiwayatHubungiTable />
         </TabsContent>
       </Tabs>
     </div>

@@ -191,12 +191,19 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         page: 1,
         limit: 10,
         search: search || undefined,
-        agenda_status:
+        agendaStatus:
           filterAgendaStatus.length > 0 ? filterAgendaStatus : undefined,
-        schedule_date_from: dateRange.start.toISOString().split("T")[0],
-        schedule_date_to: dateRange.end.toISOString().split("T")[0],
-        view_type: viewType,
+        scheduleDateFrom: dateRange.start.toISOString().split("T")[0],
+        scheduleDateTo: dateRange.end.toISOString().split("T")[0],
+        viewType: viewType,
       };
+
+      console.log("📡 fetchSchedules API call:", {
+        search,
+        filterAgendaStatus,
+        params,
+        timestamp: new Date().toLocaleTimeString(),
+      });
 
       const response = await getAgendaSchedules(params);
       const { schedules, pagination, summary } = response;
@@ -263,11 +270,11 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         page: nextPage,
         limit: 10,
         search: search || undefined,
-        agenda_status:
+        agendaStatus:
           filterAgendaStatus.length > 0 ? filterAgendaStatus : undefined,
-        schedule_date_from: dateRange.start.toISOString().split("T")[0],
-        schedule_date_to: dateRange.end.toISOString().split("T")[0],
-        view_type: viewType,
+        scheduleDateFrom: dateRange.start.toISOString().split("T")[0],
+        scheduleDateTo: dateRange.end.toISOString().split("T")[0],
+        viewType: viewType,
       };
 
       const response = await getAgendaSchedules(params);

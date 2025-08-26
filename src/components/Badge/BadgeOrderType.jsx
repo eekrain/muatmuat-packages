@@ -1,6 +1,8 @@
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 const BadgeOrderType = ({ type, className, ...props }) => {
+  const { t } = useTranslation();
   const isInstant = type === "INSTANT";
 
   return (
@@ -20,7 +22,9 @@ const BadgeOrderType = ({ type, className, ...props }) => {
       }}
       {...props}
     >
-      {isInstant ? "Instan" : "Terjadwal"}
+      {isInstant
+        ? t("BadgeOrderType.instant", {}, "Instan")
+        : t("BadgeOrderType.scheduled", {}, "Terjadwal")}
     </span>
   );
 };

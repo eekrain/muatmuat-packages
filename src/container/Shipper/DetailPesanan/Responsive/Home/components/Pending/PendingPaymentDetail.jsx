@@ -84,7 +84,9 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
             {t("PendingPaymentDetail.payBefore", {}, "Bayar Sebelum")}
           </h3>
           <span className="text-xs font-medium leading-[1.1] text-neutral-900">
-            {formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
+            {formatDate(dataRingkasanPembayaran?.paymentDueDateTime, {
+              padDay: true,
+            })}
           </span>
         </div>
         <BadgeStatusPesanan

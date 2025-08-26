@@ -133,7 +133,7 @@ const HubungiModal = ({
 
                     {/* Details Column */}
                     <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-                      <div className="w-full truncate text-sm font-medium leading-[17px] text-black">
+                      <div className="line-clamp-1 w-full max-w-[182px] text-sm font-medium leading-[17px] text-black">
                         {contact.name || t("HubungiModal.emptyName", {}, "-")}
                       </div>
 
