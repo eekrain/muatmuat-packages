@@ -15,6 +15,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   deleteProvinsiAreaBongkar,
   saveAreaBongkar,
@@ -27,6 +28,7 @@ import { useSearchAreaBongkar } from "@/services/Transporter/pengaturan/searchAr
 
 export default function Page() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [searchCity, setSearchCity] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [expandedProvinces, setExpandedProvinces] = useState({});
@@ -149,8 +151,17 @@ export default function Page() {
   }, [masterKotaKabupaten]);
 
   const BREADCRUMB = [
-    { name: "Pengaturan", href: "/pengaturan" },
-    { name: "Atur Area Bongkar" },
+    {
+      name: t("AreaBongkarPage.breadcrumbPengaturan", {}, "Pengaturan"),
+      href: "/pengaturan",
+    },
+    {
+      name: t(
+        "AreaBongkarPage.breadcrumbAturAreaBongkar",
+        {},
+        "Atur Area Bongkar"
+      ),
+    },
   ];
 
   // Handle remove province
@@ -446,7 +457,11 @@ export default function Page() {
           <BreadCrumb data={BREADCRUMB} />
           <div className="mt-4 flex items-center gap-2">
             <PageTitle withBack={true} onClick={() => router.back()}>
-              Atur Area Bongkar
+              {t(
+                "AreaBongkarPage.titleAturAreaBongkar",
+                {},
+                "Atur Area Bongkar"
+              )}
             </PageTitle>
             <InfoTooltip
               className="w-80"
@@ -457,9 +472,11 @@ export default function Page() {
                 </button>
               }
             >
-              Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
-              dan efisien, muatrans hanya menawarkan permintaan jasa angkut
-              dengan lokasi bongkar didalam area kerjamu
+              {t(
+                "AreaBongkarPage.tooltipAreaBongkar",
+                {},
+                "Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif dan efisien, muatrans hanya menawarkan permintaan jasa angkut dengan lokasi bongkar didalam area kerjamu"
+              )}
             </InfoTooltip>
           </div>
 
@@ -485,7 +502,11 @@ export default function Page() {
               <div className="mb-6 flex items-center">
                 <div className="me-4">
                   <Input
-                    placeholder="Cari Provinsi/Area"
+                    placeholder={t(
+                      "AreaBongkarPage.placeholderCariProvinsiArea",
+                      {},
+                      "Cari Provinsi/Area"
+                    )}
                     icon={{ left: "/icons/search.svg" }}
                     value={searchKeyword}
                     onChange={(e) => {
@@ -497,7 +518,11 @@ export default function Page() {
                 </div>
                 <div className="me-4">
                   <Input
-                    placeholder="Cari Kota/Kabupaten"
+                    placeholder={t(
+                      "AreaBongkarPage.placeholderCariKotaKabupaten",
+                      {},
+                      "Cari Kota/Kabupaten"
+                    )}
                     icon={{ left: "/icons/search.svg" }}
                     value={searchCity}
                     onChange={(e) => setSearchCity(e.target.value)}
@@ -512,7 +537,11 @@ export default function Page() {
                     className="!gap-0"
                   />
                   <span className="text-sm font-normal leading-[16.8px] text-neutral-900">
-                    Tampilkan yang terpilih saja
+                    {t(
+                      "AreaBongkarPage.checkboxTampilkanYangTerpilih",
+                      {},
+                      "Tampilkan yang terpilih saja"
+                    )}
                   </span>
                 </div>
               </div>

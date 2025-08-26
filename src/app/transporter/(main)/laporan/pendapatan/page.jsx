@@ -456,11 +456,23 @@ export default function Page() {
       return (
         <div className="space-y-1 text-sm">
           <div className="flex items-center">
-            <span>Pendapatan Pesanan:</span>
+            <span>
+              {t(
+                "LaporanPendapatanPage.tooltipOrderRevenue",
+                {},
+                "Pendapatan Pesanan:"
+              )}{" "}
+            </span>
             <span>{orderRevenue?.formatted || "Rp0"}</span>
           </div>
           <div className="flex items-center">
-            <span>Penyesuaian Pendapatan:</span>
+            <span>
+              {t(
+                "LaporanPendapatanPage.tooltipRevenueAdjustment",
+                {},
+                "Penyesuaian Pendapatan:"
+              )}{" "}
+            </span>
             <span>{adjustmentRevenue?.formatted || "Rp0"}</span>
           </div>
         </div>

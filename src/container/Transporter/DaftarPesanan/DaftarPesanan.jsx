@@ -17,14 +17,15 @@ import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepper
 import Table from "@/components/Table/Table";
 import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 // Assuming path, adjust if necessary
-import RespondChangeFormModal from "@/container/Shared/OrderModal/RespondChangeFormModal";
 import { useTranslation } from "@/hooks/use-translation";
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
-import { formatLoadTime, formatToYYYYMMDD } from "@/lib/utils/dateFormat";
+import { formatLoadTime } from "@/lib/utils/dateFormat";
 import {
   ORDER_STATUS,
+  getOrderStatusBadgeWithTranslation,
   getOrderStatusConfig,
 } from "@/utils/Transporter/orderStatus";
 
@@ -63,8 +64,12 @@ const DaftarPesanan = ({
 
   // Handle search
   const handleSearch = (e) => {
-    if (e.key === "Enter" && tempSearch.length >= 3) {
-      onChangeQueryParams("search", tempSearch);
+    if (e.key === "Enter") {
+      if (tempSearch.length >= 3) {
+        onChangeQueryParams("search", tempSearch);
+      } else if (tempSearch.length === 0) {
+        onChangeQueryParams("search", "");
+      }
     }
   };
 
@@ -181,7 +186,7 @@ const DaftarPesanan = ({
       ),
     },
     {
-      key: "loadingTime",
+      key: "loadTimeStart",
       header: "Waktu Muat",
       sortable: true,
       width: "202px",
@@ -198,7 +203,7 @@ const DaftarPesanan = ({
     {
       key: "location",
       header: "Rute Muat & Bongkar",
-      sortable: true,
+      sortable: false,
       width: "203px",
       className: "align-top !px-3",
       headerClassName: "px-3",
@@ -310,53 +315,46 @@ const DaftarPesanan = ({
       },
     },
     {
-      key: "status",
+      key: "orderStatus",
       header: "Status",
       width: "198px",
       className: "align-top !pl-3 pr-2.5",
       headerClassName: "pl-3 pr-2.5",
-      sortable: false,
-      render: (row, rowIndex) => (
-        <BadgeStatusPesanan
-          variant={
-            rowIndex === 4 || rowIndex === 6
-              ? "warning"
-              : rowIndex === 5
-                ? "error"
-                : "primary"
-          }
-          icon={{
-            iconLeft:
-              rowIndex === 4 || rowIndex === 5 || rowIndex === 6
-                ? "/icons/warning14.svg"
-                : null,
-          }}
-        >
-          <div className="flex items-center gap-x-1">
-            {rowIndex === 2 ? (
-              <InfoTooltip
-                appearance={{
-                  iconClassName: "text-primary-700 w-3.5 h-3.5",
-                }}
-              >
-                <p className="max-w-[312px]">
-                  Armada kamu telah tercatat untuk pesanan ini, harap menunggu
-                  maks. 1 jam untuk konfirmasi dari shipper.
-                </p>
-              </InfoTooltip>
-            ) : null}
-            {rowIndex === 2
-              ? "Menunggu Konfirmasi"
-              : rowIndex === 4
-                ? "Perlu Assign Armada"
-                : rowIndex === 5
-                  ? "Perlu Konfirmasi Siap"
-                  : rowIndex === 6
-                    ? "Perlu Respon Perubahan"
-                    : "Proses Muat"}
-          </div>
-        </BadgeStatusPesanan>
-      ),
+      sortable: true,
+      render: (row, rowIndex) => {
+        const statusConfig = getOrderStatusBadgeWithTranslation(
+          row.orderStatus,
+          t
+        );
+        return (
+          <BadgeStatusPesanan
+            variant={statusConfig.variant}
+            icon={{
+              iconLeft:
+                statusConfig.variant === "warning" ||
+                statusConfig.variant === "error"
+                  ? "/icons/warning14.svg"
+                  : null,
+            }}
+          >
+            <div className="flex items-center gap-x-1">
+              {row.orderStatus === "NEED_CONFIRMATION_READY" ? (
+                <InfoTooltip
+                  appearance={{
+                    iconClassName: "text-primary-700 w-3.5 h-3.5",
+                  }}
+                >
+                  <p className="max-w-[312px]">
+                    Armada kamu telah tercatat untuk pesanan ini, harap menunggu
+                    maks. 1 jam untuk konfirmasi dari shipper.
+                  </p>
+                </InfoTooltip>
+              ) : null}
+              {statusConfig.label}
+            </div>
+          </BadgeStatusPesanan>
+        );
+      },
     },
     {
       key: "action",
@@ -367,7 +365,7 @@ const DaftarPesanan = ({
       sortable: false,
       render: (row, rowIndex) => (
         <div className="flex flex-col gap-y-3">
-          {rowIndex === 4 ? (
+          {row.orderStatus === "NEED_ASSIGN_FLEET" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -377,7 +375,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- START */}
-          {rowIndex === 5 ? (
+          {row.orderStatus === "NEED_CONFIRMATION_READY" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -387,7 +385,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- END */}
-          {rowIndex === 6 ? (
+          {row.orderStatus === "NEED_CHANGE_RESPONSE" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -431,68 +429,70 @@ const DaftarPesanan = ({
     }
   };
 
-  const handleSelectPeriod = (selectedOption) => {
-    // For custom date range option
-    if (selectedOption?.range) {
-      // Use string manipulation, not Date object with toISOString()
-      const formattedStartDate = formatToYYYYMMDD(selectedOption.start_date);
-      const formattedEndDate = formatToYYYYMMDD(selectedOption.end_date);
-
-      onChangeQueryParams("startDate", formattedStartDate);
-      onChangeQueryParams("endDate", formattedEndDate);
-
-      // Update recent selections - only add if not already in the array
-      // if (
-      //   !recentSelections?.some((s) => s?.value === selectedOption?.value)
-      // ) {
-      //   setRecentPeriodOptions((prev) => [...prev, selectedOption]);
-      // }
-
-      // Update the current period value
-      setCurrentPeriodValue(selectedOption);
+  const handleSelectPeriod = (selectedPeriod) => {
+    if (selectedPeriod === "custom") {
+      // Handle custom date range - this would typically open a date picker
+      return;
     }
-    // For default "Semua Periode" option
-    else if (selectedOption?.value === "") {
-      onChangeQueryParams("startDate", null);
-      onChangeQueryParams("endDate", null);
 
-      // Update the current period value
-      setCurrentPeriodValue(selectedOption);
-    }
-    // For predefined period options (today, last 7 days, etc.)
-    else if (selectedOption?.value !== undefined) {
-      // Get local dates using direct component extraction, not toISOString()
-      const getLocalDateString = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      };
+    let startDate, endDate, periodValue;
+    const today = new Date();
+    const todayString = today.toISOString().split("T")[0];
 
-      // Get today as end date
-      const today = new Date();
-      const endDate = getLocalDateString(today);
-
-      // Calculate start date
-      let startDate;
-      if (selectedOption.value === 0) {
+    if (selectedPeriod === "" || selectedPeriod === "all") {
+      // "Semua Periode" - clear date filters
+      startDate = "";
+      endDate = "";
+      periodValue = "ALL_PERIODS";
+    } else {
+      // Calculate date range based on period value
+      const daysAgo = parseInt(selectedPeriod);
+      if (daysAgo === 0) {
         // Today
-        startDate = endDate;
+        startDate = todayString;
+        endDate = todayString;
+        periodValue = "TODAY";
+      } else if (daysAgo === 7) {
+        // Last 7 days
+        const startDateObj = new Date(today);
+        startDateObj.setDate(today.getDate() - daysAgo);
+        startDate = startDateObj.toISOString().split("T")[0];
+        endDate = todayString;
+        periodValue = "LAST_7_DAYS";
+      } else if (daysAgo === 30) {
+        // Last 30 days
+        const startDateObj = new Date(today);
+        startDateObj.setDate(today.getDate() - daysAgo);
+        startDate = startDateObj.toISOString().split("T")[0];
+        endDate = todayString;
+        periodValue = "LAST_30_DAYS";
+      } else if (daysAgo === 90) {
+        // Last 90 days
+        const startDateObj = new Date(today);
+        startDateObj.setDate(today.getDate() - daysAgo);
+        startDate = startDateObj.toISOString().split("T")[0];
+        endDate = todayString;
+        periodValue = "LAST_90_DAYS";
+      } else if (daysAgo === 365) {
+        // Last 1 year
+        const startDateObj = new Date(today);
+        startDateObj.setDate(today.getDate() - daysAgo);
+        startDate = startDateObj.toISOString().split("T")[0];
+        endDate = todayString;
+        periodValue = "LAST_1_YEAR";
       } else {
-        // Other periods (7 days, 30 days, etc.)
-        const startDateObj = new Date();
-        // Set to noon to avoid any date boundary issues
-        startDateObj.setHours(12, 0, 0, 0);
-        startDateObj.setDate(today.getDate() - selectedOption.value);
-        startDate = getLocalDateString(startDateObj);
+        // Default case for other values
+        const startDateObj = new Date(today);
+        startDateObj.setDate(today.getDate() - daysAgo);
+        startDate = startDateObj.toISOString().split("T")[0];
+        endDate = todayString;
+        periodValue = `last_${daysAgo}_days`;
       }
-
-      onChangeQueryParams("startDate", startDate);
-      onChangeQueryParams("endDate", endDate);
-
-      // Update the current period value
-      setCurrentPeriodValue(selectedOption);
     }
+
+    onChangeQueryParams("startDate", startDate);
+    onChangeQueryParams("endDate", endDate);
+    setCurrentPeriodValue(periodValue);
   };
 
   return (
@@ -671,12 +671,10 @@ const DaftarPesanan = ({
       )}
 
       {/* Respond Change Modal */}
-      <RespondChangeFormModal
+      <RespondChangeModal
         isOpen={isRespondModalOpen}
         onClose={handleCloseRespondModal}
-        onBackClick={handleBackFromRespondModal}
         orderData={selectedOrderForChange}
-        fromDaftarPesanan={true}
       />
 
       {/* Confirmation Modal for Respond Change */}

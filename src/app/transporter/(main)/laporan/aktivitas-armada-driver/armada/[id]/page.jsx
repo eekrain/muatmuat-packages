@@ -19,9 +19,11 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetDetailData } from "@/services/Transporter/laporan/aktivitas/getArmadaDetailData";
 
 export default function DetailArmadaPage({ params }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -486,10 +488,10 @@ export default function DetailArmadaPage({ params }) {
         {/* Title and Download Button in one row */}
         <div className="flex items-center justify-between">
           <PageTitle className={`mt-3`} onClick={handleBack}>
-            Detail Aktivitas
+            {t("DetailFleetPage.titleActivityDetails", {}, "Detail Aktivitas")}
           </PageTitle>
           <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
-            Unduh
+            {t("DetailFleetPage.buttonDownload", {}, "Unduh")}
           </Button>
         </div>
       </div>
@@ -504,7 +506,11 @@ export default function DetailArmadaPage({ params }) {
               <div className="flex-shrink-0">
                 <LightboxProvider
                   image={armadaData.image}
-                  title="Gambar Armada"
+                  title={t(
+                    "DetailFleetPage.fleetImageTitle",
+                    {},
+                    "Gambar Armada"
+                  )}
                 >
                   <LightboxPreview
                     image={armadaData.image}
@@ -559,7 +565,11 @@ export default function DetailArmadaPage({ params }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Search
-                placeholder="Cari Kode Pesanan, Rute atau lainnya"
+                placeholder={t(
+                  "DetailFleetPage.searchPlaceholder",
+                  {},
+                  "Cari Kode Pesanan, Rute atau lainnya"
+                )}
                 onSearch={handleSearch}
                 containerClassName="w-80"
               />
@@ -571,7 +581,11 @@ export default function DetailArmadaPage({ params }) {
               />
             </div>
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {activitiesData.length} Aktivitas
+              {t(
+                "DetailFleetPage.totalActivities",
+                { count: activitiesData.length },
+                `Total : ${activitiesData.length} Aktivitas`
+              )}
             </div>
           </div>
         </CardContent>
@@ -585,12 +599,20 @@ export default function DetailArmadaPage({ params }) {
             <div className="flex h-64 flex-col items-center justify-center px-6 py-12">
               <DataNotFound
                 type="data"
-                title="Belum ada Aktivitas Armada"
+                title={t(
+                  "DetailFleetPage.emptyFleetActivities",
+                  {},
+                  "Belum ada Aktivitas Armada"
+                )}
                 className="gap-y-3"
               />
               <div className="mt-2 text-center">
                 <p className="text-sm font-medium text-neutral-500">
-                  Pastikan Armada aktif dan siap menerima pesanan.
+                  {t(
+                    "DetailFleetPage.emptyFleetActivitiesDesc",
+                    {},
+                    "Pastikan Armada aktif dan siap menerima pesanan."
+                  )}
                 </p>
               </div>
             </div>
@@ -604,8 +626,16 @@ export default function DetailArmadaPage({ params }) {
                 <div className="px-6 py-8">
                   <DataNotFound
                     type="search"
-                    title="Data tidak ditemukan"
-                    description="Coba ubah kata kunci pencarian atau filter periode"
+                    title={t(
+                      "DetailFleetPage.dataNotFound",
+                      {},
+                      "Data tidak ditemukan"
+                    )}
+                    description={t(
+                      "DetailFleetPage.dataNotFoundDesc",
+                      {},
+                      "Coba ubah kata kunci pencarian atau filter periode"
+                    )}
                     className="gap-y-3"
                   />
                 </div>

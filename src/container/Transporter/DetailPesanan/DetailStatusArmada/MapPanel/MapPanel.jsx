@@ -20,7 +20,7 @@ export const MapPanel = () => {
     data: dataTracking,
     error,
     isLoading,
-  } = useGetFleetDetailedInfo("uuid");
+  } = useGetFleetDetailedInfo(params.uuid);
 
   // Transform fleet detailed info to match MapWithPath expected format
 

@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 export const mockWithdrawalDetail = {
   success: {
@@ -30,7 +30,7 @@ export const mockWithdrawalDetail = {
             id: 1,
             orderCode: "MT001",
             invoiceNumber: "INV/20240120/MPM/00001",
-            source: "Pendapatan Pesanan",
+            source: "DetailPencairanDanaPage.sourceOrderRevenue", // Pendapatan Pesanan
             amount: 220000.0,
             orderDate: "2025-01-20T10:00:00Z",
           },
@@ -38,7 +38,7 @@ export const mockWithdrawalDetail = {
             id: 2,
             orderCode: "MT002",
             invoiceNumber: "INV/20240120/MPM/00002",
-            source: "Pendapatan Pesanan",
+            source: "DetailPencairanDanaPage.sourceOrderRevenue", // Pendapatan Pesanan
             amount: 210000.0,
             orderDate: "2025-01-21T10:00:00Z",
           },
@@ -46,7 +46,7 @@ export const mockWithdrawalDetail = {
             id: 3,
             orderCode: "MT003",
             invoiceNumber: "INV/20240120/MPM/00003",
-            source: "Penyesuaian Pendapatan",
+            source: "DetailPencairanDanaPage.sourceRevenueAdjustment", // Penyesuaian Pendapatan
             amount: 300000.0,
             orderDate: "2025-01-22T10:00:00Z",
           },
@@ -54,7 +54,7 @@ export const mockWithdrawalDetail = {
             id: 4,
             orderCode: "MT004",
             invoiceNumber: "COM/20240120/MPM/00004",
-            source: "Penyesuaian Pendapatan",
+            source: "DetailPencairanDanaPage.sourceRevenueAdjustment", // Penyesuaian Pendapatan
             amount: 300000.0,
             orderDate: "2025-01-23T10:00:00Z",
           },

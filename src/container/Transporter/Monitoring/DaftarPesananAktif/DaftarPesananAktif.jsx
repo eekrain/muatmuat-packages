@@ -530,7 +530,7 @@ const DaftarPesananAktif = ({
       headerClassName: "px-4 py-3",
       className: "p-4 align-top",
       render: (row) => {
-        const { dateLabel, timeRange, dateColor } = formatMuatTime(row);
+        const { dateLabel, timeRange, dateColor } = formatMuatTime(row, t);
         return (
           <div className="flex flex-col gap-1">
             <span className={`text-xs font-semibold ${dateColor}`}>

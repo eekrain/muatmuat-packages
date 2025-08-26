@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 // Mock API result for development/testing
 const mockAPIResult = {
@@ -210,7 +210,6 @@ export const getFleetDetailedInfo = async (fleetId) => {
       `/v1/transporter/fleet/${fleetId}/detailed-info`
     );
   }
-  console.log(result, "tes");
 
   const data = normalizeFleetDataForMap(result?.data?.Data);
   return data;
