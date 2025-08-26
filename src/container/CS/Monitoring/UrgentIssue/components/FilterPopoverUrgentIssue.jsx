@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SlidersHorizontal } from "lucide-react";
 
@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { useGetFilterOption } from "@/services/CS/monitoring/urgent-issue/getFilterOption";
 
 const TRUCK_STATUS_OPTIONS = [
   {
@@ -52,10 +53,13 @@ const ORDER_STATUS_OPTIONS = [
   },
 ];
 
-export default function FilterPopoverUrgentIssue({
+// FIX 1: Menambahkan deklarasi fungsi komponen
+export default function UrgentIssueFilter({
   onApplyFilter,
   filterCounts = {},
 }) {
+  // Ambil data filter dari mock
+  const { data: filterData, isLoading: isFilterLoading } = useGetFilterOption();
   const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
   const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,15 +77,38 @@ export default function FilterPopoverUrgentIssue({
     NEEDS_RESPONSE: "needResponse",
   };
 
-  // Add counts to each option
-  const truckStatusOptionsWithCount = TRUCK_STATUS_OPTIONS.map((opt) => ({
-    ...opt,
-    count: filterCounts[countKeyMapping[opt.id]] ?? 0,
-  }));
-
+  // FIX 2: Definisikan variabel 'orderStatusOptionsWithCount' yang hilang
   const orderStatusOptionsWithCount = ORDER_STATUS_OPTIONS.map((opt) => ({
     ...opt,
-    count: filterCounts[countKeyMapping[opt.id]] ?? 0,
+    count: filterCounts[countKeyMapping[opt.id]] || 0,
+  }));
+
+  // Jenis laporan dari API
+  const issueTypeOptions = (filterData?.issue_types || []).map((opt) => ({
+    id: opt.type,
+    label: opt.label,
+    count: opt.count,
+  }));
+  const [selectedIssueTypes, setSelectedIssueTypes] = useState([]);
+
+  const handleToggleIssueType = (id) => {
+    setSelectedIssueTypes((prev) =>
+      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
+    );
+  };
+
+  // Transporter dari API
+  const transporterOptions = (filterData?.transporters || []).map((tr) => ({
+    label: tr.name,
+    value: tr.id,
+  }));
+
+  // Periode dari API
+  const apiPeriodOptions = (filterData?.historyPeriods || []).map((p) => ({
+    name: `${p.startDate} - ${p.endDate}`,
+    value: `${p.startDate}_${p.endDate}`,
+    format: "custom",
+    range: { start: p.startDate, end: p.endDate },
   }));
 
   const toggleTruckStatus = (id) => {
@@ -106,42 +133,22 @@ export default function FilterPopoverUrgentIssue({
     onApplyFilter?.(selectedTruckStatuses, selectedOrderStatuses);
   };
 
-  const [dynamicKecamatanOptions, setDynamicKecamatanOptions] = useState([
-    { label: "Kecamatan A", value: "kecamatan_a" },
-    { label: "Kecamatan B", value: "kecamatan_b" },
-  ]);
+  // Transporter dropdown
+  const [dynamicKecamatanOptions, setDynamicKecamatanOptions] = useState([]);
+  const [selectedTransporter, setSelectedTransporter] = useState(null);
 
+  useEffect(() => {
+    setDynamicKecamatanOptions(transporterOptions);
+  }, [filterData?.transporters]);
+
+  // Gabungkan default dan API period
   const periodOptions = [
     {
       name: "Semua Periode (Default)",
       value: "",
       format: "day",
     },
-    {
-      name: "Hari Ini",
-      value: 0,
-      format: "day",
-    },
-    {
-      name: "1 Minggu Terakhir",
-      value: 7,
-      format: "day",
-    },
-    {
-      name: "30 Hari Terakhir",
-      value: 30,
-      format: "month",
-    },
-    {
-      name: "90 Hari Terakhir",
-      value: 90,
-      format: "month",
-    },
-    {
-      name: "1 Tahun Terakhir",
-      value: 365,
-      format: "year",
-    },
+    ...apiPeriodOptions,
   ];
 
   const handleSelectPeriod = (selectedOption) => {
@@ -179,57 +186,40 @@ export default function FilterPopoverUrgentIssue({
         sideOffset={12}
         style={{ border: "none" }}
       >
-        {/* Arrow/triangle pointing left */}
-        <div
-          className="absolute"
-          style={{
-            width: 0,
-            height: 0,
-            borderStyle: "solid",
-            borderWidth: "8px 0 8px 10px",
-            borderColor: "transparent transparent transparent white",
-            right: "-9px",
-            top: "12px",
-            filter: "drop-shadow(2px -2px 2px rgba(0, 0, 0, 0.1))",
-          }}
-        />
-        <PopoverClose>
-          <IconComponent
-            src="/icons/silang-primary.svg"
-            width={16}
-            height={16}
-            className="absolute right-4 top-1 text-primary-700 hover:cursor-pointer"
-          />
-        </PopoverClose>
         <div className="flex flex-col gap-4">
           {/* Header */}
           <h3 className="text-base font-bold text-black">
             Filter Urgent Issue
           </h3>
+          <PopoverClose>
+            <IconComponent
+              src="/icons/silang-primary.svg"
+              width={16}
+              height={16}
+              className="absolute -top-1 right-[6px] text-primary-700 hover:cursor-pointer"
+            />
+          </PopoverClose>
 
-          {/* Truck Status Filter */}
+          {/* Jenis Laporan dari API */}
           <div className="space-y-4">
             <p className="mb-3 text-xs font-semibold text-black">
               Jenis Laporan
             </p>
-            <div className="flex items-center gap-2">
-              <Checkbox label="" />
-              <span className="cursor-pointer text-xs font-medium text-black">
-                Potensi Driver Terlambat Muat (1)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox label="" />
-              <span className="cursor-pointer text-xs font-medium text-black">
-                Armada Tidak Siap Untuk Muat (0)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox label="" />
-              <span className="cursor-pointer text-xs font-medium text-black">
-                Armada Tidak Bergerak Menuju Lokasi (12)
-              </span>
-            </div>
+            {issueTypeOptions.map((opt) => (
+              <div key={opt.id} className="flex items-center gap-2">
+                <Checkbox
+                  label=""
+                  checked={selectedIssueTypes.includes(opt.id)}
+                  onChange={() => handleToggleIssueType(opt.id)}
+                />
+                <span
+                  className="cursor-pointer text-xs font-medium text-black"
+                  onClick={() => handleToggleIssueType(opt.id)}
+                >
+                  {opt.label} ({opt.count})
+                </span>
+              </div>
+            ))}
           </div>
 
           {/* Order Status Filter */}
@@ -240,8 +230,20 @@ export default function FilterPopoverUrgentIssue({
               </p>
               <SelectFilterRadix
                 options={dynamicKecamatanOptions}
-                placeholder="Pilih Kecamatan"
+                placeholder="Semua Transporter"
+                value={selectedTransporter}
+                onValueChange={(val) => setSelectedTransporter(val)}
               />
+              {/* Tampilkan nama transporter yang dipilih */}
+              {selectedTransporter && (
+                <div className="mt-2 text-xs font-semibold text-primary-700">
+                  {
+                    dynamicKecamatanOptions.find(
+                      (tr) => tr.value === selectedTransporter
+                    )?.label
+                  }
+                </div>
+              )}
             </div>
           )}
 
