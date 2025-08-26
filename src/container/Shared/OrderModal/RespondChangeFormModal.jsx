@@ -13,7 +13,6 @@ import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
-import { isFleetChangeAllowed } from "@/utils/Transporter/trackingStatus";
 
 import FleetSelector from "./components/FleetSelector";
 import ImageArmada from "./components/ImageArmada";
@@ -164,9 +163,10 @@ const RespondChangeFormModal = ({
   };
 
   // Check if any fleet has a status that allows fleet change
-  const hasFleetChangeEligibleStatus = orderData?.fleets?.some((fleet) =>
-    isFleetChangeAllowed(fleet?.currentStatus)
-  );
+  // const hasFleetChangeEligibleStatus = orderData?.fleets?.some((fleet) =>
+  //   isFleetChangeAllowed(fleet?.currentStatus)
+  // );
+  const hasFleetChangeEligibleStatus = true;
 
   const responseOptions = [
     {
@@ -309,7 +309,7 @@ const RespondChangeFormModal = ({
                     {option.id === "accept_change_fleet" &&
                       selectedResponse === "accept_change_fleet" && (
                         <div className="pl-6">
-                          <p className="mb-2 text-xs text-neutral-600">
+                          <p className="mb-2 text-xs font-medium text-neutral-600">
                             {t(
                               "RespondChangeFormModal.selectReplacementFleet",
                               {},

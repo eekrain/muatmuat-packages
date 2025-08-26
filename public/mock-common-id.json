@@ -2722,5 +2722,12 @@
   "ModalTerimaPermintaanInstant.buttonAccept": "Terima",
   "ModalTerimaPermintaanInstant.titleNotification": "Pemberitahuan",
   "ModalTerimaPermintaanInstant.buttonContactCS": "Hubungi Customer Service",
-  "ModalTerimaPermintaanInstant.buttonOK": "OK"
+  "ModalTerimaPermintaanInstant.buttonOK": "OK",
+  "FleetSelector.placeholder": "Pilih Armada",
+  "FleetSelector.searchPlaceholder": "Cari No. Polisi / Driver",
+  "FleetSelector.noFleetAvailable": "Belum ada armada pengganti yang tersedia.",
+  "FleetSelector.addSuitableFleet": "Tambahkan armada yang sesuai untuk dapat menampilkan armada pengganti.",
+  "FleetSelector.dataNotFound": "Data Tidak Ditemukan",
+  "FleetSelector.recommendation": "Rekomendasi",
+  "FleetSelector.potentialOverload": "Potensi Overload"
 }
