@@ -19,9 +19,11 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetDriverDetailData } from "@/services/Transporter/laporan/aktivitas/getDriverDetailData";
 
 export default function DetailDriverPage({ params }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,7 +117,7 @@ export default function DetailDriverPage({ params }) {
   // Table columns for activities
   const columns = [
     {
-      header: "Kode Pesanan",
+      header: t("DetailDriverPage.columnOrderCode", {}, "Kode Pesanan"),
       key: "invoiceNumber",
       sortable: true,
       width: "200px",
@@ -135,7 +137,7 @@ export default function DetailDriverPage({ params }) {
       },
     },
     {
-      header: "Rute Pesanan",
+      header: t("DetailDriverPage.columnOrderRoute", {}, "Rute Pesanan"),
       key: "orderInfo",
       sortable: false,
       width: "250px",
@@ -144,7 +146,11 @@ export default function DetailDriverPage({ params }) {
         <div className="space-y-2">
           {row.orderInfo?.estimatedDistance && (
             <div className="text-xs font-medium">
-              Estimasi: {row.orderInfo.estimatedDistance} km
+              {t(
+                "DetailDriverPage.estimateDistance",
+                { distance: row.orderInfo.estimatedDistance },
+                `Estimasi: ${row.orderInfo.estimatedDistance} km`
+              )}
             </div>
           )}
           <MuatBongkarStepper
@@ -161,7 +167,7 @@ export default function DetailDriverPage({ params }) {
       ),
     },
     {
-      header: "No. Polisi",
+      header: t("DetailDriverPage.columnLicensePlate", {}, "No. Polisi"),
       key: "licensePlate",
       sortable: true,
       width: "200px",
@@ -169,18 +175,19 @@ export default function DetailDriverPage({ params }) {
       render: (row) => (
         <div className="space-y-1">
           <div className="text-sm font-semibold text-gray-900">
-            {row.fleetInfo?.licensePlate || "Belum Ada"}
+            {row.fleetInfo?.licensePlate ||
+              t("DetailDriverPage.notAvailable", {}, "Belum Ada")}
           </div>
           <div className="text-xs font-medium">
             {row.fleetInfo
               ? `${row.fleetInfo.truckType} - ${row.fleetInfo.carrierType}`
-              : "Belum Ada"}
+              : t("DetailDriverPage.notAvailable", {}, "Belum Ada")}
           </div>
         </div>
       ),
     },
     {
-      header: "Tanggal Muat",
+      header: t("DetailDriverPage.columnLoadingDate", {}, "Tanggal Muat"),
       key: "loadingTime",
       sortable: true,
       width: "150px",
@@ -197,7 +204,7 @@ export default function DetailDriverPage({ params }) {
       },
     },
     {
-      header: "Tanggal Bongkar",
+      header: t("DetailDriverPage.columnUnloadingDate", {}, "Tanggal Bongkar"),
       key: "unloadingTime",
       sortable: true,
       width: "150px",
@@ -214,7 +221,7 @@ export default function DetailDriverPage({ params }) {
       },
     },
     {
-      header: "Status",
+      header: t("DetailDriverPage.columnStatus", {}, "Status"),
       key: "status",
       sortable: true,
       width: "150px",
@@ -222,7 +229,7 @@ export default function DetailDriverPage({ params }) {
       render: (row) => getStatusBadge(row.orderInfo?.status),
     },
     {
-      header: "Action",
+      header: t("DetailDriverPage.columnAction", {}, "Action"),
       key: "action",
       sortable: false,
       width: "100px",
@@ -235,7 +242,7 @@ export default function DetailDriverPage({ params }) {
             // TODO: Implement detail activity navigation
           }}
         >
-          Detail
+          {t("DetailDriverPage.buttonDetail", {}, "Detail")}
         </Button>
       ),
     },
@@ -295,9 +302,29 @@ export default function DetailDriverPage({ params }) {
 
   // Breadcrumb data
   const breadcrumbData = [
-    { name: "Laporan Aktivitas", href: "/laporan/aktivitas-armada-driver" },
-    { name: "Aktivitas Driver", href: "/laporan/aktivitas-armada-driver" },
-    { name: "Detail Aktivitas" },
+    {
+      name: t(
+        "DetailDriverPage.breadcrumbActivityReport",
+        {},
+        "Laporan Aktivitas"
+      ),
+      href: "/laporan/aktivitas-armada-driver",
+    },
+    {
+      name: t(
+        "DetailDriverPage.breadcrumbDriverActivities",
+        {},
+        "Aktivitas Driver"
+      ),
+      href: "/laporan/aktivitas-armada-driver",
+    },
+    {
+      name: t(
+        "DetailDriverPage.breadcrumbActivityDetails",
+        {},
+        "Detail Aktivitas"
+      ),
+    },
   ];
 
   const handleBack = () => {
@@ -378,43 +405,59 @@ export default function DetailDriverPage({ params }) {
     if (status === "LOADING") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-      displayStatus = "Sedang Muat";
+      displayStatus = t("DetailDriverPage.statusLoading", {}, "Sedang Muat");
     } else if (status === "COMPLETED") {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
-      displayStatus = "Selesai";
+      displayStatus = t("DetailDriverPage.statusCompleted", {}, "Selesai");
     } else if (status === "PENDING") {
       bgColor = "bg-yellow-100";
       textColor = "text-yellow-900";
-      displayStatus = "Menunggu";
+      displayStatus = t("DetailDriverPage.statusWaiting", {}, "Menunggu");
     } else if (status === "CANCELLED") {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
-      displayStatus = "Dibatalkan";
+      displayStatus = t("DetailDriverPage.statusCancelled", {}, "Dibatalkan");
     } else if (status === "ON_DUTY") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-      displayStatus = "Bertugas";
+      displayStatus = t("DetailDriverPage.statusOnDuty", {}, "Bertugas");
     } else if (status === "READY_FOR_ORDER") {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
-      displayStatus = "Siap Menerima Order";
+      displayStatus = t(
+        "DetailDriverPage.statusReadyForOrder",
+        {},
+        "Siap Menerima Order"
+      );
     } else if (status === "WAITING_PAYMENT_1") {
       bgColor = "bg-orange-100";
       textColor = "text-orange-900";
-      displayStatus = "Menunggu Pembayaran";
+      displayStatus = t(
+        "DetailDriverPage.statusWaitingPayment",
+        {},
+        "Menunggu Pembayaran"
+      );
     } else if (status === "NOT_PAIRED") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-600";
-      displayStatus = "Belum Dipasangkan";
+      displayStatus = t(
+        "DetailDriverPage.statusNotPaired",
+        {},
+        "Belum Dipasangkan"
+      );
     } else if (status === "INACTIVE") {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
-      displayStatus = "Nonaktif";
+      displayStatus = t("DetailDriverPage.statusInactive", {}, "Nonaktif");
     } else if (status === null || status === "") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-500";
-      displayStatus = "Tidak Ada Status";
+      displayStatus = t(
+        "DetailDriverPage.statusNoStatus",
+        {},
+        "Tidak Ada Status"
+      );
     }
 
     return (
@@ -446,10 +489,10 @@ export default function DetailDriverPage({ params }) {
         {/* Title and Download Button in one row */}
         <div className="flex items-center justify-between">
           <PageTitle className="mt-3" onClick={handleBack}>
-            Detail Aktivitas
+            {t("DetailDriverPage.titleActivityDetails", {}, "Detail Aktivitas")}
           </PageTitle>
           <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
-            Unduh
+            {t("DetailDriverPage.buttonDownload", {}, "Unduh")}
           </Button>
         </div>
       </div>
@@ -464,7 +507,11 @@ export default function DetailDriverPage({ params }) {
               <div className="flex-shrink-0">
                 <LightboxProvider
                   image={driverData.image}
-                  title="Gambar Driver"
+                  title={t(
+                    "DetailDriverPage.driverImageTitle",
+                    {},
+                    "Gambar Driver"
+                  )}
                 >
                   <LightboxPreview
                     image={driverData.image}
@@ -530,7 +577,11 @@ export default function DetailDriverPage({ params }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Search
-                placeholder="Cari Kode Pesanan, Rute atau lainnya"
+                placeholder={t(
+                  "DetailDriverPage.searchPlaceholder",
+                  {},
+                  "Cari Kode Pesanan, Rute atau lainnya"
+                )}
                 onSearch={handleSearch}
                 containerClassName="w-80"
               />
@@ -542,7 +593,11 @@ export default function DetailDriverPage({ params }) {
               />
             </div>
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {activitiesData.length} Aktivitas
+              {t(
+                "DetailDriverPage.totalActivities",
+                { count: activitiesData.length },
+                `Total : ${activitiesData.length} Aktivitas`
+              )}
             </div>
           </div>
         </CardContent>
@@ -556,12 +611,20 @@ export default function DetailDriverPage({ params }) {
             <div className="flex h-64 flex-col items-center justify-center px-6 py-12">
               <DataNotFound
                 type="data"
-                title="Belum ada Aktivitas Driver"
+                title={t(
+                  "DetailDriverPage.emptyDriverActivities",
+                  {},
+                  "Belum ada Aktivitas Driver"
+                )}
                 className="gap-y-3"
               />
               <div className="mt-2 text-center">
                 <p className="text-sm font-medium text-neutral-500">
-                  Pastikan Driver aktif dan siap menerima pesanan.
+                  {t(
+                    "DetailDriverPage.emptyDriverActivitiesDesc",
+                    {},
+                    "Pastikan Driver aktif dan siap menerima pesanan."
+                  )}
                 </p>
               </div>
             </div>
@@ -575,8 +638,16 @@ export default function DetailDriverPage({ params }) {
                 <div className="px-6 py-8">
                   <DataNotFound
                     type="search"
-                    title="Data tidak ditemukan"
-                    description="Coba ubah kata kunci pencarian atau filter periode"
+                    title={t(
+                      "DetailDriverPage.dataNotFound",
+                      {},
+                      "Data tidak ditemukan"
+                    )}
+                    description={t(
+                      "DetailDriverPage.dataNotFoundDesc",
+                      {},
+                      "Coba ubah kata kunci pencarian atau filter periode"
+                    )}
                     className="gap-y-3"
                   />
                 </div>

@@ -1,4 +1,3 @@
-import { meta } from "@eslint/js";
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
@@ -347,7 +346,7 @@ export const mockUrgentIssueList = {
   },
   meta: {
     overdue_count: 3,
-    overdue_issues: ["uuid1", "uuid2", "uuid3"],
+    overdue_issues: ["123e4567-e89b-12d3-a456-426614174000", "uuid2", "uuid3"],
   },
 };
 

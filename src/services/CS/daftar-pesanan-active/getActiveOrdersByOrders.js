@@ -2,8 +2,8 @@ import useSWR from "swr";
 
 import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
 
-// DONE, masih ke lempar ke login
-const isMockActiveOrdersByOrders = true;
+// DONE, implementasi API
+const isMockActiveOrdersByOrders = false;
 
 export const fetcherActiveOrdersByOrders = async (url, { arg } = {}) => {
   // url should be the API endpoint path when not mocking, or the relative api path when mocking

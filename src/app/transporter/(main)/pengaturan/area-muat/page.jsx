@@ -19,6 +19,7 @@ import ProvinceSelectionModal from "@/components/Modal/ProvinceSelectionModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import {
   useGetAreaMuatCities,
@@ -28,6 +29,7 @@ import {
 import { useSaveAreaMuat } from "@/services/Transporter/pengaturan/saveAreaMuatData";
 
 export default function Page() {
+  const { t } = useTranslation();
   const router = useRouter(); // Using a placeholder ID
   const [searchCity, setSearchCity] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
@@ -130,8 +132,11 @@ export default function Page() {
   };
 
   const BREADCRUMB = [
-    { name: "Pengaturan", href: "/pengaturan" },
-    { name: "Atur Area Muat" },
+    {
+      name: t("AreaMuatPage.breadcrumbPengaturan", {}, "Pengaturan"),
+      href: "/pengaturan",
+    },
+    { name: t("AreaMuatPage.breadcrumbAturAreaMuat", {}, "Atur Area Muat") },
   ];
 
   const handleRemoveProvince = async (provinceId) => {
@@ -142,8 +147,11 @@ export default function Page() {
     if (selectedProvinces.length <= 1) {
       setAlert({
         show: true,
-        message:
-          "Kamu tidak bisa menghapus provinsi terakhir. Minimal harus ada satu provinsi terpilih",
+        message: t(
+          "AreaMuatPage.toastErrorMinimalProvinsi",
+          {},
+          "Kamu tidak bisa menghapus provinsi terakhir. Minimal harus ada satu provinsi terpilih"
+        ),
         type: "error",
       });
       return;
@@ -206,6 +214,16 @@ export default function Page() {
       }
       console.error("Remove province failed:", error);
     }
+    setAlert({
+      show: true,
+      message: t(
+        "AreaMuatPage.toastSuccessHapusProvinsi",
+        {},
+        // eslint-disable-next-line no-undef
+        `Berhasil menghapus provinsi ${province.province}`
+      ),
+      type: "success",
+    });
   };
 
   const handleAddProvince = () => {
@@ -270,7 +288,13 @@ export default function Page() {
     );
 
     if (!isAnyCitySelected) {
-      toast.error("Pilih minimal 1 Area Muat untuk menyimpan");
+      toast.error(
+        t(
+          "AreaMuatPage.toastErrorPilihMinimal",
+          {},
+          "Pilih minimal 1 Area Muat untuk menyimpan"
+        )
+      );
       return;
     }
 
@@ -299,7 +323,13 @@ export default function Page() {
     try {
       const result = await saveAreaMuat(payload);
       setIsConfirmModalOpen(false);
-      toast.success("Berhasil menyimpan Area Muat!");
+      toast.success(
+        t(
+          "AreaMuatPage.toastSuccessSimpan",
+          {},
+          "Berhasil menyimpan Area Muat!"
+        )
+      );
       localStorage.removeItem("areaMuatProvinces");
       if (result?.redirectTo) {
         router.push(result.redirectTo);
@@ -310,7 +340,13 @@ export default function Page() {
       if (apiErrors && apiErrors.length > 0) {
         apiErrors.forEach((err) => toast.error(err.message));
       } else {
-        toast.error("Gagal menyimpan data. Silakan coba lagi.");
+        toast.error(
+          t(
+            "AreaMuatPage.toastErrorSimpan",
+            {},
+            "Gagal menyimpan data. Silakan coba lagi."
+          )
+        );
       }
       console.error("Save failed:", error);
     }
@@ -344,7 +380,7 @@ export default function Page() {
       onClick={handleSave}
       isLoading={isMutating}
     >
-      Simpan
+      {t("AreaMuatPage.buttonSimpan", {}, "Simpan")}
     </Button>
   );
 
@@ -355,7 +391,7 @@ export default function Page() {
           <BreadCrumb data={BREADCRUMB} />
           <div className="mt-4 flex items-center gap-2">
             <PageTitle withBack={true} onClick={handleLeavePage}>
-              Atur Area Muat
+              {t("AreaMuatPage.titleAturAreaMuat", {}, "Atur Area Muat")}
             </PageTitle>
 
             <InfoTooltip
@@ -367,9 +403,11 @@ export default function Page() {
                 </button>
               }
             >
-              Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
-              dan efisien, muatrans hanya menawarkan permintaan jasa angkut
-              dengan lokasi pick up didalam area kerjamu
+              {t(
+                "AreaMuatPage.tooltipAreaMuat",
+                {},
+                "Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif dan efisien, muatrans hanya menawarkan permintaan jasa angkut dengan lokasi pick up didalam area kerjamu"
+              )}
             </InfoTooltip>
           </div>
 
@@ -392,7 +430,11 @@ export default function Page() {
               <div className="mb-6 flex items-center">
                 <div className="me-4">
                   <Input
-                    placeholder="Cari Kota/Kabupaten"
+                    placeholder={t(
+                      "AreaMuatPage.placeholderCariKotaKabupaten",
+                      {},
+                      "Cari Kota/Kabupaten"
+                    )}
                     icon={{ left: "/icons/search.svg" }}
                     value={searchCity}
                     onChange={(e) => setSearchCity(e.target.value)}
@@ -418,7 +460,11 @@ export default function Page() {
                           : "text-neutral-900"
                       }`}
                     >
-                      Tampilkan yang terpilih saja
+                      {t(
+                        "AreaMuatPage.checkboxTampilkanYangTerpilih",
+                        {},
+                        "Tampilkan yang terpilih saja"
+                      )}
                     </span>
                   </Checkbox>
                 </div>
@@ -427,15 +473,23 @@ export default function Page() {
               {!isInitialized || isLoading || isLoadingMasterProvinces ? (
                 <div className="flex h-[200px] items-center justify-center">
                   <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
-                    Loading...
+                    {t("AreaMuatPage.textLoading", {}, "Loading...")}
                   </span>
                 </div>
               ) : finalProvinces.length === 0 ? (
                 <DataNotFound
                   title={
                     searchCity
-                      ? "Keyword tidak ditemukan"
-                      : "Belum ada area muat terpilih"
+                      ? t(
+                          "AreaMuatPage.emptyStateKeywordNotFound",
+                          {},
+                          "Keyword tidak ditemukan"
+                        )
+                      : t(
+                          "AreaMuatPage.emptyStateBelumAdaAreaMuat",
+                          {},
+                          "Belum ada area muat terpilih"
+                        )
                   }
                   image={
                     searchCity
@@ -467,7 +521,8 @@ export default function Page() {
                           <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
                             {province.provinceName}{" "}
                             <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
-                              ({actualSelectedCount} Terpilih)
+                              ({actualSelectedCount}{" "}
+                              {t("AreaMuatPage.labelTerpilih", {}, "Terpilih")})
                             </span>
                           </h3>
                         </div>
@@ -488,7 +543,11 @@ export default function Page() {
                             className="!gap-0"
                           />
                           <span className="text-sm font-medium leading-[16.8px] text-neutral-900">
-                            Pilih Semua Kota/Kabupaten
+                            {t(
+                              "AreaMuatPage.labelPilihSemuaKota",
+                              {},
+                              "Pilih Semua Kota/Kabupaten"
+                            )}
                           </span>
                         </div>
 
@@ -547,8 +606,16 @@ export default function Page() {
                               className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
                             >
                               {isExpanded
-                                ? "Sembunyikan"
-                                : "Lihat Selengkapnya"}
+                                ? t(
+                                    "AreaMuatPage.buttonSembunyikan",
+                                    {},
+                                    "Sembunyikan"
+                                  )
+                                : t(
+                                    "AreaMuatPage.buttonLihatSelengkapnya",
+                                    {},
+                                    "Lihat Selengkapnya"
+                                  )}
                               <ChevronDown
                                 size={16}
                                 className={`transform transition-transform duration-200 ${
@@ -590,16 +657,20 @@ export default function Page() {
         isOpen={isConfirmModalOpen}
         setIsOpen={setIsConfirmModalOpen}
         title={{
-          text: "Apakah kamu yakin menyimpan data ini?",
+          text: t(
+            "AreaMuatPage.modalConfirmSimpan",
+            {},
+            "Apakah kamu yakin menyimpan data ini?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Simpan",
+          text: t("AreaMuatPage.buttonSimpan", {}, "Simpan"),
           onClick: confirmSave,
           isLoading: isMutating,
         }}
         cancel={{
-          text: "Batal",
+          text: t("AreaMuatPage.buttonBatal", {}, "Batal"),
           onClick: () => setIsConfirmModalOpen(false),
         }}
       />
@@ -608,11 +679,15 @@ export default function Page() {
         isOpen={isLeaveModalOpen}
         setIsOpen={setIsLeaveModalOpen}
         title={{
-          text: "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini",
+          text: t(
+            "AreaMuatPage.modalConfirmLeave",
+            {},
+            "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini"
+          ),
           className: "text-sm font-medium text-center",
         }}
         cancel={{
-          text: "Ya",
+          text: t("AreaMuatPage.buttonYa", {}, "Ya"),
           variant: "destructive",
           onClick: () => {
             localStorage.removeItem("areaMuatProvinces");
@@ -620,7 +695,7 @@ export default function Page() {
           },
         }}
         confirm={{
-          text: "Batal",
+          text: t("AreaMuatPage.buttonBatal", {}, "Batal"),
           onClick: () => setIsLeaveModalOpen(false),
         }}
       />
@@ -629,7 +704,11 @@ export default function Page() {
         isOpen={isProvinceModalOpen}
         onClose={() => setIsProvinceModalOpen(false)}
         onSave={handleSaveProvinces}
-        title="Tambah Provinsi"
+        title={t(
+          "AreaMuatPage.modalTitleTambahProvinsi",
+          {},
+          "Tambah Provinsi"
+        )}
         provinces={masterProvinces}
         isLoading={isLoadingMasterProvinces}
         onSearch={searchProvinces}

@@ -19,11 +19,13 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { CargoSelection } from "@/container/Transporter/Pengaturan/CargoSelection";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { useGetMasterCargo } from "@/services/Transporter/pengaturan/getMasterCargoData";
 import { useSaveTransporterCargoConfig } from "@/services/Transporter/pengaturan/saveCargoConfigData";
 
 export default function AturMuatanDilayaniPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: apiData, isLoading, error } = useGetMasterCargo();
   const { trigger: saveCargo, isMutating } = useSaveTransporterCargoConfig();
@@ -151,7 +153,13 @@ export default function AturMuatanDilayaniPage() {
 
   const handleSave = () => {
     if (totalSelectedCount === 0) {
-      toast.error("Pilih minimal 1 Muatan untuk menyimpan");
+      toast.error(
+        t(
+          "MuatanDilayaniPage.toastErrorPilihMinimal",
+          {},
+          "Pilih minimal 1 Muatan untuk menyimpan"
+        )
+      );
       return;
     }
     setIsConfirmModalOpen(true);
@@ -173,14 +181,24 @@ export default function AturMuatanDilayaniPage() {
 
     const payload = {
       cargoTypeIds,
-      notes: "Konfigurasi muatan untuk layanan reguler",
+      notes: t(
+        "MuatanDilayaniPage.configNotes",
+        {},
+        "Konfigurasi muatan untuk layanan reguler"
+      ),
       effectiveDate: new Date().toISOString(),
     };
 
     try {
       await saveCargo(payload);
       setIsConfirmModalOpen(false);
-      toast.success("Berhasil menyimpan muatan yang dilayani!");
+      toast.success(
+        t(
+          "MuatanDilayaniPage.toastSuccessSimpan",
+          {},
+          "Berhasil menyimpan muatan yang dilayani!"
+        )
+      );
 
       // --- NEW: Update the initial state after a successful save ---
       setInitialSelectedItems(selectedItems);
@@ -190,13 +208,28 @@ export default function AturMuatanDilayaniPage() {
     } catch (err) {
       console.error("Failed to save cargo configuration:", err);
       setIsConfirmModalOpen(false);
-      toast.error("Ada ganguan server coba lagi nanti");
+      toast.error(
+        t(
+          "MuatanDilayaniPage.toastErrorServerGanguan",
+          {},
+          "Ada ganguan server coba lagi nanti"
+        )
+      );
     }
   };
 
   const breadcrumbItems = [
-    { name: "Pengaturan", href: "/pengaturan" },
-    { name: "Atur Muatan Dilayani" },
+    {
+      name: t("MuatanDilayaniPage.breadcrumbPengaturan", {}, "Pengaturan"),
+      href: "/pengaturan",
+    },
+    {
+      name: t(
+        "MuatanDilayaniPage.breadcrumbAturMuatanDilayani",
+        {},
+        "Atur Muatan Dilayani"
+      ),
+    },
   ];
 
   if (isLoading) {
@@ -211,8 +244,16 @@ export default function AturMuatanDilayaniPage() {
     return (
       <div className="flex h-screen w-full items-center justify-center p-4">
         <DataEmpty
-          title="Gagal Memuat Data"
-          subtitle="Terjadi kesalahan saat mengambil data muatan."
+          title={t(
+            "MuatanDilayaniPage.emptyStateTitleGagalMemuat",
+            {},
+            "Gagal Memuat Data"
+          )}
+          subtitle={t(
+            "MuatanDilayaniPage.emptyStateSubtitleGagalMemuat",
+            {},
+            "Terjadi kesalahan saat mengambil data muatan."
+          )}
         />
       </div>
     );
@@ -230,7 +271,7 @@ export default function AturMuatanDilayaniPage() {
       onClick={handleSave}
       isLoading={isMutating}
     >
-      Simpan
+      {t("MuatanDilayaniPage.buttonSimpan", {}, "Simpan")}
     </Button>
   );
 
@@ -242,7 +283,11 @@ export default function AturMuatanDilayaniPage() {
         </div>
         <div className="mt-6 flex items-center gap-2">
           <PageTitle withBack={true} onClick={handleLeavePage}>
-            Atur Muatan Dilayani
+            {t(
+              "MuatanDilayaniPage.titleAturMuatanDilayani",
+              {},
+              "Atur Muatan Dilayani"
+            )}
           </PageTitle>
           <InfoTooltip
             className="w-80"
@@ -253,8 +298,11 @@ export default function AturMuatanDilayaniPage() {
               </button>
             }
           >
-            Atur muatan yang kamu layani sekarang untuk mendapatkan muatan yang
-            sesuai
+            {t(
+              "MuatanDilayaniPage.tooltipMuatanDilayani",
+              {},
+              "Atur muatan yang kamu layani sekarang untuk mendapatkan muatan yang sesuai"
+            )}
           </InfoTooltip>
         </div>
 
@@ -263,7 +311,11 @@ export default function AturMuatanDilayaniPage() {
             <div className="flex flex-row items-center gap-4">
               <InputSearch
                 options={[]}
-                placeholder="Cari Muatan"
+                placeholder={t(
+                  "MuatanDilayaniPage.placeholderCariMuatan",
+                  {},
+                  "Cari Muatan"
+                )}
                 className="w-[262px]"
                 searchValue={searchTerm}
                 setSearchValue={setSearchTerm}
@@ -280,14 +332,25 @@ export default function AturMuatanDilayaniPage() {
                     isCheckboxDisabled ? "text-neutral-500" : "text-neutral-900"
                   }`}
                 >
-                  Tampilkan yang terpilih saja
+                  {t(
+                    "MuatanDilayaniPage.checkboxTampilkanYangTerpilih",
+                    {},
+                    "Tampilkan yang terpilih saja"
+                  )}
                 </span>
               </Checkbox>
             </div>
 
             {showNotFound ? (
               <div className="flex justify-center pt-4">
-                <DataNotFound type="search" title={"Keyword Tidak Ditemukan"} />
+                <DataNotFound
+                  type="search"
+                  title={t(
+                    "MuatanDilayaniPage.emptyStateTitleKeywordNotFound",
+                    {},
+                    "Keyword Tidak Ditemukan"
+                  )}
+                />
               </div>
             ) : (
               processedHierarchies.map((hierarchy) =>
@@ -315,16 +378,20 @@ export default function AturMuatanDilayaniPage() {
         isOpen={isConfirmModalOpen}
         setIsOpen={setIsConfirmModalOpen}
         title={{
-          text: "Apakah kamu yakin menyimpan data ini?",
+          text: t(
+            "MuatanDilayaniPage.modalConfirmSimpan",
+            {},
+            "Apakah kamu yakin menyimpan data ini?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Simpan",
+          text: t("MuatanDilayaniPage.buttonSimpan", {}, "Simpan"),
           onClick: confirmSave,
           isLoading: isMutating,
         }}
         cancel={{
-          text: "Batal",
+          text: t("MuatanDilayaniPage.buttonBatal", {}, "Batal"),
           onClick: () => setIsConfirmModalOpen(false),
         }}
       />
@@ -333,16 +400,20 @@ export default function AturMuatanDilayaniPage() {
         isOpen={isLeaveModalOpen}
         setIsOpen={setIsLeaveModalOpen}
         title={{
-          text: "Muatan yang dilayani tidak akan tersimpan kalau kamu meninggalkan halaman ini",
+          text: t(
+            "MuatanDilayaniPage.modalConfirmLeave",
+            {},
+            "Muatan yang dilayani tidak akan tersimpan kalau kamu meninggalkan halaman ini"
+          ),
           className: "text-sm font-medium text-center",
         }}
         cancel={{
-          text: "Ya",
+          text: t("MuatanDilayaniPage.buttonYa", {}, "Ya"),
           variant: "destructive", // Use a destructive variant for a better UX
           onClick: () => router.back(), // Proceed to leave the page
         }}
         confirm={{
-          text: "Batal",
+          text: t("MuatanDilayaniPage.buttonBatal", {}, "Batal"),
           onClick: () => setIsLeaveModalOpen(false), // Stay on the page
         }}
       />

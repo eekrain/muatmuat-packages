@@ -22,6 +22,7 @@ const RequestList = ({
   status,
   openDetails,
   toggleDetail,
+  meta,
 }) => {
   const { t } = useTranslation();
 
@@ -85,6 +86,7 @@ const RequestList = ({
           statusTab={status}
           isDetailOpen={openDetails.includes(item.id)}
           onToggleDetail={() => toggleDetail(item.id)}
+          meta={meta}
         />
       ))}
     </div>
@@ -223,26 +225,28 @@ const UrgentIssue = () => {
         <h1 className="mb-4 text-base font-bold text-neutral-900">
           {t("UrgentIssue.titleUrgentIssueReport", {}, "Laporan Urgent Issue")}
         </h1>
-        <div
-          className={cn(
-            "mb-4 flex items-center gap-1 rounded-xl bg-error-50 p-2"
-          )}
-        >
-          <IconComponent src="/icons/warning-red.svg" className="h-4 w-4" />
-          <div className="flex flex-col">
-            <span className={cn("text-xs font-semibold text-error-400")}>
-              {meta?.overdue_count ?? 0} Laporan Urgent Issue Melewati Batas
-              Waktu
-            </span>
-            <span className="text-[10px] font-medium text-neutral-900">
-              {t(
-                "UrgentIssue.alertOverdueReportsAction",
-                {},
-                "Segera hubungi Transporter terkait untuk penyelesaian laporan."
-              )}
-            </span>
+        {meta?.overdue_count > 0 && (
+          <div
+            className={cn(
+              "mb-4 flex items-center gap-1 rounded-xl bg-error-50 p-2"
+            )}
+          >
+            <IconComponent src="/icons/warning-red.svg" className="h-4 w-4" />
+            <div className="flex flex-col">
+              <span className={cn("text-xs font-semibold text-error-400")}>
+                {meta?.overdue_count ?? 0} Laporan Urgent Issue Melewati Batas
+                Waktu
+              </span>
+              <span className="text-[10px] font-medium text-neutral-900">
+                {t(
+                  "UrgentIssue.alertOverdueReportsAction",
+                  {},
+                  "Segera hubungi Transporter terkait untuk penyelesaian laporan."
+                )}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
         <div className="flex items-center justify-between gap-2">
           <div className="flex gap-2">
             <button
@@ -307,6 +311,7 @@ const UrgentIssue = () => {
           status={activeTab}
           openDetails={openDetails}
           toggleDetail={toggleDetail}
+          meta={meta}
         />
       </div>
     </div>

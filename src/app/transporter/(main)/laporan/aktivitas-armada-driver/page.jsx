@@ -13,6 +13,7 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetActivities } from "@/services/Transporter/laporan/aktivitas/getArmadaData";
 import { useGetCountArmadaDriver } from "@/services/Transporter/laporan/aktivitas/getCountArmadaDriver";
 import { useGetCustomPeriods } from "@/services/Transporter/laporan/aktivitas/getCustomPeriods";
@@ -23,6 +24,7 @@ import { useGetFleetStatusFilters } from "@/services/Transporter/laporan/aktivit
 import { useSaveCustomPeriod } from "@/services/Transporter/laporan/aktivitas/saveCustomPeriod";
 
 export default function Page() {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState("armada");
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -235,19 +237,27 @@ export default function Page() {
   // Konfigurasi periode dengan startDate dan endDate
   const periodOptions = [
     {
-      name: "Semua Periode (Default)",
+      name: t(
+        "AktivitasArmadaDriverPage.periodAllDefault",
+        {},
+        "Semua Periode (Default)"
+      ),
       value: "",
       format: "day",
     },
     {
-      name: "Hari Ini",
+      name: t("AktivitasArmadaDriverPage.periodToday", {}, "Hari Ini"),
       value: 0,
       format: "day",
       startDate: new Date().toISOString().split("T")[0], // YYYY-MM-DD
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "1 Minggu Terakhir",
+      name: t(
+        "AktivitasArmadaDriverPage.periodLastWeek",
+        {},
+        "1 Minggu Terakhir"
+      ),
       value: 7,
       format: "day",
       startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -256,7 +266,11 @@ export default function Page() {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "30 Hari Terakhir",
+      name: t(
+        "AktivitasArmadaDriverPage.periodLast30Days",
+        {},
+        "30 Hari Terakhir"
+      ),
       value: 30,
       format: "month",
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -265,7 +279,11 @@ export default function Page() {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "90 Hari Terakhir",
+      name: t(
+        "AktivitasArmadaDriverPage.periodLast90Days",
+        {},
+        "90 Hari Terakhir"
+      ),
       value: 90,
       format: "month",
       startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
@@ -274,7 +292,11 @@ export default function Page() {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "1 Tahun Terakhir",
+      name: t(
+        "AktivitasArmadaDriverPage.periodLastYear",
+        {},
+        "1 Tahun Terakhir"
+      ),
       value: 365,
       format: "year",
       startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
@@ -295,12 +317,16 @@ export default function Page() {
     categories: [
       {
         key: "status",
-        label: "Status",
+        label: t("AktivitasArmadaDriverPage.filterStatus", {}, "Status"),
         searchable: false,
       },
       {
         key: "fleetType",
-        label: "Jenis Armada",
+        label: t(
+          "AktivitasArmadaDriverPage.filterFleetType",
+          {},
+          "Jenis Armada"
+        ),
         searchable: false,
       },
     ],
@@ -309,15 +335,31 @@ export default function Page() {
         id: item.status,
         label:
           item.status === "READY_FOR_ORDER"
-            ? "Siap Menerima Order"
+            ? t(
+                "AktivitasArmadaDriverPage.statusReadyForOrder",
+                {},
+                "Siap Menerima Order"
+              )
             : item.status === "NOT_PAIRED"
-              ? "Belum Dipasangkan"
+              ? t(
+                  "AktivitasArmadaDriverPage.statusNotPaired",
+                  {},
+                  "Belum Dipasangkan"
+                )
               : item.status === "ON_DUTY"
-                ? "Bertugas"
+                ? t("AktivitasArmadaDriverPage.statusOnDuty", {}, "Bertugas")
                 : item.status === "WAITING_LOADING_TIME"
-                  ? "Akan Muat Hari Ini"
+                  ? t(
+                      "AktivitasArmadaDriverPage.statusWillLoadToday",
+                      {},
+                      "Akan Muat Hari Ini"
+                    )
                   : item.status === "INACTIVE"
-                    ? "Nonaktif"
+                    ? t(
+                        "AktivitasArmadaDriverPage.statusInactive",
+                        {},
+                        "Nonaktif"
+                      )
                     : item.status,
       })),
       fleetType: fleetTypeFilters.map((item) => ({
@@ -332,7 +374,7 @@ export default function Page() {
     categories: [
       {
         key: "currentStatus",
-        label: "Status",
+        label: t("AktivitasArmadaDriverPage.filterStatus", {}, "Status"),
         searchable: false,
       },
     ],
@@ -341,13 +383,25 @@ export default function Page() {
         id: item.status,
         label:
           item.status === "READY_FOR_ORDER"
-            ? "Siap Order"
+            ? t("AktivitasArmadaDriverPage.statusReadyOrder", {}, "Siap Order")
             : item.status === "NOT_PAIRED"
-              ? "Belum Dipasangkan"
+              ? t(
+                  "AktivitasArmadaDriverPage.statusNotPaired",
+                  {},
+                  "Belum Dipasangkan"
+                )
               : item.status === "ON_DUTY"
-                ? "Sedang Bertugas"
+                ? t(
+                    "AktivitasArmadaDriverPage.statusCurrentlyOnDuty",
+                    {},
+                    "Sedang Bertugas"
+                  )
                 : item.status === "NON_ACTIVE"
-                  ? "Non Aktif"
+                  ? t(
+                      "AktivitasArmadaDriverPage.statusNotActive",
+                      {},
+                      "Non Aktif"
+                    )
                   : item.status,
       })),
     },
@@ -483,7 +537,13 @@ export default function Page() {
     <div className="mx-auto mt-7 max-w-full px-0">
       {/* Header Section */}
       <div className="mb-6">
-        <h1 className="text-xl font-bold">Laporan Aktivitas</h1>
+        <h1 className="text-xl font-bold">
+          {t(
+            "AktivitasArmadaDriverPage.titleActivityReport",
+            {},
+            "Laporan Aktivitas"
+          )}
+        </h1>
       </div>
 
       {/* Tabs */}
@@ -495,10 +555,20 @@ export default function Page() {
         >
           <TabsList className="w-[390px]">
             <TabsTriggerWithSeparator value="armada" activeColor="primary-700">
-              Aktivitas Armada ({countLoading ? "..." : countData.fleet || 0})
+              {t(
+                "AktivitasArmadaDriverPage.tabFleetActivities",
+                {},
+                "Aktivitas Armada"
+              )}{" "}
+              ({countLoading ? "..." : countData.fleet || 0})
             </TabsTriggerWithSeparator>
             <TabsTriggerWithSeparator value="driver" activeColor="primary-700">
-              Aktivitas Driver ({countLoading ? "..." : countData.driver || 0})
+              {t(
+                "AktivitasArmadaDriverPage.tabDriverActivities",
+                {},
+                "Aktivitas Driver"
+              )}{" "}
+              ({countLoading ? "..." : countData.driver || 0})
             </TabsTriggerWithSeparator>
           </TabsList>
         </Tabs>
@@ -579,7 +649,7 @@ export default function Page() {
                 isPeriodFilterActive)
             }
           >
-            Unduh
+            {t("AktivitasArmadaDriverPage.buttonDownload", {}, "Unduh")}
           </Button>
         </div>
       </div>
@@ -587,7 +657,9 @@ export default function Page() {
       {/* Data Table - Always show table, only state UI changes */}
       {isLoading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="text-gray-500">Loading...</div>
+          <div className="text-gray-500">
+            {t("AktivitasArmadaDriverPage.loadingMessage", {}, "Loading...")}
+          </div>
         </div>
       ) : (
         <>
@@ -616,7 +688,11 @@ export default function Page() {
               sortConfig={sortConfig}
               showFilter={true}
               showSearch={true}
-              searchPlaceholder="Cari No. Pol atau Kode Pesanan"
+              searchPlaceholder={t(
+                "AktivitasArmadaDriverPage.searchPlaceholderFleet",
+                {},
+                "Cari No. Pol atau Kode Pesanan"
+              )}
               disabledByPeriod={false}
               multiSelect={true} // ✅ Gunakan multi-select untuk filter (checkbox)
               isSearchNoResults={isSearchNoResults}
@@ -649,7 +725,11 @@ export default function Page() {
               sortConfig={sortConfig}
               showFilter={true}
               showSearch={true}
-              searchPlaceholder="Cari Nama Driver, Rute atau lainnya"
+              searchPlaceholder={t(
+                "AktivitasArmadaDriverPage.searchPlaceholderDriver",
+                {},
+                "Cari Nama Driver, Rute atau lainnya"
+              )}
               disabledByPeriod={false}
               multiSelect={true} // ✅ Gunakan multi-select untuk driver filter (checkbox)
               isSearchNoResults={isSearchNoResults}

@@ -23,6 +23,7 @@ import {
   ProvinceSelectionModal,
 } from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
 import {
   useGetAreaMuatData,
@@ -35,6 +36,7 @@ import { useGetTransporterCargoStatus } from "@/services/Transporter/pengaturan/
 export default function Page() {
   const router = useRouter();
   const transporterId = "transporter-123";
+  const { t } = useTranslation();
 
   // Modal state
   const [isBackModalOpen, setIsBackModalOpen] = useState(false);
@@ -128,24 +130,26 @@ export default function Page() {
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-2">
               <h3 className="text-lg font-semibold text-neutral-900">
-                Area Muat
+                {t("PengaturanPage.titleAreaMuat", {}, "Area Muat")}
               </h3>
               {hasData ? (
                 <BadgeStatus variant="success" className="w-auto">
                   <CheckCircle size={16} className="mr-2" />
-                  Data Tersimpan
+                  {t("PengaturanPage.badgeDataTersimpan", {}, "Data Tersimpan")}
                 </BadgeStatus>
               ) : (
                 <BadgeStatus variant="error" className="w-auto">
                   <XCircle size={16} className="mr-2" />
-                  Belum Ada Data
+                  {t("PengaturanPage.badgeBelumAdaData", {}, "Belum Ada Data")}
                 </BadgeStatus>
               )}
             </div>
             <p className="text-sm text-neutral-600">
-              Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
-              dan efisien. muatrans hanya menawarkan permintaan jasa angkut
-              dengan lokasi pick up didalam area kerjamu
+              {t(
+                "PengaturanPage.descriptionAreaMuat",
+                {},
+                "Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif dan efisien. muatrans hanya menawarkan permintaan jasa angkut dengan lokasi pick up didalam area kerjamu"
+              )}
             </p>
           </div>
           <div className="ml-4 flex-shrink-0">
@@ -159,7 +163,13 @@ export default function Page() {
                 }
               }}
             >
-              {hasData ? "Atur Area Muat" : "Tambah Area Muat"}
+              {hasData
+                ? t("PengaturanPage.buttonAturAreaMuat", {}, "Atur Area Muat")
+                : t(
+                    "PengaturanPage.buttonTambahAreaMuat",
+                    {},
+                    "Tambah Area Muat"
+                  )}
             </Button>
           </div>
         </div>
@@ -169,7 +179,8 @@ export default function Page() {
               <div className="rounded-lg border">
                 <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
                   <span className="text-sm font-medium text-[#7B7B7B]">
-                    {areaMuatSummary?.totalProvinces} Provinsi
+                    {areaMuatSummary?.totalProvinces}{" "}
+                    {t("PengaturanPage.labelProvinsi", {}, "Provinsi")}
                   </span>
                   <ChevronDown
                     size={16}
@@ -186,7 +197,7 @@ export default function Page() {
                         >
                           {province.province} -{" "}
                           {typeof province.cityCount === "number"
-                            ? `${province.cityCount} Kota/Kab`
+                            ? `${province.cityCount} ${t("PengaturanPage.labelKotaKab", {}, "Kota/Kab")}`
                             : province.cityCount}
                         </TagBubble>
                       ))}
@@ -228,24 +239,26 @@ export default function Page() {
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-2">
               <h3 className="text-lg font-semibold text-neutral-900">
-                Area Bongkar
+                {t("PengaturanPage.titleAreaBongkar", {}, "Area Bongkar")}
               </h3>
               {hasData ? (
                 <BadgeStatus variant="success" className="w-auto">
                   <CheckCircle size={16} className="mr-2" />
-                  Data Tersimpan
+                  {t("PengaturanPage.badgeDataTersimpan", {}, "Data Tersimpan")}
                 </BadgeStatus>
               ) : (
                 <BadgeStatus variant="error" className="w-auto">
                   <XCircle size={16} className="mr-2" />
-                  Belum Ada Data
+                  {t("PengaturanPage.badgeBelumAdaData", {}, "Belum Ada Data")}
                 </BadgeStatus>
               )}
             </div>
             <p className="text-sm text-neutral-600">
-              Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
-              dan efisien. muatrans hanya menawarkan permintaan jasa angkut
-              dengan lokasi bongkar didalam area kerjamu
+              {t(
+                "PengaturanPage.descriptionAreaBongkar",
+                {},
+                "Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif dan efisien. muatrans hanya menawarkan permintaan jasa angkut dengan lokasi bongkar didalam area kerjamu"
+              )}
             </p>
           </div>
           <div className="ml-4 flex-shrink-0">
@@ -259,7 +272,17 @@ export default function Page() {
                 }
               }}
             >
-              {hasData ? "Atur Area Bongkar" : "Tambah Area Bongkar"}
+              {hasData
+                ? t(
+                    "PengaturanPage.buttonAturAreaBongkar",
+                    {},
+                    "Atur Area Bongkar"
+                  )
+                : t(
+                    "PengaturanPage.buttonTambahAreaBongkar",
+                    {},
+                    "Tambah Area Bongkar"
+                  )}
             </Button>
           </div>
         </div>
@@ -269,7 +292,8 @@ export default function Page() {
               <div className="rounded-lg border">
                 <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
                   <span className="text-sm font-medium text-[#7B7B7B]">
-                    {areaBongkarData.totalProvinces} Provinsi
+                    {areaBongkarData.totalProvinces}{" "}
+                    {t("PengaturanPage.labelProvinsi", {}, "Provinsi")}
                   </span>
                   <ChevronDown
                     size={16}
@@ -283,7 +307,7 @@ export default function Page() {
                         <TagBubble key={province.id} className="me-1 px-2">
                           {province.name} -{" "}
                           {typeof province.cityCount === "number"
-                            ? `${province.cityCount} Kota/Kab`
+                            ? `${province.cityCount} ${t("PengaturanPage.labelKotaKab", {}, "Kota/Kab")}`
                             : province.cityCount}
                         </TagBubble>
                       ))}
@@ -315,7 +339,7 @@ export default function Page() {
     <>
       <div className="mx-auto py-6">
         <PageTitle withBack={false} className="mb-6">
-          Pengaturan
+          {t("PengaturanPage.titlePengaturan", {}, "Pengaturan")}
         </PageTitle>
 
         <Card className="!border-none">
@@ -351,13 +375,19 @@ export default function Page() {
                 <div className="flex-1">
                   <div className="mb-2 flex items-center gap-2">
                     <h3 className="text-lg font-semibold text-neutral-900">
-                      Layanan Halal Logistik
+                      {t(
+                        "PengaturanPage.titleLayananHalalLogistik",
+                        {},
+                        "Layanan Halal Logistik"
+                      )}
                     </h3>
                   </div>
                   <p className="text-sm text-neutral-600">
-                    Tentukan area kerja kamu agar pekerjaanmu menjadi lebih
-                    efektif dan efisien. muatrans hanya menawarkan permintaan
-                    muat dengan lokasi pick up didalam area kerjamu
+                    {t(
+                      "PengaturanPage.descriptionLayananHalalLogistik",
+                      {},
+                      "Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif dan efisien. muatrans hanya menawarkan permintaan muat dengan lokasi pick up didalam area kerjamu"
+                    )}
                   </p>
                 </div>
                 <div className="ml-4 flex-shrink-0">
@@ -365,7 +395,11 @@ export default function Page() {
                     variant="muattrans-primary"
                     onClick={() => router.push("/pengaturan/halal-logistik")}
                   >
-                    Daftar Halal Logistik
+                    {t(
+                      "PengaturanPage.buttonDaftarHalalLogistik",
+                      {},
+                      "Daftar Halal Logistik"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -379,7 +413,11 @@ export default function Page() {
         isOpen={isAreaMuatModalOpen}
         onClose={() => setIsAreaMuatModalOpen(false)}
         onSave={handleSaveProvinces}
-        title="Pilih Provinsi Area Muat"
+        title={t(
+          "PengaturanPage.modalTitlePilihProvinsiAreaMuat",
+          {},
+          "Pilih Provinsi Area Muat"
+        )}
         provinces={provincesData}
         isLoading={isLoadingProvinces}
         onSearch={handleSearchProvinces}
@@ -391,7 +429,11 @@ export default function Page() {
         isOpen={isAreaBongkarModalOpen}
         onClose={() => setIsAreaBongkarModalOpen(false)}
         onSave={handleSaveProvinces}
-        title="Pilih Provinsi Area Bongkar"
+        title={t(
+          "PengaturanPage.modalTitlePilihProvinsiAreaBongkar",
+          {},
+          "Pilih Provinsi Area Bongkar"
+        )}
         provinces={provincesData}
         isLoading={isLoadingProvinces}
         onSearch={handleSearchProvinces}
@@ -411,12 +453,20 @@ export default function Page() {
         <ModalContent type="muatmuat" className="h-[397px] w-[544px]">
           <div className="flex flex-col px-5 py-4">
             <h2 className="mb-4 text-center text-lg font-bold leading-[21.6px]">
-              Lihat Area Muat
+              {t(
+                "PengaturanPage.modalTitleLihatAreaMuat",
+                {},
+                "Lihat Area Muat"
+              )}
             </h2>
             <div className="h-[320px] rounded-xl border border-neutral-400 p-4">
               <div className="mb-4">
                 <InputSearch
-                  placeholder="Cari Area Muat"
+                  placeholder={t(
+                    "PengaturanPage.placeholderCariAreaMuat",
+                    {},
+                    "Cari Area Muat"
+                  )}
                   searchValue={viewModalSearch}
                   setSearchValue={setViewModalSearch}
                   options={[]}
@@ -427,7 +477,8 @@ export default function Page() {
               {!viewModalSearch && (
                 <div className="mb-2">
                   <span className="text-sm font-medium text-neutral-900">
-                    {areaMuatProvinces ? areaMuatProvinces.length : 0} Provinsi
+                    {areaMuatProvinces ? areaMuatProvinces.length : 0}{" "}
+                    {t("PengaturanPage.labelProvinsi", {}, "Provinsi")}
                   </span>
                 </div>
               )}
