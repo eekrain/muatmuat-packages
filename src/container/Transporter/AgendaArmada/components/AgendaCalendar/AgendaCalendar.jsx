@@ -23,6 +23,7 @@ export const AgendaCalendar = ({
   shouldShowOverlay,
   mutate,
 }) => {
+  const viewType = useAgendaNavigatorStore((state) => state.viewType);
   const { t } = useTranslation();
   const navigator = useDateNavigator();
   const {
@@ -68,9 +69,45 @@ export const AgendaCalendar = ({
   // Get schedules for selected date
   const selectedDateSchedules = useMemo(() => {
     if (!displaySchedules || displaySchedules.length === 0) return [];
-    return displaySchedules.filter(
-      (schedule) => schedule.start_date === selectedDate
-    );
+
+    // Process the new API structure where schedules are nested
+    const processedSchedules = displaySchedules
+      .map((armadaItem) => {
+        // Check if this armada has schedules for the selected date
+        const matchingSchedules =
+          armadaItem.schedule?.filter((scheduleItem) => {
+            return scheduleItem.scheduleDate === selectedDate;
+          }) || [];
+
+        if (matchingSchedules.length > 0) {
+          // Return the armada item with filtered schedules
+          return {
+            ...armadaItem,
+            schedule: matchingSchedules,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean); // Remove null items
+
+    console.log("🔍 selectedDateSchedules processed:", {
+      selectedDate,
+      selectedDateType: typeof selectedDate,
+      totalArmadas: displaySchedules.length,
+      matchingArmadas: processedSchedules.length,
+      sampleScheduleDates: displaySchedules.slice(0, 2).map((item) => ({
+        licensePlate: item.licensePlate,
+        scheduleDates: item.schedule?.map((s) => s.scheduleDate) || [],
+      })),
+      schedules: processedSchedules.map((item) => ({
+        licensePlate: item.licensePlate,
+        scheduleCount: item.schedule.length,
+        scheduleDates: item.schedule.map((s) => s.scheduleDate),
+      })),
+    });
+
+    return processedSchedules;
   }, [displaySchedules, selectedDate]);
 
   // Intersection Observer for infinite scrolling
@@ -193,6 +230,7 @@ export const AgendaCalendar = ({
         navigateToDate={navigateToDate}
         clientWidth={clientWidth}
       />
+
       <Content
         data={data}
         displaySchedules={displaySchedules}
@@ -232,10 +270,6 @@ export const Content = ({
       ? (containerWidth - SIDEBAR_WIDTH) / DAY_COLUMNS - 1
       : 0;
 
-  // Use data if provided, otherwise use selectedDateSchedules
-  const dataToRender = data?.length > 0 ? data : selectedDateSchedules || [];
-  const dataLength = dataToRender.length;
-
   // Get search state to determine what empty state to show
   const { search, filterAgendaStatus, lastInteraction } = useDateNavigator();
 
@@ -244,33 +278,90 @@ export const Content = ({
   // Filter is active when it's an array with specific filters (not empty array which means all enabled)
   const isFiltering =
     Array.isArray(filterAgendaStatus) && filterAgendaStatus.length > 0;
+
+  // Use data if provided, otherwise use selectedDateSchedules
+  // When searching or filtering, we want to show all matching data from API, not just for selected date
+  const dataToRender =
+    data?.length > 0
+      ? data
+      : (isSearching || isFiltering
+          ? displaySchedules // Use API data when searching/filtering
+          : selectedDateSchedules) || [];
+  const dataLength = dataToRender.length;
+
+  console.log("🔍 Content dataToRender:", {
+    dataLength,
+    isSearching,
+    isFiltering,
+    displaySchedulesLength: displaySchedules?.length || 0,
+    selectedDateSchedulesLength: selectedDateSchedules?.length || 0,
+    searchValue: search,
+    filterValue: filterAgendaStatus,
+    lastInteraction,
+    dataToRenderSample: dataToRender.slice(0, 2).map((item) => ({
+      licensePlate: item.licensePlate,
+      scheduleCount: item.schedule?.length || 0,
+      scheduleDates: item.schedule?.map((s) => s.scheduleDate) || [],
+    })),
+  });
   const hasOnlyPlaceholders =
     dataToRender.length > 0 && dataToRender.every((item) => item.isPlaceholder);
 
   // Determine the appropriate error message based on last interaction when both search and filter are active
   const getErrorMessage = () => {
-    if (!hasOnlyPlaceholders) return null;
-
-    // If both search and filter are active, use last interaction to determine message
-    if (isSearching && isFiltering) {
-      if (lastInteraction === "search") {
-        return "keyword"; // User searched within filtered results
-      } else if (lastInteraction === "filter") {
-        return "filter"; // User filtered within search results
+    // Check if we have no data and user is searching or filtering
+    if (dataToRender.length === 0 && (isSearching || isFiltering)) {
+      // If both search and filter are active, use last interaction to determine message
+      if (isSearching && isFiltering) {
+        if (lastInteraction === "search") {
+          return "search_filter"; // User searched within filtered results (LDF-26)
+        } else if (lastInteraction === "filter") {
+          return "filter_search"; // User filtered within search results (LDF-27)
+        }
       }
+
+      // If only one is active, show appropriate message
+      if (isSearching) return "search"; // LDF-24
+      if (isFiltering) return "filter"; // LDF-20
     }
 
-    // If only one is active, show appropriate message
-    if (isSearching) return "keyword";
-    if (isFiltering) return "filter";
+    // Check for placeholder items (legacy logic)
+    if (hasOnlyPlaceholders) {
+      if (isSearching && isFiltering) {
+        if (lastInteraction === "search") {
+          return "search_filter";
+        } else if (lastInteraction === "filter") {
+          return "filter_search";
+        }
+      }
+      if (isSearching) return "search";
+      if (isFiltering) return "filter";
+    }
 
     return null;
   };
 
-  const errorMessageType = getErrorMessage();
+  // Get the final error message type, handling the case when data is empty
+  const getFinalErrorMessageType = () => {
+    const errorType = getErrorMessage();
+    if (errorType) return errorType;
+
+    // If no error type but we have no data and user is searching/filtering
+    if (dataToRender.length === 0 && (isSearching || isFiltering)) {
+      if (isSearching && isFiltering) {
+        return lastInteraction === "search" ? "search_filter" : "filter_search";
+      }
+      if (isSearching) return "search";
+      if (isFiltering) return "filter";
+    }
+
+    return null;
+  };
+
+  const errorMessageType = getFinalErrorMessageType();
   const shouldShowNotFound = errorMessageType !== null;
 
-  if (!dataLength && !isLoadingMore) {
+  if (!dataLength && !isLoadingMore && !shouldShowNotFound) {
     // Default empty state when not searching and truly no data
     return (
       <div className="flex h-[calc(100dvh-295px)] items-center justify-center bg-neutral-50">
@@ -300,7 +391,7 @@ export const Content = ({
         <div className="absolute inset-0 overflow-y-auto bg-white">
           {dataToRender.map((item, index) => (
             <AgendaRowItem
-              key={`${item.id || item.vehicle_id || index}-${item.start_date || item.date || index}`}
+              key={`${item.licensePlate || item.id || index}-${item.schedule?.[0]?.scheduleDate || index}-${index}`}
               data={item}
               cellWidth={cellWidth}
               mutate={mutate}
@@ -331,7 +422,7 @@ export const Content = ({
 
         {shouldShowNotFound && (
           <div
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{
               left: SIDEBAR_WIDTH + (2 * cellWidth + cellWidth / 2),
             }}
@@ -339,18 +430,18 @@ export const Content = ({
             <DataNotFound
               type="search"
               title={
-                errorMessageType === "keyword" ? (
+                errorMessageType === "search" ? (
                   <span>
                     {t(
-                      "AgendaCalendar.titleKeywordTidakDitemukan",
+                      "AgendaCalendar.titleSearchTidakDitemukan",
                       {},
-                      "Keyword Tidak Ditemukan"
+                      "Pencarian Tidak Ditemukan"
                     )}
                   </span>
-                ) : (
+                ) : errorMessageType === "filter" ? (
                   <span>
                     {t(
-                      "AgendaCalendar.titleDataTidakDitemukan",
+                      "AgendaCalendar.titleFilterTidakDitemukan",
                       {},
                       "Data tidak Ditemukan."
                     )}
@@ -359,6 +450,30 @@ export const Content = ({
                       "AgendaCalendar.messageHapusFilter",
                       {},
                       "Mohon coba hapus beberapa filter"
+                    )}
+                  </span>
+                ) : errorMessageType === "search_filter" ? (
+                  <span>
+                    {t(
+                      "AgendaCalendar.titleSearchFilterTidakDitemukan",
+                      {},
+                      "Pencarian dalam filter tidak ditemukan"
+                    )}
+                  </span>
+                ) : errorMessageType === "filter_search" ? (
+                  <span>
+                    {t(
+                      "AgendaCalendar.titleFilterSearchTidakDitemukan",
+                      {},
+                      "Filter dalam pencarian tidak ditemukan"
+                    )}
+                  </span>
+                ) : (
+                  <span>
+                    {t(
+                      "AgendaCalendar.titleDataTidakDitemukan",
+                      {},
+                      "Data tidak Ditemukan."
                     )}
                   </span>
                 )
