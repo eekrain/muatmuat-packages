@@ -71,7 +71,7 @@ const PesananActionBar = ({
       categories: [
         {
           key: "transporter",
-          label: t("pesananActionBar.filterByTransporter", {}, "Transporter"),
+          label: "Transporter",
           searchable: true,
           type: "checkbox-multi",
           searchPlaceholder: t(
@@ -82,7 +82,7 @@ const PesananActionBar = ({
         },
         {
           key: "shipper",
-          label: t("pesananActionBar.filterByShipper", {}, "Shipper"),
+          label: "Shipper",
           searchable: true,
           type: "checkbox-multi",
           searchPlaceholder: t(

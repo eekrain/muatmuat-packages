@@ -501,13 +501,14 @@ const DaftarPesananAktif = ({
             <InfoTooltip
               trigger={
                 <button type="button" className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-warning-900"></div>
+                  <NotificationDot size="md" color="warning" animated={true} />
                 </button>
               }
               side="right"
-              align="start"
+              align="center"
+              className="border-none shadow-none"
             >
-              <p className="text-xs">
+              <p className="w-[237px] text-xs">
                 {t(
                   "DaftarPesananAktif.locationChangeTooltip",
                   {},

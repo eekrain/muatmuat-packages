@@ -18,7 +18,10 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
-import { formatDateToDDMonYYYY } from "@/lib/utils/dateFormat";
+import {
+  formatDateToDDMonYYYY,
+  formatToYYYYMMDD,
+} from "@/lib/utils/dateFormat";
 
 import OrderWithAdditionalCost from "./OrderWithAdditionalCost";
 
@@ -36,6 +39,7 @@ const LaporanTambahanBiaya = ({
   currentPeriodValue,
   setCurrentPeriodValue,
   onChangeQueryParams,
+  onSavePeriodHistory,
 }) => {
   const { t } = useTranslation();
   const isFirstTimer = false;
@@ -102,6 +106,65 @@ const LaporanTambahanBiaya = ({
     [filterOptions]
   );
 
+  const handleSelectPeriod = (selectedOption) => {
+    // For custom date range option
+    if (selectedOption?.range) {
+      // Use string manipulation, not Date object with toISOString()
+      const formattedStartDate = formatToYYYYMMDD(selectedOption.start_date);
+      const formattedEndDate = formatToYYYYMMDD(selectedOption.end_date);
+
+      onChangeQueryParams("startDate", formattedStartDate);
+      onChangeQueryParams("endDate", formattedEndDate);
+
+      onSavePeriodHistory(formattedStartDate, formattedEndDate);
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
+    }
+    // For default "Semua Periode" option
+    else if (selectedOption?.value === "") {
+      onChangeQueryParams("startDate", null);
+      onChangeQueryParams("endDate", null);
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
+    }
+    // For predefined period options (today, last 7 days, etc.)
+    else if (selectedOption?.value !== undefined) {
+      // Get local dates using direct component extraction, not toISOString()
+      const getLocalDateString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+
+      // Get today as end date
+      const today = new Date();
+      const endDate = getLocalDateString(today);
+
+      // Calculate start date
+      let startDate;
+      if (selectedOption.value === 0) {
+        // Today
+        startDate = endDate;
+      } else {
+        // Other periods (7 days, 30 days, etc.)
+        const startDateObj = new Date();
+        // Set to noon to avoid any date boundary issues
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - selectedOption.value);
+        startDate = getLocalDateString(startDateObj);
+      }
+
+      onChangeQueryParams("startDate", startDate);
+      onChangeQueryParams("endDate", endDate);
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
+    }
+  };
+
   // Handle search
   const handleSearch = (e) => {
     if (e.key === "Enter" && tempSearch.length >= 3) {
@@ -143,12 +206,9 @@ const LaporanTambahanBiaya = ({
               <DropdownPeriode
                 disable={reports.length === 0}
                 options={periodOptions}
-                onSelect={() => {}}
+                onSelect={handleSelectPeriod}
                 recentSelections={recentSelections}
-                value={null}
-                //   onSelect={handleSelectPeriod}
-                //   recentSelections={recentPeriodOptions}
-                //   value={currentPeriodValue}
+                value={currentPeriodValue}
               />
               <Button
                 disabled={reports.length === 0}

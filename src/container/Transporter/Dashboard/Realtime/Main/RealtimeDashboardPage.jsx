@@ -9,7 +9,7 @@ import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/St
 import SuspendedAccountAlert from "@/app/transporter/(main)/dashboard/real-time/components/SuspendedAccountAlert";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetSosReports } from "@/services/Transporter/dashboard/getSosReports";
+import { useGetSosReports } from "@/services/Transporter/alerts/getSosReports";
 
 const RealtimeDashboardPage = () => {
   const { t } = useTranslation();

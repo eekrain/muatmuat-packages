@@ -22,7 +22,7 @@ const RespondChangeFormModal = ({
   isOpen,
   onClose,
   orderData,
-  onBackClick,
+  onBackClick = () => {},
   formDaftarPesanan,
 }) => {
   const { t } = useTranslation();
@@ -126,32 +126,13 @@ const RespondChangeFormModal = ({
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      const responseLabels = {
-        accept: t(
-          "RespondChangeFormModal.acceptChange",
-          {},
-          "Terima Perubahan"
-        ),
-        accept_change_fleet: t(
-          "RespondChangeFormModal.acceptChangeFleet",
-          {},
-          "Terima Perubahan & Ubah Armada"
-        ),
-        reject_cancel: t(
-          "RespondChangeFormModal.rejectCancel",
-          {},
-          "Tolak Perubahan & Batalkan Armada"
-        ),
-      };
-
       toast.success(
         t(
           "RespondChangeFormModal.successMessage",
           {
-            response: responseLabels[data.selectedResponse],
             orderCode: orderData?.orderCode || "MT001234",
           },
-          `Berhasil ${responseLabels[data.selectedResponse]} untuk pesanan ${orderData?.orderCode || "MT001234"}`
+          `Berhasil kirim respon perubahan untuk pesanan ${orderData?.orderCode || "MT001234"}`
         )
       );
       handleClose();

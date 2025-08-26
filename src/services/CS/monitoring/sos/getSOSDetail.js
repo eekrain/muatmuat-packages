@@ -2,239 +2,186 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 export const mockSOSDetailData = {
-  data: {
-    Message: {
-      Code: 200,
-      Text: "SOS detail retrieved successfully",
-    },
-    Data: {
-      id: "123e4567-e89b-12d3-a456-426614174000",
-      sosStatus: "OPEN",
-      isUrgent: false,
-      escalationLevel: 1,
-      sosTime: "2025-08-04T10:30:00Z",
-      responseDeadline: "2025-08-04T12:30:00Z",
-      acknowledgedAt: null,
-      acknowledgedByUserID: null,
-      description: "Mesin mati mendadak saat di jalan tol",
-      transporter: {
-        id: "trans123",
-        companyName: "PT ABC Transport",
-        logoUrl: "https://cdn.example.com/logos/abc-transport.png",
-        companyPhoneNumber: "02112345678",
-        emergencyContactName: "John Smith",
-        emergencyContactPhone: "08987654321",
-        whatsappBusinessNumber: "628987654321",
-      },
-      fleet: {
-        id: "fleet456",
-        licensePlate: "B1234CD",
-        vehicleType: "Truk Fuso",
-        carrierType: "Box Aluminium",
-        imageUrl: "https://cdn.example.com/vehicles/fleet456.jpg",
-      },
-      driver: {
-        id: "driver789",
-        fullName: "John Doe",
-        phoneNumber: "08123456789",
-        whatsappNumber: "628123456789",
-      },
-      sosCategory: {
-        id: "cat001",
-        categoryName: "Mesin",
-        description: "Masalah terkait mesin kendaraan",
-      },
+  Message: {
+    Code: 200,
+    Text: "Detail SOS berhasil diambil",
+  },
+  Data: {
+    sosDetail: {
+      sosId: "456e7890-e89b-12d3-a456-426614174001",
+      description: "Ban pecah di jalan tol, memerlukan bantuan segera",
+      sosTime: "2025-08-05T14:30:00Z",
+      status: "RESOLVED",
+      resolution: "Bantuan teknis telah diberikan, ban sudah diganti",
+      resolvedAt: "2025-08-05T16:15:00Z",
       location: {
-        sosLatitude: -6.123456,
-        sosLongitude: 106.789123,
-        lastAddress: "Jalan Sudirman No. 123, Jakarta Pusat",
+        latitude: -6.2088,
+        longitude: 106.8456,
+        address: "Jalan Tol Jakarta-Cikampek KM 15, Jakarta Timur",
+        isLocationAccurate: true,
       },
-      order: {
-        id: "order123",
-        orderNumber: "ORD-20250804-001",
-        status: "IN_PROGRESS",
-        pickupLocation: "Jakarta",
-        deliveryLocation: "Bandung",
-        estimatedArrival: "2025-08-04T18:00:00Z",
+      category: {
+        categoryId: "cat-123-456",
+        categoryCode: "VEHICLE_BREAKDOWN",
+        categoryName: "Kerusakan Kendaraan",
+        priorityLevel: "HIGH",
+        iconUrl: "https://example.com/icons/vehicle-breakdown.png",
+        colorCode: "#FF6B6B",
+      },
+      fleetInfo: {
+        fleetId: "fleet-789-012",
+        licensePlate: "B 1234 XYZ",
+        driverName: "Ahmad Sudrajat",
+        driverPhone: "+62812345678901",
+      },
+      transporterInfo: {
+        transporterId: "trans-345-678",
+        companyName: "PT Angkutan Jaya",
+        phoneNumber: "+62215551234",
       },
       photoEvidence: [
         {
-          id: "photo1",
-          originalFileName: "sos_evidence_1.jpg",
-          thumbnailUrl: "https://cdn.example.com/sos/thumb/photo1.jpg",
-          mediumUrl: "https://cdn.example.com/sos/medium/photo1.jpg",
-          photoUrl: "https://cdn.example.com/sos/original/photo1.jpg",
-          imageWidth: 1920,
-          imageHeight: 1080,
-          fileSize: 524288,
-          mimeType: "image/jpeg",
-          description: "Mesin dalam kondisi mati",
+          photoId: "photo-001-abc",
+          photoUrl: "https://example.com/photos/sos-evidence-1.jpg",
+          description: "Kondisi ban yang pecah",
+          uploadedAt: "2025-08-05T14:45:00Z",
         },
         {
-          id: "photo2",
-          originalFileName: "sos_evidence_2.jpg",
-          thumbnailUrl: "https://cdn.example.com/sos/thumb/photo2.jpg",
-          mediumUrl: "https://cdn.example.com/sos/medium/photo2.jpg",
-          photoUrl: "https://cdn.example.com/sos/original/photo2.jpg",
-          imageWidth: 1920,
-          imageHeight: 1080,
-          fileSize: 786432,
-          mimeType: "image/jpeg",
-          description: "Kondisi jalan tol saat kejadian",
+          photoId: "photo-002-def",
+          photoUrl: "https://example.com/photos/sos-evidence-2.jpg",
+          description: "Lokasi kejadian dari sisi jalan",
+          uploadedAt: "2025-08-05T14:50:00Z",
         },
       ],
-      countdownMinutes: -45,
-      statusHistory: [
+      timeline: [
         {
-          id: "hist1",
-          previousStatus: null,
-          newStatus: "OPEN",
-          changedAt: "2025-08-04T10:30:00Z",
-          changeReason: "Initial SOS report created",
+          timestamp: "2025-08-05T14:30:00Z",
+          event: "SOS Dilaporkan",
+          description: "Driver melaporkan kondisi SOS",
+          status: "OPEN",
         },
         {
-          id: "hist2",
-          previousStatus: "OPEN",
-          newStatus: "ACKNOWLEDGED",
-          changedAt: "2025-08-04T10:35:00Z",
-          changeReason: "SOS acknowledged by CS team",
+          timestamp: "2025-08-05T14:35:00Z",
+          event: "Tim Respons Dihubungi",
+          description: "Operator CS menghubungi tim respons darurat",
+          status: "IN_PROGRESS",
+        },
+        {
+          timestamp: "2025-08-05T15:20:00Z",
+          event: "Tim Bantuan Tiba",
+          description: "Tim bantuan teknis tiba di lokasi",
+          status: "IN_PROGRESS",
+        },
+        {
+          timestamp: "2025-08-05T16:15:00Z",
+          event: "Masalah Teratasi",
+          description:
+            "Ban sudah diganti, kendaraan siap melanjutkan perjalanan",
+          status: "RESOLVED",
         },
       ],
     },
-    Type: "SOS_DETAIL",
   },
+  Type: "SOS_DETAIL_SUCCESS",
 };
 
 export const mockSOSDetailUrgent = {
-  data: {
-    Message: {
-      Code: 200,
-      Text: "SOS detail retrieved successfully",
-    },
-    Data: {
-      id: "456e7890-e89b-12d3-a456-426614174001",
-      sosStatus: "IN_PROGRESS",
-      isUrgent: true,
-      escalationLevel: 3,
-      sosTime: "2025-08-04T09:15:00Z",
-      responseDeadline: "2025-08-04T11:15:00Z",
-      acknowledgedAt: "2025-08-04T09:20:00Z",
-      acknowledgedByUserID: "user123",
-      description: "Kecelakaan serius di tol km 23, sopir terluka",
-      transporter: {
-        id: "trans456",
-        companyName: "PT XYZ Logistics",
-        logoUrl: "https://cdn.example.com/logos/xyz-logistics.png",
-        companyPhoneNumber: "02187654321",
-        emergencyContactName: "Jane Smith",
-        emergencyContactPhone: "08987654321",
-        whatsappBusinessNumber: "628987654321",
-      },
-      fleet: {
-        id: "fleet789",
-        licensePlate: "B5678EF",
-        vehicleType: "Colt Diesel",
-        carrierType: "Box Kayu",
-        imageUrl: "https://cdn.example.com/vehicles/fleet789.jpg",
-      },
-      driver: {
-        id: "driver012",
-        fullName: "Jane Smith",
-        phoneNumber: "08987654321",
-        whatsappNumber: "628987654321",
-      },
-      sosCategory: {
-        id: "cat002",
-        categoryName: "Kecelakaan",
-        description: "Kecelakaan kendaraan",
-      },
+  Message: {
+    Code: 200,
+    Text: "Detail SOS berhasil diambil",
+  },
+  Data: {
+    sosDetail: {
+      sosId: "789e0123-e89b-12d3-a456-426614174002",
+      description: "Mesin overheating, asap keluar dari kap mesin",
+      sosTime: "2025-08-05T10:15:00Z",
+      status: "OPEN",
+      resolution: null,
+      resolvedAt: null,
       location: {
-        sosLatitude: -6.234567,
-        sosLongitude: 106.890234,
-        lastAddress: "Jalan Thamrin No. 456, Jakarta Pusat",
+        latitude: -6.3751,
+        longitude: 106.865,
+        address: "Jalan Raya Bogor KM 25, Depok",
+        isLocationAccurate: true,
       },
-      order: {
-        id: "order456",
-        orderNumber: "ORD-20250804-002",
-        status: "ON_HOLD",
-        pickupLocation: "Jakarta",
-        deliveryLocation: "Surabaya",
-        estimatedArrival: "2025-08-05T10:00:00Z",
+      category: {
+        categoryId: "cat-456-789",
+        categoryCode: "ENGINE_PROBLEM",
+        categoryName: "Masalah Mesin",
+        priorityLevel: "CRITICAL",
+        iconUrl: "https://example.com/icons/engine-problem.png",
+        colorCode: "#DC143C",
+      },
+      fleetInfo: {
+        fleetId: "fleet-012-345",
+        licensePlate: "B 5678 ABC",
+        driverName: "Budi Santoso",
+        driverPhone: "+62812345678902",
+      },
+      transporterInfo: {
+        transporterId: "trans-678-901",
+        companyName: "CV Transportasi Mandiri",
+        phoneNumber: "+62215551235",
       },
       photoEvidence: [
         {
-          id: "photo3",
-          originalFileName: "accident_evidence_1.jpg",
-          thumbnailUrl: "https://cdn.example.com/sos/thumb/photo3.jpg",
-          mediumUrl: "https://cdn.example.com/sos/medium/photo3.jpg",
-          photoUrl: "https://cdn.example.com/sos/original/photo3.jpg",
-          imageWidth: 1920,
-          imageHeight: 1080,
-          fileSize: 1048576,
-          mimeType: "image/jpeg",
-          description: "Kondisi kendaraan setelah kecelakaan",
+          photoId: "photo-003-ghi",
+          photoUrl: "https://example.com/photos/sos-evidence-3.jpg",
+          description: "Asap keluar dari kap mesin",
+          uploadedAt: "2025-08-05T10:20:00Z",
         },
       ],
-      countdownMinutes: 30,
-      statusHistory: [
+      timeline: [
         {
-          id: "hist3",
-          previousStatus: null,
-          newStatus: "OPEN",
-          changedAt: "2025-08-04T09:15:00Z",
-          changeReason: "Emergency SOS report created",
+          timestamp: "2025-08-05T10:15:00Z",
+          event: "SOS Dilaporkan",
+          description: "Driver melaporkan mesin overheating",
+          status: "OPEN",
         },
         {
-          id: "hist4",
-          previousStatus: "OPEN",
-          newStatus: "IN_PROGRESS",
-          changedAt: "2025-08-04T09:20:00Z",
-          changeReason: "Emergency response team dispatched",
+          timestamp: "2025-08-05T10:18:00Z",
+          event: "Konfirmasi Diterima",
+          description: "Operator CS mengkonfirmasi penerimaan laporan",
+          status: "OPEN",
         },
       ],
     },
-    Type: "SOS_DETAIL",
   },
+  Type: "SOS_DETAIL_SUCCESS",
 };
 
 export const mockSOSDetailNotFound = {
-  data: {
-    Message: {
-      Code: 404,
-      Text: "SOS report not found",
-    },
-    Data: {
-      errors: [
-        {
-          field: "id",
-          message: "SOS with specified ID does not exist",
-        },
-      ],
-    },
-    Type: "SOS_DETAIL_ERROR",
+  Message: {
+    Code: 404,
+    Text: "Detail SOS tidak ditemukan",
   },
+  Type: "SOS_DETAIL_NOT_FOUND",
 };
 
-export const getSOSDetail = async (id, params = {}) => {
-  if (!id) {
+export const getSOSDetail = async (orderId, sosId, params = {}) => {
+  if (!orderId || !sosId) {
     return {
       data: {
         Message: {
           Code: 400,
-          Text: "SOS ID is required",
+          Text: "Parameter orderId dan sosId wajib disediakan",
         },
         Data: {
           errors: [
             {
-              field: "id",
+              field: "orderId",
+              message: "Order ID parameter is missing",
+            },
+            {
+              field: "sosId",
               message: "SOS ID parameter is missing",
             },
           ],
         },
-        Type: "SOS_DETAIL_ERROR",
+        Type: "SOS_DETAIL_BAD_REQUEST",
       },
       raw: null,
     };
@@ -243,24 +190,32 @@ export const getSOSDetail = async (id, params = {}) => {
   let result;
 
   if (useMockData) {
-    // Simulate different scenarios based on ID
-    if (id === "123e4567-e89b-12d3-a456-426614174000") {
-      result = mockSOSDetailData.data;
-    } else if (id === "456e7890-e89b-12d3-a456-426614174001") {
-      result = mockSOSDetailUrgent.data;
-    } else {
+    // Use the new mock endpoint structure
+    try {
+      const response = await fetch(`/api/v1/cs/orders/${orderId}/sos/${sosId}`);
+      result = await response.json();
+    } catch (error) {
       result = mockSOSDetailNotFound.data;
     }
   } else {
     try {
-      result = await fetcherMuatrans.get(`/v1/cs/sos/${id}`, {
-        params,
-      });
+      result = await fetcherMuatrans.get(
+        `/v1/cs/orders/${orderId}/sos/${sosId}`,
+        {
+          params,
+        }
+      );
     } catch (error) {
       // Handle error response
       if (error.response?.status === 404) {
         return {
-          data: mockSOSDetailNotFound.data,
+          data: {
+            Message: {
+              Code: 404,
+              Text: "Detail SOS tidak ditemukan",
+            },
+            Type: "SOS_DETAIL_NOT_FOUND",
+          },
           raw: error.response,
         };
       }
@@ -270,16 +225,7 @@ export const getSOSDetail = async (id, params = {}) => {
           Message: {
             Code: error.response?.status || 500,
             Text:
-              error.response?.data?.Message?.Text ||
-              "Failed to retrieve SOS detail",
-          },
-          Data: {
-            errors: [
-              {
-                field: "system",
-                message: "Internal server error occurred",
-              },
-            ],
+              error.response?.data?.Message?.Text || "Terjadi kesalahan server",
           },
           Type: "SOS_DETAIL_ERROR",
         },
@@ -289,21 +235,34 @@ export const getSOSDetail = async (id, params = {}) => {
   }
 
   return {
-    data: result?.data || {},
+    data: result || {},
     raw: result,
   };
 };
 
-export const useGetSOSDetail = (id, params = {}) => {
+export const useGetSOSDetail = (orderId, sosId, params = {}, options = {}) => {
+  const {
+    enableRefresh = true,
+    refreshInterval = 30000,
+    revalidateOnFocus = false, // Changed to false to prevent excessive calls
+    revalidateOnReconnect = true,
+    errorRetryCount = 2, // Reduced from 3 to prevent excessive retries
+    errorRetryInterval = 5000,
+  } = options;
+
   const { data, error, isLoading, mutate } = useSWR(
-    id ? [`getSOSDetail`, id, params] : null,
-    () => getSOSDetail(id, params),
+    orderId && sosId ? [`getSOSDetail`, orderId, sosId, params] : null,
+    () => getSOSDetail(orderId, sosId, params),
     {
-      refreshInterval: 30000, // Refresh every 30 seconds for real-time updates
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      errorRetryCount: 3,
-      errorRetryInterval: 5000,
+      refreshInterval: enableRefresh ? refreshInterval : 0,
+      revalidateOnFocus,
+      revalidateOnReconnect,
+      errorRetryCount,
+      errorRetryInterval,
+      // Add dedupingInterval to prevent duplicate requests
+      dedupingInterval: 5000,
+      // Add focusThrottleInterval to prevent excessive focus revalidation
+      focusThrottleInterval: 10000,
     }
   );
 
