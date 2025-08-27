@@ -984,63 +984,68 @@ const DaftarPesananAktif = ({
         </div>
         <div className="flex w-full items-center gap-3">
           {/* Status Filter Pills */}
-          <div className="flex flex-1 items-center gap-2">
-            {filterConfig.map(
-              (filter) =>
-                filter.hasFilter && (
-                  <div key={filter.key} className="relative">
-                    <button
-                      onClick={() =>
-                        setSelectedFilter(
-                          selectedFilter === filter.key ? null : filter.key
-                        )
-                      }
-                      className={cn(
-                        "flex items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 text-[10px] font-semibold leading-[130%] text-primary-700 transition-colors",
-                        selectedFilter === filter.key && "bg-primary-50"
-                      )}
-                    >
-                      <span>{filter.label}</span>
-                      {filter.count > 0 && (
-                        <span>
-                          ({filter.count > 99 ? "99+" : filter.count})
-                        </span>
-                      )}
-                    </button>
-                    {filter.count > 0 && (
-                      <NotificationDot
-                        position="absolute"
-                        positionClasses="right-[1px] top-[-1px]"
-                        size="md"
-                        color="red"
-                        animated={true}
-                      />
-                    )}
-                  </div>
-                )
-            )}
-          </div>
-          <Search
-            placeholder={t(
-              "DaftarPesananAktif.searchPlaceholder",
-              {},
-              "Cari Pesanan"
-            )}
-            onSearch={handleSearch}
-            onFocus={() => {
-              if (!isExpanded) {
-                onToggleExpand();
-              }
-            }}
-            containerClassName="h-8 w-[180px]"
-            inputClassName="text-xs"
-            disabled={totalActiveOrders === 0}
-            autoSearch={false}
-            debounceTime={0}
-          />
+          {totalActiveOrders !== 0 && (
+            <>
+              <div className="flex flex-1 items-center gap-2">
+                {filterConfig.map(
+                  (filter) =>
+                    filter.hasFilter && (
+                      <div key={filter.key} className="relative">
+                        <button
+                          onClick={() =>
+                            setSelectedFilter(
+                              selectedFilter === filter.key ? null : filter.key
+                            )
+                          }
+                          className={cn(
+                            "flex items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 text-[10px] font-semibold leading-[130%] text-primary-700 transition-colors",
+                            selectedFilter === filter.key && "bg-primary-50"
+                          )}
+                        >
+                          <span>{filter.label}</span>
+                          {filter.count > 0 && (
+                            <span>
+                              ({filter.count > 99 ? "99+" : filter.count})
+                            </span>
+                          )}
+                        </button>
+                        {filter.count > 0 && (
+                          <NotificationDot
+                            position="absolute"
+                            positionClasses="right-[1px] top-[-1px]"
+                            size="md"
+                            color="red"
+                            animated={true}
+                          />
+                        )}
+                      </div>
+                    )
+                )}
+              </div>
+              <Search
+                placeholder={t(
+                  "DaftarPesananAktif.searchPlaceholder",
+                  {},
+                  "Cari Pesanan"
+                )}
+                onSearch={handleSearch}
+                onFocus={() => {
+                  if (!isExpanded) {
+                    onToggleExpand();
+                  }
+                }}
+                containerClassName="h-8 w-[180px]"
+                inputClassName="text-xs"
+                disabled={totalActiveOrders === 0}
+                autoSearch={false}
+                debounceTime={0}
+              />
+            </>
+          )}
+
           <button
             onClick={onToggleExpand}
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
           >
             <IconComponent
               src="/icons/monitoring/collapse.svg"
@@ -1068,7 +1073,11 @@ const DaftarPesananAktif = ({
             {/* Check if there are no active orders */}
             {!isLoading && totalActiveOrders === 0 ? (
               <div className="flex h-full items-center justify-center p-4">
-                <DataNotFound className="h-full gap-y-5 pb-10" type="data">
+                <DataNotFound
+                  className="h-full gap-y-5 pb-10"
+                  type="data"
+                  width={95.5}
+                >
                   <div className="flex flex-col items-center gap-2">
                     <p className="text-center text-base font-semibold leading-tight text-neutral-600">
                       {t(
