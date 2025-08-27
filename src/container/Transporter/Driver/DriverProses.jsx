@@ -5,6 +5,9 @@ import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { deleteDriver } from "@/services/Transporter/manajemen-driver/deleteDriver";
+import { useGetProcessDriversData } from "@/services/Transporter/manajemen-driver/getProcessDriversData";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -14,11 +17,11 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
-import { deleteDriver } from "@/services/Transporter/manajemen-driver/deleteDriver";
-import { useGetProcessDriversData } from "@/services/Transporter/manajemen-driver/getProcessDriversData";
 
 const DriverProses = ({
   onPageChange,

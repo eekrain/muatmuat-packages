@@ -1,6 +1,7 @@
 "use client";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import TransporterRatingTable from "./components/TransporterRatingTable";

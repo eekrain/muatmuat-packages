@@ -1,7 +1,9 @@
+import { useUploadDriverPhoto } from "@/services/Transporter/manajemen-driver/postUploadDriverPhoto";
+
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useUploadDriverPhoto } from "@/services/Transporter/manajemen-driver/postUploadDriverPhoto";
 
 export default function UploadDriverPhoto({
   value,

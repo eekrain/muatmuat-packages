@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { createNewDriverEntry } from "@/config/forms/driverFormConfig";
 import { toast } from "@/lib/toast";
+
+import { createNewDriverEntry } from "@/config/forms/driverFormConfig";
 
 /**
  * Reusable hook for driver table-based forms

@@ -8,7 +8,9 @@ import Button from "@/components/Button/Button";
 import CardRiwayatPerubahan from "@/components/Card/CardRiwayatPerubahan";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TabsContent } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 

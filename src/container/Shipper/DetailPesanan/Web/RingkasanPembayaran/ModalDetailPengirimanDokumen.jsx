@@ -1,7 +1,9 @@
 import { useMemo } from "react";
 
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {

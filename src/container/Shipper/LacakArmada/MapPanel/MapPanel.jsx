@@ -1,8 +1,9 @@
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrackingLocations";
+
+import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 
 export const MapPanel = () => {
   const params = useParams();

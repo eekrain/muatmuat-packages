@@ -1,5 +1,6 @@
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 export const ModalKonfimasiBuktiDokumenDiterima = ({

@@ -10,7 +10,9 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
+
 import { toast } from "@/lib/toast";
+
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const nameRegex = /^[a-zA-Z\s'.]+$/;

@@ -2262,7 +2262,7 @@
   "DashboardPage.stepsDesc": "请完善您的车队和司机信息，以便在 muatrans 上开始接单。",
   "AgendaArmadaPage.messageSuccessJadwalBerhasilDiperbarui": "日程已成功更新！",
   "AgendaArmadaPage.messageErrorJadwalTidakAdaPerubahan": "日程没有变化",
-  "AgendaArmadaPage.titleAgendaArmadaDriver": "车队和司机日程",
+  "AgendaArmadaPage.titleAgendaArmadaDriver": "车队-司机 日程表",
   "AgendaArmadaPage.labelTerakhirDiUpdate": "最后更新：",
   "AgendaArmadaPage.altLoading": "加载中",
   "AgendaArmadaPage.labelMemuatAgenda": "正在加载日程...",
@@ -2946,7 +2946,6 @@
   "MuatanDilayaniPage.modalConfirmLeave": "如果你离开此页面，服务货物将不会保存",
   "MuatanDilayaniPage.buttonBatal": "取消",
   "MuatanDilayaniPage.buttonYa": "是",
-  "MuatanDilayaniPage.configNotes": "常规服务的货物配置",
   "Dropzone.invalidFormat": "文件格式不符合要求",
   "Dropzone.maxSizeExceeded": "文件大小最大 {maxSize}MB",
   "Dropzone.browseFile": "浏览文件",
@@ -3121,5 +3120,11 @@
   "LaporanPermintaanDibatalkan.buttonUnduh": "下载",
   "LaporanPermintaanDibatalkan.labelPermintaanDibatalkanInfo": "发货人已取消的运输请求将显示在此处",
   "LaporanPermintaanDibatalkan.placeholderCariPermintaan": "搜索请求",
-  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "总计：{total} 个已取消请求"
+  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "总计：{total} 个已取消请求",
+  "MuatanDilayaniPage.configNotes": "常规服务的货物配置",
+  "labelSangatBuruk": "非常差",
+  "labelBuruk": "差",
+  "labelCukup": "一般",
+  "labelBaik": "好",
+  "labelSangatBaik": "非常好"
 }

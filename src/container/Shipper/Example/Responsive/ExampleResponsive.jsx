@@ -1,14 +1,16 @@
 "use client";
 
 import ResponsiveMenu from "@/container/Shipper/ResponsiveMenu/ResponsiveMenuScreen";
-import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
-import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
+
 import {
   ResponsiveProvider,
   ResponsiveRoute,
   useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
+
+import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 
 import ExampleWeb from "../Web/ExampleWeb";
 

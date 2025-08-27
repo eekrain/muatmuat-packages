@@ -2,7 +2,9 @@ import PropTypes from "prop-types";
 
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 // --- Function to get legality items from transporter data ---

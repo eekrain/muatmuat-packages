@@ -5,6 +5,15 @@ import { useCallback, useState } from "react";
 
 import { CheckCircle, ChevronDown, XCircle } from "lucide-react";
 
+import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
+import {
+  useGetAreaMuatData,
+  useGetAreaMuatStatus,
+  useGetMasterProvinces,
+} from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import { useGetTransporterCargoData } from "@/services/Transporter/pengaturan/getDataCargoConfig";
+import { useGetTransporterCargoStatus } from "@/services/Transporter/pengaturan/getDataCargoStatus";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { TagBubble } from "@/components/Badge/TagBubble";
 import Button from "@/components/Button/Button";
@@ -23,15 +32,8 @@ import {
   ProvinceSelectionModal,
 } from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
-import {
-  useGetAreaMuatData,
-  useGetAreaMuatStatus,
-  useGetMasterProvinces,
-} from "@/services/Transporter/pengaturan/getDataAreaMuat";
-import { useGetTransporterCargoData } from "@/services/Transporter/pengaturan/getDataCargoConfig";
-import { useGetTransporterCargoStatus } from "@/services/Transporter/pengaturan/getDataCargoStatus";
 
 export default function Page() {
   const router = useRouter();

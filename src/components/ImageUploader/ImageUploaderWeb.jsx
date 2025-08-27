@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 
 import CropperWebNew from "../Cropper/CropperWebNew";

@@ -1,6 +1,7 @@
 "use client";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
 
 const backgroundStyles = {

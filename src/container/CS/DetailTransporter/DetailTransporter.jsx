@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
+import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
@@ -8,11 +10,13 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+
 import DetailTransporterHeader from "@/container/CS/DetailTransporter/DetailTransporterHeader/DetailTransporterHeader";
 import ModalCatatanPenyelesaian from "@/container/CS/DetailTransporter/DetailTransporterHeader/ModalCatatanPenyelesaian";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
-import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 // Helper to format date and duration
 function formatDate(dateStr) {

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 
 import { Download, MapPin, Phone, Truck } from "lucide-react";
 
+import { useGetDriverDetailData } from "@/services/Transporter/laporan/aktivitas/getDriverDetailData";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -19,8 +21,8 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetDriverDetailData } from "@/services/Transporter/laporan/aktivitas/getDriverDetailData";
 
 export default function DetailDriverPage({ params }) {
   const { t } = useTranslation();

@@ -7,6 +7,7 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const formatCurrency = (amount) =>

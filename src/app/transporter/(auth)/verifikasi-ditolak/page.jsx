@@ -1,6 +1,7 @@
 "use client";
 
 import StatusPage from "@/container/Transporter/Auth/components/StatusPage/StatusPage";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const Page = () => {

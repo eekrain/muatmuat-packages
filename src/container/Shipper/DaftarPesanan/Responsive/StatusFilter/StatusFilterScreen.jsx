@@ -3,9 +3,11 @@ import { useEffect } from "react";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import RadioButton from "@/components/Radio/RadioButton";
-import FilterResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FilterResponsiveLayout";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
+
+import FilterResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FilterResponsiveLayout";
 
 const StatusFilterScreen = ({
   onChangeQueryParams,

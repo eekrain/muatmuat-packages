@@ -2,11 +2,12 @@
 
 import { useMemo } from "react";
 
+import { useGetCsDashboardAnalyticsIncome } from "@/services/CS/dashboard/analytics/getIncomeAnalytics";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import LineChart from "@/components/Chart/LineChart";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetCsDashboardAnalyticsIncome } from "@/services/CS/dashboard/analytics/getIncomeAnalytics";
 
 const TotalIncome = () => {
   // Fetch income analytics data using the custom SWR hook

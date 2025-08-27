@@ -1,7 +1,8 @@
+import { useGetDocumentStatus } from "@/services/CS/monitoring/detail-pesanan-cs/getDocumentStatus";
+
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import Loading from "@/components/Loading/LoadingStatic";
 import { TabsContent } from "@/components/Tabs/Tabs";
-import { useGetDocumentStatus } from "@/services/CS/monitoring/detail-pesanan-cs/getDocumentStatus";
 
 import {
   AdditionalServiceCard,

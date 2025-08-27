@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
+
 import { cn } from "@/lib/utils";
 
 const TruncatedTooltip = ({ text, lineClamp = 2, className = "" }) => {

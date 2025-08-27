@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { cn } from "@/lib/utils";
 
 /**

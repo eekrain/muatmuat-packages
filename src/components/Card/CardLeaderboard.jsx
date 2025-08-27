@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import BadgeLeaderboard from "@/components/Badge/BadgeLeaderboard";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
 
 const CardLeaderboard = ({

@@ -4,7 +4,9 @@ import { sub } from "date-fns";
 
 import CardRiwayatPerubahan from "@/components/Card/CardRiwayatPerubahan";
 import { TabsContent } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { formatDate } from "@/lib/utils/dateFormat";
 
 const activityData = [

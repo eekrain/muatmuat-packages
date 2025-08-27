@@ -1,5 +1,6 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+
 import { cn } from "@/lib/utils";
 
 /**

@@ -7,6 +7,7 @@ import Button from "@/components/Button/Button";
 import CropperWeb from "@/components/Cropper/CropperWeb";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 

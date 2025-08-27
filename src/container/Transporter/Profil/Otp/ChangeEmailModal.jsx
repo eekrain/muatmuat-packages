@@ -4,7 +4,9 @@ import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 const ChangeEmailModal = ({

@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
-import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
 import Button from "@/components/Button/Button";
 import {
   Collapsible,
@@ -12,7 +11,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/Collapsible";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
+import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
 
 import HubungiModal from "../../user/components/HubungiModal";
 import PesananCard from "./PesananCard";

@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import useDevice from "@/hooks/use-device";
+
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";

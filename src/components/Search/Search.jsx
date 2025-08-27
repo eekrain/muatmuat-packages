@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
 
 const Search = ({

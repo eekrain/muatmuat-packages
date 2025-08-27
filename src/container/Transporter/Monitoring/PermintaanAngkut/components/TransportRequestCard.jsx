@@ -3,12 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { usePostAcknowledgeRequest } from "@/services/Transporter/monitoring/permintaan-angkut/postAcknowledgeRequest";
+// Import the required services
+import { usePostToggleSaveTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postToggleSaveTransport";
+
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -37,10 +43,62 @@ const TransportRequestCard = ({
     }
   }, [isBookmarked]);
 
-  const handleSave = () => {
-    const newSavedState = !isSaved;
-    setIsSaved(newSavedState);
-    if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
+  // Use the save transport service
+  const { toggleSave, isToggling } = usePostToggleSaveTransport();
+
+  // Use the acknowledge request service
+  const { acknowledgeRequest } = usePostAcknowledgeRequest();
+
+  const handleSave = async () => {
+    try {
+      const newSavedState = !isSaved;
+
+      // Call the API to toggle save status
+      await toggleSave({
+        id: request.id,
+        payload: { save: newSavedState },
+      });
+
+      // Update local state
+      setIsSaved(newSavedState);
+
+      // Call the prop callback if provided
+      if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
+
+      // Show success toast
+      toast.success(
+        t(
+          "TransportRequestCard.toastSuccessSaveToggle",
+          {
+            orderCode: request.orderCode,
+            action: newSavedState ? "disimpan" : "dihapus",
+          },
+          `Permintaan ${request.orderCode} berhasil ${newSavedState ? "disimpan" : "dihapus"}`
+        )
+      );
+    } catch (error) {
+      // Handle error response
+      if (error.response?.status === 409) {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorSaveConflict",
+            {},
+            "Permintaan tidak tersedia untuk disimpan"
+          )
+        );
+      } else {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorSaveGeneric",
+            {},
+            "Gagal menyimpan permintaan"
+          )
+        );
+      }
+
+      // Revert the UI state if API call fails
+      setIsSaved(isSaved);
+    }
   };
 
   const handleDetail = () => {
@@ -59,15 +117,42 @@ const TransportRequestCard = ({
     setShowTolakModal(true);
   };
 
-  const handleUnderstand = () => {
-    toast.success(
-      t(
-        "TransportRequestCard.toastSuccessRequestClosed",
-        { orderCode: request.orderCode },
-        `Permintaan ${request.orderCode} berhasil ditutup`
-      )
-    );
-    if (onUnderstand) onUnderstand(request.id);
+  const handleUnderstand = async () => {
+    try {
+      // Call the API to acknowledge the request
+      await acknowledgeRequest({ id: request.id });
+
+      // Show success toast
+      toast.success(
+        t(
+          "TransportRequestCard.toastSuccessRequestClosed",
+          { orderCode: request.orderCode },
+          `Permintaan ${request.orderCode} berhasil ditutup`
+        )
+      );
+
+      // Call the prop callback if provided
+      if (onUnderstand) onUnderstand(request.id);
+    } catch (error) {
+      // Handle error response
+      if (error.response?.status === 404) {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorRequestNotFound",
+            {},
+            "Permintaan tidak ditemukan"
+          )
+        );
+      } else {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorGeneric",
+            {},
+            "Gagal menutup permintaan"
+          )
+        );
+      }
+    }
   };
 
   const router = useRouter();
@@ -324,9 +409,11 @@ const TransportRequestCard = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleSave}
+                disabled={isToggling}
                 className={cn(
                   "flex h-6 w-6 items-center justify-center rounded-full hover:opacity-75",
-                  isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white"
+                  isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white",
+                  isToggling && "cursor-not-allowed opacity-50"
                 )}
               >
                 <IconComponent

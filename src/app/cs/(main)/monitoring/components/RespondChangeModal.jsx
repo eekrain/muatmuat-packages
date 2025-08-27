@@ -5,10 +5,10 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+import { useGetOrderChanges } from "@/services/CS/active-orders/getOrderChanges";
 import {
   formatCurrency,
   formatDistance,
-  useGetOrderChangeDetail,
 } from "@/services/Transporter/monitoring/order-change/getOrderChangeDetail";
 
 import Button from "@/components/Button/Button";
@@ -16,9 +16,9 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 
-import { useTranslation } from "@/hooks/use-translation";
+import RespondChangeFormModal from "@/container/Shared/OrderModal/RespondChangeFormModal";
 
-import RespondChangeFormModal from "./RespondChangeFormModal";
+import { useTranslation } from "@/hooks/use-translation";
 
 // ===================================================================
 // KOMPONEN BARU: Diimplementasikan berdasarkan gaya LocationChangeRow
@@ -107,7 +107,7 @@ const RespondChangeModal = ({
 
   // Fetch order change details only when modal is open
   const { data: changeDetails, isLoading: isLoadingDetails } =
-    useGetOrderChangeDetail(isOpen ? orderData?.id : null, {
+    useGetOrderChanges(isOpen ? orderData?.id : null, {
       enabled: isOpen && !!orderData?.id,
     });
 

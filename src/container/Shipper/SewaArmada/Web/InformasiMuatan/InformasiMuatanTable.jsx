@@ -1,5 +1,6 @@
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
 import { thousandSeparator } from "@/lib/utils/formatters";
 

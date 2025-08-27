@@ -4,13 +4,16 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
-import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
+import { useGetDriverRatings } from "@/services/CS/dashboard/realtime/getDriverRatings";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetDriverRatings } from "@/services/CS/dashboard/realtime/getDriverRatings";
+
+import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
+import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
 
 const DriverDetailRatingTable = () => {
   const { t } = useTranslation();

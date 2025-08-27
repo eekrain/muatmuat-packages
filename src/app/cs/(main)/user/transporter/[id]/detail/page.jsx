@@ -3,12 +3,14 @@
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
+import { usePatchCSTransporterStatus } from "@/services/CS/transporters/patchCSTransporterStatus";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { toast } from "@/lib/toast";
-import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
-import { usePatchCSTransporterStatus } from "@/services/CS/transporters/patchCSTransporterStatus";
 
 import ModalKonfirmasi from "../../../components/ModalKonfirmasi";
 import TransporterDetailContainer from "./containers/TransporterDetailContainer";

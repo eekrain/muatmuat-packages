@@ -2,11 +2,13 @@
 
 import { useParams } from "next/navigation";
 
+import { useGetCanceledOrderDetail } from "@/services/CS/laporan/permintaan-dibatalkan/detail-permintaan-dibatalkan/getCanceledOrdersDetail";
+
 import DetailLaporanPermintaanDibatalkan from "@/container/CS/LaporanPermintaanDibatalkan/DetailLaporanPermintaanDibatalkan";
+
 import useDevice from "@/hooks/use-device";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetCanceledOrderDetail } from "@/services/CS/laporan/permintaan-dibatalkan/detail-permintaan-dibatalkan/getCanceledOrdersDetail";
 
 const Page = () => {
   const { mounted } = useDevice();

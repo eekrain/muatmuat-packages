@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { toast } from "@/lib/toast";
 import { useGetCSTransportersWithParams } from "@/services/CS/transporters/getCSTransporters";
 import { usePatchCSTransporterStatus } from "@/services/CS/transporters/patchCSTransporterStatus";
+
+import { toast } from "@/lib/toast";
 
 export const useTransporterLogic = ({
   onPageChange,
