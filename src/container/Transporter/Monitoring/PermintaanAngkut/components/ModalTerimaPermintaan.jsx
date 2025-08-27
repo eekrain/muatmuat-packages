@@ -2,7 +2,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
-import { usePostAcceptScheduledTransportRequest } from "@/services/Transporter/monitoring/postAcceptScheduledTransportRequest";
+import { usePostAcceptScheduledTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postAcceptScheduledTransport";
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
@@ -14,8 +14,6 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
-import { usePostAcceptScheduledTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postAcceptScheduledTransport";
 
 // Utility function for currency formatting
 const formatCurrency = (amount) => {
