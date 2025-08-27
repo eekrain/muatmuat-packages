@@ -33,7 +33,7 @@ export const mockAPIResult = {
  * @returns {Promise<Object>} The data portion of the API response.
  */
 export const fetcherUserJourneyStatus = async (_cacheKey) => {
-  const url = "/api/v1/user-journey/status";
+  const url = "v1/transporter/user/journey-status";
 
   if (useMockData) {
     // Return mock data if enabled

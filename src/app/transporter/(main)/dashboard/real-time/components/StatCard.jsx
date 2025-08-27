@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -21,6 +20,7 @@ const StatCard = ({
   openNewTab = false,
   variant = "default", // 'default' | 'soft'
   side = "top",
+  onClick, // Add onClick prop
 }) => {
   const isSoft = variant === "soft";
 
@@ -46,6 +46,35 @@ const StatCard = ({
 
   const valueTextClass = `!text-base font-bold text-neutral-900 ${valueStyle}`;
 
+  // If onClick is provided, use a button instead of Link
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={containerClass} type="button">
+        {iconWrapper}
+        <div className={contentClass}>
+          <div className={labelRowClass}>
+            <h3 className="truncate text-sm font-medium text-neutral-900">
+              {label}
+            </h3>
+            {tooltipText && (
+              <InfoTooltip side={side}>
+                <p className="w-[336px] text-sm">{tooltipText}</p>
+              </InfoTooltip>
+            )}
+          </div>
+          <div className={valueRowClass}>
+            {labelIcon && <IconComponent src={labelIcon} />}
+            <div className="flex items-baseline gap-1">
+              <span className={valueTextClass}>{value}</span>
+              {formatUnit(valueUnit)}
+            </div>
+          </div>
+        </div>
+      </button>
+    );
+  }
+
+  // Default Link behavior
   return (
     <Link
       href={href}

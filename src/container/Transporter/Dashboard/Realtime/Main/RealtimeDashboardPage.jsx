@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import DashboardSection from "@/app/transporter/(main)/dashboard/real-time/components/DashboardSection";
 import IncomeCards from "@/app/transporter/(main)/dashboard/real-time/components/IncomeCards";
@@ -9,14 +9,38 @@ import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/St
 import SuspendedAccountAlert from "@/app/transporter/(main)/dashboard/real-time/components/SuspendedAccountAlert";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetAccountStatus } from "@/services/Transporter/account/getAccountStatus";
 import { useGetSosReports } from "@/services/Transporter/alerts/getSosReports";
+import { useGetDashboardMenuOptions } from "@/services/Transporter/dashboard/getDashboardMenuOptions";
+import { useGetDashboardSummary } from "@/services/Transporter/dashboard/getDashboardSummary";
+import { useGetFilteredOrders } from "@/services/Transporter/orders/getFilteredOrders";
+import { useGetFilteredOrdersCompleted } from "@/services/Transporter/orders/getFilteredOrdersCompleted";
+import { useGetFilteredOrdersConfirmed } from "@/services/Transporter/orders/getFilteredOrdersConfirmed";
+import { useGetFilteredOrdersDocumentDelivery } from "@/services/Transporter/orders/getFilteredOrdersDocumentDelivery";
+import { useGetFilteredOrdersDocumentPreparation } from "@/services/Transporter/orders/getFilteredOrdersDocumentPreparation";
+import { useGetFilteredOrdersLoading } from "@/services/Transporter/orders/getFilteredOrdersLoading";
+import { useGetFilteredOrdersScheduled } from "@/services/Transporter/orders/getFilteredOrdersScheduled";
+import { useGetFilteredOrdersUnloading } from "@/services/Transporter/orders/getFilteredOrdersUnloading";
 
 const RealtimeDashboardPage = () => {
   const { t } = useTranslation();
-  const [dashboardData, setDashboardData] = useState(null);
-  const [accountStatus, setAccountStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const router = useRouter();
+
+  // Dashboard Summary data using SWR hook
+  const {
+    data: dashboardData,
+    isLoading: dashboardLoading,
+    isError: dashboardError,
+    mutate: refreshDashboard,
+  } = useGetDashboardSummary();
+
+  // Account Status data using SWR hook
+  const {
+    data: accountStatusData,
+    isLoading: accountStatusLoading,
+    isError: accountStatusError,
+    mutate: refreshAccountStatus,
+  } = useGetAccountStatus();
 
   // SOS Reports data
   const {
@@ -25,52 +49,137 @@ const RealtimeDashboardPage = () => {
     isError: sosReportsError,
   } = useGetSosReports();
 
-  // NOTE: pesananLabel, alertLabel, and contents objects are removed as they are now handled by t() directly.
+  // Dashboard Menu Options data using SWR hook
+  const {
+    data: menuOptionsData,
+    isLoading: menuOptionsLoading,
+    isError: menuOptionsError,
+    mutate: refreshMenuOptions,
+  } = useGetDashboardMenuOptions();
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch("/api/v1/dashboard/summary");
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
-        }
-        const result = await response.json();
+  // Filtered Orders data using SWR hooks for all statuses
+  const {
+    data: waitingConfirmationData,
+    isLoading: waitingConfirmationLoading,
+    isError: waitingConfirmationError,
+    mutate: refreshWaitingConfirmation,
+  } = useGetFilteredOrders({ page: 1, limit: 10 });
 
-        setDashboardData(result.Data.summary);
-        setAccountStatus(result.Data.accountStatus);
-      } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
-        setError(
-          t(
-            "RealtimeDashboardPage.messageErrorLoad",
-            {},
-            "Gagal memuat data dashboard. Silakan coba lagi nanti."
-          )
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const {
+    data: confirmedData,
+    isLoading: confirmedLoading,
+    isError: confirmedError,
+    mutate: refreshConfirmed,
+  } = useGetFilteredOrdersConfirmed({ page: 1, limit: 10 });
 
-    fetchDashboardData();
-    const intervalId = setInterval(fetchDashboardData, 300000);
-    return () => clearInterval(intervalId);
-  }, [t]);
+  const {
+    data: scheduledData,
+    isLoading: scheduledLoading,
+    isError: scheduledError,
+    mutate: refreshScheduled,
+  } = useGetFilteredOrdersScheduled({ page: 1, limit: 10 });
 
-  if (loading) {
+  const {
+    data: loadingData,
+    isLoading: loadingLoading,
+    isError: loadingError,
+    mutate: refreshLoading,
+  } = useGetFilteredOrdersLoading({ page: 1, limit: 10 });
+
+  const {
+    data: unloadingData,
+    isLoading: unloadingLoading,
+    isError: unloadingError,
+    mutate: refreshUnloading,
+  } = useGetFilteredOrdersUnloading({ page: 1, limit: 10 });
+
+  const {
+    data: documentPreparationData,
+    isLoading: documentPreparationLoading,
+    isError: documentPreparationError,
+    mutate: refreshDocumentPreparation,
+  } = useGetFilteredOrdersDocumentPreparation({ page: 1, limit: 10 });
+
+  const {
+    data: documentDeliveryData,
+    isLoading: documentDeliveryLoading,
+    isError: documentDeliveryError,
+    mutate: refreshDocumentDelivery,
+  } = useGetFilteredOrdersDocumentDelivery({ page: 1, limit: 10 });
+
+  const {
+    data: completedData,
+    isLoading: completedLoading,
+    isError: completedError,
+    mutate: refreshCompleted,
+  } = useGetFilteredOrdersCompleted({ page: 1, limit: 10 });
+
+  // Debug: Log menu options data
+  console.log("🔍 Menu Options Data:", menuOptionsData);
+  console.log("🔍 Menu Options Loading:", menuOptionsLoading);
+  console.log("🔍 Menu Options Error:", menuOptionsError);
+
+  // Navigation handler for waiting confirmation orders
+  const handleWaitingConfirmationClick = () => {
+    console.log("🚀 Navigating to waiting confirmation orders...");
+    router.push("/daftar-pesanan?status=waitingConfirmation");
+  };
+
+  // Navigation handlers for all order statuses
+  const handleConfirmedClick = () => {
+    console.log("🚀 Navigating to confirmed orders...");
+    router.push("/daftar-pesanan?status=confirmed");
+  };
+
+  const handleScheduledClick = () => {
+    console.log("🚀 Navigating to scheduled orders...");
+    router.push("/daftar-pesanan?status=scheduled");
+  };
+
+  const handleLoadingClick = () => {
+    console.log("🚀 Navigating to loading orders...");
+    router.push("/daftar-pesanan?status=loading");
+  };
+
+  const handleUnloadingClick = () => {
+    console.log("🚀 Navigating to unloading orders...");
+    router.push("/daftar-pesanan?status=unloading");
+  };
+
+  const handleDocumentPreparationClick = () => {
+    console.log("🚀 Navigating to document preparation orders...");
+    router.push("/daftar-pesanan?status=documentPreparation");
+  };
+
+  const handleDocumentDeliveryClick = () => {
+    console.log("🚀 Navigating to document delivery orders...");
+    router.push("/daftar-pesanan?status=documentDelivery");
+  };
+
+  const handleCompletedClick = () => {
+    console.log("🚀 Navigating to completed orders...");
+    router.push("/daftar-pesanan?status=completed");
+  };
+
+  // Loading state
+  if (dashboardLoading) {
     return <SkeletonLoading />;
   }
 
-  if (error && !dashboardData) {
+  // Error state
+  if (dashboardError && !dashboardData) {
     return (
       <div className="p-8 text-center text-lg font-semibold text-error-500">
-        {error}
+        {t(
+          "RealtimeDashboardPage.messageErrorLoad",
+          {},
+          "Gagal memuat data dashboard. Silakan coba lagi nanti."
+        )}
       </div>
     );
   }
 
+  // No data state
   if (!dashboardData) {
     return null;
   }
@@ -81,41 +190,49 @@ const RealtimeDashboardPage = () => {
         href: "/daftar-pesanan?status=waitingConfirmation",
         openNewTab: true,
         side: "right",
+        onClick: handleWaitingConfirmationClick, // Add click handler
       },
       confirmed: {
         href: "/daftar-pesanan?status=confirmed",
         openNewTab: true,
         side: "right",
+        onClick: handleConfirmedClick,
       },
       scheduled: {
         href: "/daftar-pesanan?status=scheduled",
         openNewTab: true,
         side: "top",
+        onClick: handleScheduledClick,
       },
       loading: {
         href: "/daftar-pesanan?status=loading",
         openNewTab: true,
         side: "left",
+        onClick: handleLoadingClick,
       },
       unloading: {
         href: "/daftar-pesanan?status=unloading",
         openNewTab: true,
         side: "top",
+        onClick: handleUnloadingClick,
       },
       documentPreparation: {
         href: "/daftar-pesanan?status=documentPreparation",
         openNewTab: true,
         side: "top",
+        onClick: handleDocumentPreparationClick,
       },
       documentDelivery: {
         href: "/daftar-pesanan?status=documentDelivery",
         openNewTab: true,
         side: "top",
+        onClick: handleDocumentDeliveryClick,
       },
       completed: {
         href: "/daftar-pesanan?status=completed",
         openNewTab: true,
         side: "left",
+        onClick: handleCompletedClick,
       },
     },
     alerts: {
@@ -149,7 +266,7 @@ const RealtimeDashboardPage = () => {
         {t("RealtimeDashboardPage.titlePage", {}, "Dashboard Real-time")}
       </PageTitle>
 
-      <SuspendedAccountAlert status={accountStatus} />
+      <SuspendedAccountAlert accountStatusData={accountStatusData} />
 
       <DashboardSection
         title={t("RealtimeDashboardPage.titleOrders", {}, "Pesanan")}
@@ -160,19 +277,18 @@ const RealtimeDashboardPage = () => {
         )}
       >
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {Object.entries(dashboardData.orders).map(([key, data]) => (
+          {Object.entries(dashboardData.sections.orders).map(([key, data]) => (
             <StatCard
               key={key}
               label={t(
                 `RealtimeDashboardPage.ordersLabel${key.charAt(0).toUpperCase() + key.slice(1)}`
               )}
               value={data.count}
-              href={contentMap.orders[key].href}
-              openNewTab={contentMap.orders[key].openNewTab}
-              tooltipText={t(
-                `RealtimeDashboardPage.ordersTooltip${key.charAt(0).toUpperCase() + key.slice(1)}`
-              )}
-              side={contentMap.orders[key].side}
+              href={contentMap.orders[key]?.href}
+              openNewTab={contentMap.orders[key]?.openNewTab}
+              tooltipText={data.tooltip}
+              side={contentMap.orders[key]?.side}
+              onClick={contentMap.orders[key]?.onClick} // Add onClick handler
             />
           ))}
         </div>
@@ -186,7 +302,7 @@ const RealtimeDashboardPage = () => {
           "Informasi potensi pendapatan dan status pencairan yang kamu dapatkan"
         )}
       >
-        <IncomeCards data={dashboardData.earnings} />
+        <IncomeCards data={dashboardData.sections.earnings} />
       </DashboardSection>
 
       <DashboardSection
@@ -203,7 +319,7 @@ const RealtimeDashboardPage = () => {
         className="bg-[#FFECB4]"
       >
         <div className="grid grid-cols-4 gap-4">
-          {Object.entries(dashboardData.alerts).map(([key, data]) => {
+          {Object.entries(dashboardData.sections.alerts).map(([key, data]) => {
             // Override sosReports data with real SOS data if available
             if (key === "sosReports" && sosReportsData?.summary) {
               return (
@@ -265,7 +381,7 @@ const RealtimeDashboardPage = () => {
               {},
               "Rating Driver Keseluruhan"
             )}
-            value={dashboardData.performance.overallRating}
+            value={dashboardData.sections.performance.overallRating}
             valueUnit="/5"
             href="/dashboard/real-time/rating-driver"
             icon="/icons/star.svg"
@@ -284,7 +400,7 @@ const RealtimeDashboardPage = () => {
               {},
               "Pesanan Dibatalkan"
             )}
-            value={dashboardData.performance.cancelledOrders}
+            value={dashboardData.sections.performance.cancelledOrders}
             valueUnit={t(
               "RealtimeDashboardPage.performanceUnitOrders",
               {},
@@ -307,7 +423,7 @@ const RealtimeDashboardPage = () => {
               {},
               "Jumlah Penalti"
             )}
-            value={dashboardData.performance.penalties}
+            value={dashboardData.sections.performance.penalties}
             valueUnit={t(
               "RealtimeDashboardPage.performanceUnitPenalties",
               {},
