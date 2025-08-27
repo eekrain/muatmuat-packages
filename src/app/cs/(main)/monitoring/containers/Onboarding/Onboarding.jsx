@@ -14,6 +14,8 @@ import { Slider } from "@/components/Slider/Slider";
 import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
 import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
+/* eslint-disable no-console */
+
 const onboardingSlides = [
   {
     title: "Daftar Pesanan Aktif",
@@ -71,7 +73,12 @@ const onboardingSlides = [
   },
 ];
 
-const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
+const Onboarding = ({
+  hasShownOnboarding,
+  onOnboardingShown,
+  controlledOpen, // optional boolean to control modal from parent
+  onControlledClose, // optional callback (dontShowAgain) => {}
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -83,13 +90,21 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
     mutate,
   } = useGetUserPopupPreference();
 
-  // useEffect hanya untuk membuka modal secara otomatis
+  // useEffect untuk membuka modal berdasarkan source of truth
   useEffect(() => {
+    // Controlled mode: parent drives open state
+    if (typeof controlledOpen === "boolean") {
+      setIsModalOpen(controlledOpen);
+      if (controlledOpen) onOnboardingShown?.();
+      return;
+    }
+
+    // Uncontrolled mode: use popupPreference as before
     if (popupPreference && popupPreference.showPopup && !hasShownOnboarding) {
       setIsModalOpen(true);
       onOnboardingShown?.();
     }
-  }, [popupPreference, hasShownOnboarding, onOnboardingShown]);
+  }, [controlledOpen, popupPreference, hasShownOnboarding, onOnboardingShown]);
 
   // useEffect untuk menyinkronkan checkbox saat modal dibuka secara manual
   useEffect(() => {
@@ -101,7 +116,15 @@ const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
   const handleOpenChange = async (openState) => {
     setIsModalOpen(openState);
 
-    // Logic untuk menyimpan preferensi hanya dijalankan saat modal ditutup
+    // If we're in controlled mode, inform parent when modal is closed
+    if (typeof controlledOpen === "boolean") {
+      if (!openState) {
+        onControlledClose?.(dontShowAgain);
+      }
+      return;
+    }
+
+    // Uncontrolled mode: persist transporter popup preference as before
     if (!openState) {
       const preferenceFromApi = !popupPreference?.showPopup;
       if (dontShowAgain !== preferenceFromApi) {

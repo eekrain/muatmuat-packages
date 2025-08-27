@@ -31,6 +31,12 @@ import { cn } from "@/lib/utils";
 
 // src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
 
+// src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
+
+// src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
+
+// src/components/UrgentStatusFilter/UrgentStatusFilter.jsx
+
 /**
  * @description A small visual component for the blinking red dot indicator.
  */
@@ -64,7 +70,7 @@ export const UrgentStatusFilter = ({
     const opts = [
       {
         value: "ALL_STATUS",
-        label: "Semua Status (Default)",
+        label: `Status Urgent (${total > 99 ? "99+" : total})`,
         showDot: false,
       },
     ];

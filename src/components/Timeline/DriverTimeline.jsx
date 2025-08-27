@@ -119,6 +119,7 @@ export const DriverTimeline = ({ dataTimeline, onClickProof }) => {
                       item: driverStatusItem,
                       isActive: parentIndex === 0 && index === 0,
                       isLastInGroup: index === parent.children.length - 1,
+                      orderStatus: parent.mappedOrderStatus,
                     }}
                     // Callbacks are now passed as individual props
                     setLightboxActiveIndex={setLightboxActiveIndex}
@@ -152,7 +153,7 @@ const ItemWithLightbox = ({
   onMobileClick,
   index,
 }) => {
-  const { item, isActive, isLastInGroup } = data;
+  const { item, isActive, isLastInGroup, orderStatus } = data;
   const { t } = useTranslation();
   const { current, openLightbox } = useLightbox();
   const { isMobile } = useDevice();
@@ -171,6 +172,7 @@ const ItemWithLightbox = ({
   };
 
   const statusMeta = getStatusDriverMetadata({
+    orderStatus,
     driverStatus: item.statusCode,
     t,
   });
@@ -197,10 +199,7 @@ const ItemWithLightbox = ({
             item.statusCode.startsWith("PENGIRIMAN_")
               ? t("labelLihatBuktiMuatBarangPOD")
               : t("labelLihatBuktiStatus", {
-                  statusName: getStatusDriverMetadata({
-                    driverStatus: item.statusCode,
-                    t,
-                  }).label,
+                  statusName: statusMeta.label,
                 })}
           </ButtonMini>
         )
