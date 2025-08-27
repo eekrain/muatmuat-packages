@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
 
-const useMockData = false;
+const useMockData = true;
 const useMuatransFetcher = true; // true: use fetcherMuatrans, false: use fetcherMuatransCS (basic auth)
 
 // Mock API result for development/testing

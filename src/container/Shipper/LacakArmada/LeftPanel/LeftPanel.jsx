@@ -6,7 +6,7 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useTranslation } from "@/hooks/use-translation";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getStatusDriverMetadata } from "@/lib/normalizers/detailpesanan/getStatusDriverMetadata";
 
 export const LeftPanel = ({ dataDriverTimeline }) => {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ export const LeftPanel = ({ dataDriverTimeline }) => {
     { name: t("LeftPanel.breadcrumbLacakArmada", {}, "Lacak Armada") },
   ];
 
-  const statusMeta = getDriverStatusMetadata({
+  const statusMeta = getStatusDriverMetadata({
     driverStatus: dataDriverTimeline?.dataDriver?.driverStatus,
     orderStatus: dataDriverTimeline?.dataDriver?.orderStatus,
     t,

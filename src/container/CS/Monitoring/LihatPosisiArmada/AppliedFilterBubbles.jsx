@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 
-import { useLacakArmadaContext } from "./use-lacak-armada";
-
-export const AppliedFilterBubbles = () => {
+export const AppliedFilterBubbles = ({
+  activeFilters,
+  onRemoveFilter,
+  onClearAllFilters,
+  filterOptions,
+}) => {
   const { t } = useTranslation();
-  const { appliedFilters, clearAllFilters, hasActiveFilters } =
-    useLacakArmadaContext();
 
   const {
     scrollContainerRef,
@@ -21,6 +22,51 @@ export const AppliedFilterBubbles = () => {
     checkScroll,
   } = useFilterSlider();
 
+  // Create applied filters array from activeFilters
+  const appliedFilters = useMemo(() => {
+    const filters = [];
+
+    // Add transporter filters
+    activeFilters.transporters.forEach((transporterValue) => {
+      const transporter = filterOptions.transporters.find(
+        (t) => t.value === transporterValue
+      );
+      if (transporter) {
+        filters.push({
+          type: "transporter",
+          value: transporterValue,
+          label: transporter.label,
+        });
+      }
+    });
+
+    // Add status filters
+    activeFilters.statuses.forEach((statusValue) => {
+      const status = filterOptions.statuses.find(
+        (s) => s.value === statusValue
+      );
+      if (status) {
+        filters.push({
+          type: "status",
+          value: statusValue,
+          label: status.label,
+        });
+      }
+    });
+
+    return filters;
+  }, [activeFilters, filterOptions]);
+
+  // Create stable remove handlers
+  const handleRemoveFilter = useCallback(
+    (filterType, value) => {
+      onRemoveFilter(filterType, value);
+    },
+    [onRemoveFilter]
+  );
+
+  const hasActiveFilters = appliedFilters.length > 0;
+
   // Check scroll when applied filters change
   useEffect(() => {
     checkScroll();
@@ -29,9 +75,9 @@ export const AppliedFilterBubbles = () => {
   if (!hasActiveFilters) return null;
 
   return (
-    <div className="flex w-full items-center gap-3">
+    <div className="mt-4 flex w-full items-center gap-3 px-4">
       <button
-        onClick={clearAllFilters}
+        onClick={onClearAllFilters}
         className="w-[113px] flex-shrink-0 cursor-pointer text-xs font-bold text-primary-700 hover:text-primary-800"
       >
         {t(
@@ -67,17 +113,15 @@ export const AppliedFilterBubbles = () => {
               key={`${filter.type}-${filter.value}-${index}`}
               className="flex-shrink-0"
             >
-              <TagBubble withRemove={filter.onRemove}>
-                {t(filter.label)}
+              <TagBubble
+                withRemove={{
+                  onRemove: () => handleRemoveFilter(filter.type, filter.value),
+                }}
+              >
+                {filter.label}
               </TagBubble>
             </div>
           ))}
-
-          {/* {MOCK.map((item) => (
-            <div key={item} className="flex-shrink-0">
-              <TagBubble withRemove={{ onRemove: () => {} }}>{item}</TagBubble>
-            </div>
-          ))} */}
         </div>
       </div>
 
