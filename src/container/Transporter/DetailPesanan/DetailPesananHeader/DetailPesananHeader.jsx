@@ -143,7 +143,6 @@ const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
               variant="muatparts-error-secondary"
               onClick={handleCancelOrder}
               disabled={isCancelling}
-              loading={isCancelling}
             >
               {isCancelling ? "Membatalkan..." : "Batalkan Pesanan"}
             </Button>

@@ -7,6 +7,8 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { toast } from "@/lib/toast";
+import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
+import { usePatchCSTransporterStatus } from "@/services/CS/transporters/patchCSTransporterStatus";
 
 import ModalKonfirmasi from "../../../components/ModalKonfirmasi";
 import TransporterDetailContainer from "./containers/TransporterDetailContainer";
@@ -18,21 +20,50 @@ export default function TransporterDetailPage() {
   const [aktifState, setAktifState] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch transporter details and pass down to container
+  const {
+    data: apiResponse,
+    error,
+    isLoading,
+    mutate,
+  } = useGetTransporterDetails(transporterId);
+
+  const transporterData = apiResponse?.Data;
+
   const breadcrumbData = [
     { name: "Daftar User", href: "/user" },
     { name: "Transporter", href: "/user" },
     { name: "Detail Transporter" },
   ];
 
-  const handleConfirmAction = () => {
-    // Toggle the state
-    const newState = !aktifState;
-    setAktifState(newState);
+  const { trigger: patchTransporterStatus } = usePatchCSTransporterStatus();
 
-    // Show success toast
-    toast.success(
-      `Berhasil ${newState ? "mengaktifkan" : "menonaktifkan"} Transporter`
-    );
+  const handleConfirmAction = async () => {
+    // Desired new state (toggle)
+    const newState = !aktifState;
+
+    try {
+      // Call the API to update status
+      await patchTransporterStatus({
+        id: transporterId,
+        data: { isActive: newState },
+      });
+
+      // Update local state after success
+      setAktifState(newState);
+
+      // Show success toast
+      toast.success(
+        `Berhasil ${newState ? "mengaktifkan" : "menonaktifkan"} Transporter`
+      );
+    } catch (err) {
+      // Surface an error message if available
+      const message = err?.message || "Gagal memperbarui status transporter";
+      toast.error(message);
+    } finally {
+      // Close the modal in both cases
+      setIsModalOpen(false);
+    }
   };
 
   const handleCancelAction = () => {
@@ -62,7 +93,13 @@ export default function TransporterDetailPage() {
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
       />
-      <TransporterDetailContainer transporterId={transporterId} />
+      <TransporterDetailContainer
+        transporterId={transporterId}
+        transporterData={transporterData}
+        isLoading={isLoading}
+        error={error}
+        mutate={mutate}
+      />
     </div>
   );
 }

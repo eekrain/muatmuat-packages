@@ -26,7 +26,6 @@ const DetailPesanan = ({ breadcrumbData }) => {
   // Fetch fleet tracking data from API
   const { data: fleetTrackingData, error: fleetTrackingError } =
     useGetFleetTracking(params.uuid);
-  console.log(fleetTrackingData, "fleetTrackingData");
   const tabItems = useShallowMemo(() => {
     return [
       {

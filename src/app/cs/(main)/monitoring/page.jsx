@@ -512,7 +512,7 @@ const Page = () => {
                     });
                     selectionsDispatch({
                       type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
-                      payload: order,
+                      payload: { id: order?.orderId },
                     });
                   }}
                   onViewFleetStatus={(order) => {
