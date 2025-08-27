@@ -29,7 +29,7 @@ export const DropdownSearch = ({
 
   // Filter options based on search term
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+    option?.label?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Focus search input when dropdown opens

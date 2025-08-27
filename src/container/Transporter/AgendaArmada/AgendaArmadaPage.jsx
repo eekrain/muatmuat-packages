@@ -110,7 +110,7 @@ const AgendaArmadaDriverPage = () => {
             {t(
               "AgendaArmadaPage.titleAgendaArmadaDriver",
               {},
-              "Agenda Armada & Driver"
+              "Agenda Armada-Driver"
             )}
           </h1>
           <div className="flex items-center gap-3">
