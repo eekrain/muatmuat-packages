@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -33,6 +34,7 @@ const LaporanPermintaanDibatalkan = ({
   onSavePeriodHistory,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [tempSearch, setTempSearch] = useState("");
 
@@ -229,7 +231,11 @@ const LaporanPermintaanDibatalkan = ({
         <Button
           className="!px-[36.5px]"
           variant="muattrans-primary"
-          onClick={() => {}}
+          onClick={() =>
+            router.push(
+              `/laporan/permintaan-dibatalkan.${row.id}}/detail-permintaan-dibatalkan`
+            )
+          }
         >
           Detail
         </Button>
