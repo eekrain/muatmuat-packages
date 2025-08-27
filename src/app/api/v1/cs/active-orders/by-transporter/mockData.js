@@ -642,7 +642,7 @@ export const successResponse = {
                 orderId: "order-uuid-12",
                 orderNumber: "MT-20250822-0012",
                 orderType: "SCHEDULED",
-                orderStatus: "COMPLETED",
+                orderStatus: "PREPARE_DOCUMENT",
                 orderStatusUnit: 0,
                 sosUnit: 0,
                 loadTimeStart: "2025-08-20T08:00:00Z",
