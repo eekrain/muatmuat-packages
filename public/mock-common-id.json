@@ -2948,5 +2948,6 @@
   "RingkasanPesananBody.truckCountLabel": "Kebutuhan : {count} Unit",
   "DetailLaporanPermintaanDibatalkan.breadcrumbReportTitle": "Laporan Permintaan Dibatalkan",
   "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Detail Pesanan",
-  "FleetChange.replacementFleet": "Menggantikan Armada"
+  "FleetChange.replacementFleet": "Menggantikan Armada",
+  "LihatPosisiArmada.replacingFleet": "Menggantikan Armada"
 }

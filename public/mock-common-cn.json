@@ -2984,5 +2984,6 @@
   "RingkasanPesananBody.truckCountLabel": "需求：{count}台",
   "DetailLaporanPermintaanDibatalkan.breadcrumbReportTitle": "取消订单报告",
   "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "订单详情",
-  "FleetChange.replacementFleet": "更换车队"
+  "FleetChange.replacementFleet": "更换车队",
+  "LihatPosisiArmada.replacingFleet": "替换车队"
 }

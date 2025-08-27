@@ -1564,7 +1564,7 @@
   "DaftarArmada.selectDriverTitle": "Select Driver",
   "LacakArmada.estimatedArrival": "Estimated Arrival at Unloading Location",
   "LihatPosisiArmada.breadcrumb.monitoring": "Monitoring",
-  "LihatPosisiArmada.breadcrumb.orderDetail": "Order Detail",
+  "LihatPosisiArmada.breadcrumb.orderDetail": "Order Details",
   "LihatPosisiArmada.breadcrumb.viewFleetPosition": "View Fleet Position",
   "LihatPosisiArmada.closePanel": "Close panel",
   "LihatPosisiArmada.title": "View Fleet Position",
@@ -1644,7 +1644,7 @@
   "LihatPosisiArmada.hideDetail": "Hide details",
   "LihatPosisiArmada.showDetail": "Show details",
   "LihatPosisiArmada.estimatedArrival": "Estimated Arrival at Unloading Location",
-  "LihatPosisiArmada.driverStatusDetail": "Driver Status Detail",
+  "LihatPosisiArmada.driverStatusDetail": "Driver Status Details",
   "BadgeSOSPopover.sosLabel": "SOS",
   "BadgeSOSPopover.viewSosButton": "View SOS",
   "NoOrderTable.noReportTitle": "No Inactive Transporter History Report Yet",
@@ -2947,5 +2947,6 @@
   "RingkasanPesananBody.truckCountLabel": "Required: {count} Unit(s)",
   "DetailLaporanPermintaanDibatalkan.breadcrumbReportTitle": "Canceled Order Report",
   "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Order Details",
-  "FleetChange.replacementFleet": "Replacement Fleet"
+  "FleetChange.replacementFleet": "Replacement Fleet",
+  "LihatPosisiArmada.replacingFleet": "Replacing Fleet"
 }

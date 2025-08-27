@@ -256,7 +256,11 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     <div className="flex items-center justify-between gap-4 text-nowrap py-4">
                       <div className="w-full border-t border-neutral-400"></div>
                       <div className="text-xs text-neutral-600">
-                        Menggantikan Armada
+                        {t(
+                          "LihatPosisiArmada.replacingFleet",
+                          {},
+                          "Menggantikan Armada"
+                        )}
                       </div>
                       <div className="w-full border-t border-neutral-400"></div>
                     </div>
