@@ -10,6 +10,7 @@ import ChangeWhatsappNumberModal from "@/components/Modal/ChangeWhatsappNumberMo
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import ModalEmailBaru from "@/components/Modal/ModalEmailBaru";
 import ModalGantiPassword from "@/components/Modal/ModalGantiPassword";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useUpdatePassword } from "@/services/Transporter/profil/updatePassword";
@@ -18,6 +19,7 @@ import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtp
 
 // --- Internal Dropzone Component (logic from your modal file) ---
 const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
 
   const validateFile = useCallback(
@@ -25,11 +27,19 @@ const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
       if (!file) return null;
       const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
       if (!acceptedFormats.includes(fileExtension)) {
-        toast.error("Format file tidak sesuai ketentuan");
+        toast.error(
+          t("Dropzone.invalidFormat", {}, "Format file tidak sesuai ketentuan")
+        );
         return null;
       }
       if (file.size > maxSize * 1024 * 1024) {
-        toast.error(`Ukuran file maksimal ${maxSize}MB`);
+        toast.error(
+          t(
+            "Dropzone.maxSizeExceeded",
+            { maxSize },
+            `Ukuran file maksimal ${maxSize}MB`
+          )
+        );
         return null;
       }
       return file;
@@ -73,53 +83,61 @@ const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
         )}
       >
         <span className="text-xs font-medium text-neutral-900">
-          Browse File
+          {t("Dropzone.browseFile", {}, "Browse File")}
         </span>
       </div>
       <p className="mt-2 text-xs text-neutral-600">
-        Format file jpg/png maks. {maxSize}MB
+        {t(
+          "Dropzone.formatInfo",
+          { maxSize },
+          `Format file jpg/png maks. ${maxSize}MB`
+        )}
       </p>
     </div>
   );
 };
 
 // --- Reusable Field Component ---
-const EditableField = ({ label, value, href = "#", onClick }) => (
-  <div className="flex flex-col gap-1">
-    <span className="mb-3 text-xs font-medium text-neutral-600">{label}</span>
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-neutral-900">{value}</span>
-      {onClick ? (
-        <button type="button" onClick={onClick}>
-          <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
-            Ubah
-            <IconComponent
-              src="/icons/pencil-outline.svg"
-              alt="Edit"
-              width={16}
-              height={16}
-            />
-          </div>
-        </button>
-      ) : (
-        <Link href={href}>
-          <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
-            Ubah
-            <IconComponent
-              src="/icons/pencil-outline.svg"
-              alt="Edit"
-              width={16}
-              height={16}
-            />
-          </div>
-        </Link>
-      )}
+const EditableField = ({ label, value, href = "#", onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="mb-3 text-xs font-medium text-neutral-600">{label}</span>
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-neutral-900">{value}</span>
+        {onClick ? (
+          <button type="button" onClick={onClick}>
+            <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
+              {t("EditableField.edit", {}, "Ubah")}
+              <IconComponent
+                src="/icons/pencil-outline.svg"
+                alt="Edit"
+                width={16}
+                height={16}
+              />
+            </div>
+          </button>
+        ) : (
+          <Link href={href}>
+            <div className="flex cursor-pointer items-center gap-1 text-sm text-primary-700 hover:text-primary-800">
+              {t("EditableField.edit", {}, "Ubah")}
+              <IconComponent
+                src="/icons/pencil-outline.svg"
+                alt="Edit"
+                width={16}
+                height={16}
+              />
+            </div>
+          </Link>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- Main Profile Component ---
 const UserProfileInfo = ({ userProfile }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { trigger: uploadPhoto, isMutating: isUploading } =
@@ -221,12 +239,24 @@ const UserProfileInfo = ({ userProfile }) => {
       console.log(response, file, cropData, uploadData, "tes");
       if (response?.data?.Data?.profileImage) {
         setAvatarUrl(response.data.Data.profileImage);
-        toast.success("Foto profil berhasil diperbarui");
+        toast.success(
+          t(
+            "UserProfileInfo.photoUpdateSuccess",
+            {},
+            "Foto profil berhasil diperbarui"
+          )
+        );
       } else {
         // Fallback to preview URL if API doesn't return image URL
         const previewUrl = URL.createObjectURL(file);
         setAvatarUrl(previewUrl);
-        toast.success("Foto profil berhasil diperbarui");
+        toast.success(
+          t(
+            "UserProfileInfo.photoUpdateSuccess",
+            {},
+            "Foto profil berhasil diperbarui"
+          )
+        );
       }
 
       setCropModalOpen(false);
@@ -237,10 +267,16 @@ const UserProfileInfo = ({ userProfile }) => {
       if (error?.response?.data?.Data?.errors) {
         const errorMessage =
           error.response.data.Data.errors[0]?.message ||
-          "Gagal mengupload foto";
+          t("UserProfileInfo.uploadFailed", {}, "Gagal mengupload foto");
         toast.error(errorMessage);
       } else {
-        toast.error("Gagal mengupload foto profil");
+        toast.error(
+          t(
+            "UserProfileInfo.uploadProfileFailed",
+            {},
+            "Gagal mengupload foto profil"
+          )
+        );
       }
     }
   };
@@ -267,7 +303,14 @@ const UserProfileInfo = ({ userProfile }) => {
       router.push(`/otp?type=change-number&whatsapp=${newNumber}`);
     } catch (error) {
       console.error("Error generating OTP for new number:", error);
-      toast.error(error.message || "Gagal mengirim OTP ke nomor baru");
+      toast.error(
+        error.message ||
+          t(
+            "UserProfileInfo.failedSendNewNumberOTP",
+            {},
+            "Gagal mengirim OTP ke nomor baru"
+          )
+      );
     }
   };
 
@@ -289,7 +332,14 @@ const UserProfileInfo = ({ userProfile }) => {
       router.push(`/otp?type=change-email2&email=${newEmail}`);
     } catch (error) {
       console.error("Error generating OTP for new email:", error);
-      toast.error(error.message || "Gagal mengirim OTP ke email baru");
+      toast.error(
+        error.message ||
+          t(
+            "UserProfileInfo.failedSendNewEmailOTP",
+            {},
+            "Gagal mengirim OTP ke email baru"
+          )
+      );
     }
   };
 
@@ -302,7 +352,13 @@ const UserProfileInfo = ({ userProfile }) => {
       });
 
       if (response?.data?.Message?.Code === 200) {
-        toast.success("Password berhasil diubah");
+        toast.success(
+          t(
+            "UserProfileInfo.passwordChangeSuccess",
+            {},
+            "Password berhasil diubah"
+          )
+        );
         setChangePasswordModalOpen(false);
         router.push("/password-success");
       }
@@ -331,7 +387,7 @@ const UserProfileInfo = ({ userProfile }) => {
           </div>
           <button type="button" onClick={() => setUploadModalOpen(true)}>
             <span className="cursor-pointer text-sm font-semibold text-primary-700 hover:underline">
-              Ubah Foto
+              {t("UserProfileInfo.changePhoto", {}, "Ubah Foto")}
             </span>
           </button>
         </div>
@@ -343,7 +399,7 @@ const UserProfileInfo = ({ userProfile }) => {
           </h2>
           <div className="grid flex-1 grid-cols-2 gap-x-10 gap-y-6">
             <EditableField
-              label="No. Whatsapp"
+              label={t("UserProfileInfo.whatsappNumber", {}, "No. Whatsapp")}
               value={userData.whatsapp}
               onClick={async () => {
                 try {
@@ -364,12 +420,19 @@ const UserProfileInfo = ({ userProfile }) => {
                   );
                 } catch (error) {
                   console.error("Error generating OTP:", error);
-                  toast.error(error.message || "Gagal mengirim OTP");
+                  toast.error(
+                    error.message ||
+                      t(
+                        "UserProfileInfo.failedSendOTP",
+                        {},
+                        "Gagal mengirim OTP"
+                      )
+                  );
                 }
               }}
             />
             <EditableField
-              label="Email"
+              label={t("UserProfileInfo.email", {}, "Email")}
               value={userData.email}
               onClick={async () => {
                 try {
@@ -388,13 +451,20 @@ const UserProfileInfo = ({ userProfile }) => {
                   router.push(`/otp?type=change-email&email=${userData.email}`);
                 } catch (error) {
                   console.error("Error generating OTP for email:", error);
-                  toast.error(error.message || "Gagal mengirim OTP ke email");
+                  toast.error(
+                    error.message ||
+                      t(
+                        "UserProfileInfo.failedSendEmailOTP",
+                        {},
+                        "Gagal mengirim OTP ke email"
+                      )
+                  );
                 }
               }}
             />
             <EditableField
-              label="Password"
-              value="********"
+              label={t("UserProfileInfo.password", {}, "Password")}
+              value={t("UserProfileInfo.passwordMask", {}, "********")}
               onClick={() => setChangePasswordModalOpen(true)}
             />
           </div>
@@ -407,7 +477,7 @@ const UserProfileInfo = ({ userProfile }) => {
           <ModalHeader />
           <div className="rounded-lg bg-white p-6 px-[67px]">
             <h3 className="mb-6 mt-2 text-center text-sm font-bold">
-              Ubah Foto Profil
+              {t("UserProfileInfo.changeProfilePhoto", {}, "Ubah Foto Profil")}
             </h3>
             <Dropzone
               onFileAccepted={handleFileAccepted}
@@ -428,7 +498,7 @@ const UserProfileInfo = ({ userProfile }) => {
         onClose={handleCropClose}
         result={handleCropSuccess}
         isCircle={true}
-        title="Ubah Foto Profil"
+        title={t("UserProfileInfo.changeProfilePhoto", {}, "Ubah Foto Profil")}
         aspectRatio={1}
         isLoading={isUploading}
       />

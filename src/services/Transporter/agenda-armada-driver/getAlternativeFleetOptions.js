@@ -89,7 +89,7 @@ export const mockAPIResult = {
  * @returns {Promise<Object>} - Data armada alternatif
  */
 export const getAlternativeFleetOptions = async (conflictId, search = "") => {
-  const useMockData = true; // Set to false to use real API calls
+  const useMockData = false; // Set to false to use real API calls
 
   if (useMockData) {
     // Simulate API delay

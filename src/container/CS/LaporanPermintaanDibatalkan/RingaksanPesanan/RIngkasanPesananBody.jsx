@@ -13,6 +13,8 @@ import {
 import { Modal } from "@/components/Modal";
 import { ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+// Component untuk kartu lokasi individual
+import { useTranslation } from "@/hooks/use-translation";
 import { LocationTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
@@ -61,9 +63,8 @@ const PICDetailItem = ({ icon, text, className = "" }) => (
   </div>
 );
 
-// Component untuk kartu lokasi individual
 const PICLocationCard = ({ locations = [], title }) => {
-  console.log("locations", locations);
+  const { t } = useTranslation();
   return (
     <div className={"flex w-full flex-row gap-8"}>
       <div className="flex h-8 min-w-[178px] items-center">
@@ -88,8 +89,16 @@ const PICLocationCard = ({ locations = [], title }) => {
                   {/* Header lokasi */}
                   <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
                     {location.type === LocationTypeEnum.PICKUP
-                      ? "Lokasi Muat"
-                      : "Lokasi Bongkar"}
+                      ? t(
+                          "RingkasanPesananBody.pickupLocation",
+                          {},
+                          "Lokasi Muat"
+                        )
+                      : t(
+                          "RingkasanPesananBody.dropoffLocation",
+                          {},
+                          "Lokasi Bongkar"
+                        )}
                   </span>
 
                   {/* Detail items */}
@@ -119,6 +128,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
   const [isMainSectionExpanded, setIsMainSectionExpanded] = useState(false);
   const [isPicSectionExpanded, setIsPicSectionExpanded] = useState(false);
 
+  const { t } = useTranslation();
   const toggleExpanded = () => {
     setIsPicSectionExpanded((prevState) => !prevState);
   };
@@ -204,16 +214,22 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
               alt="Halal Indonesia"
             />
             <span className="mt-0.5 text-center text-xs font-semibold text-[#652672]">
-              Memerlukan pengiriman dengan sertifikasi halal logistik
+              {t(
+                "RingkasanPesananBody.halalLogisticsNotice",
+                {},
+                "Memerlukan pengiriman dengan sertifikasi halal logistik"
+              )}
             </span>
           </div>
         )}
         <h1 className="text-lg font-semibold leading-tight text-neutral-900">
-          Ringkasan Pesanan
+          {t("RingkasanPesananBody.title", {}, "Ringkasan Pesanan")}
         </h1>
 
         {/* --- Always Visible Sections --- */}
-        <SectionRow label="Informasi Armada">
+        <SectionRow
+          label={t("RingkasanPesananBody.armadaInfo", {}, "Informasi Armada")}
+        >
           <div className="flex items-center gap-4">
             <LightboxProvider
               image={dataOrderDetail?.vehicle?.vehicleImage}
@@ -231,13 +247,19 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                 {`${dataOrderDetail?.vehicle?.truckTypeName} - Box`}
               </h3>
               <p className="mt-2 text-xs font-medium text-neutral-900">
-                Kebutuhan : {dataOrderDetail?.truckCount} Unit
+                {t(
+                  "RingkasanPesananBody.truckCountLabel",
+                  { count: dataOrderDetail?.truckCount },
+                  "Kebutuhan : {count} Unit"
+                )}
               </p>
             </div>
           </div>
         </SectionRow>
 
-        <SectionRow label="Waktu Muat">
+        <SectionRow
+          label={t("RingkasanPesananBody.loadTime", {}, "Waktu Muat")}
+        >
           <p className="text-xs font-medium text-neutral-900">
             {formatLoadTimeOnOneLine(
               dataOrderDetail?.loadTimeStart,
@@ -246,10 +268,16 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           </p>
         </SectionRow>
 
-        <SectionRow label="Rute Muat & Bongkar">
+        <SectionRow
+          label={t("RingkasanPesananBody.route", {}, "Rute Muat & Bongkar")}
+        >
           <div className="flex flex-col gap-3">
             <p className="text-xs font-medium text-neutral-900">
-              Estimasi {dataOrderDetail?.estimatedDistance} km
+              {t(
+                "RingkasanPesananBody.estimatedDistance",
+                { distance: dataOrderDetail?.estimatedDistance },
+                "Estimasi {distance} km"
+              )}
             </p>
             <MuatBongkarStepperWithModal
               pickupLocations={pickupLocations}
@@ -258,10 +286,16 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           </div>
         </SectionRow>
 
-        <SectionRow label="Informasi Muatan">
+        <SectionRow
+          label={t("RingkasanPesananBody.cargoInfo", {}, "Informasi Muatan")}
+        >
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium">
-              {`Total Berat : ${totalWeightKg} kg`}
+              {t(
+                "RingkasanPesananBody.totalWeight",
+                { weight: totalWeightKg },
+                "Total Berat : {weight} kg"
+              )}
             </span>
             <div className="flex flex-col gap-2">{displayedCargo}</div>
 
@@ -269,7 +303,11 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
               {dataOrderDetail?.cargo?.length >= 4 ? (
                 <ModalTrigger>
                   <button className="text-start text-xs font-medium leading-[14.4px] text-primary-700">
-                    Lihat Informasi Muatan Lainnya
+                    {t(
+                      "RingkasanPesananBody.seeMoreCargo",
+                      {},
+                      "Lihat Informasi Muatan Lainnya"
+                    )}
                   </button>
                 </ModalTrigger>
               ) : null}
@@ -277,7 +315,11 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                 <div className="flex flex-col gap-y-3 p-6">
                   {/* Header */}
                   <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
-                    Informasi Muatan
+                    {t(
+                      "RingkasanPesananBody.cargoInfoModalTitle",
+                      {},
+                      "Informasi Muatan"
+                    )}
                   </h2>
                   <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
                     {renderCargoItems(dataOrderDetail.cargo)}
@@ -298,18 +340,34 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           >
             <div className="overflow-hidden">
               <div className="flex flex-col gap-6">
-                <SectionRow label="Deskripsi Muatan">
+                <SectionRow
+                  label={t(
+                    "RingkasanPesananBody.cargoDescription",
+                    {},
+                    "Deskripsi Muatan"
+                  )}
+                >
                   <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {dataOrderDetail?.cargoDescription}
                   </p>
                 </SectionRow>
 
-                <SectionRow label="Foto Muatan">
+                <SectionRow
+                  label={t(
+                    "RingkasanPesananBody.cargoPhotos",
+                    {},
+                    "Foto Muatan"
+                  )}
+                >
                   <LightboxProvider
                     images={
                       dataOrderDetail?.photos?.map((photo) => photo) || []
                     }
-                    title="Foto Muatan"
+                    title={t(
+                      "RingkasanPesananBody.cargoPhotos",
+                      {},
+                      "Foto Muatan"
+                    )}
                   >
                     <div className="flex gap-4">
                       {dataOrderDetail?.photos?.map((photo, index) => (
@@ -317,7 +375,11 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                           key={index}
                           image={photo}
                           index={index}
-                          alt={`Foto Muatan ${index + 1}`}
+                          alt={t(
+                            "RingkasanPesananBody.cargoPhotoAlt",
+                            { index: index + 1 },
+                            "Foto Muatan {index}"
+                          )}
                           className="size-[124px] rounded-xl object-cover"
                         />
                       ))}
@@ -326,7 +388,13 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                 </SectionRow>
 
                 {dataOrderDetail?.deliveryOrders?.length > 0 ? (
-                  <SectionRow label="No. Delivery Order">
+                  <SectionRow
+                    label={t(
+                      "RingkasanPesananBody.deliveryOrderNumber",
+                      {},
+                      "No. Delivery Order"
+                    )}
+                  >
                     <div className="flex flex-wrap gap-2">
                       {dataOrderDetail?.deliveryOrders?.map((order, index) => (
                         <TagBubble key={index}>{order}</TagBubble>
@@ -336,7 +404,13 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                 ) : null}
 
                 {dataOrderDetail?.additionalServices.length > 0 ? (
-                  <SectionRow label="Layanan Tambahan">
+                  <SectionRow
+                    label={t(
+                      "RingkasanPesananBody.additionalServices",
+                      {},
+                      "Layanan Tambahan"
+                    )}
+                  >
                     <div className="flex flex-col gap-y-2">
                       {dataOrderDetail?.additionalServices.map(
                         (service, key) => (
@@ -367,7 +441,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
 
                 <div className="flex w-full items-center justify-between">
                   <h1 className="text-lg font-semibold leading-[21.6px] text-neutral-900">
-                    Detail PIC
+                    {t("RingkasanPesananBody.picDetail", {}, "Detail PIC")}
                   </h1>
                   <button
                     onClick={toggleExpanded}
@@ -394,13 +468,21 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                     {/* Detail PIC Lokasi Muat Section */}
                     <PICLocationCard
                       locations={pickupLocations}
-                      title="Detail PIC Lokasi Muat"
+                      title={t(
+                        "RingkasanPesananBody.picPickupLocation",
+                        {},
+                        "Detail PIC Lokasi Muat"
+                      )}
                     />
 
                     {/* Detail PIC Lokasi Bongkar Section */}
                     <PICLocationCard
                       locations={dropoffLocations}
-                      title="Detail PIC Lokasi Bongkar"
+                      title={t(
+                        "RingkasanPesananBody.picDropoffLocation",
+                        {},
+                        "Detail PIC Lokasi Bongkar"
+                      )}
                     />
                   </div>
                 </div>
@@ -416,13 +498,19 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           >
             <IconComponent
               src="/icons/chevron-down24.svg"
-              alt="Toggle visibility"
+              alt={t(
+                "RingkasanPesananBody.toggleVisibility",
+                {},
+                "Toggle visibility"
+              )}
               className={`size-5 text-primary-700 transition-transform duration-300 ${
                 isMainSectionExpanded ? "rotate-180" : ""
               }`}
             />
             <span className="text-xs font-semibold text-primary-700">
-              {isMainSectionExpanded ? "Sembunyikan" : "Lihat Selengkapnya"}
+              {isMainSectionExpanded
+                ? t("RingkasanPesananBody.hide", {}, "Sembunyikan")
+                : t("RingkasanPesananBody.seeMore", {}, "Lihat Selengkapnya")}
             </span>
           </button>
         </div>

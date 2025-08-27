@@ -26,7 +26,6 @@ const DetailPesanan = ({ breadcrumbData }) => {
   // Fetch fleet tracking data from API
   const { data: fleetTrackingData, error: fleetTrackingError } =
     useGetFleetTracking(params.uuid);
-
   const tabItems = useShallowMemo(() => {
     return [
       {
@@ -37,7 +36,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
         value: "lacak-armada",
         label: (
           <LabelLacakArmada
-            fleetCount={fleetTrackingData?.totalFleet || 0}
+            fleetCount={fleetTrackingData?.fleetSummary?.totalFleet || 0}
             hasSOS={dataOrderDetail?.hasSOSAlert}
           />
         ),

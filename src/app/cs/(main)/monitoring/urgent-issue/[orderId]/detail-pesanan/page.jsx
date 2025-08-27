@@ -10,13 +10,9 @@ const Page = () => {
       name: t("SOSDetailPesananPage.breadcrumbMonitoring", {}, "Monitoring"),
       href: "/monitoring",
     },
-    { name: t("SOSDetailPesananPage.breadcrumbSOS", {}, "Urgent Issue") },
+    { name: "Urgent Issue", href: "/monitoring?tab=urgent" },
     {
-      name: t(
-        "SOSDetailPesananPage.breadcrumbDetailPesanan",
-        {},
-        "Detail Pesanan"
-      ),
+      name: "Detail Pesanan",
     },
   ];
   return <DetailPesanan breadcrumbData={breadcrumbData} />;

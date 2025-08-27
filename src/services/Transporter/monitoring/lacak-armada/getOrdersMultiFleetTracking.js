@@ -16,6 +16,82 @@ const apiResultOrdersMultiFleetTracking = {
       totalVehicles: 8,
       vehicles: [
         {
+          vehicleId: "vehicle-uuid-90",
+          licensePlate: "AB 1",
+          orderStatus: "IN_PROGRESS",
+          polylineEncode: "~oifA~i|xSbAcAbBsBfCgDxAgBpBeC",
+          driverName: "John Doe",
+          currentLocation: {
+            latitude: -6.175392,
+            longitude: 106.827153,
+            lastUpdate: "2024-01-15T10:30:00.000Z",
+          },
+          driverStatus: {
+            mainStatus: "LOADING",
+            subStatus: "MENUJU_KE_LOKASI_MUAT",
+            displayName: "Menuju ke Lokasi Muat 1",
+          },
+          trackingStatus: "WAITING_CHANGE_FLEET",
+          sosStatus: {
+            hasSos: false,
+            sosId: "sos-uuid-1",
+          },
+          estimatedArrival: "2024-01-15T11:15:00.000Z",
+
+          timeline: {
+            statusDefinitions: [
+              {
+                mappedOrderStatus: "FLEET_CHANGE",
+                date: "2024-01-15T10:30:00.000Z",
+                children: [
+                  //   {
+                  //     statusCode: "MENUJU_KE_LOKASI_MUAT",
+                  //     statusName: "Menuju ke Lokasi Muat",
+                  //     date: "2024-01-15T10:30:00.000Z",
+                  //     requiresPhoto: false,
+                  //   },
+                  //   {
+                  //     statusCode: "MENUJU_KE_LOKASI_MUAT",
+                  //     statusName: "Menuju ke Lokasi Muat",
+                  //     date: "2024-01-15T10:30:00.000Z",
+                  //     requiresPhoto: false,
+                  //   },
+                ],
+              },
+            ],
+          },
+          replacementFleet: {
+            id: "fleet-002-replacement",
+            licensePlate: "AE 3333 LBA",
+            vehicleImage: "/img/truck3.png",
+            truckType: "Colt Diesel Engkel - Box",
+            driverName: "John",
+            profileImage: "https://example.com/driver3.jpg",
+            timeline: {
+              statusDefinitions: [
+                {
+                  mappedOrderStatus: "LOADING",
+                  date: "2024-01-15T10:30:00.000Z",
+                  children: [
+                    // {
+                    //   statusCode: "SEDANG_MUAT",
+                    //   statusName: "Proses Muat",
+                    //   date: "2024-01-15T10:30:00.000Z",
+                    //   requiresPhoto: false,
+                    // },
+                    // {
+                    //   statusCode: "MENUJU_KE_LOKASI_MUAT",
+                    //   statusName: "Menuju ke Lokasi Muat",
+                    //   date: "2024-01-15T10:30:00.000Z",
+                    //   requiresPhoto: false,
+                    // },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
           vehicleId: "vehicle-uuid-1",
           licensePlate: "B1234XYZ",
           orderStatus: "IN_PROGRESS",

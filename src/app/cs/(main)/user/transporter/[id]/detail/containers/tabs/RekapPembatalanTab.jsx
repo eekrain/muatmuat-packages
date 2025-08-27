@@ -156,7 +156,7 @@ const RekapPembatalanTab = () => {
           </div>
         ) : error ? (
           <div className="flex h-[400px] w-full flex-col items-center justify-center">
-            <DataNotFound type="error" width={95} height={76}>
+            <DataNotFound type="data" width={95} height={76}>
               <div className="text-center text-neutral-600">
                 <p className="font-semibold">
                   {t(

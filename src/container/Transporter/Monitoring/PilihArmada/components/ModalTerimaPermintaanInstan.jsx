@@ -33,7 +33,7 @@ const ModalTerimaPermintaanInstant = ({
 }) => {
   const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState("");
-  const [partialCount, setPartialCount] = useState(null);
+  const [partialCount, setPartialCount] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [showTermsAlert, setShowTermsAlert] = useState(false);
@@ -47,7 +47,7 @@ const ModalTerimaPermintaanInstant = ({
   const id = searchParams.get("id");
 
   // API hooks
-  const { trigger: acceptScheduledRequest, isMutating } =
+  const { acceptRequest, isAccepting } =
     usePostAcceptScheduledTransportRequest();
 
   // Ambil detail data berdasarkan request.id
@@ -109,142 +109,162 @@ const ModalTerimaPermintaanInstant = ({
     setShowConfirmModal(true);
   };
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
+    // Validasi opsi yang dipilih
+    if (!selectedOption) {
+      setShowAlert(true);
+      return;
+    }
+
+    // Validasi jumlah unit untuk opsi parsial
+    if (selectedOption === "partial" && (!partialCount || partialCount <= 0)) {
+      setShowPartialAlert(true);
+      return;
+    }
+
     // Validasi syarat dan ketentuan
     if (!acceptTerms) {
       setShowTermsAlert(true);
       return;
     }
 
-    // // Show modal sequence for demo
-    // showModalSequence();
-  };
-
-  const handleConfirmAccept = () => {
-    const requestData = {
-      id: detail.id || request?.id,
-      data: {
-        type: selectedOption,
-        truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
-      },
+    // Create the payload according to API specification
+    const payload = {
+      acceptType: selectedOption === "all" ? "ALL" : "PARTIAL",
+      vehicleCount:
+        selectedOption === "all" ? detail.truckCount : parseInt(partialCount),
+      acceptTerms: acceptTerms,
     };
 
-    console.log("Sending request data:", requestData); // Debug log
+    const requestData = {
+      id: detail.id || request?.id,
+      payload: payload,
+    };
 
-    if (request.isTaken) {
-      setShowConfirmModal(true);
+    try {
+      // Call the API to accept the scheduled transport request
+      const response = await acceptRequest(requestData);
+
+      // Show success toast
+      const message =
+        response.Data?.toast?.message ||
+        t(
+          "ModalTerimaPermintaanInstant.toastSuccessRequestAccepted",
+          { orderCode: response.Data?.orderCode || "berhasil" },
+          `Permintaan ${response.Data?.orderCode || "berhasil"} diterima`
+        );
+      toast.success(message);
+
+      // Close modal
+      onClose();
+
+      // Call parent callback if needed
+      if (onAccept) {
+        onAccept(requestData);
+      }
+    } catch (error) {
+      console.log("Error occurred:", error); // Debug log
+
+      // Handle different error scenarios
+      if (error.response?.status === 422) {
+        const errors = error.response?.data?.Data?.errors || [];
+
+        // Case 1: Pesanan sudah diambil
+        const orderStatusError = errors.find(
+          (err) => err.field === "orderStatus"
+        );
+        if (orderStatusError) {
+          setModalType("taken");
+          setModalData({
+            title: t(
+              "ModalTerimaPermintaanInstant.titleOrderTaken",
+              {},
+              "Pesanan Sudah Diambil"
+            ),
+            message: t(
+              "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
+              {},
+              "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
+            ),
+          });
+          setShowConfirmModal(true);
+          return;
+        }
+
+        // Case 2: Perubahan kebutuhan unit
+        const vehicleCountError = errors.find(
+          (err) => err.field === "vehicleCount"
+        );
+        if (vehicleCountError) {
+          setModalType("unit-change");
+          setModalData({
+            title: t(
+              "ModalTerimaPermintaanInstant.titleUnitRequirementChanged",
+              {},
+              "Perubahan Kebutuhan Unit"
+            ),
+            message: t(
+              "ModalTerimaPermintaanInstant.messageErrorUnitRequirementChanged",
+              {},
+              "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan."
+            ),
+          });
+          setShowConfirmModal(true);
+          return;
+        }
+
+        // Case 3: Syarat dan ketentuan tidak diterima
+        const termsError = errors.find((err) => err.field === "acceptTerms");
+        if (termsError) {
+          toast.error(
+            t(
+              "ModalTerimaPermintaanInstant.toastErrorTermsNotAccepted",
+              {},
+              "Syarat dan ketentuan harus diterima"
+            )
+          );
+          return;
+        }
+
+        // Case 4: Akun ditangguhkan
+        const accountError = errors.find(
+          (err) => err.field === "account" || err.field === "userStatus"
+        );
+        if (
+          accountError ||
+          error.response?.data?.Message?.Text?.includes("ditangguhkan") ||
+          error.response?.data?.Message?.Text?.includes("suspended")
+        ) {
+          setModalType("suspended");
+          setModalData({
+            title: t(
+              "ModalTerimaPermintaanInstant.titleAccountSuspended",
+              {},
+              "Akun Ditangguhkan"
+            ),
+            message: t(
+              "ModalTerimaPermintaanInstant.messageErrorAccountSuspended",
+              {},
+              "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali."
+            ),
+          });
+          setShowConfirmModal(true);
+          return;
+        }
+      }
+
+      // Case untuk error lainnya - show generic error toast
+      const errorMessage =
+        error.response?.data?.Message?.Text ||
+        t(
+          "ModalTerimaPermintaanInstant.toastErrorFailedToAccept",
+          {},
+          "Gagal menerima permintaan. Silakan coba lagi."
+        );
+      toast.error(errorMessage);
     }
-    acceptScheduledRequest(requestData)
-      .then((response) => {
-        console.log("Success response:", response); // Debug log
-
-        // Show success toast
-        const message =
-          response.Data?.toast?.message ||
-          t(
-            "ModalTerimaPermintaanInstant.toastSuccessRequestAccepted",
-            { orderCode: response.Data?.orderCode || "berhasil" },
-            "Permintaan {orderCode} diterima"
-          );
-        toast.success(message);
-
-        // Close modal
-        onClose();
-
-        // Call parent callback if needed
-        if (onAccept) {
-          onAccept(requestData);
-        }
-      })
-      .catch((error) => {
-        console.log("Error occurred:", error); // Debug log
-
-        // Handle different error scenarios
-        if (error.response?.status === 422) {
-          const errors = error.response?.data?.Data?.errors || [];
-
-          // Case 1: Pesanan sudah diambil
-          const orderStatusError = errors.find(
-            (err) => err.field === "orderStatus"
-          );
-          if (orderStatusError) {
-            setModalType("taken");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaanInstant.titleOrderTaken",
-                {},
-                "Pesanan Sudah Diambil"
-              ),
-              message: t(
-                "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
-                {},
-                "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 2: Perubahan kebutuhan unit
-          const vehicleCountError = errors.find(
-            (err) => err.field === "vehicleCount"
-          );
-          if (vehicleCountError) {
-            setModalType("unit-change");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaanInstant.titleUnitRequirementChanged",
-                {},
-                "Perubahan Kebutuhan Unit"
-              ),
-              message: t(
-                "ModalTerimaPermintaanInstant.messageErrorUnitRequirementChanged",
-                {},
-                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 3: Akun ditangguhkan
-          const accountError = errors.find(
-            (err) => err.field === "account" || err.field === "userStatus"
-          );
-          if (
-            accountError ||
-            error.response?.data?.Message?.Text?.includes("ditangguhkan") ||
-            error.response?.data?.Message?.Text?.includes("suspended")
-          ) {
-            setModalType("suspended");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaanInstant.titleAccountSuspended",
-                {},
-                "Akun Ditangguhkan"
-              ),
-              message: t(
-                "ModalTerimaPermintaanInstant.messageErrorAccountSuspended",
-                {},
-                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-        }
-
-        // Case untuk error lainnya - show generic error toast
-        const errorMessage =
-          error.response?.data?.Message?.Text ||
-          t(
-            "ModalTerimaPermintaanInstant.toastErrorFailedToAccept",
-            {},
-            "Gagal menerima permintaan. Silakan coba lagi."
-          );
-        toast.error(errorMessage);
-      });
   };
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 ${
@@ -759,6 +779,138 @@ const ModalTerimaPermintaanInstant = ({
               )}
             </div>
 
+            {/* Fleet Selection Options */}
+            <div className="mb-4 rounded-lg border border-neutral-400 p-4">
+              <div className="mb-3">
+                <span className="text-xs font-medium text-gray-600">
+                  {t(
+                    "ModalTerimaPermintaanInstant.titleFleetSelection",
+                    {},
+                    "Pilihan Armada"
+                  )}
+                </span>
+              </div>
+
+              {/* Full Acceptance Option */}
+              <div className="mb-3 flex items-center">
+                <input
+                  type="radio"
+                  id="acceptAll"
+                  name="fleetOption"
+                  value="all"
+                  checked={selectedOption === "all"}
+                  onChange={(e) => {
+                    setSelectedOption(e.target.value);
+                    setShowAlert(false);
+                  }}
+                  className="h-4 w-4 text-primary-600"
+                />
+                <label
+                  htmlFor="acceptAll"
+                  className="ml-2 text-sm text-gray-900"
+                >
+                  {t(
+                    "ModalTerimaPermintaanInstant.labelAcceptAllUnits",
+                    { count: detail.truckCount || request?.truckCount || 3 },
+                    "Terima semua unit ({count} unit)"
+                  )}
+                </label>
+              </div>
+
+              {/* Partial Acceptance Option */}
+              <div className="flex items-start">
+                <input
+                  type="radio"
+                  id="acceptPartial"
+                  name="fleetOption"
+                  value="partial"
+                  checked={selectedOption === "partial"}
+                  onChange={(e) => {
+                    setSelectedOption(e.target.value);
+                    setShowAlert(false);
+                  }}
+                  className="mt-1 h-4 w-4 text-primary-600"
+                />
+                <div className="ml-2 flex-1">
+                  <label
+                    htmlFor="acceptPartial"
+                    className="text-sm text-gray-900"
+                  >
+                    {t(
+                      "ModalTerimaPermintaanInstant.labelAcceptPartialUnits",
+                      {},
+                      "Terima sebagian unit"
+                    )}
+                  </label>
+                  {selectedOption === "partial" && (
+                    <div className="mt-2 flex items-center">
+                      <input
+                        type="number"
+                        min="1"
+                        max={detail.truckCount || request?.truckCount || 3}
+                        value={partialCount}
+                        onChange={(e) => {
+                          setPartialCount(e.target.value);
+                          setShowPartialAlert(false);
+                        }}
+                        className="w-20 rounded-lg border border-neutral-300 p-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                        placeholder={t(
+                          "ModalTerimaPermintaanInstant.placeholderUnitCount",
+                          {},
+                          "Jumlah unit"
+                        )}
+                      />
+                      <span className="ml-2 text-sm text-gray-600">
+                        {t(
+                          "ModalTerimaPermintaanInstant.labelUnit",
+                          {},
+                          "unit"
+                        )}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Alert for fleet selection validation */}
+              {showAlert && !selectedOption && (
+                <p className="mt-2 text-xs font-medium text-error-400">
+                  {t(
+                    "ModalTerimaPermintaanInstant.messageErrorSelectFleetOption",
+                    {},
+                    "Pilih salah satu opsi armada"
+                  )}
+                </p>
+              )}
+
+              {/* Alert for partial count validation */}
+              {showPartialAlert &&
+                selectedOption === "partial" &&
+                (!partialCount || partialCount <= 0) && (
+                  <p className="mt-2 text-xs font-medium text-error-400">
+                    {t(
+                      "ModalTerimaPermintaanInstant.messageErrorEnterValidCount",
+                      {},
+                      "Masukkan jumlah unit yang valid"
+                    )}
+                  </p>
+                )}
+
+              {/* Alert for partial count exceeding total */}
+              {selectedOption === "partial" &&
+                partialCount &&
+                detail.truckCount &&
+                parseInt(partialCount) > detail.truckCount && (
+                  <p className="mt-2 text-xs font-medium text-error-400">
+                    {t(
+                      "ModalTerimaPermintaanInstant.messageErrorCountExceedsTotal",
+                      { total: detail.truckCount },
+                      "Jumlah unit tidak boleh melebihi total {total} unit"
+                    )}
+                  </p>
+                )}
+            </div>
+
             {/* Syarat & Ketentuan (not scrollable) */}
             <div className="mb-4">
               <label className="flex cursor-pointer items-start gap-3">
@@ -811,16 +963,26 @@ const ModalTerimaPermintaanInstant = ({
                 variant="muattrans-primary"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
                 onClick={handleAccept}
-                disabled={isMutating}
+                disabled={isAccepting}
               >
-                {t("ModalTerimaPermintaanInstant.buttonAccept", {}, "Terima")}
+                {isAccepting
+                  ? t(
+                      "ModalTerimaPermintaanInstant.buttonAccepting",
+                      {},
+                      "Menerima..."
+                    )
+                  : t(
+                      "ModalTerimaPermintaanInstant.buttonAccept",
+                      {},
+                      "Terima"
+                    )}
               </Button>
             </div>
           </>
         )}
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Error Modal */}
       <ConfirmationModal
         isOpen={showConfirmModal}
         setIsOpen={setShowConfirmModal}

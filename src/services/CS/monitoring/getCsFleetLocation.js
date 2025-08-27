@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 
 // Set to true to use mock data, false for a real API call.
-const isMockEnabled = true;
+const isMockEnabled = false;
 
 // Mock API result with data synchronized with the main fleet list service.
 export const mockApiResultCsFleetLocations = {

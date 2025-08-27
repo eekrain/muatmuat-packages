@@ -32,8 +32,8 @@ import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitMod
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
-import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
+import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrders";
+import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrdersCount";
 import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 import {
   ORDER_STATUS,
@@ -44,6 +44,30 @@ import {
 
 import Onboarding from "../Onboarding/Onboarding";
 import AlertPerubahanLokasi from "./components/AlertPerubahanLokasi";
+
+// Component to handle truck name with conditional tooltip using character length
+const TruckNameWithTooltip = ({ name }) => {
+  const isLongName = name && name.length > 20;
+
+  if (isLongName) {
+    return (
+      <InfoTooltip
+        trigger={
+          <span className="line-clamp-1 cursor-pointer break-all text-xs font-bold">
+            {name}
+          </span>
+        }
+        side="top"
+      >
+        <p className="text-sm">{name}</p>
+      </InfoTooltip>
+    );
+  }
+
+  return (
+    <span className="line-clamp-1 break-all text-xs font-bold">{name}</span>
+  );
+};
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -173,6 +197,7 @@ const DaftarPesananAktif = ({
   };
 
   const { data, isLoading } = useGetActiveOrders(requestParams);
+  console.log("Order Aktif:", data);
 
   // Calculate orders with location/time changes
   const orders = data?.orders || [];
@@ -553,7 +578,7 @@ const DaftarPesananAktif = ({
           pickupLocations={row.pickupLocations}
           dropoffLocations={row.dropoffLocations}
           appearance={{
-            titleClassName: "text-xxs font-semibold",
+            titleClassName: "line-clamp-2 break-all",
           }}
         />
       ),
@@ -566,14 +591,12 @@ const DaftarPesananAktif = ({
       className: "p-4 align-top",
       render: (row) => (
         <div className="flex w-[140px] flex-col gap-1">
-          <span className="line-clamp-1 break-all text-xs font-bold">
-            {row.truckType.name}
-          </span>
+          <TruckNameWithTooltip name={row.truckType.name} />
           <span className="line-clamp-1 break-all text-xs font-medium">
             <span className="text-neutral-600">
               {t("DaftarPesananAktif.carrierLabel", {}, "Carrier")} :
             </span>{" "}
-            {row.carrierTruck.name}
+            {row.carrierTruck.description}
           </span>
           <div className="mt-1 flex items-center gap-4">
             <div className="flex items-center gap-1">

@@ -7,7 +7,7 @@ const isMockPatchCSTransporter = true;
 const patchCSTransporterStatus = async (url, { arg }) => {
   const { id, data } = arg;
   if (isMockPatchCSTransporter) {
-    const response = await fetcherMock.patch(`${url}/${id}/status`, arg);
+    const response = await fetcherMock.patch(`/api/${url}/${id}/status`, arg);
     return response.data;
   }
   return await fetcherMuatrans.patch(`${url}/${id}/status`, data);

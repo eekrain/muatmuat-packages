@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -11,9 +11,11 @@ import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
+import { getShipperContact } from "@/services/CS/monitoring/urgent-issue/getShipperContact";
 import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import CheckBoxGroup from "./CheckboxGroup";
+import ModalTransporterMenolakPerubahan from "./ModalTransporterMenolakPerubahan";
 import ModalUbahTransporter from "./ModalUbahTransporter";
 
 export const UrgentIssueCard = ({
@@ -42,11 +44,18 @@ export const UrgentIssueCard = ({
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
+  const [hubungiContacts, setHubungiContacts] = useState(null);
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
   const [selectedIssueData, setSelectedIssueData] = useState(null);
   const [showGroupSection, setShowGroupSection] = useState(false);
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
   const [remainingTime, setRemainingTime] = useState(countdown);
+  const [showTransporterMenolakModal, setShowTransporterMenolakModal] =
+    useState(false);
+
+  const openTransporterMenolakModal = useCallback(() => {
+    setShowTransporterMenolakModal(true);
+  }, []);
 
   const { message, isError } = useUpdateUrgentIssueStatus(
     updateParams.id,
@@ -113,7 +122,7 @@ export const UrgentIssueCard = ({
   }
 
   const handleClickOrder = (orderId) => {
-    router.push(`/daftarpesanan/detailpesanan/${orderId}`);
+    router.push(`/monitoring/urgent-issue/${orderCode}/detail-pesanan`);
   };
 
   const handleConfirmStatus = (status) => {
@@ -145,7 +154,17 @@ export const UrgentIssueCard = ({
   };
 
   const issues = data?.issues || [];
-  const groupIssues = issues.slice(1);
+  const mainIssue = data;
+  // Sort groupIssues: overdue issues first
+  let groupIssues = issues.slice(1);
+  if (Array.isArray(meta?.overdue_issues)) {
+    groupIssues = groupIssues.slice().sort((a, b) => {
+      const aIsNegative = meta.overdue_issues.includes(a.id);
+      const bIsNegative = meta.overdue_issues.includes(b.id);
+      if (aIsNegative === bIsNegative) return 0;
+      return aIsNegative ? -1 : 1;
+    });
+  }
 
   const formatTime = (totalSeconds) => {
     if (!totalSeconds || totalSeconds <= 0) {
@@ -224,7 +243,28 @@ export const UrgentIssueCard = ({
           </div>
           <Button
             type="button"
-            onClick={() => setShowHubungiModal(true)}
+            onClick={async () => {
+              const shipperId = data?.transporter?.id || "uuid";
+              const contactRes = await getShipperContact(shipperId);
+              const contacts = {
+                pics: (contactRes.data.picContacts || []).map((pic, idx) => ({
+                  name: pic.name,
+                  position: pic.position,
+                  phoneNumber: pic.phone,
+                  Level: idx + 1,
+                })),
+                emergencyContact: {
+                  name: contactRes.data.emergencyContact?.name,
+                  position:
+                    contactRes.data.emergencyContact?.relationship ||
+                    "Emergency Contact",
+                  phoneNumber: contactRes.data.emergencyContact?.phone,
+                },
+                companyContact: contactRes.data.primaryContact?.phone,
+              };
+              setHubungiContacts(contacts);
+              setShowHubungiModal(true);
+            }}
             variant="muattrans-primary"
           >
             {t("UrgentIssueCard.buttonContact", {}, "Hubungi")}
@@ -236,7 +276,13 @@ export const UrgentIssueCard = ({
               {statusDisplay !== "selesai" && (
                 <NotificationDot
                   size="md"
-                  color={status === "PROCESSING" ? "orange" : "red"}
+                  color={
+                    statusDisplay === "baru"
+                      ? "red"
+                      : statusDisplay === "diproses"
+                        ? "orange"
+                        : "red"
+                  }
                 />
               )}
               <span className="text-xs font-bold text-neutral-900">
@@ -249,13 +295,21 @@ export const UrgentIssueCard = ({
                       : issue_type}
               </span>
             </div>
-            {isCountDown && (
-              <BadgeStatus
-                variant={isNegative ? "outlineWarning" : "outlineSecondary"}
-                className="w-max text-sm font-semibold"
-              >
-                {isNegative ? `-${formatted}` : formatted}
-              </BadgeStatus>
+            {(statusDisplay === "baru" || statusDisplay === "diproses") &&
+              isCountDown && (
+                <BadgeStatus
+                  variant={isNegative ? "outlineWarning" : "outlineSecondary"}
+                  className="w-max text-sm font-semibold"
+                >
+                  {isNegative ? `-${formatted}` : formatted}
+                </BadgeStatus>
+              )}
+
+            {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
+            {statusDisplay === "selesai" && (
+              <div className="text-xs font-medium text-neutral-600">
+                {detectedAt ? formatDate(detectedAt) : "-"}
+              </div>
             )}
           </div>
           <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
@@ -269,9 +323,21 @@ export const UrgentIssueCard = ({
             {description}
           </div>
           {isNegative && (
-            <div className="mt-1 text-xs font-medium text-primary-700">
-              2 Transporter Menolak Perubahan Armada
+            <div
+              className="mt-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
+              onClick={openTransporterMenolakModal}
+            >
+              {data?.rejection_count} Transporter Menolak Perubahan Armada
             </div>
+          )}
+
+          {showTransporterMenolakModal && (
+            <ModalTransporterMenolakPerubahan
+              // transporter={data?.transporter}
+              // detail={data?.detail}
+              // latestNote={data?.latestNote}
+              onClose={() => setShowTransporterMenolakModal(false)}
+            />
           )}
 
           <div className="my-3 h-px w-full bg-neutral-400" />
@@ -410,7 +476,10 @@ export const UrgentIssueCard = ({
                 type="button"
                 onClick={() => {
                   setModalUbahTransporter(true);
-                  setSelectedIssueData(data);
+                  setSelectedIssueData({
+                    ...data,
+                    selectedVehicleId: data?.vehicle?.id,
+                  });
                 }}
                 variant="muattrans-primary-secondary"
               >
@@ -432,13 +501,13 @@ export const UrgentIssueCard = ({
                       />
                     )}
                     <span className="text-xs font-bold text-neutral-900">
-                      {issue_type === "FLEET_NOT_READY"
+                      {issue.issue_type === "FLEET_NOT_READY"
                         ? "Armada Tidak Siap Untuk Muat"
-                        : issue_type === "FLEET_NOT_MOVING"
+                        : issue.issue_type === "FLEET_NOT_MOVING"
                           ? "Armada Tidak Bergerak Menuju Lokasi"
-                          : issue_type === "POTENTIAL_DRIVER_LATE"
+                          : issue.issue_type === "POTENTIAL_DRIVER_LATE"
                             ? "Potensi Driver Terlambat Muat"
-                            : issue_type}
+                            : issue.issue_type}
                     </span>
                   </div>
                   {isCountDown && (
@@ -458,9 +527,9 @@ export const UrgentIssueCard = ({
                     onClick={() => handleClickVehiclePlateNumber()}
                     className="font-medium text-primary-700 hover:cursor-pointer"
                   >
-                    {data?.vehicle?.plate_number || vehiclePlateNumber || "-"}
+                    {issue?.vehicle?.plate_number || "-"}
                   </span>{" "}
-                  {description}
+                  {issue?.description}
                 </div>
                 <div className="my-3 h-px w-full bg-neutral-400" />
                 {/* Selesai - Lihat Detail */}
@@ -593,19 +662,16 @@ export const UrgentIssueCard = ({
                     <Button
                       type="button"
                       onClick={() => {
-                        if (statusDisplay === "baru") {
-                          setIsConfirmProccess(true);
-                        } else if (statusDisplay === "diproses") {
-                          setIsConfirmCompleted(true);
-                        }
+                        console.log("Vehicle ID clicked:", issue?.vehicle?.id);
+                        setModalUbahTransporter(true);
+                        setSelectedIssueData({
+                          ...data,
+                          selectedVehicleId: issue?.vehicle?.id, // Ganti dari data?.vehicle?.id ke issue?.vehicle?.id
+                        });
                       }}
                       variant="muattrans-primary-secondary"
                     >
-                      {t(
-                        "UrgentIssueCard.buttonChangeTransporter",
-                        {},
-                        "Ubah Transporter"
-                      )}
+                      Ubah Transporter
                     </Button>
                   </div>
                 )}
@@ -672,13 +738,14 @@ export const UrgentIssueCard = ({
         <HubungiModal
           isOpen={showHubungiModal}
           onClose={() => setShowHubungiModal(false)}
-          transporterData={null} // TODO: pass actual transporter data if available
+          contacts={hubungiContacts}
         />
 
         <ModalUbahTransporter
           open={modalUbahTransporter}
           onClose={() => setModalUbahTransporter(false)}
           issueData={selectedIssueData}
+          selectedVehicleId={selectedIssueData?.selectedVehicleId}
         />
       </div>
     </>

@@ -110,31 +110,7 @@ export const InformasiMuatanModal = ({
     control,
     name: "informasiMuatan",
   });
-  const [listNamaMuatan, setListNamaMuatan] = useState([]);
-  // const [listNamaMuatan, setListNamaMuatan] = useState([
-  //   { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
-  //   {
-  //     value: "0c57b52d-7e63-46c8-b779-c5697242b471",
-  //     label: "Elektronik Rumah Tangga",
-  //   },
-  //   {
-  //     value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
-  //     label: "Peralatan dan Kebutuhan Kantor",
-  //   },
-  //   {
-  //     value: "38015672-0dab-4523-bda8-867893c95cfb",
-  //     label: "Produk Makanan Kemasan",
-  //     selected: true,
-  //   },
-  //   {
-  //     value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
-  //     label: "Produk Minuman Kemasan",
-  //   },
-  // ]);
-  // const { cargoTypeId, cargoCategoryId } = useSewaArmadaStore((state) => ({
-  //   cargoTypeId: state.formValues.cargoTypeId,
-  //   cargoCategoryId: state.formValues.cargoCategoryId,
-  // }));
+  const [listCustomNamaMuatan, setCustomListNamaMuatan] = useState([]);
   const rawData = localStorage.getItem("t-sewa-armada");
   const parsedData = rawData ? JSON.parse(rawData) : null;
   const cargoTypeId = parsedData.state.formValues.cargoTypeId || "";
@@ -147,8 +123,6 @@ export const InformasiMuatanModal = ({
     cargoTypeId,
     cargoCategoryId,
   });
-  // const cargoNames =""
-  // const isLoading = false
   const [openModalNamaMuatan, setOpenModalNamaMuatan] = useState(false);
 
   // Handler for form submit (optional, for demo)
@@ -160,8 +134,8 @@ export const InformasiMuatanModal = ({
   };
 
   const handleAddNew = (newNamaMuatan) => {
-    setListNamaMuatan([
-      ...listNamaMuatan,
+    setCustomListNamaMuatan([
+      ...listCustomNamaMuatan,
       { value: null, label: newNamaMuatan },
     ]);
     setOpenModalNamaMuatan(false);
@@ -248,7 +222,10 @@ export const InformasiMuatanModal = ({
                             <div>
                               <DropdownSearch
                                 placeholder={"Pilih Muatan"}
-                                options={cargoNames || []}
+                                options={[
+                                  ...cargoNames,
+                                  ...listCustomNamaMuatan,
+                                ]}
                                 value={field.value}
                                 onChange={field.onChange}
                                 onAddNew={() => setOpenModalNamaMuatan(true)}

@@ -3,8 +3,8 @@
 import { usePathname } from "next/navigation";
 
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
-import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useOverlay } from "@/store/Shared/overlayStore";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
 import HeaderLayout from "../HeaderLayout/HeaderLayout";
@@ -12,8 +12,8 @@ import HeaderLayout from "../HeaderLayout/HeaderLayout";
 export default function DesktopLayout({ children }) {
   const pathname = usePathname();
 
-  const { isLoggedIn } = useAuth();
   const { notification, chat } = useNotificationCounterStore();
+  const { isOverlayActive } = useOverlay();
 
   const arr = ["/register/otp"];
   if (arr.some((item) => pathname.includes(item))) {
@@ -27,12 +27,10 @@ export default function DesktopLayout({ children }) {
   return (
     <div className="relative min-h-screen">
       <HeaderLayout notifCounter={{ notification, chat }} />
-      <div
-        className={cn(
-          "mx-auto max-w-[1232px]",
-          isLoggedIn ? "max-h-[calc(100dvh-92px)]" : "max-h-[calc(100dvh-60px)]"
-        )}
-      >
+      {isOverlayActive && (
+        <div className="fixed inset-0 top-[92px] z-30 bg-black/25" />
+      )}
+      <div className={cn("mx-auto max-h-[calc(100dvh-92px)] max-w-[1232px]")}>
         {children}
       </div>
       {!isMonitoringPage && <FloatingButton />}

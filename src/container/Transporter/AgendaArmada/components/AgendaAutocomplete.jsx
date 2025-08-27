@@ -17,7 +17,7 @@ import {
 } from "@/components/Popover/Popover";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import { useGetSearchSuggestions } from "@/services/agenda-armada-driver/getSearchSuggestions";
+import { useGetSearchSuggestions } from "@/services/Transporter/agenda-armada-driver/getSearchSuggestions";
 
 import { useAgendaNavigatorStore } from "./AgendaCalendar/agendaNavigatorStore";
 

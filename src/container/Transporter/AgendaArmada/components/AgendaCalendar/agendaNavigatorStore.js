@@ -2,6 +2,7 @@ import { addDays, addMonths, startOfMonth, subDays, subMonths } from "date-fns";
 import { create } from "zustand";
 
 import { getAgendaSchedules } from "@/services/Transporter/agenda-armada-driver/getAgendaSchedules";
+import { getAvailablePeriods } from "@/services/Transporter/agenda-armada-driver/getAvailablePeriods";
 
 // Make sure the path to your services file is correct
 
@@ -54,6 +55,10 @@ export const useAgendaNavigatorStore = create((set, get) => ({
   status: "idle", // 'idle' | 'loading' | 'loading-more' | 'success' | 'error'
   error: null,
 
+  // --- Available Periods State ---
+  availablePeriods: null,
+  isLoadingPeriods: false,
+
   // --- ACTIONS ---
 
   initialize: ({ initialDate, intervalDays }) =>
@@ -90,6 +95,10 @@ export const useAgendaNavigatorStore = create((set, get) => ({
       false
     ),
   setViewType: (viewType) => get()._resetDataState({ viewType }, false),
+
+  // Available Periods Actions
+  setAvailablePeriods: (periods) => set({ availablePeriods: periods }),
+  setLoadingPeriods: (loading) => set({ isLoadingPeriods: loading }),
 
   nextInterval: () => {
     const { currentStartDate, intervalDays } = get();
@@ -296,6 +305,24 @@ export const useAgendaNavigatorStore = create((set, get) => ({
     } catch (error) {
       console.log("❌ fetchNextPage error:", error);
       set({ status: "error", error: error, hasNextPage: false });
+    }
+  },
+
+  fetchAvailablePeriods: async () => {
+    const { setAvailablePeriods, setLoadingPeriods } = get();
+
+    console.log("🌐 Fetching available periods...");
+    setLoadingPeriods(true);
+
+    try {
+      const periods = await getAvailablePeriods();
+      console.log("✅ Available periods fetched successfully:", periods);
+      setAvailablePeriods(periods);
+    } catch (error) {
+      console.error("❌ Failed to fetch available periods:", error);
+      setAvailablePeriods(null);
+    } finally {
+      setLoadingPeriods(false);
     }
   },
 }));

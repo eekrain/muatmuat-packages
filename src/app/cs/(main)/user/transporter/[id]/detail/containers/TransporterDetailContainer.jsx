@@ -12,7 +12,7 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 import { toast } from "@/lib/toast";
-import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
+import { usePatchCSTransporterStatus } from "@/services/CS/transporters/patchCSTransporterStatus";
 
 import DaftarArmadaTab from "./tabs/DaftarArmadaTab";
 import DaftarDriverTab from "./tabs/DaftarDriverTab";
@@ -20,7 +20,13 @@ import DataTransporterTab from "./tabs/DataTransporterTab";
 import RekapPembatalanTab from "./tabs/RekapPembatalanTab";
 import RiwayatStatusTab from "./tabs/RiwayatStatusTab";
 
-const TransporterDetailContainer = ({ transporterId }) => {
+const TransporterDetailContainer = ({
+  transporterId,
+  transporterData,
+  isLoading,
+  error,
+  mutate,
+}) => {
   // State management
   const [activeTab, setActiveTab] = useState("daftar-armada");
   const [modalState, setModalState] = useState({
@@ -30,15 +36,7 @@ const TransporterDetailContainer = ({ transporterId }) => {
   });
   const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
 
-  // API call to get transporter details
-  const {
-    data: apiResponse,
-    error,
-    isLoading,
-    mutate,
-  } = useGetTransporterDetails(transporterId);
-  // Extract transporter data from API response
-  const transporterData = apiResponse?.Data;
+  const { trigger: patchTransporterStatus } = usePatchCSTransporterStatus();
 
   const openHubungiModal = () => {
     setHubungiModalOpen(true);
@@ -48,21 +46,38 @@ const TransporterDetailContainer = ({ transporterId }) => {
     setHubungiModalOpen(false);
   };
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = async () => {
     if (!modalState.data) return;
 
-    if (modalState.type === "deactivate") {
-      // In a real app, you would call an API to update the transporter status
-      // For now, we'll just refresh the data and show a success message
-      mutate(); // Refresh the data
-      toast.success("Berhasil menonaktifkan Transporter");
-    } else if (modalState.type === "activate") {
-      // In a real app, you would call an API to update the transporter status
-      // For now, we'll just refresh the data and show a success message
-      mutate(); // Refresh the data
-      toast.success("Berhasil mengaktifkan Transporter");
+    const isDeactivate = modalState.type === "deactivate";
+    const idToPatch = modalState.data?.id || transporterId;
+
+    try {
+      await patchTransporterStatus({
+        id: idToPatch,
+        data: {
+          isActive: !isDeactivate,
+          reason: isDeactivate
+            ? "Deaktivasi transporter"
+            : "Aktivasi transporter",
+        },
+      });
+
+      // Revalidate transporter details
+      await mutate();
+
+      toast.success(
+        isDeactivate
+          ? "Berhasil menonaktifkan Transporter"
+          : "Berhasil mengaktifkan Transporter"
+      );
+    } catch (err) {
+      // Try to surface server message if available
+      const msg = err?.message || "Gagal memperbarui status Transporter";
+      toast.error(msg);
+    } finally {
+      setModalState({ isOpen: false, type: "", data: null });
     }
-    setModalState({ isOpen: false, type: "", data: null });
   };
 
   const renderConfirmationModal = () => {
@@ -299,7 +314,7 @@ const TransporterDetailContainer = ({ transporterId }) => {
         onClose={closeHubungiModal}
         contacts={{
           pics: transporterData?.contact || [],
-          emergencyContact: transporterData?.emergencyContact || null,
+          emergencyContact: transporterData?.emergency || null,
           companyContact: transporterData?.company?.phoneNumber,
         }}
       />

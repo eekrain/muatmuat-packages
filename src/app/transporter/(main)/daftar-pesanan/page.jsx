@@ -72,6 +72,7 @@ const DaftarPesananPage = () => {
   const {
     data: { isFirstTimer = true, orders = [], pagination = {} } = {},
     isLoading,
+    mutate,
   } = useGetOrderList(queryString);
   // TODO: Replace with actual userId from auth context/store
   const userId = "user-id-placeholder"; // This should come from authentication context
@@ -103,7 +104,7 @@ const DaftarPesananPage = () => {
       { label: "Semua", value: "", count: statusCounts?.all },
       {
         label: `Perlu Respon Perubahan${statusCounts?.NEED_RESPONSE_CHANGE > 0 ? ` (${statusCounts?.NEED_RESPONSE_CHANGE})` : ""}`,
-        value: ORDER_STATUS.NEED_CHANGE_RESPONSE,
+        value: "NEED_RESPONSE_CHANGE",
         count: statusCounts?.NEED_RESPONSE_CHANGE,
       },
       {
@@ -126,7 +127,7 @@ const DaftarPesananPage = () => {
       label: "Status",
       children: [
         ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER,
-        ORDER_STATUS.NEED_CHANGE_RESPONSE,
+        "NEED_RESPONSE_CHANGE",
         ORDER_STATUS.NEED_CONFIRMATION_READY,
         ORDER_STATUS.LOADING,
         ORDER_STATUS.UNLOADING,
@@ -135,7 +136,12 @@ const DaftarPesananPage = () => {
         ORDER_STATUS.COMPLETED,
       ].map((item) => ({
         value: item,
-        label: getOrderStatusConfig(t)[item].label,
+        label:
+          getOrderStatusConfig(t)[
+            item === "NEED_RESPONSE_CHANGE"
+              ? ORDER_STATUS.NEED_CHANGE_RESPONSE
+              : item
+          ].label,
       })),
     },
   ];
@@ -177,6 +183,7 @@ const DaftarPesananPage = () => {
       filterType={filterType}
       setFilterType={setFilterType}
       onChangeQueryParams={handleChangeQueryParams}
+      mutate={mutate}
     />
   );
 };

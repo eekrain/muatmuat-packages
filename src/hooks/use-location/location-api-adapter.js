@@ -138,12 +138,12 @@ const LocationApiAdapter = {
       }),
 
   saveUserLocation: async (formValues) =>
-    fetcherMuatrans.post("v1/muatparts/profile/location", {
+    fetcherMuatparts.post("v1/muatparts/profile/location", {
       param: normalizeLocationDataForSaving(formValues),
     }),
 
   updateUserLocation: async (formValues, IDtoUpdate) =>
-    fetcherMuatrans.put("v1/muatparts/profile/location", {
+    fetcherMuatparts.put("v1/muatparts/profile/location", {
       param: {
         ...normalizeLocationDataForSaving(formValues),
         ID: IDtoUpdate,

@@ -103,9 +103,9 @@ const RespondChangeModal = ({
   const { t } = useTranslation();
   const [showFormModal, setShowFormModal] = useState(false);
 
-  // Fetch order change details
+  // Fetch order change details only when modal is open
   const { data: changeDetails, isLoading: isLoadingDetails } =
-    useGetOrderChangeDetail(orderData?.id, {
+    useGetOrderChangeDetail(isOpen ? orderData?.id : null, {
       enabled: isOpen && !!orderData?.id,
     });
 
@@ -432,7 +432,7 @@ const RespondChangeModal = ({
                           "Penyesuaian Pendapatan"
                         )}
                       </h3>
-                      <InfoTooltip side="top">
+                      <InfoTooltip side="top" className={"z-[52]"}>
                         <p>
                           {t(
                             "RespondChangeModal.incomeAdjustmentTooltip",

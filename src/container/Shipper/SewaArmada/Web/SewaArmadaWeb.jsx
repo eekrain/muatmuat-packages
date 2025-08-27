@@ -30,13 +30,9 @@ import { CreateOrderSummaryPanel } from "@/container/Shipper/SewaArmada/Web/Summ
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
-import { isDev } from "@/lib/constants/is-dev";
 import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
-import {
-  useSewaArmadaActions,
-  useSewaArmadaStore,
-} from "@/store/Shipper/forms/sewaArmadaStore";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 import UpdateOrderSummaryPanel from "./SummaryPanel/UpdateOrderSummaryPanel";
@@ -126,12 +122,6 @@ export default function SewaArmadaWeb({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, isLoadingUserPreferences]);
 
-  const { validateForm } = useSewaArmadaActions();
-  const testSubmit = () => {
-    const isValidForm = validateForm();
-    console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
-  };
-
   return (
     <>
       <main className="mx-auto flex min-h-full max-w-[1280px] flex-col items-center gap-6 px-10 py-8">
@@ -210,8 +200,6 @@ export default function SewaArmadaWeb({
       <LoginModal />
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
-
-      {isDev && <button onClick={testSubmit}>Test Submit</button>}
     </>
   );
 }

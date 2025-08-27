@@ -1,6 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+
+// Import the router
 
 import { Download } from "lucide-react";
 
@@ -18,6 +21,7 @@ import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 const periodOptions = generateDynamicPeriodOptions();
 
 function Page() {
+  const router = useRouter(); // Initialize the router
   const { period, label, startDate, endDate, setPeriodOption } =
     useAnalyticsStore();
   const [currentPage, setCurrentPage] = useState(1);
@@ -178,14 +182,23 @@ function Page() {
         ),
       },
       {
-        render: () => (
+        render: (row) => (
           <div className="flex w-full justify-end">
-            <Button className="w-[122px]">Detail</Button>
+            <Button
+              className="w-[122px]"
+              onClick={() =>
+                router.push(
+                  `/laporan/aktivitas-armada-driver/armada/${row.fleet.fleetId}?from=dashboard`
+                )
+              }
+            >
+              Detail
+            </Button>
           </div>
         ),
       },
     ],
-    []
+    [router]
   );
 
   const handleSearch = (value) => {

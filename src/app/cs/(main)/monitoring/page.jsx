@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 
 import { useMonitoringHandlers } from "@/app/transporter/(main)/monitoring/hooks/useMonitoringHandlers";
 import {
@@ -150,9 +150,8 @@ const Page = () => {
 
   // Handle fleet click from list - focus map on selected fleet
   const handleFleetClickFromList = (fleet) => {
-    // Find the corresponding marker from fleet locations
-    const marker = allFleetMarkers.find((m) => m.fleet.id === fleet.id);
-    if (marker) {
+    // Directly use the coordinates from the clicked fleet data
+    if (fleet && fleet.lastLatitude && fleet.lastLongitude) {
       // Center map on the selected fleet
       mapDispatch({
         type: MAP_ACTIONS.SET_MAP_CENTER,
@@ -161,18 +160,20 @@ const Page = () => {
           lng: fleet.lastLongitude,
         },
       });
-      mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: 16 }); // Zoom in to focus on the truck
+      // Zoom in to focus on the truck
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: 16 });
+      // Disable auto-fit to prevent the map from zooming out again
       mapDispatch({
         type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
         payload: false,
-      }); // Disable auto-fit
+      });
+      // Disable map interaction temporarily to ensure a smooth transition
       mapDispatch({
         type: MAP_ACTIONS.SET_MAP_INTERACTION,
         payload: false,
       });
     }
   };
-
   // Handle search selection - focus map on selected vehicle
   const handleSearchSelect = (searchData) => {
     if (!searchData || !searchData.originalData) return;
@@ -216,41 +217,55 @@ const Page = () => {
     }
   };
 
-  // Convert fleet locations to map markers and apply filters
-  const allFleetMarkers =
-    fleetLocationsData?.fleets?.map((fleet) => {
-      let icon = "/img/monitoring/truck/gray.png"; // Default
+  // De-duplicate fleet data to prevent key errors
+  const uniqueFleetLocations = useMemo(() => {
+    if (!fleetLocationsData?.fleets) {
+      return [];
+    }
+    const fleetMap = new Map();
+    fleetLocationsData.fleets.forEach((fleet) => {
+      // Use a composite key that matches the error source to ensure uniqueness
+      const uniqueKey = `${fleet.licensePlate}-${fleet.driver?.name}`;
+      fleetMap.set(uniqueKey, fleet);
+    });
+    return Array.from(fleetMap.values());
+  }, [fleetLocationsData]);
 
-      // Map operational status to truck icon colors
-      switch (fleet.operationalStatus) {
-        case "ON_DUTY":
-          icon = "/img/monitoring/truck/blue.png";
-          break;
-        case "READY_FOR_ORDER":
-          icon = "/img/monitoring/truck/green.png";
-          break;
-        case "NOT_PAIRED":
-          icon = "/img/monitoring/truck/gray.png";
-          break;
-        case "WAITING_LOADING_TIME":
-          icon = "/img/monitoring/truck/yellow.png";
-          break;
-        case "INACTIVE":
-          icon = "/img/monitoring/truck/red.png";
-          break;
-        default:
-          icon = "/img/monitoring/truck/gray.png";
-      }
-
-      return {
-        position: { lat: fleet.latitude, lng: fleet.longitude },
-        title: `${fleet.licensePlate} - ${fleet.driverName}`,
-        icon: icon,
-        rotation: fleet.heading || 0, // Pass heading as rotation
-        fleet: fleet, // Keep fleet data for additional info
-        onClick: handleTruckClick, // Add click handler
-      };
-    }) || [];
+  // Convert the unique fleet locations to map markers
+  const allFleetMarkers = useMemo(
+    () =>
+      uniqueFleetLocations.map((fleet) => {
+        let icon = "/img/monitoring/truck/gray.png"; // Default
+        switch (fleet.operationalStatus) {
+          case "ON_DUTY":
+            icon = "/img/monitoring/truck/blue.png";
+            break;
+          case "READY_FOR_ORDER":
+            icon = "/img/monitoring/truck/green.png";
+            break;
+          case "NOT_PAIRED":
+            icon = "/img/monitoring/truck/gray.png";
+            break;
+          case "WAITING_LOADING_TIME":
+            icon = "/img/monitoring/truck/yellow.png";
+            break;
+          case "INACTIVE":
+            icon = "/img/monitoring/truck/red.png";
+            break;
+          default:
+            icon = "/img/monitoring/truck/gray.png";
+        }
+        return {
+          position: { lat: fleet.latitude, lng: fleet.longitude },
+          title: `${fleet.licensePlate} - ${fleet.driverName}`,
+          icon: icon,
+          rotation: fleet.heading || 0,
+          fleet: fleet,
+          onClick: handleTruckClick,
+        };
+      }),
+    [uniqueFleetLocations, handleTruckClick]
+  );
 
   // Apply filters to fleet markers
   const fleetMarkers = allFleetMarkers.filter((marker) => {
@@ -445,9 +460,9 @@ const Page = () => {
             {/* Left Panel - Daftar Armada or SOS */}
             <div
               className={cn(
-                "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
-                panels.showLeftPanel ? "translate-x-0" : "-translate-x-full",
-                panels.leftPanelMode && "w-[480px]"
+                "absolute left-0 top-0 z-10 h-full rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
+                panels.leftPanelMode === "posisi" ? "w-[450px]" : "w-[350px]",
+                panels.showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
               {panels.leftPanelMode === "sos" ? (
@@ -512,7 +527,7 @@ const Page = () => {
                     });
                     selectionsDispatch({
                       type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
-                      payload: order,
+                      payload: { id: order?.orderId },
                     });
                   }}
                   onViewFleetStatus={(order) => {

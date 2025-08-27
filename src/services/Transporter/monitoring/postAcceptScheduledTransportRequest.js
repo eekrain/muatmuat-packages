@@ -3,34 +3,81 @@ import useSWRMutation from "swr/mutation";
 import { fetcherMuatrans } from "@/lib/axios";
 
 // Mock config for testing
-const IS_MOCK = true;
+const IS_MOCK = false;
 
 // Mock response untuk testing
 const mockSuccessResponse = {
-  data: {
+  Message: {
+    Code: 200,
+    Text: "Scheduled request accepted successfully",
+  },
+  Data: {
+    id: "uuid",
+    orderCode: "MT-2025-001",
+    acceptedAt: "2025-01-15T10:30:00+07:00",
+    acceptedVehicleCount: 2,
+    requiredVehicleCount: 2,
+    newOrderStatus: "PERLU_ASSIGN_ARMADA",
+    nextAction: {
+      type: "ASSIGN_VEHICLE",
+      description: "Assign vehicles to this order",
+      redirectTo: "/orders/active",
+    },
+    toast: {
+      type: "success",
+      message: "Permintaan MT-2025-001 berhasil diterima",
+      duration: 6000,
+    },
+  },
+  Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST",
+};
+
+// Mock error responses
+const mockErrorResponses = {
+  validation: {
     Message: {
-      Code: 200,
-      Text: "Scheduled request accepted successfully",
+      Code: 422,
+      Text: "Request validation failed",
     },
     Data: {
-      id: "550e8400-e29b-41d4-a716-446655440001",
-      orderCode: "MT25A001A",
-      acceptedAt: "2025-08-11T10:30:00+07:00",
-      acceptedVehicleCount: 2,
-      requiredVehicleCount: 2,
-      newOrderStatus: "PERLU_ASSIGN_ARMADA",
-      nextAction: {
-        type: "ASSIGN_VEHICLE",
-        description: "Assign vehicles to this order",
-        redirectTo: "/orders/active",
-      },
-      toast: {
-        type: "success",
-        message: "Permintaan MT25A001A berhasil diterima",
-        duration: 6000,
-      },
+      errors: [
+        {
+          field: "vehicleCount",
+          message: "Vehicle count cannot exceed required count of 2",
+        },
+      ],
     },
-    Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST",
+    Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST_ERROR",
+  },
+  terms: {
+    Message: {
+      Code: 422,
+      Text: "Request validation failed",
+    },
+    Data: {
+      errors: [
+        {
+          field: "acceptTerms",
+          message: "Terms and conditions must be accepted",
+        },
+      ],
+    },
+    Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST_ERROR",
+  },
+  status: {
+    Message: {
+      Code: 422,
+      Text: "Request validation failed",
+    },
+    Data: {
+      errors: [
+        {
+          field: "orderStatus",
+          message: "Request is no longer available for acceptance",
+        },
+      ],
+    },
+    Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST_ERROR",
   },
 };
 
@@ -39,7 +86,7 @@ const mockSuccessResponse = {
  * @param {string} key - SWR key
  * @param {Object} arg - Request arguments
  * @param {string} arg.arg.id - Request ID
- * @param {Object} arg.arg.data - Request payload
+ * @param {Object} arg.arg.payload - Request payload with acceptType, vehicleCount, and acceptTerms
  * @returns {Promise} API response
  */
 export const fetcherAcceptScheduledTransportRequest = async (key, { arg }) => {
@@ -47,88 +94,124 @@ export const fetcherAcceptScheduledTransportRequest = async (key, { arg }) => {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
+    // Validate payload
+    if (!arg.payload.acceptTerms) {
+      return Promise.reject({
+        response: {
+          status: 422,
+          data: mockErrorResponses.terms,
+        },
+      });
+    }
+
+    if (arg.payload.vehicleCount && arg.payload.vehicleCount > 10) {
+      // Simulate vehicle count error
+      return Promise.reject({
+        response: {
+          status: 422,
+          data: mockErrorResponses.validation,
+        },
+      });
+    }
+
     // Mock different scenarios for testing
     const scenario = Math.random();
 
-    if (scenario < 0.7) {
-      // 70% success
-      return mockSuccessResponse.data;
-    } else if (scenario < 0.8) {
-      // 10% pesanan sudah diambil
-      throw {
-        response: {
-          status: 422,
-          data: {
-            Message: {
-              Code: 422,
-              Text: "Request validation failed",
-            },
-            Data: {
-              errors: [
-                {
-                  field: "orderStatus",
-                  message: "Request is no longer available for acceptance",
-                },
-              ],
-            },
-            Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST_ERROR",
-          },
-        },
-      };
-    } else if (scenario < 0.9) {
-      // 10% perubahan unit
-      throw {
-        response: {
-          status: 422,
-          data: {
-            Message: {
-              Code: 422,
-              Text: "Request validation failed",
-            },
-            Data: {
-              errors: [
-                {
-                  field: "vehicleCount",
-                  message: "Vehicle count cannot exceed required count",
-                },
-              ],
-            },
-            Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST_ERROR",
-          },
-        },
-      };
+    if (scenario < 0.85) {
+      // 85% success
+      const result = JSON.parse(JSON.stringify(mockSuccessResponse));
+      result.Data.id = arg.id;
+      return result;
     } else {
-      // 10% akun ditangguhkan
-      throw {
+      // 15% error - order no longer available
+      return Promise.reject({
         response: {
           status: 422,
-          data: {
-            Message: {
-              Code: 422,
-              Text: "Account suspended during process",
-            },
-            Data: {
-              errors: [
-                {
-                  field: "account",
-                  message: "User account is suspended",
-                },
-              ],
-            },
-            Type: "ACCEPT_SCHEDULED_TRANSPORT_REQUEST_ERROR",
-          },
+          data: mockErrorResponses.status,
         },
-      };
+      });
     }
   }
 
-  const { id, data } = arg;
+  const { id, payload } = arg;
 
-  const payload = {
-    acceptType: data.type === "all" ? "ALL" : "PARTIAL",
-    vehicleCount: data.type === "partial" ? data.truckCount : null,
-    acceptTerms: true,
-  };
+  // Validate payload according to API spec
+  if (!payload.acceptTerms) {
+    return Promise.reject({
+      response: {
+        status: 422,
+        data: mockErrorResponses.terms,
+      },
+    });
+  }
+
+  const result = await fetcherMuatrans.post(
+    `v1/transporter/monitoring/transport-requests/${id}/accept-scheduled`,
+    payload
+  );
+
+  return result?.data || {};
+};
+
+/**
+ * Direct function to accept scheduled transport request
+ * @param {string} id - Request ID
+ * @param {Object} payload - Request payload with acceptType, vehicleCount, and acceptTerms
+ * @returns {Promise} API response
+ */
+export const postAcceptScheduledTransportRequest = async (id, payload) => {
+  if (IS_MOCK) {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Validate payload
+    if (!payload.acceptTerms) {
+      return Promise.reject({
+        response: {
+          status: 422,
+          data: mockErrorResponses.terms,
+        },
+      });
+    }
+
+    if (payload.vehicleCount && payload.vehicleCount > 10) {
+      // Simulate vehicle count error
+      return Promise.reject({
+        response: {
+          status: 422,
+          data: mockErrorResponses.validation,
+        },
+      });
+    }
+
+    // Mock different scenarios for testing
+    const scenario = Math.random();
+
+    if (scenario < 0.85) {
+      // 85% success
+      const result = JSON.parse(JSON.stringify(mockSuccessResponse));
+      result.Data.id = id;
+      return result;
+    } else {
+      // 15% error - order no longer available
+      return Promise.reject({
+        response: {
+          status: 422,
+          data: mockErrorResponses.status,
+        },
+      });
+    }
+  }
+
+  // Validate payload according to API spec
+  if (!payload.acceptTerms) {
+    return Promise.reject({
+      response: {
+        status: 422,
+        data: mockErrorResponses.terms,
+      },
+    });
+  }
 
   const result = await fetcherMuatrans.post(
     `v1/transporter/monitoring/transport-requests/${id}/accept-scheduled`,
@@ -143,8 +226,15 @@ export const fetcherAcceptScheduledTransportRequest = async (key, { arg }) => {
  * @returns {Object} SWR mutation object
  */
 export const usePostAcceptScheduledTransportRequest = () => {
-  return useSWRMutation(
+  const { trigger, isMutating, data, error } = useSWRMutation(
     "accept-scheduled-transport-request",
     fetcherAcceptScheduledTransportRequest
   );
+
+  return {
+    acceptRequest: trigger,
+    isAccepting: isMutating,
+    data,
+    error,
+  };
 };

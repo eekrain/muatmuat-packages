@@ -92,7 +92,7 @@ export const mockAPIResult = {
  * @returns {Promise<Object>} - Opsi filter yang tersedia
  */
 export const getAgendaFilterOptions = async (viewType = "armada") => {
-  const useMockData = true; // Set to false to use real API calls
+  const useMockData = false; // Set to false to use real API calls
 
   if (useMockData) {
     // Simulate API delay

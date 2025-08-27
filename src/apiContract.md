@@ -86,16 +86,17 @@ LDF-27 - Empty State Filter + Search -->
 <!-- LDF-37 - Driver Agenda Display
 LDF-40 - Driver Horizontal Date Scroll
 LDF-40.1 - Driver Vertical List Scroll
-LDF-40.2 - Driver Date Navigation Control
-LDF-52 - Driver Filter Success
+LDF-40.2 - Driver Date Navigation Control -->
+
+<!-- LDF-52 - Driver Filter Success
 LDF-53 - Driver Filter Failed
 LDF-56 - Driver Search Success
 LDF-57 - Driver Search Failed
 LDF-58 - Driver Search+Filter Success
 LDF-59 - Driver Search+Filter Failed (search priority)
-LDF-60 - Driver Filter+Search Failed (filter priority) -->
+LDF-60 - Driver Filter+Search Failed (filter priority)
 
-<!-- Parameters
+Parameters
 Query Parameters
 
 | Parameter          | Tipe    | Wajib | Default | Deskripsi                          |
@@ -221,8 +222,66 @@ Error Response (400 Bad Request)
 ]
 },
 "Type": "GET_AGENDA_SCHEDULES_ERROR"
+}
+
+5. Get Search Suggestions
+
+Deskripsi
+Mengambil saran pencarian berdasarkan input pengguna
+
+Endpoint
+GET /v1/transporter/agenda-schedules/search-suggestions
+
+LD References
+LDF-22 - Real-time Search Suggestions (Armada View)
+LDF-55 - Real-time Search Suggestions (Driver View)
+
+Parameters
+Query Parameters
+Parameters
+Query Parameters
+
+| Parameter | Tipe    | Wajib | Default | Deskripsi                           |
+| :-------- | :------ | :---- | :------ | ----------------------------------- |
+| query     | string  | Ya    | -       | Keyowrd Pencarian ( min 2 karakter) |
+| limit     | integer | Tidak | 5       | Maksimal suggestions                |
+| view_type | string  | Ya    | armada  | Jenis Tampilan: armada/driver       |
+
+Request Headers
+
+| Header        | Nilai          | Wajib | Deskripsi                   |
+| :------------ | :------------- | :---- | :-------------------------- |
+| Authorization | Bearer {token} | Ya    | JWT token untuk autentikasi |
+
+Response Success (200 OK)
+{
+"Message": {
+"Code": 200,
+"Text": "Saran pencarian berhasil dimuat"
+},
+"Data": {
+"suggestions": [
+{
+"type": "LICENSE_PLATE", // [dbt_mt_agenda_search_cache.searchType]
+"value": "B1234ABC",
+"label": "B 1234 ABC - Box Truck",
+"fleetID": "uuid", // [dbm_mt_fleet.id]
+"matchCount": 3
+},
+{
+"type": "DRIVER_NAME",
+"value": "John Doe",
+"label": "John Doe - Driver",
+"driverID": "uuid", // [dbt_mt_drivers.id]
+"matchCount": 2
+}
+],
+"cacheHit": true
+},
+"Type": "GET_SEARCH_SUGGESTIONS"
 } -->
 
+<!--
 7. Get Schedule Conflicts
 
 Deskripsi
@@ -241,6 +300,7 @@ Query Parameters
 | :------------ | :--------------- | :---- | :-------------------------- |
 | resolution_status | string | Tidak |PENDING |status resolusi: PENDING/RESLVED |
 
+Request Headers
 Request Headers
 | Header | Nilai | Wajib | Deskripsi |
 | :------------ | :------------- | :---- | :-------------------------- |
@@ -394,4 +454,123 @@ Response Success (200 OK)
 }
 },
 "Type": "RESOLVE_SCHEDULE_CONFLICT"
+} -->
+<!--
+3. Get Available Periods
+
+Deskripsi
+Mengambil daftar tahun dan bulan yang memiliki data agenda
+
+Endpoint
+GET /v1/transporter/agenda-schedules/available-periods
+
+LD References
+LDF-14 - Dropdown Pilih Tahun (Armada View)
+LDF-15 - Dropdown Pilih Bulan (Armada View)
+LDF-16 - Update View dengan Periode Baru (Armada View)
+LDF-47 - Dropdown Pilih Tahun (Driver View)
+LDF-48 - Dropdown Pilih Bulan (Driver View)
+LDF-49 - Update View dengan Periode Baru (Driver View)
+
+Parameters
+Query Parameters
+| Parameter | Tipe | Wajib | Default ~ Deskripsi |
+| :-------- | :----- | :---- | :---------------- | ----------------------------- |
+| year | integer | Tidak | - | Tahun untuk filter bulan |
+
+Request Headers
+Request Headers
+| Header | Nilai | Wajib | Deskripsi |
+| :------------ | :------------- | :---- | :-------------------------- |
+| Authorization | Bearer {token} | Ya | JWT token untuk autentikasi |
+
+Response Success (200 OK)
+{
+"Message": {
+"Code": 200,
+"Text": "Data periode berhasil dimuat"
+},
+"Data": {
+"availableYears": [2023, 2024], // ini gk perlu
+"availableMonths": {
+"2024": [1, 2, 3, 4],
+"2023": [10, 11, 12]
+},
+"dataRanges": {
+"earliest": "2023-10-01",
+"latest": "2024-04-30"
+}
+},
+"Type": "GET_AVAILABLE_PERIODS"
+} -->
+
+10. Update Schedule Estimation
+
+Deskripsi
+Mengupdate estimasi jarak dan waktu untuk jadwal
+
+Endpoint
+PUT /v1/transporter/agenda-schedules/{id}/estimation
+
+LD References
+LDF-35 - Modal Edit Estimasi (Armada View)
+LDF-35.1 - Modal Edit Estimasi Variation (Armada View)
+LDF-35.3 - Modal Edit Estimasi Final (Armada View)
+LDF-67 - Modal Edit Estimasi (Driver View)
+LDF-67.1 - Modal Edit Estimasi Variation (Driver View)
+LDF-67.2 - Modal Edit Estimasi Final (Driver View)
+
+Parameters
+Path Parameters
+| Parameter | Tipe | Wajib | Deskripsi |
+| :-------- | :----- | :---- | ----------------------------- |
+| id | string | Ya | ID agenda schedule |
+
+Request Headers
+| Header | Nilai | Wajib | Deskripsi |
+| :------------ | :------------- | :---- | :-------------------------- |
+| Authorization | Bearer {token} | Ya | JWT token untuk autentikasi |
+| Content-Type | application/json | Ya | Format request body |
+
+Request Body
+{
+"estimatedDistanceKm": 125.0, // [dbt_mt_agenda_schedule.estimatedDistanceKm]
+"estimatedDurationMinutes": 500, // [dbt_mt_agenda_schedule.estimatedDurationMinutes]
+"updateReason": "Traffic condition changed" // [dbt_mt_schedule_estimation.updateReason]
+}
+Response Success (200 OK)
+{
+"Message": {
+"Code": 200,
+"Text": "Estimasi berhasil diperbarui"
+},
+"Data": {
+"scheduleID": "uuid", // [dbt_mt_agenda_schedule.id]
+"previousEstimation": {
+"distanceKm": 121.5, // [dbt_mt_schedule_estimation.originalDistanceKm]
+"durationMinutes": 480 // [dbt_mt_schedule_estimation.originalDurationMinutes]
+},
+"newEstimation": {
+"distanceKm": 125.0, // [dbt_mt_schedule_estimation.currentDistanceKm]
+"durationMinutes": 500 // [dbt_mt_schedule_estimation.currentDurationMinutes]
+},
+"lastRecalculated": "2024-04-01T11:15:00Z" // [dbt_mt_schedule_estimation.lastRecalculated]
+},
+"Type": "UPDATE_SCHEDULE_ESTIMATION"
+}
+Error Response (400 Bad Request)
+{
+"Message": {
+"Code": 400,
+"Text": "Estimasi tidak valid"
+},
+"Data": {
+"errors": [
+{
+"field": "estimatedDistanceKm",
+"message": "Jarak tidak boleh kurang dari 1 km"
+}
+]
+},
+"Type": "UPDATE_SCHEDULE_ESTIMATION_ERROR"
 }

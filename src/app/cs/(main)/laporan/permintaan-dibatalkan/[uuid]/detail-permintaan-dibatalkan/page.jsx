@@ -5,10 +5,12 @@ import { useParams } from "next/navigation";
 import DetailLaporanPermintaanDibatalkan from "@/container/CS/LaporanPermintaanDibatalkan/DetailLaporanPermintaanDibatalkan";
 import useDevice from "@/hooks/use-device";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetCanceledOrderDetail } from "@/services/CS/laporan/permintaan-dibatalkan/detail-permintaan-dibatalkan/getCanceledOrdersDetail";
 
 const Page = () => {
   const { mounted } = useDevice();
+  const { t } = useTranslation();
 
   const params = useParams();
   const { data: detail = {} } = useGetCanceledOrderDetail(params.uuid);
@@ -16,13 +18,22 @@ const Page = () => {
   const breadcrumbData = useShallowMemo(
     () => [
       {
-        name: "Laporan Permintaan Dibatalkan",
+        name: t(
+          "DetailLaporanPermintaanDibatalkan.breadcrumbReportTitle",
+          {},
+          "Laporan Permintaan Dibatalkan"
+        ),
         href: "/laporan/permintaan-dibatalkan",
       },
-
-      { name: "Detail Pesanan" },
+      {
+        name: t(
+          "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail",
+          {},
+          "Detail Pesanan"
+        ),
+      },
     ],
-    [detail?.order?.status]
+    [detail?.order?.status, t]
   );
 
   if (!mounted) return null;

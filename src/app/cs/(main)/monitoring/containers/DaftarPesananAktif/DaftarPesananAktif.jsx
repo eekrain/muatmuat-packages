@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
 import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import {
@@ -24,8 +26,12 @@ import {
 } from "@/services/CS/active-orders/getOrderContacts";
 import { useGetActiveOrdersByOrdersWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByOrders";
 import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByTransporter";
+import { useGetCSImportantNotifications } from "@/services/CS/getCSImportantNotifications";
+import { useGetCSTutorialStatus } from "@/services/CS/getCSTutorialStatus";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { useGetCsActiveOrdersUrgentStatusCounts } from "@/services/CS/monitoring/daftar-pesanan-active/getCsActiveOrdersUrgentStatusCounts";
+import { usePutCSImportantNotificationsDismiss } from "@/services/CS/putCSImportantNotificationsDismiss";
+import { usePutCSTutorialStatus } from "@/services/CS/putCSTutorialStatus";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
@@ -35,6 +41,8 @@ import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
 import DaftarPesananAktifListItemByTransporter from "./components/DaftarPesananAktifListItemByTransporter";
 import UrgentStatusFilter from "./components/UrgentStatusFilter";
+
+/* eslint-disable no-console */
 
 // Mock data for OrderChangeInfoModal
 const mockChangeDetails = {
@@ -95,13 +103,18 @@ const DaftarPesananAktif = ({
   isExpanded,
   onViewFleetStatus,
   onTrackFleet,
-  hasShownOnboarding,
-  onOnboardingShown,
 }) => {
   const router = useRouter();
+
+  const { t } = useTranslation();
+
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const { data: urgentStatusCountsData } =
     useGetCsActiveOrdersUrgentStatusCounts();
+  const { data: importantNotification } = useGetCSImportantNotifications(
+    `/v1/cs/active-orders/important-notifications`
+  );
+
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatusFilter, setSelectedStatusFilter] =
     useState("ALL_STATUS");
@@ -127,8 +140,6 @@ const DaftarPesananAktif = ({
     useState([]);
   const [orderChangeInfoModalOpen, setOrderChangeInfoModalOpen] =
     useState(false);
-
-  // Hubungi modal state
   const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
   const [hubungiModalProps, setHubungiModalProps] = useState({
     showInitialChoice: false,
@@ -138,12 +149,83 @@ const DaftarPesananAktif = ({
   });
   const [selectedOrderForContacts, setSelectedOrderForContacts] =
     useState(null);
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-
   // Fetch contacts data when orderId is selected
   const { data: contactsData, isLoading: isContactsLoading } =
     useGetOrderContacts(selectedOrderForContacts?.orderId);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [hasShownOnboarding, setHasShownOnboarding] = useState(false);
+
+  // Tutorial onboarding state and API
+  const { data: tutorialStatusData, mutate: mutateTutorial } =
+    useGetCSTutorialStatus();
+  const { trigger: triggerPutCSTutorialStatus } = usePutCSTutorialStatus();
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+
+  const onOnboardingShown = () => {
+    setHasShownOnboarding(true);
+  };
+
+  // Open onboarding when API says so and hasn't been shown yet
+  useEffect(() => {
+    const shouldShow =
+      !!tutorialStatusData?.Data?.showTutorialDaftarPesananAktif;
+    if (shouldShow && !hasShownOnboarding) {
+      setOnboardingOpen(true);
+    } else if (!shouldShow) {
+      setOnboardingOpen(false);
+    }
+  }, [tutorialStatusData, hasShownOnboarding]);
+
+  const handleOnboardingControlledClose = async (dontShowAgain) => {
+    // Close locally
+    setOnboardingOpen(false);
+    setHasShownOnboarding(true);
+
+    // If user chose to not show again, persist via PUT
+    if (dontShowAgain) {
+      try {
+        const payload = {
+          showTutorialDaftarPesananAktif: false,
+          action: "DISABLE_TUTORIAL",
+        };
+        const res = await triggerPutCSTutorialStatus(payload);
+        if (res?.Message?.Code === 200) {
+          // update local SWR cache
+          mutateTutorial(
+            {
+              ...tutorialStatusData,
+              Data: {
+                ...tutorialStatusData?.Data,
+                showTutorialDaftarPesananAktif: false,
+                updatedAt: res.Data?.updatedAt ?? new Date().toISOString(),
+                success: res.Data?.success ?? true,
+              },
+            },
+            false
+          );
+        } else {
+          toast.error(
+            res?.Message?.Text ||
+              t(
+                "DaftarPesananAktif.toast.tutorialUpdateError",
+                {},
+                "Gagal memperbarui preferensi tutorial"
+              )
+          );
+        }
+      } catch (err) {
+        console.error("PUT tutorial status failed:", err);
+        toast.error(
+          t(
+            "DaftarPesananAktif.toast.tutorialUpdateError",
+            {},
+            "Gagal memperbarui preferensi tutorial"
+          )
+        );
+      }
+    }
+  };
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
@@ -189,14 +271,30 @@ const DaftarPesananAktif = ({
       // Show success toast notification
       const fleetCount = cancellationData.selectedFleets.length;
       toast.success(
-        `Berhasil membatalkan ${fleetCount} armada dari pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.toast.cancelFleetsSuccess",
+          {
+            count: fleetCount,
+            order:
+              cancellationData.order?.orderCode ||
+              cancellationData.order?.orderNumber ||
+              "",
+          },
+          `Berhasil membatalkan ${fleetCount} armada dari pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+        )
       );
 
       // TODO: Refresh data or update state as needed
       // You might want to refetch the orders list here
     } catch {
       // Show error toast
-      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.toast.cancelFleetsError",
+          {},
+          "Gagal membatalkan armada. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -221,7 +319,14 @@ const DaftarPesananAktif = ({
       // Show success toast notification
       const truckCount = order?.truckCount || order?.vehicleCount || 1;
       toast.success(
-        `Berhasil membatalkan ${truckCount} armada dari pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.toast.cancelFleetSuccess",
+          {
+            count: truckCount,
+            order: order?.orderCode || order?.orderNumber || "",
+          },
+          `Berhasil membatalkan ${truckCount} armada dari pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        )
       );
 
       // TODO: Refresh data or update state as needed
@@ -229,7 +334,13 @@ const DaftarPesananAktif = ({
     } catch {
       // console.error("Error canceling fleet:", error);
       // Show error toast
-      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.toast.cancelFleetError",
+          {},
+          "Gagal membatalkan armada. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -249,14 +360,24 @@ const DaftarPesananAktif = ({
 
       // Show success toast notification
       toast.success(
-        `Berhasil membatalkan pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.toast.cancelOrderSuccess",
+          { order: order?.orderCode || order?.orderNumber || "" },
+          `Berhasil membatalkan pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        )
       );
 
       // TODO: Refresh data or update state as needed
       // You might want to refetch the orders list here
     } catch {
       // Show error toast
-      toast.error("Gagal membatalkan pesanan. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.toast.cancelOrderError",
+          {},
+          "Gagal membatalkan pesanan. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -276,7 +397,16 @@ const DaftarPesananAktif = ({
 
       // Show success toast notification
       toast.success(
-        `Berhasil melakukan perubahan jumlah unit pesanan ${changeData.orderData?.orderCode || changeData.orderData?.orderNumber || ""}`
+        t(
+          "DaftarPesananAktif.toast.changeUnitSuccess",
+          {
+            order:
+              changeData.orderData?.orderCode ||
+              changeData.orderData?.orderNumber ||
+              "",
+          },
+          `Berhasil melakukan perubahan jumlah unit pesanan ${changeData.orderData?.orderCode || changeData.orderData?.orderNumber || ""}`
+        )
       );
 
       // Open AssignArmadaModal after successful unit count change
@@ -291,7 +421,13 @@ const DaftarPesananAktif = ({
     } catch {
       // console.error("Error changing unit count:", error);
       // Show error toast
-      toast.error("Gagal mengubah jumlah unit. Silakan coba lagi.");
+      toast.error(
+        t(
+          "DaftarPesananAktif.toast.changeUnitError",
+          {},
+          "Gagal mengubah jumlah unit. Silakan coba lagi."
+        )
+      );
     }
   };
 
@@ -307,7 +443,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
-        console.log("Detail Pesanan", row);
+        // Navigate to order detail
         if (row.sosUnit > 0) {
           router.push(`/monitoring/riwayat-sos/${row.orderId}/detail-pesanan`);
           break;
@@ -349,7 +485,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       default:
-        // console.log("Unknown action:", actionType, row);
+        // Unknown action
         break;
     }
   };
@@ -411,15 +547,49 @@ const DaftarPesananAktif = ({
   // Dropdown options
 
   const groupByOptions = [
-    { value: "BY_PESANAN", label: "By Pesanan" },
-    { value: "BY_TRANSPORTER", label: "By Transporter" },
+    {
+      value: "BY_PESANAN",
+      label: t("DaftarPesananAktif.groupByByPesanan", {}, "By Pesanan"),
+    },
+    {
+      value: "BY_TRANSPORTER",
+      label: t("DaftarPesananAktif.groupByByTransporter", {}, "By Transporter"),
+    },
   ];
 
   const sortOptions = [
-    { value: "WAKTU_MUAT_TERDEKAT", label: "Waktu Muat Terdekat" },
-    { value: "WAKTU_MUAT_TERLAMA", label: "Waktu Muat Terlama" },
-    { value: "NO_PESANAN_AZ", label: "No. Pesanan (A-Z, 9-0)" },
-    { value: "NO_PESANAN_ZA", label: "No. Pesanan (Z-A, 0-9)" },
+    {
+      value: "WAKTU_MUAT_TERDEKAT",
+      label: t(
+        "DaftarPesananAktif.sortWaktuMuatTerdekat",
+        {},
+        "Waktu Muat Terdekat"
+      ),
+    },
+    {
+      value: "WAKTU_MUAT_TERLAMA",
+      label: t(
+        "DaftarPesananAktif.sortWaktuMuatTerlama",
+        {},
+        "Waktu Muat Terlama"
+      ),
+    },
+    {
+      value: "NO_PESANAN_AZ",
+      label: t(
+        "DaftarPesananAktif.sortNoPesananAZ",
+        {},
+        "No. Pesanan (A-Z, 9-0)"
+      ),
+    },
+    {
+      value: "NO_PESANAN_ZA",
+      label: t(
+        "DaftarPesananAktif.sortNoPesananZA",
+        {},
+        "No. Pesanan (Z-A, 0-9)"
+      ),
+    },
   ];
 
   // Get selected status count for notification dot
@@ -438,15 +608,48 @@ const DaftarPesananAktif = ({
   const shouldShowControls = !isFirstTimer;
 
   useEffect(() => {
-    if (true) {
+    if (
+      importantNotification &&
+      importantNotification.Data &&
+      !importantNotification.Data.isRead
+    ) {
       setIsAlertOpen(true);
     }
-  }, []);
+  }, [importantNotification]);
+
+  // SWR mutation hook to dismiss important notification
+  const { trigger: triggerDismissNotification } =
+    usePutCSImportantNotificationsDismiss(
+      importantNotification?.Data?.notificationId
+    );
+
+  const handleDismissAlert = async () => {
+    setIsAlertOpen(false);
+    try {
+      // Call the API to mark notification as READ
+      await triggerDismissNotification?.({ action: "READ" });
+    } catch {
+      setIsAlertOpen(true);
+      toast.error(
+        t(
+          "DaftarPesananAktif.toast.dismissAlertError",
+          {},
+          "Gagal menandai notifikasi sebagai dibaca"
+        )
+      );
+    }
+  };
 
   // Open HubungiModal helper — caller should supply order data for contact fetching
   const openHubungiModal = (orderData) => {
     if (!orderData || !orderData.orderId) {
-      console.error("Order data or orderId is required for contact fetching");
+      toast.error(
+        t(
+          "DaftarPesananAktif.toast.openContactsError",
+          {},
+          "Order data atau orderId diperlukan untuk membuka kontak"
+        )
+      );
       return;
     }
 
@@ -487,10 +690,14 @@ const DaftarPesananAktif = ({
       {/* Header */}
       <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
-          <h3 className="w-[80px] text-xs font-bold">Daftar Pesanan Aktif</h3>
+          <h3 className="w-[80px] text-xs font-bold">
+            {t("DaftarPesananAktif.title", {}, "Daftar Pesanan Aktif")}
+          </h3>
           <Onboarding
             hasShownOnboarding={hasShownOnboarding}
             onOnboardingShown={onOnboardingShown}
+            controlledOpen={onboardingOpen}
+            onControlledClose={handleOnboardingControlledClose}
           />
         </div>
         {shouldShowControls && (
@@ -549,7 +756,11 @@ const DaftarPesananAktif = ({
             </div>
 
             <Search
-              placeholder="Cari Pesanan"
+              placeholder={t(
+                "DaftarPesananAktif.searchPlaceholder",
+                {},
+                "Cari Pesanan"
+              )}
               onSearch={(value) => {
                 setSearchValue(value);
               }}
@@ -589,20 +800,26 @@ const DaftarPesananAktif = ({
                   className="mr-1 size-4 shrink-0 text-warning-900"
                 />
                 <div className="text-black">
-                  Transporter{" "}
+                  {t("DaftarPesananAktif.alertPrefix", {}, "Transporter ")}
                   <span className="font-bold">
                     PT Prima Transport dan 2 lainnya
-                  </span>{" "}
-                  telah melakukan pembatalan pesanan.
+                  </span>
+                  {t(
+                    "DaftarPesananAktif.alertSuffix",
+                    {},
+                    " telah melakukan pembatalan pesanan."
+                  )}
                 </div>
-                <Button variant="link" className="ml-1 text-xs">
-                  Lihat Pesanan
-                </Button>
+                <Link
+                  href="/daftar-pesanan/pesanan-aktif"
+                  variant="link"
+                  className="ml-1 text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800"
+                >
+                  {t("DaftarPesananAktif.viewOrders", {}, "Lihat Pesanan")}
+                </Link>
               </div>
               <Button
-                onClick={() => {
-                  setIsAlertOpen(false);
-                }}
+                onClick={handleDismissAlert}
                 variant="link"
                 className="ml-1 text-xs"
               >
@@ -617,10 +834,18 @@ const DaftarPesananAktif = ({
                 <DataNotFound className="h-full gap-y-5 pb-10" type="data">
                   <div className="flex flex-col items-center gap-2">
                     <p className="text-center text-base font-semibold leading-tight text-neutral-600">
-                      Oops, daftar pesananmu masih kosong
+                      {t(
+                        "DaftarPesananAktif.emptyFirstTimerTitle",
+                        {},
+                        "Oops, daftar pesananmu masih kosong"
+                      )}
                     </p>
                     <p className="text-center text-xs font-medium leading-tight text-neutral-600">
-                      Mohon bersabar untuk menanti permintaan baru
+                      {t(
+                        "DaftarPesananAktif.emptyFirstTimerSubtitle",
+                        {},
+                        "Mohon bersabar untuk menanti permintaan baru"
+                      )}
                     </p>
                   </div>
                 </DataNotFound>
@@ -631,7 +856,7 @@ const DaftarPesananAktif = ({
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center">
                       <p className="text-base font-semibold text-neutral-600">
-                        Loading...
+                        {t("DaftarPesananAktif.loading", {}, "Loading...")}
                       </p>
                     </div>
                   </div>
@@ -642,7 +867,11 @@ const DaftarPesananAktif = ({
                       className="text-center text-neutral-600"
                     >
                       <p className="text-base font-semibold">
-                        Keyword Tidak Ditemukan
+                        {t(
+                          "DaftarPesananAktif.keywordNotFound",
+                          {},
+                          "Keyword Tidak Ditemukan"
+                        )}
                       </p>
                     </DataNotFound>
                   </div>
@@ -653,10 +882,18 @@ const DaftarPesananAktif = ({
                       className="text-center text-neutral-600"
                     >
                       <p className="text-base font-semibold">
-                        Data Tidak Ditemukan.
+                        {t(
+                          "DaftarPesananAktif.dataNotFound",
+                          {},
+                          "Data Tidak Ditemukan."
+                        )}
                       </p>
                       <p className="mt-1 text-xs font-medium">
-                        Mohon coba hapus beberapa filter
+                        {t(
+                          "DaftarPesananAktif.tryRemoveFilters",
+                          {},
+                          "Mohon coba hapus beberapa filter"
+                        )}
                       </p>
                     </DataNotFound>
                   </div>
@@ -667,10 +904,18 @@ const DaftarPesananAktif = ({
                       className="text-center text-neutral-600"
                     >
                       <p className="font-semibold">
-                        Oops, daftar pesanan masih kosong
+                        {t(
+                          "DaftarPesananAktif.emptyTitle",
+                          {},
+                          "Oops, daftar pesanan masih kosong"
+                        )}
                       </p>
                       <p className="mt-3 text-xs font-medium">
-                        Belum ada Transporter yang menerima permintaan
+                        {t(
+                          "DaftarPesananAktif.emptySubtitle",
+                          {},
+                          "Belum ada Transporter yang menerima permintaan"
+                        )}
                       </p>
                     </DataNotFound>
                   </div>
