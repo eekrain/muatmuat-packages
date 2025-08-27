@@ -44,6 +44,7 @@ const DaftarPesanan = ({
   filterType,
   setFilterType,
   onChangeQueryParams,
+  mutate,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -732,6 +733,7 @@ const DaftarPesanan = ({
         isOpen={isAssignArmadaModalOpen}
         onClose={() => {
           setIsAssignArmadaModalOpen(false);
+          mutate();
         }}
         orderData={selectedOrderForAssign}
       />

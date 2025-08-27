@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 
-const useMockData = true; // Set to false to use real API
+const useMockData = false; // Set to false to use real API
 
 // Mock API result for development/testing
 export const mockAPIResult = {
