@@ -1436,6 +1436,7 @@
   "statusDibatalkan": "Cancelled",
   "statusMenungguKonfirmasi": "Waiting for Confirmation",
   "statusPergantianArmada": "Fleet Change",
+  "labelLihatBuktiStatus": "View Proof {statusName}",
   "labelLihatBuktiMuatBarangPOD": "Delivery Evidence & POD",
   "labelBuktiMuatBarangMulti": "Loading Evidence at Location {index}",
   "labelBuktiMuatBarang": "Loading Evidence",

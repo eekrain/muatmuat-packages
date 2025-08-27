@@ -41,6 +41,18 @@ const MOCK_SOS_POPOVER = {
   dropoffLocation: "Kab. Pasuruan, Kec. Klojen",
 };
 
+const InfoItem = ({ icon, value }) => (
+  <div className="flex items-center gap-1.5">
+    <IconComponent
+      src={icon}
+      className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900"
+    />
+    <span className="line-clamp-1 text-xs font-medium text-neutral-900">
+      {value}
+    </span>
+  </div>
+);
+
 const VehicleTrackingCard = ({
   vehicle,
   index,
@@ -49,18 +61,6 @@ const VehicleTrackingCard = ({
   onViewSos,
   t,
 }) => {
-  const Info = ({ icon, value }) => (
-    <div className="flex items-center gap-1.5">
-      <IconComponent
-        src={icon}
-        className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900"
-      />
-      <span className="line-clamp-1 text-xs font-medium text-neutral-900">
-        {value}
-      </span>
-    </div>
-  );
-
   const statusDriver = getStatusDriverMetadata({
     orderStatus: vehicle.driverStatus.mainStatus,
     driverStatus: vehicle.driverStatus.subStatus,
@@ -108,12 +108,12 @@ const VehicleTrackingCard = ({
               {vehicle.licensePlate}
             </h3>
             <div className="mt-1 flex items-center gap-2">
-              <Info
+              <InfoItem
                 icon="/icons/transporter16.svg"
                 value={vehicle.transporterName}
               />
               <div className="size-0.5 rounded-full bg-neutral-600"></div>
-              <Info icon="/icons/user16.svg" value={vehicle.driverName} />
+              <InfoItem icon="/icons/user16.svg" value={vehicle.driverName} />
             </div>
           </div>
         </div>
