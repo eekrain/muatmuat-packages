@@ -358,7 +358,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           </h3>
                           <DriverTimeline
                             dataTimeline={
-                              vehicle.timeline || {
+                              vehicle.replacementFleet.timeline || {
                                 statusDefinitions: [
                                   {
                                     mappedOrderStatus:
