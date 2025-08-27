@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 
-import FileUploadInput from "@/app/transporter/(main)/manajemen-armada/tambah-massal/components/FileUploadInput";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DatePicker from "@/components/DatePicker/DatePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+
+import FileUploadInput from "@/app/transporter/(main)/manajemen-armada/tambah-massal/components/FileUploadInput";
 
 import ModalAddImage from "../ModalAddImage/ModalAddImage";
 import InputFullName from "./InputFullName";

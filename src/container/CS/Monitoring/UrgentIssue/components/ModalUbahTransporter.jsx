@@ -1,6 +1,9 @@
 // Ganti path import sesuai dengan struktur proyek Anda
 import { useState } from "react";
 
+import { useGetAvailableTransporter } from "@/services/CS/monitoring/urgent-issue/getAvailableTransporter";
+import { useGetTransporterVehicles } from "@/services/CS/monitoring/urgent-issue/getTransporterVehicles";
+
 // Hook helper baru
 
 // Import komponen UI Anda
@@ -11,11 +14,11 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { ModalFooter, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
+
 import { useDebounce } from "@/hooks/use-debounce";
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
-import { useGetAvailableTransporter } from "@/services/CS/monitoring/urgent-issue/getAvailableTransporter";
-import { useGetTransporterVehicles } from "@/services/CS/monitoring/urgent-issue/getTransporterVehicles";
 
 /**
  * Sub-komponen untuk menampilkan daftar kendaraan milik satu transporter.
@@ -327,13 +330,12 @@ const ModalUbahTransporter = ({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button
-              onClick={() => setShowDetail(false)}
-              variant="muattrans-primary-secondary"
-            >
-              {t("ModalUbahTransporter.buttonKembali", {}, "Kembali")}
-            </Button>
-            <Button
-              onClick={() => setShowConfirmModal(true)}
+              onClick={() => {
+                setShowConfirmModal(true);
+                toast.success(
+                  `Perubahan Transporter berhasil dikirim ke Transporter ${selectedTransporter?.name || "-"}`
+                );
+              }}
               variant="muattrans-primary"
             >
               {t(
@@ -584,11 +586,21 @@ const ModalUbahTransporter = ({
                           setCatatanError("Alasan pembatalan wajib diisi");
                         } else {
                           setCatatanError("");
+                          const selectedIssue = Array.isArray(issueData?.issues)
+                            ? issueData.issues.find(
+                                (iss) => iss?.vehicle?.id === selectedVehicleId
+                              )
+                            : null;
+                          const plateNumber =
+                            selectedIssue?.vehicle?.plate_number || "-";
+                          const transporterName =
+                            issueData?.transporter?.name || "-";
+                          const orderCode = issueData?.orderCode || "-";
                           toast.success(
-                            `Armada ${issueData?.vehicle?.plate_number || "-"} dari transporter ${issueData?.transporter?.name || "-"} pada Pesanan ${issueData?.orderCode || "-"} berhasil dibatalkan`
+                            `Armada ${plateNumber} dari transporter ${transporterName} pada Pesanan ${orderCode} berhasil dibatalkan`
                           );
                           setShowAlasanModal(false);
-                          onClose();
+                          // onClose();
                           // TODO: handle submit logic here
                         }
                       }}

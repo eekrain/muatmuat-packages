@@ -8,12 +8,15 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+
 import { useSWRMutateHook } from "@/hooks/use-swr";
-import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
+
 import { isDev } from "@/lib/constants/is-dev";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { formatNumberWithComma, idrFormat } from "@/lib/utils/formatters";
+
+import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,

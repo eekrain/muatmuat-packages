@@ -1,15 +1,18 @@
 import { useState } from "react";
 
+import { useGetContactHistory } from "@/services/CS/laporan/tambahan-biaya/detail-tambahan-biaya/getContactHistory";
+
 import Card from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
+
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetContactHistory } from "@/services/CS/laporan/tambahan-biaya/detail-tambahan-biaya/getContactHistory";
 
 /**
  * Komponen DataTable untuk menampilkan riwayat menghubungi CS.

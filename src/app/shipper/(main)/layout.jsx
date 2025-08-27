@@ -1,6 +1,7 @@
 "use client";
 
 import useDevice from "@/hooks/use-device";
+
 import DesktopLayout from "@/layout/Shipper/DesktopLayout/DesktopLayout";
 
 export default function RootLayout({ children }) {

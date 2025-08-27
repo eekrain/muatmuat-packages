@@ -1,5 +1,6 @@
 import Card from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const NoOrderTable = () => {

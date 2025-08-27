@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/use-translation";
+
 import { useLoadingStore } from "@/store/Shared/loadingStore";
 
 export default function LoadingInteractive() {

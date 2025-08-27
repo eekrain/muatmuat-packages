@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import React from "react";
 
+import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
+
 import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -20,8 +22,8 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { cn } from "@/lib/utils";
-import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
 
 const DetailRow = ({
   label,

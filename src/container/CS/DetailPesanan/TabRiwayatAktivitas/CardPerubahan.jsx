@@ -4,6 +4,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/Collapsible";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
 
 const Root = ({ title = "Detail Perubahan", className, children }) => {

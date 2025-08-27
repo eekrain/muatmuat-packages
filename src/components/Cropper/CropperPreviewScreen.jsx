@@ -2,9 +2,12 @@ import Image from "next/image";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import {
   useImageUploaderActions,
   useImageUploaderStore,

@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+import { useGetTransporterFleets } from "@/services/CS/transporters/getTransporterFleets";
+
 import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -11,7 +13,6 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { TabsContent } from "@/components/Tabs/Tabs";
-import { useGetTransporterFleets } from "@/services/CS/transporters/getTransporterFleets";
 
 const DaftarArmadaTab = ({ transporterId }) => {
   // Local state for this tab

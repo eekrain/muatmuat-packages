@@ -5,6 +5,10 @@ import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { deactivateVehicle } from "@/services/Transporter/manajemen-armada/deactivateVehicle";
+import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
+import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -16,13 +20,13 @@ import {
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+
 import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
-import { deactivateVehicle } from "@/services/Transporter/manajemen-armada/deactivateVehicle";
-import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
-import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
 
 const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
   const { t } = useTranslation();

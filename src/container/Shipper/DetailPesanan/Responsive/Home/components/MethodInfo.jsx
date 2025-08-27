@@ -1,4 +1,5 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 export const MethodInfo = ({ dataRingkasanPembayaran }) => {

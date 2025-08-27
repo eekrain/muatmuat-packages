@@ -6,6 +6,7 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 export const ModalInformasiSlider = () => {

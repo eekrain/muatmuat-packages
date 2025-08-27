@@ -3,6 +3,29 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useState } from "react";
 
+import { useGetFleetCount } from "@/services/CS/getFleetCount";
+import { useGetCSMapsLocations } from "@/services/CS/maps/getCsMapsLocations";
+import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
+
+import {
+  MonitoringTabTrigger,
+  MonitoringTabs,
+  MonitoringTabsContent,
+  MonitoringTabsList,
+} from "@/components/MonitoringTabs/MonitoringTabs";
+import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
+
+import DaftarArmadaCs from "@/container/CS/Monitoring/DaftarArmada/DaftarArmadaCs";
+import LihatPosisiArmada from "@/container/CS/Monitoring/LihatPosisiArmada/LihatPosisiArmada";
+import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import SOSCSContainer from "@/container/CS/Monitoring/SOS/SOSCSContainer";
+import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
+import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
+import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
+import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
+
+import { cn } from "@/lib/utils";
+
 import { useMonitoringHandlers } from "@/app/transporter/(main)/monitoring/hooks/useMonitoringHandlers";
 import {
   filtersReducer,
@@ -24,25 +47,6 @@ import {
   selectionsReducer,
 } from "@/app/transporter/(main)/monitoring/reducers/selectionsReducer";
 import { calculateMapBounds } from "@/app/transporter/(main)/monitoring/utils/mapUtils";
-import {
-  MonitoringTabTrigger,
-  MonitoringTabs,
-  MonitoringTabsContent,
-  MonitoringTabsList,
-} from "@/components/MonitoringTabs/MonitoringTabs";
-import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
-import DaftarArmadaCs from "@/container/CS/Monitoring/DaftarArmada/DaftarArmadaCs";
-import LihatPosisiArmada from "@/container/CS/Monitoring/LihatPosisiArmada/LihatPosisiArmada";
-import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
-import SOSCSContainer from "@/container/CS/Monitoring/SOS/SOSCSContainer";
-import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
-import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
-import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
-import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
-import { cn } from "@/lib/utils";
-import { useGetFleetCount } from "@/services/CS/getFleetCount";
-import { useGetCSMapsLocations } from "@/services/CS/maps/getCsMapsLocations";
-import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { MapInterfaceOverlay } from "./components/Map/MapInterfaceOverlay";
@@ -347,9 +351,7 @@ const Page = () => {
   // PilihArmada handlers are now imported from useMonitoringHandlers hook
 
   useEffect(() => {
-    console.log("fleetData", fleetData);
     if (fleetData && fleetData.data.Data) {
-      console.log("fleetData has Data", fleetData);
       setHasFleet(true);
     }
   }, [fleetData]);

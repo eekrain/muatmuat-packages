@@ -2,11 +2,12 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { zustandDevtools } from "@/lib/utils";
 import {
   LOGIN_TRANSPORTER_ENDPOINT,
   loginTransporter,
 } from "@/services/Transporter/auth/login";
+
+import { zustandDevtools } from "@/lib/utils";
 
 const initialState = {
   token: null,

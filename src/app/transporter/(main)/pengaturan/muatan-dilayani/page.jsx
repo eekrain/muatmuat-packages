@@ -6,6 +6,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { isEqual } from "lodash";
 import { Info } from "lucide-react";
 
+import { useGetMasterCargo } from "@/services/Transporter/pengaturan/getMasterCargoData";
+import { useSaveTransporterCargoConfig } from "@/services/Transporter/pengaturan/saveCargoConfigData";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -17,12 +20,13 @@ import { InputSearch } from "@/components/InputSearch/InputSearch";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { CargoSelection } from "@/container/Transporter/Pengaturan/CargoSelection";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
-import { useGetMasterCargo } from "@/services/Transporter/pengaturan/getMasterCargoData";
-import { useSaveTransporterCargoConfig } from "@/services/Transporter/pengaturan/saveCargoConfigData";
 
 export default function AturMuatanDilayaniPage() {
   const { t } = useTranslation();

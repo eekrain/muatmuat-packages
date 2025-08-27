@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const TransporterRatingCard = ({ ratingData }) => {

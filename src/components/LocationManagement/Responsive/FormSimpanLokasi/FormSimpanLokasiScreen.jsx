@@ -5,14 +5,17 @@ import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Checkbox from "@/components/Form/Checkbox";
 import { FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
+
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
+
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 const FormSimpanLokasiScreen = () => {

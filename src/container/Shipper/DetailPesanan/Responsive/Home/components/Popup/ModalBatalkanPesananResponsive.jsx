@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 /**

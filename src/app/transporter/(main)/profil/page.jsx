@@ -1,11 +1,13 @@
 "use client";
 
+import { useGetTransporterProfile } from "@/services/Transporter/profil/getTransporterProfile";
+
 import Sidebar from "@/components/Sidebar/SidebarProfile";
+
 import CompanyLegality from "@/container/Transporter/Profil/CompanyLegality";
 import CompanyProfileInfo from "@/container/Transporter/Profil/CompanyProfileInfo";
 import PicContactInfo from "@/container/Transporter/Profil/PicContactInfo";
 import UserProfileInfo from "@/container/Transporter/Profil/UserProfileInfo";
-import { useGetTransporterProfile } from "@/services/Transporter/profil/getTransporterProfile";
 
 const Profile = () => {
   const {

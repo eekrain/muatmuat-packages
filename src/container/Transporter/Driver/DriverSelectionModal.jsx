@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
+import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -9,9 +12,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
+
 import { toast } from "@/lib/toast";
-import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
-import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const DriverSelectionModal = ({
   onClose,

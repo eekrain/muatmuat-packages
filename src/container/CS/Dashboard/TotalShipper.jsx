@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
+import { useGetDashboardAnalyticsTotalShipper } from "@/services/CS/dashboard/analytics/getTotalShipper";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import DonutChart from "@/components/Chart/DonutChart";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetDashboardAnalyticsTotalShipper } from "@/services/CS/dashboard/analytics/getTotalShipper";
 
 const TotalShipper = () => {
   // 1. Fetch data using the SWR hook

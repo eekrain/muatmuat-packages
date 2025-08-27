@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import { TabsContent } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 import { Alert } from "./Alert";

@@ -7,6 +7,11 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Controller, useForm } from "react-hook-form";
 import * as v from "valibot";
 
+import { useUploadFile } from "@/services/Shared/uploadFile";
+// Import the SWR hooks for getting details and updating
+import { useGetDriverDetail } from "@/services/Transporter/manajemen-driver/getDriverDetail";
+import { useUpdateDriver } from "@/services/Transporter/manajemen-driver/updateDriver";
+
 import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -23,11 +28,8 @@ import {
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { toast } from "@/lib/toast";
-import { useUploadFile } from "@/services/Shared/uploadFile";
-// Import the SWR hooks for getting details and updating
-import { useGetDriverDetail } from "@/services/Transporter/manajemen-driver/getDriverDetail";
-import { useUpdateDriver } from "@/services/Transporter/manajemen-driver/updateDriver";
 
 const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;

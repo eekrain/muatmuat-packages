@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const DetailTransporterHeader = ({ transporter }) => {

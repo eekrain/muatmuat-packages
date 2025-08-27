@@ -6,6 +6,11 @@
   "importOrder": [
     "^(react|next?/?([a-zA-Z/]*))$",
     "<THIRD_PARTY_MODULES>",
+    "^@/services/(.*)$",
+    "^@/components/(.*)$",
+    "^@/container/(.*)$",
+    "^@/hooks/(.*)$",
+    "^@/lib/(.*)$",
     "^@/(.*)$",
     "^[./]"
   ],

@@ -4,7 +4,9 @@ import { X } from "lucide-react";
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 import { SearchSuggestions } from "./SearchSuggestions";

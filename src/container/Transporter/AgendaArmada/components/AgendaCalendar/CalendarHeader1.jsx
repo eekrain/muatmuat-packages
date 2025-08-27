@@ -1,10 +1,12 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
+import { useGetAgendaFilterOptions } from "@/services/Transporter/agenda-armada-driver/getAgendaFilterOptions";
+
 import Button from "@/components/Button/Button";
 import MyDropdown from "@/components/Dropdown/MyDropdown";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetAgendaFilterOptions } from "@/services/Transporter/agenda-armada-driver/getAgendaFilterOptions";
 
 import { AgendaAutocomplete } from "../AgendaAutocomplete";
 import { AgendaFilterPopover } from "../AgendaFilterPopover";

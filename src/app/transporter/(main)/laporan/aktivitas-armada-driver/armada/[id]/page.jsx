@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 
 import { Download, MapPin, Truck } from "lucide-react";
 
+import { useGetFleetDetailData } from "@/services/Transporter/laporan/aktivitas/getArmadaDetailData";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -19,8 +21,8 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetFleetDetailData } from "@/services/Transporter/laporan/aktivitas/getArmadaDetailData";
 
 export default function DetailArmadaPage() {
   const { t } = useTranslation();

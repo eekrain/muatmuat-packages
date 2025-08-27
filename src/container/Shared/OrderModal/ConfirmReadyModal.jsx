@@ -5,27 +5,122 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+import { useGetFleetReadinessChecklist } from "@/services/Transporter/daftar-pesanan/getFleetReadinessChecklist";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 
 const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
   const { t } = useTranslation();
   const [confirmLoading, setConfirmLoading] = useState(false);
+  console.log(orderData, "orderData");
 
-  // Use order data directly from the list
-  const orderInfo = orderData || {};
+  // Fetch readiness checklist data
+  const orderId = orderData?.orderId || orderData?.id;
+  const {
+    data: readinessData,
+    error: readinessError,
+    isLoading: readinessLoading,
+  } = useGetFleetReadinessChecklist(isOpen && orderId ? orderId : null);
+  console.log(readinessData, "readinessData");
 
-  // Use assigned vehicles from orderData
-  const assignedVehicles = orderData?.assignedVehicles || [];
+  // Use data from API response when available, fallback to orderData
+  const apiOrder = readinessData?.order || {};
+  const orderInfo = { ...orderData, ...apiOrder };
+
+  // Map fleet information from API response
+  const assignedVehicles =
+    readinessData?.fleetInfo?.details?.map((fleet) => ({
+      id: fleet.id,
+      licensePlate: fleet.fleet?.licensePlate,
+      driverName: fleet.driver?.name,
+      driverStatus: fleet.driver?.verificationStatus || "VERIFIED",
+      location: null, // API doesn't provide current location in this response
+    })) ||
+    orderData?.assignedVehicles ||
+    [];
+
   const estimatedDistance = orderInfo?.estimatedDistance || 121;
-  const potentialEarnings = orderInfo?.potentialEarnings || "Rp999.999.999";
+
+  // Calculate potential earnings from API data
+  const potentialEarnings = orderInfo?.totalPrice
+    ? `Rp${orderInfo.totalPrice.toLocaleString("id-ID")}`
+    : orderData?.potentialEarnings || "Rp999.999.999";
+
+  // Map pickup and dropoff locations from API
+  const pickupLocations =
+    readinessData?.locations?.pickup?.map((loc) => ({
+      id: loc.id,
+      fullAddress:
+        loc.fullAddress ||
+        loc.address ||
+        `${loc.city}, ${loc.province}` ||
+        "Alamat tidak tersedia",
+      address: loc.fullAddress,
+      detailAddress: loc.detailAddress,
+      city: loc.city,
+      province: loc.province,
+      picName: loc.picName,
+      picPhone: loc.picPhoneNumber,
+      sequence: loc.sequence,
+    })) ||
+    orderData?.pickupLocations?.map((loc) => ({
+      ...loc,
+      fullAddress:
+        loc.fullAddress ||
+        loc.address ||
+        `${loc.city || ""}, ${loc.province || ""}`.trim() ||
+        "Alamat tidak tersedia",
+    })) ||
+    [];
+
+  const dropoffLocations =
+    readinessData?.locations?.dropoff?.map((loc) => ({
+      id: loc.id,
+      fullAddress:
+        loc.fullAddress ||
+        loc.address ||
+        `${loc.city}, ${loc.province}` ||
+        "Alamat tidak tersedia",
+      address: loc.fullAddress,
+      detailAddress: loc.detailAddress,
+      city: loc.city,
+      province: loc.province,
+      picName: loc.picName,
+      picPhone: loc.picPhoneNumber,
+      sequence: loc.sequence,
+    })) ||
+    orderData?.dropoffLocations?.map((loc) => ({
+      ...loc,
+      fullAddress:
+        loc.fullAddress ||
+        loc.address ||
+        `${loc.city || ""}, ${loc.province || ""}`.trim() ||
+        "Alamat tidak tersedia",
+    })) ||
+    [];
+
+  // Map cargo information from API
+  const cargoInfo = readinessData?.cargoInfo;
+  const totalWeight = cargoInfo?.summary?.totalWeight;
+  const weightUnit = cargoInfo?.summary?.weightUnit;
+  const cargoTypes = cargoInfo?.summary?.cargoTypes || [];
+  const cargoDetails = cargoInfo?.details || [];
+
+  // Map additional service requirements
+  const additionalServices =
+    readinessData?.additionalServiceRequirements ||
+    orderData?.additionalServices ||
+    [];
 
   const handleConfirm = async () => {
     setConfirmLoading(true);
@@ -203,9 +298,16 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                     )}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <BadgeStatus variant="success" className="w-auto text-xs">
-                      {t("ConfirmReadyModal.instant", {}, "Instan")}
-                    </BadgeStatus>
+                    {orderInfo?.orderType === "INSTANT" && (
+                      <BadgeStatus variant="success" className="w-auto text-xs">
+                        {t("ConfirmReadyModal.instant", {}, "Instan")}
+                      </BadgeStatus>
+                    )}
+                    {orderInfo?.orderType === "SCHEDULED" && (
+                      <BadgeStatus variant="warning" className="w-auto text-xs">
+                        {t("ConfirmReadyModal.scheduled", {}, "Terjadwal")}
+                      </BadgeStatus>
+                    )}
                     {orderInfo?.timeLabel && (
                       <BadgeStatus
                         variant="warning"
@@ -227,7 +329,8 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                         )}
                       </BadgeStatus>
                     )}
-                    {orderInfo?.hasAdditionalService && (
+                    {(additionalServices?.length > 0 ||
+                      orderInfo?.hasAdditionalService) && (
                       <BadgeStatus
                         variant="primary"
                         className="w-auto whitespace-nowrap text-xs"
@@ -276,8 +379,8 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                 {/* Locations */}
                 <div className="flex items-center justify-between">
                   <MuatBongkarStepperWithModal
-                    pickupLocations={orderInfo?.pickupLocations || []}
-                    dropoffLocations={orderInfo?.dropoffLocations || []}
+                    pickupLocations={pickupLocations}
+                    dropoffLocations={dropoffLocations}
                     appearance={{
                       titleClassName: "text-xs font-bold",
                     }}
@@ -312,36 +415,37 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                         {t(
                           "ConfirmReadyModal.cargoInfo",
                           {
-                            total: orderInfo?.totalWeight
-                              ? `${orderInfo.totalWeight} ${orderInfo.weightUnit || "kg"}`
+                            total: totalWeight
+                              ? `${totalWeight} ${weightUnit || "kg"}`
                               : "2.500 kg",
                           },
                           `Informasi Muatan (Total : ${
-                            orderInfo?.totalWeight
-                              ? `${orderInfo.totalWeight} ${orderInfo.weightUnit || "kg"}`
+                            totalWeight
+                              ? `${totalWeight} ${weightUnit || "kg"}`
                               : "2.500 kg"
                           })`
                         )}
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-semibold leading-[120%] text-black">
-                          {orderInfo?.cargos?.[0] ||
+                          {cargoDetails?.[0]?.name ||
+                            cargoTypes?.[0] ||
                             t(
                               "ConfirmReadyModal.householdEquipment",
                               {},
                               "Peralatan Rumah Tangga"
                             )}
-                          {orderInfo?.cargos?.length > 1 && ","}
+                          {cargoDetails?.length > 1 && ","}
                         </span>
-                        {orderInfo?.cargos?.length > 1 && (
+                        {cargoDetails?.length > 1 && (
                           <InfoTooltip
                             side="top"
                             trigger={
                               <span className="cursor-pointer text-xs font-semibold leading-[120%] text-primary-700">
                                 {t(
                                   "ConfirmReadyModal.othersCount",
-                                  { count: orderInfo.cargos.length - 1 },
-                                  `+${orderInfo.cargos.length - 1} lainnya`
+                                  { count: cargoDetails.length - 1 },
+                                  `+${cargoDetails.length - 1} lainnya`
                                 )}
                               </span>
                             }
@@ -355,13 +459,11 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                                 )}
                               </p>
                               <ol className="list-inside list-decimal space-y-0.5">
-                                {orderInfo.cargos
-                                  .slice(1)
-                                  .map((cargo, index) => (
-                                    <li key={index} className="text-sm">
-                                      {cargo}
-                                    </li>
-                                  ))}
+                                {cargoDetails.slice(1).map((cargo, index) => (
+                                  <li key={index} className="text-sm">
+                                    {cargo.name}
+                                  </li>
+                                ))}
                               </ol>
                             </div>
                           </InfoTooltip>
@@ -437,12 +539,12 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                   </div>
 
                   {/* Additional Services */}
-                  {orderInfo?.additionalServices?.length > 0 && (
+                  {additionalServices?.length > 0 && (
                     <div className="flex h-6 items-center rounded-md bg-[#FFF5C6] px-2 py-2">
                       <span className="flex-1 text-xs font-semibold leading-[120%] text-black">
                         +{" "}
-                        {orderInfo.additionalServices
-                          .map((s) => s.serviceName)
+                        {additionalServices
+                          .map((s) => s.serviceName || s.name)
                           .join(", ")}
                       </span>
                     </div>

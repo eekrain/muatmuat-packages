@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import { useGetTransporterInactiveFleetDetails } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactiveDetail";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
@@ -8,10 +9,13 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { TransporterInactiveTypeEnum } from "@/lib/constants/Transporter/laporan/transporterInactive.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetTransporterInactiveFleetDetails } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactiveDetail";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 import DetailTransporterHeader from "./DetailTransporterHeader/DetailTransporterHeader";
 

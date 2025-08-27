@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import { useGetFleetsList } from "@/services/Transporter/manajemen-driver/getFleetsList";
+import { updateDriverFleet } from "@/services/Transporter/manajemen-driver/updateDriverFleet";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -13,9 +16,8 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
+
 import { toast } from "@/lib/toast";
-import { useGetFleetsList } from "@/services/Transporter/manajemen-driver/getFleetsList";
-import { updateDriverFleet } from "@/services/Transporter/manajemen-driver/updateDriverFleet";
 
 const FleetSelectionModal = ({
   onClose,

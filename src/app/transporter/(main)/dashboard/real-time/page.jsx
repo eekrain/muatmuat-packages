@@ -2,10 +2,12 @@
 
 import React from "react";
 
+import { useGetUserJourneyStatus } from "@/services/Transporter/dashboard/getUserJourneyStatus";
+
 import LoadingStatic from "@/components/Loading/LoadingStatic";
+
 import RealtimeDashboardPage from "@/container/Transporter/Dashboard/Realtime/Main/RealtimeDashboardPage";
 import UserJourney from "@/container/Transporter/Dashboard/UserJourney";
-import { useGetUserJourneyStatus } from "@/services/Transporter/dashboard/getUserJourneyStatus";
 
 function Page() {
   const { data, isLoading, error } = useGetUserJourneyStatus();
