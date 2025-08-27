@@ -28,7 +28,7 @@ function Page() {
 
   return (
     <div className="pt-8">
-      {data?.allStepsCompleted === true ? (
+      {data?.isComplete === true ? (
         <RealtimeDashboardPage />
       ) : (
         <UserJourney journeyStatus={data} />

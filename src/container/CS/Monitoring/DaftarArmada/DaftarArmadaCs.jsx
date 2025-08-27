@@ -13,6 +13,7 @@ import CustomDropdown from "@/components/CustomDropdown";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import ModalInitialChoice from "@/components/Modal/ModalInitialChoice";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import {
   Popover,
@@ -86,9 +87,34 @@ const DaftarArmadaCs = ({
   const [showResponseChangeModal, setShowResponseChangeModal] = useState(false);
   const [selectedFleetForResponse, setSelectedFleetForResponse] =
     useState(null);
-  const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
-  const [selectedTransporter, setSelectedTransporter] = useState(null);
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
+
+  // --- NEW STATE & HANDLERS ---
+  const [modalView, setModalView] = useState("none"); // 'none' | 'initialChoice' | 'hubungi'
+  const [selectedTransporter, setSelectedTransporter] = useState(null);
+  const [selectedContactType, setSelectedContactType] = useState(null);
+
+  const handleOpenHubungiModal = (transporter) => {
+    setSelectedTransporter(transporter);
+    setModalView("initialChoice");
+  };
+
+  const handleContactTransporter = () => {
+    setSelectedContactType("transporter");
+    setModalView("hubungi");
+  };
+
+  const handleContactDriver = () => {
+    setSelectedContactType("driver");
+    setModalView("hubungi");
+  };
+
+  const handleCloseModals = () => {
+    setModalView("none");
+    setSelectedTransporter(null);
+    setSelectedContactType(null);
+  };
+  // --- END NEW STATE & HANDLERS ---
 
   // State management for filters
   const [filterValues, setFilterValues] = useState({
@@ -307,11 +333,6 @@ const DaftarArmadaCs = ({
   const handleFleetCardClick = (fleet) => {
     if (onFleetClick) onFleetClick(fleet);
     if (onFleetSelect) onFleetSelect(fleet.fleetId);
-  };
-
-  const handleOpenHubungiModal = (transporter) => {
-    setSelectedTransporter(transporter);
-    setIsHubungiModalOpen(true);
   };
 
   const truckStatusOptions = useMemo(() => {
@@ -782,13 +803,22 @@ const DaftarArmadaCs = ({
         }}
       />
 
-      {isHubungiModalOpen && (
+      {/* Modal Flow Control */}
+      {modalView === "initialChoice" && (
+        <ModalInitialChoice
+          isOpen={true}
+          onClose={handleCloseModals}
+          onContactTransporter={handleContactTransporter}
+          onContactDriver={handleContactDriver}
+        />
+      )}
+      {modalView === "hubungi" && (
         <HubungiModal
-          isOpen={isHubungiModalOpen}
-          onClose={() => setIsHubungiModalOpen(false)}
-          showInitialChoice={true}
+          isOpen={true}
+          onClose={handleCloseModals}
           transporterContacts={generalContacts}
           driverContacts={generalContacts2}
+          selectedContactType={selectedContactType}
         />
       )}
     </div>

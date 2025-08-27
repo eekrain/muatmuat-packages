@@ -173,6 +173,7 @@ const DaftarPesananAktif = ({
   };
 
   const { data, isLoading } = useGetActiveOrders(requestParams);
+  console.log("Order Aktif:", data);
 
   // Calculate orders with location/time changes
   const orders = data?.orders || [];

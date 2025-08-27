@@ -460,9 +460,9 @@ const Page = () => {
             {/* Left Panel - Daftar Armada or SOS */}
             <div
               className={cn(
-                "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
-                panels.showLeftPanel ? "translate-x-0" : "-translate-x-full",
-                panels.leftPanelMode && "w-[480px]"
+                "absolute left-0 top-0 z-10 h-full rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
+                panels.leftPanelMode === "posisi" ? "w-[450px]" : "w-[350px]",
+                panels.showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
               {panels.leftPanelMode === "sos" ? (
