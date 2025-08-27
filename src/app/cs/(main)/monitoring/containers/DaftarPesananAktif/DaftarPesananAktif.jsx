@@ -24,6 +24,7 @@ import {
 } from "@/services/CS/active-orders/getOrderContacts";
 import { useGetActiveOrdersByOrdersWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByOrders";
 import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByTransporter";
+import { useGetCSImportantNotifications } from "@/services/CS/getCSImportantNotifications";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { useGetCsActiveOrdersUrgentStatusCounts } from "@/services/CS/monitoring/daftar-pesanan-active/getCsActiveOrdersUrgentStatusCounts";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
@@ -99,9 +100,14 @@ const DaftarPesananAktif = ({
   onOnboardingShown,
 }) => {
   const router = useRouter();
+
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const { data: urgentStatusCountsData } =
     useGetCsActiveOrdersUrgentStatusCounts();
+  const { data: importantNotification } = useGetCSImportantNotifications(
+    `/v1/cs/active-orders/important-notifications`
+  );
+
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatusFilter, setSelectedStatusFilter] =
     useState("ALL_STATUS");
@@ -127,8 +133,6 @@ const DaftarPesananAktif = ({
     useState([]);
   const [orderChangeInfoModalOpen, setOrderChangeInfoModalOpen] =
     useState(false);
-
-  // Hubungi modal state
   const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
   const [hubungiModalProps, setHubungiModalProps] = useState({
     showInitialChoice: false,
@@ -138,12 +142,11 @@ const DaftarPesananAktif = ({
   });
   const [selectedOrderForContacts, setSelectedOrderForContacts] =
     useState(null);
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-
   // Fetch contacts data when orderId is selected
   const { data: contactsData, isLoading: isContactsLoading } =
     useGetOrderContacts(selectedOrderForContacts?.orderId);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
@@ -438,10 +441,14 @@ const DaftarPesananAktif = ({
   const shouldShowControls = !isFirstTimer;
 
   useEffect(() => {
-    if (true) {
+    if (
+      importantNotification &&
+      importantNotification.Data &&
+      !importantNotification.Data.isRead
+    ) {
       setIsAlertOpen(true);
     }
-  }, []);
+  }, [importantNotification]);
 
   // Open HubungiModal helper — caller should supply order data for contact fetching
   const openHubungiModal = (orderData) => {
