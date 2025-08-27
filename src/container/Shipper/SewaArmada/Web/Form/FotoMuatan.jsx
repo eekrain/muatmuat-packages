@@ -6,6 +6,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 
 import { useSWRMutateHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
@@ -16,6 +17,7 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const FotoMuatan = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const cargoPhotos = useSewaArmadaStore(
@@ -45,7 +47,9 @@ export const FotoMuatan = () => {
 
   return (
     <FormContainer>
-      <FormLabel required>Lampiran/Foto Muatan</FormLabel>
+      <FormLabel required>
+        {t("FotoMuatan.title", {}, "Lampiran/Foto Muatan")}
+      </FormLabel>
       <div className="flex-1">
         <div className="flex flex-wrap gap-4">
           {isEditPage
@@ -58,7 +62,11 @@ export const FotoMuatan = () => {
                     key={key}
                     width={124}
                     height={124}
-                    alt={`Foto Muatan ${key}`}
+                    alt={t(
+                      "FotoMuatan.photoAlt",
+                      { number: key + 1 },
+                      `Foto Muatan ${key + 1}`
+                    )}
                   />
                 ))
             : [...Array(4)].map((_, key) => (
@@ -68,13 +76,25 @@ export const FotoMuatan = () => {
                       handleFirstTime(() => handleImageUpload(key, value))
                     }
                     isCircle
-                    uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
+                    uploadText={
+                      key === 0
+                        ? t("FotoMuatan.primaryPhoto", {}, "Foto Utama")
+                        : t(
+                            "FotoMuatan.photoNumber",
+                            { number: key },
+                            `Foto ${key}`
+                          )
+                    }
                     maxSize={10}
                     className="!size-[124px]"
                     value={cargoPhotos?.[key]}
                     isLoading={isMutating && activeIndex === key}
                     isNull={formErrors.cargoPhotos}
-                    cropperTitle="Upload Foto Muatan"
+                    cropperTitle={t(
+                      "FotoMuatan.uploadTitle",
+                      {},
+                      "Upload Foto Muatan"
+                    )}
                     variant="muatparts"
                   />
                 </Fragment>
@@ -86,7 +106,11 @@ export const FotoMuatan = () => {
             )}
           >
             {formErrors?.cargoPhotos ??
-              "Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar file maks. 10MB"}
+              t(
+                "FotoMuatan.description",
+                {},
+                "Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar file maks. 10MB"
+              )}
           </p>
         </div>
       </div>

@@ -34,6 +34,7 @@ import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/Welc
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
@@ -60,6 +61,7 @@ export default function SewaArmadaWeb({
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setIsOpen } = useWaitingSettlementModalAction();
+  const { t } = useTranslation();
 
   const { data: dataBanner, isLoading } = useSWRHook("v1/orders/banner-ads");
   const { data: userPreferences, isLoading: isLoadingUserPreferences } =
@@ -71,10 +73,10 @@ export default function SewaArmadaWeb({
     return data?.map((item) => ({
       id: item.id,
       imageUrl: item.imageUrl,
-      altText: "Banner Muatrans",
+      altText: t("SewaArmadaWeb.bannerAltText", {}, "Banner Muatrans"),
       linkUrl: item.link,
     }));
-  }, [dataBanner]);
+  }, [dataBanner, t]);
 
   const alertItems = useShallowMemo(() => {
     if (!settlementAlertInfo) return [];
@@ -99,7 +101,7 @@ export default function SewaArmadaWeb({
                 className="text-xs font-medium text-primary-700"
                 onClick={() => setIsOpen(true)}
               >
-                Lihat Pesanan
+                {t("SewaArmadaWeb.viewOrder", {}, "Lihat Pesanan")}
               </button>
             ),
           };
@@ -107,7 +109,7 @@ export default function SewaArmadaWeb({
         return {
           label: item.alertText,
           link: {
-            label: "Lihat Pesanan",
+            label: t("SewaArmadaWeb.viewOrder", {}, "Lihat Pesanan"),
             link:
               item.orderId.length === 1
                 ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`

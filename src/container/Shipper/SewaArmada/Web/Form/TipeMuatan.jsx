@@ -5,6 +5,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { handleFirstTime } from "@/lib/utils/form";
 
@@ -14,6 +15,7 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const TipeMuatan = ({ cargoTypes }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const cargoTypeId = useSewaArmadaStore(
@@ -34,8 +36,11 @@ export const TipeMuatan = ({ cargoTypes }) => {
           ))}
         </ul>
         <p>
-          Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan dan
-          pengiriman.
+          {t(
+            "TipeMuatan.tooltipText",
+            {},
+            "Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan dan pengiriman."
+          )}
         </p>
       </>
     );
@@ -51,7 +56,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
           </InfoTooltip>
         }
       >
-        Tipe Muatan
+        {t("TipeMuatan.title", {}, "Tipe Muatan")}
       </FormLabel>
       <div className="flex flex-1 flex-col gap-y-3">
         <div className="flex flex-wrap gap-3">
@@ -72,7 +77,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
         </div>
         {formErrors.cargoTypeId && (
           <span className="text-xs font-medium leading-[14.4px] text-error-400">
-            Tipe Muatan wajib diisi
+            {t("TipeMuatan.requiredError", {}, "Tipe Muatan wajib diisi")}
           </span>
         )}
       </div>

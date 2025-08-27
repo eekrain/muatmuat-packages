@@ -10,6 +10,7 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { normalizeUserSavedLocation } from "@/hooks/use-location/normalizer";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
@@ -21,6 +22,13 @@ export const ModalFormSimpanLokasiWeb = ({
   onOpenChange,
   defaultValues,
 }) => {
+  const { t } = useTranslation();
+
+  // Use translated title if default is used, otherwise use the passed title
+  const translatedTitle =
+    title === "Detail Alamat"
+      ? t("ModalFormSimpanLokasiWeb.title", {}, "Detail Alamat")
+      : title;
   const {
     formValues,
     formErrors,
@@ -74,18 +82,26 @@ export const ModalFormSimpanLokasiWeb = ({
       <ModalContent type="muatmuat">
         <div className="relative grid h-[510px] w-[398px] grid-cols-1 gap-6 overflow-hidden p-6">
           <h2 className="text-base font-bold leading-[1] text-[#1B1B1B]">
-            {title}
+            {translatedTitle}
           </h2>
 
           <div className="flex h-full flex-col gap-3 overflow-y-auto">
             {/* Label Alamat */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Label Alamat*
+                {t(
+                  "ModalFormSimpanLokasiWeb.addressLabel",
+                  {},
+                  "Label Alamat*"
+                )}
               </label>
 
               <Input
-                placeholder="Masukkan label alamat"
+                placeholder={t(
+                  "ModalFormSimpanLokasiWeb.addressLabelPlaceholder",
+                  {},
+                  "Masukkan label alamat"
+                )}
                 value={formValues.namaLokasi}
                 onChange={(e) => {
                   setField("namaLokasi", e.currentTarget.value);
@@ -97,7 +113,7 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Lokasi */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Lokasi
+                {t("ModalFormSimpanLokasiWeb.locationLabel", {}, "Lokasi")}
               </label>
               <div className="flex h-[42px] w-full items-center gap-3 px-1.5">
                 <div className="h-6 w-[19.2px] flex-shrink-0">
@@ -113,13 +129,17 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Alamat */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Alamat
+                {t("ModalFormSimpanLokasiWeb.addressDetailLabel", {}, "Alamat")}
               </label>
 
               <MyTextArea
                 value={formValues.detailLokasi}
                 onChange={(e) => setField("detailLokasi", e.target.value)}
-                placeholder="Masukkan Detail Lokasi"
+                placeholder={t(
+                  "ModalFormSimpanLokasiWeb.addressDetailPlaceholder",
+                  {},
+                  "Masukkan Detail Lokasi"
+                )}
                 maxLength={500}
                 errorMessage={formErrors?.detailLokasi}
                 appearance={{
@@ -132,7 +152,7 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Kecamatan */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Kecamatan
+                {t("ModalFormSimpanLokasiWeb.districtLabel", {}, "Kecamatan")}
               </label>
               <span className="text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                 {formValues?.dataLokasi?.district?.name}
@@ -142,7 +162,7 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Kota */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Kota
+                {t("ModalFormSimpanLokasiWeb.cityLabel", {}, "Kota")}
               </label>
               <span className="text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                 {formValues?.dataLokasi?.city?.name}
@@ -152,7 +172,7 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Provinsi */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Provinsi
+                {t("ModalFormSimpanLokasiWeb.provinceLabel", {}, "Provinsi")}
               </label>
               <span className="text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                 {formValues?.dataLokasi?.province?.name}
@@ -162,10 +182,14 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Kode Pos */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Kode Pos*
+                {t("ModalFormSimpanLokasiWeb.postalCodeLabel", {}, "Kode Pos*")}
               </label>
               <Select
-                placeholder="Masukkan kode pos"
+                placeholder={t(
+                  "ModalFormSimpanLokasiWeb.postalCodePlaceholder",
+                  {},
+                  "Masukkan kode pos"
+                )}
                 options={
                   formValues?.dataLokasi?.postalCodeList &&
                   formValues?.dataLokasi?.postalCodeList.length > 0
@@ -197,11 +221,15 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* Nama PIC */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                Nama PIC*
+                {t("ModalFormSimpanLokasiWeb.picNameLabel", {}, "Nama PIC*")}
               </label>
 
               <Input
-                placeholder="Masukkan nama PIC"
+                placeholder={t(
+                  "ModalFormSimpanLokasiWeb.picNamePlaceholder",
+                  {},
+                  "Masukkan nama PIC"
+                )}
                 value={formValues.namaPIC}
                 onChange={(e) => {
                   setField("namaPIC", e.currentTarget.value);
@@ -213,10 +241,14 @@ export const ModalFormSimpanLokasiWeb = ({
             {/* No. HP PIC */}
             <div className="flex flex-col gap-0.5">
               <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
-                No. HP PIC*
+                {t("ModalFormSimpanLokasiWeb.picPhoneLabel", {}, "No. HP PIC*")}
               </label>
               <Input
-                placeholder="Masukkan no. HP PIC"
+                placeholder={t(
+                  "ModalFormSimpanLokasiWeb.picPhonePlaceholder",
+                  {},
+                  "Masukkan no. HP PIC"
+                )}
                 value={formValues.noHPPIC}
                 onChange={(e) => {
                   setField("noHPPIC", e.currentTarget.value);
@@ -227,7 +259,11 @@ export const ModalFormSimpanLokasiWeb = ({
 
             {/* Checkbox */}
             <Checkbox
-              label="Jadikan alamat sebagai alamat utama"
+              label={t(
+                "ModalFormSimpanLokasiWeb.mainAddressLabel",
+                {},
+                "Jadikan alamat sebagai alamat utama"
+              )}
               checked={formValues.isMainAddress}
               onChange={(e) => {
                 setField("isMainAddress", e.checked);
@@ -242,14 +278,14 @@ export const ModalFormSimpanLokasiWeb = ({
               onClick={onOpenChange}
               type="button"
             >
-              Batalkan
+              {t("ModalFormSimpanLokasiWeb.cancelButton", {}, "Batalkan")}
             </Button>
             <Button
               variant="muatparts-primary"
               onClick={handleSave}
               type="button"
             >
-              Simpan
+              {t("ModalFormSimpanLokasiWeb.saveButton", {}, "Simpan")}
             </Button>
           </div>
         </div>

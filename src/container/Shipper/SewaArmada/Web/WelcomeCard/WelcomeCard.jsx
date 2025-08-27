@@ -1,7 +1,12 @@
 import Card from "@/components/Card/Card";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 export const WelcomeCard = () => {
+  // ...existing code...
+
+  const { t } = useTranslation();
   return (
     <Card className="flex !h-[140px] max-w-[1200px] flex-col items-center justify-center gap-6 rounded-xl border-none bg-neutral-50">
       <div className="flex h-[76px] w-[670px] flex-row items-center justify-center gap-3">
@@ -13,15 +18,22 @@ export const WelcomeCard = () => {
         />
         <div className="flex h-[45px] w-[558px] flex-col items-start gap-3">
           <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-neutral-900">
-            Ayo kirim muatan Anda dengan muatrans!
+            {t(
+              "WelcomeCard.title",
+              {},
+              "Ayo kirim muatan Anda dengan muatrans!"
+            )}
           </h2>
           <p className="w-full text-center text-xs font-medium leading-[14.4px] text-neutral-600">
-            Pesen truk kapan saja dan di mana saja dengan mudah. Serta lacak
-            kiriman secara real-time untuk memastikan keamanan pengiriman dan
-            dapatkan rekomendasi truk sesuai muatan agar lebih efisien!
+            {t(
+              "WelcomeCard.subtitle",
+              {},
+              "Pesen truk kapan saja dan di mana saja dengan mudah. Serta lacak kiriman secara real-time untuk memastikan keamanan pengiriman dan dapatkan rekomendasi truk sesuai muatan agar lebih efisien!"
+            )}
           </p>
         </div>
       </div>
     </Card>
   );
+  // ...existing code...
 };

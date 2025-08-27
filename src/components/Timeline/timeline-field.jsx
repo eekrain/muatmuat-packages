@@ -1,5 +1,7 @@
 import { createContext, useContext } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 import { NewTimelineItem, TimelineContainer } from ".";
@@ -27,12 +29,13 @@ const Root = ({
   maxLocation = 5,
   onAddLocation,
   onEditLocation,
-  labelAddLocation = "Tambah Lokasi",
+  labelAddLocation,
   className,
   errorMessage,
   disabled = false,
   children,
 }) => {
+  const { t } = useTranslation();
   // Provide all props via context for subcomponents
   const contextValue = {
     variant,
@@ -40,7 +43,8 @@ const Root = ({
     maxLocation,
     onAddLocation,
     onEditLocation,
-    labelAddLocation,
+    labelAddLocation:
+      labelAddLocation || t("TimelineField.addLocation", {}, "Tambah Lokasi"),
     className,
     errorMessage,
     disabled,
@@ -72,6 +76,7 @@ const Root = ({
 const Item = ({ buttonRemove, index, className }) => {
   const { variant, values, onEditLocation, disabled, maxLocation } =
     useTimelineField();
+  const { t } = useTranslation();
 
   const item = values[index];
 
@@ -99,8 +104,12 @@ const Item = ({ buttonRemove, index, className }) => {
         title={
           item?.name ||
           (variant === "muat"
-            ? "Masukkan Lokasi Muat"
-            : "Masukkan Lokasi Bongkar")
+            ? t("TimelineField.loadingLocation", {}, "Masukkan Lokasi Muat")
+            : t(
+                "TimelineField.unloadingLocation",
+                {},
+                "Masukkan Lokasi Bongkar"
+              ))
         }
         isLast={index === values.length - 1}
         buttonRemove={buttonRemove}
