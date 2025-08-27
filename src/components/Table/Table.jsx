@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 
@@ -53,6 +53,14 @@ import { cn } from "@/lib/utils";
  *
  * @param {Array<number>} [props.rowRecomendations=[]] - Array of row indices that should receive special styling (legacy prop)
  *
+ * @param {boolean} [props.enableInfiniteScroll=false] - Enable infinite scroll functionality
+ * @param {boolean} [props.isLoadingMore=false] - Whether more data is being loaded (for infinite scroll)
+ * @param {boolean} [props.hasNextPage=false] - Whether there are more pages to load (for infinite scroll)
+ * @param {Function} [props.loadMore] - Function to load more data when scrolling reaches threshold
+ * @param {React.ReactNode} [props.loadingMoreComponent] - Custom component to display while loading more data
+ * @param {React.ReactNode} [props.endOfResultsComponent] - Custom component to display when all data is loaded
+ * @param {number} [props.scrollThreshold=0.8] - Scroll percentage threshold to trigger load more (0.8 = 80%)
+ *
  * @returns {React.ReactElement} The rendered Table component
  */
 const Table = ({
@@ -66,11 +74,58 @@ const Table = ({
   loadingComponent = null,
   emptyComponent = null,
   rowRecomendations = [],
+  // Infinite scroll props
+  enableInfiniteScroll = false,
+  isLoadingMore = false,
+  hasNextPage = false,
+  loadMore = null,
+  loadingMoreComponent = null,
+  endOfResultsComponent = null,
+  scrollThreshold = 0.8,
 }) => {
   const handleSort = (columnKey) => {
     if (!onSort) return;
     onSort(columnKey);
   };
+
+  // Infinite scroll functionality
+  const scrollContainerRef = useRef(null);
+
+  const handleScroll = useCallback(() => {
+    if (
+      !enableInfiniteScroll ||
+      !scrollContainerRef.current ||
+      !hasNextPage ||
+      isLoadingMore ||
+      !loadMore
+    )
+      return;
+
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
+    const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+
+    // Load more when user scrolls past the threshold
+    if (scrollPercentage > scrollThreshold) {
+      loadMore();
+    }
+  }, [
+    enableInfiniteScroll,
+    hasNextPage,
+    isLoadingMore,
+    loadMore,
+    scrollThreshold,
+  ]);
+
+  useEffect(() => {
+    if (!enableInfiniteScroll) return;
+
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+      return () => scrollContainer.removeEventListener("scroll", handleScroll);
+    }
+  }, [handleScroll, enableInfiniteScroll]);
 
   const renderLoading = () => {
     return (
@@ -110,7 +165,10 @@ const Table = ({
   };
 
   return (
-    <div className="h-full overflow-y-auto border-t border-neutral-400">
+    <div
+      ref={enableInfiniteScroll ? scrollContainerRef : null}
+      className="h-full overflow-y-auto border-t border-neutral-400"
+    >
       <table className="w-full table-auto bg-white">
         <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
           <tr>
@@ -157,7 +215,7 @@ const Table = ({
           </tr>
         </thead>
         <tbody>
-          {loading
+          {loading && data.length === 0
             ? renderLoading()
             : data.length === 0
               ? renderEmpty()
@@ -189,6 +247,32 @@ const Table = ({
                 ))}
         </tbody>
       </table>
+
+      {/* Infinite scroll indicators */}
+      {enableInfiniteScroll && (
+        <>
+          {/* Loading more indicator */}
+          {isLoadingMore && (
+            <div className="flex items-center justify-center bg-white py-4">
+              {loadingMoreComponent || (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-700"></div>
+                  <span className="text-sm text-gray-600">Loading more...</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* End of results indicator */}
+          {/* {!hasNextPage && data.length > 0 && !loading && (
+            <div className="flex items-center justify-center bg-white py-4">
+              {endOfResultsComponent || (
+                <span className="text-sm text-gray-400">All data has been loaded</span>
+              )}
+            </div>
+          )} */}
+        </>
+      )}
     </div>
   );
 };

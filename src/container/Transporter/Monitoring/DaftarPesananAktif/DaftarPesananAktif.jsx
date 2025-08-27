@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrders";
+import { useGetActiveOrdersInfinite } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrdersCount";
 
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
@@ -201,14 +201,21 @@ const DaftarPesananAktif = ({
     ...sortConfig,
   };
 
-  const { data, isLoading } = useGetActiveOrders(requestParams);
-  console.log("Order Aktif:", data);
+  // Use infinite scroll with 10 items per page
+  const ITEMS_PER_PAGE = 10;
+  const { data, isLoading, isLoadingMore, hasNextPage, loadMore } =
+    useGetActiveOrdersInfinite(requestParams, ITEMS_PER_PAGE);
+  // Debug: uncomment for development
+  // console.log("Order Aktif:", data);
+  // console.log("hasNextPage:", hasNextPage, "isLoadingMore:", isLoadingMore, "orders count:", data?.orders?.length);
 
   // Calculate orders with location/time changes
   const orders = data?.orders || [];
   const ordersWithLocationChanges = orders.filter(
     (order) => order.hasChangeRequest
   );
+
+  // Note: Infinite scroll logic is now handled by the Table component
 
   // Reset alert visibility if no orders with changes exist
   React.useEffect(() => {
@@ -1098,6 +1105,33 @@ const DaftarPesananAktif = ({
                       renderEmptyState()
                     )
                   }
+                  // Infinite scroll props
+                  enableInfiniteScroll={true}
+                  isLoadingMore={isLoadingMore}
+                  hasNextPage={hasNextPage}
+                  loadMore={loadMore}
+                  loadingMoreComponent={
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-700"></div>
+                      <span className="text-sm text-gray-600">
+                        {t(
+                          "DaftarPesananAktif.loadingMore",
+                          {},
+                          "Memuat lebih banyak..."
+                        )}
+                      </span>
+                    </div>
+                  }
+                  endOfResultsComponent={
+                    <span className="text-sm text-gray-400">
+                      {t(
+                        "DaftarPesananAktif.endOfResults",
+                        {},
+                        "Semua data telah ditampilkan"
+                      )}
+                    </span>
+                  }
+                  scrollThreshold={0.8}
                 />
               </div>
             )}

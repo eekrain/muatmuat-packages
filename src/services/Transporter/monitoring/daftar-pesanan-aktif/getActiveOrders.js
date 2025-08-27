@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
@@ -831,10 +832,10 @@ const apiResultActiveOrders = {
     ],
     pagination: {
       currentPage: 1,
-      totalPages: 1,
-      totalItems: 13,
-      itemsPerPage: 20,
-      hasNextPage: false,
+      totalPages: 3,
+      totalItems: 25,
+      itemsPerPage: 10,
+      hasNextPage: true,
       hasPreviousPage: false,
     },
     availableStatuses: {
@@ -860,6 +861,8 @@ export const fetcherActiveOrders = async (cacheKey) => {
     const searchTerm = params.get("search")?.toLowerCase() || "";
     const statusFilter = params.get("status") || "";
     const hasLocationChange = params.get("hasLocationChange") === "true";
+    const page = parseInt(params.get("page")) || 1;
+    const limit = parseInt(params.get("limit")) || 10;
 
     let filteredOrders = [...apiResultActiveOrders.Data.orders];
 
@@ -933,12 +936,45 @@ export const fetcherActiveOrders = async (cacheKey) => {
       );
     }
 
+    // Simulate more data for testing - create a larger dataset
+    const baseOrders =
+      filteredOrders.length > 0
+        ? filteredOrders
+        : apiResultActiveOrders.Data.orders;
+    const totalSimulatedItems = 35; // Total items across all pages
+    const allSimulatedOrders = [];
+
+    // Create enough orders to fill multiple pages
+    const ordersNeeded = Math.ceil(totalSimulatedItems / baseOrders.length);
+    for (let i = 0; i < ordersNeeded; i++) {
+      const duplicatedOrders = baseOrders.map((order, index) => ({
+        ...order,
+        id: `${order.id}-set${i}-${index}`,
+        orderCode: `${order.orderCode}-S${i}${index}`,
+      }));
+      allSimulatedOrders.push(...duplicatedOrders);
+    }
+
+    // Trim to exact total
+    const trimmedOrders = allSimulatedOrders.slice(0, totalSimulatedItems);
+
+    // Apply pagination
+    const totalItems = trimmedOrders.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedOrders = trimmedOrders.slice(startIndex, endIndex);
+
     return {
       ...apiResultActiveOrders.Data,
-      orders: filteredOrders,
+      orders: paginatedOrders,
       pagination: {
-        ...apiResultActiveOrders.Data.pagination,
-        totalItems: filteredOrders.length,
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
       },
     };
   }
@@ -960,4 +996,68 @@ export const useGetActiveOrders = (params = {}) => {
   const cacheKey = `active-orders${queryParams ? `?${queryParams}` : ""}`;
 
   return useSWR(cacheKey, fetcherActiveOrders);
+};
+
+// Infinite scroll hook
+export const useGetActiveOrdersInfinite = (params = {}, limit = 10) => {
+  // Filter out null/undefined values before creating URLSearchParams
+  const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
+  const getKey = (pageIndex, previousPageData) => {
+    // If no more data, don't fetch
+    if (previousPageData && !previousPageData.pagination?.hasNextPage) {
+      return null;
+    }
+
+    const page = pageIndex + 1; // SWR infinite starts from 0, but we want page 1
+    const allParams = { ...filteredParams, page, limit };
+    const queryParams = new URLSearchParams(allParams).toString();
+    return `active-orders-infinite${queryParams ? `?${queryParams}` : ""}`;
+  };
+
+  const { data, error, size, setSize, mutate } = useSWRInfinite(
+    getKey,
+    fetcherActiveOrders,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  // Flatten all pages data
+  const orders = data ? data.flatMap((page) => page.orders || []) : [];
+
+  // Get pagination info from the last page
+  const lastPage = data?.[data.length - 1];
+  const pagination = lastPage?.pagination;
+  const hasNextPage = pagination?.hasNextPage || false;
+  const totalItems = pagination?.totalItems || 0;
+
+  // Check if we're loading more data
+  const isLoadingMore =
+    size > 0 && data && typeof data[size - 1] === "undefined";
+  const isLoading = (!data && !error) || isLoadingMore;
+
+  return {
+    data: {
+      orders,
+      pagination: {
+        ...pagination,
+        hasNextPage,
+        totalItems,
+      },
+      availableStatuses: lastPage?.availableStatuses,
+    },
+    error,
+    isLoading,
+    isLoadingMore,
+    loadMore: () => setSize(size + 1),
+    hasNextPage,
+    mutate,
+  };
 };
