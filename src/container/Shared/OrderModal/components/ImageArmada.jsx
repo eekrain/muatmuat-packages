@@ -4,7 +4,9 @@ import { cva } from "class-variance-authority";
 import PropTypes from "prop-types";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 const imageArmadaVariants = cva(

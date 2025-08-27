@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import { useAuth } from "@/hooks/use-auth";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 import { HeaderButtonBack } from ".";

@@ -1,4 +1,5 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
 
 export const SavedLocationItem = ({ location, onClick, withEdit = null }) => {

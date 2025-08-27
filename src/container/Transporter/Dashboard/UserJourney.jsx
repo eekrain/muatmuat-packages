@@ -3,15 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useUpdateUserJourneyStep } from "@/services/Transporter/dashboard/updateUserJourneyStep";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardMenu from "@/components/Card/CardMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
-import { useUpdateUserJourneyStep } from "@/services/Transporter/dashboard/updateUserJourneyStep";
 
+// Updated menuItems to match the keys in the new API response (`journeyStatus.steps`)
 const menuItems = [
   {
     id: 1,
-    statusKey: "addFleetCompleted",
+    statusKey: "addFleet",
     icon: "/icons/dashboard/truck.svg",
     title: "Tambahkan Armada",
     description:
@@ -21,7 +23,7 @@ const menuItems = [
   },
   {
     id: 2,
-    statusKey: "addDriverCompleted",
+    statusKey: "addDriver",
     icon: "/icons/dashboard/driver.svg",
     title: "Tambahkan Driver",
     description:
@@ -31,7 +33,7 @@ const menuItems = [
   },
   {
     id: 3,
-    statusKey: "fleetDriverAssignmentCompleted",
+    statusKey: "pairFleetDriver",
     icon: "/icons/dashboard/pair-driver-fleet.svg",
     title: "Pasangkan Armada dan Driver",
     description:
@@ -41,7 +43,7 @@ const menuItems = [
   },
   {
     id: 4,
-    statusKey: "areaSettingCompleted",
+    statusKey: "configureServiceArea",
     icon: "/icons/dashboard/maps-box.svg",
     title: "Atur Area Muat & Bongkar dan Muatan yang Dilayani",
     description:
@@ -60,7 +62,7 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
     confirmText: "Mengerti",
     confirmClassname: "",
     modalContentClassname: "",
-    onConfirm: () => {}, // Default to an empty function
+    onConfirm: () => {},
   });
 
   const closeModal = () =>
@@ -70,7 +72,7 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
       confirmText: "Mengerti",
       confirmClassname: "",
       modalContentClassname: "",
-      onConfirm: () => {}, // Reset to default
+      onConfirm: () => {},
     });
 
   /**
@@ -129,10 +131,12 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
   }
 
   const handleMenuClick = (item) => {
-    if (item.statusKey === "fleetDriverAssignmentCompleted") {
-      const { addFleetCompleted, addDriverCompleted } = journeyStatus;
+    // Logic updated to use the new statusKey and data structure
+    if (item.statusKey === "pairFleetDriver") {
+      const isFleetAdded = journeyStatus?.steps?.addFleet?.isCompleted;
+      const isDriverAdded = journeyStatus?.steps?.addDriver?.isCompleted;
 
-      if (!addFleetCompleted && !addDriverCompleted) {
+      if (!isFleetAdded && !isDriverAdded) {
         setModal({
           isOpen: true,
           message:
@@ -140,12 +144,12 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
           confirmText: "Mengerti",
           confirmClassname: "hidden",
           modalContentClassname: "h-[169px]",
-          onConfirm: () => {}, // No action needed since button is hidden
+          onConfirm: () => {},
         });
         return;
       }
 
-      if (!addDriverCompleted) {
+      if (!isDriverAdded) {
         setModal({
           isOpen: true,
           message:
@@ -158,8 +162,7 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
         return;
       }
 
-      // 4. Set 'onConfirm' to route to the fleet management page
-      if (!addFleetCompleted) {
+      if (!isFleetAdded) {
         setModal({
           isOpen: true,
           message:
@@ -215,8 +218,9 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
                   description={item.description}
                   buttonText={item.buttonText}
                   onClick={() => handleMenuClick(item)}
+                  // Status logic updated to check the nested `isCompleted` property
                   status={
-                    journeyStatus && journeyStatus[item.statusKey]
+                    journeyStatus?.steps?.[item.statusKey]?.isCompleted
                       ? "completed"
                       : "incompleted"
                   }

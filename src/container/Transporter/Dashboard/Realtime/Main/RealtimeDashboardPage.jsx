@@ -2,13 +2,6 @@
 
 import { useRouter } from "next/navigation";
 
-import DashboardSection from "@/app/transporter/(main)/dashboard/real-time/components/DashboardSection";
-import IncomeCards from "@/app/transporter/(main)/dashboard/real-time/components/IncomeCards";
-import SkeletonLoading from "@/app/transporter/(main)/dashboard/real-time/components/SkeletonLoading";
-import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/StatCard";
-import SuspendedAccountAlert from "@/app/transporter/(main)/dashboard/real-time/components/SuspendedAccountAlert";
-import PageTitle from "@/components/PageTitle/PageTitle";
-import { useTranslation } from "@/hooks/use-translation";
 import { useGetAccountStatus } from "@/services/Transporter/account/getAccountStatus";
 import { useGetSosReports } from "@/services/Transporter/alerts/getSosReports";
 import { useGetDashboardMenuOptions } from "@/services/Transporter/dashboard/getDashboardMenuOptions";
@@ -21,6 +14,16 @@ import { useGetFilteredOrdersDocumentPreparation } from "@/services/Transporter/
 import { useGetFilteredOrdersLoading } from "@/services/Transporter/orders/getFilteredOrdersLoading";
 import { useGetFilteredOrdersScheduled } from "@/services/Transporter/orders/getFilteredOrdersScheduled";
 import { useGetFilteredOrdersUnloading } from "@/services/Transporter/orders/getFilteredOrdersUnloading";
+
+import PageTitle from "@/components/PageTitle/PageTitle";
+
+import { useTranslation } from "@/hooks/use-translation";
+
+import DashboardSection from "@/app/transporter/(main)/dashboard/real-time/components/DashboardSection";
+import IncomeCards from "@/app/transporter/(main)/dashboard/real-time/components/IncomeCards";
+import SkeletonLoading from "@/app/transporter/(main)/dashboard/real-time/components/SkeletonLoading";
+import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/StatCard";
+import SuspendedAccountAlert from "@/app/transporter/(main)/dashboard/real-time/components/SuspendedAccountAlert";
 
 const RealtimeDashboardPage = () => {
   const { t } = useTranslation();

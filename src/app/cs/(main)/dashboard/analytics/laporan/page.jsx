@@ -4,16 +4,20 @@ import { useMemo, useState } from "react";
 
 import { Download } from "lucide-react";
 
+import { useGetCsDeliverySummary } from "@/services/CS/dashboard/laporan/getDeliverySummaryCs";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { DataTable } from "@/components/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetCsDeliverySummary } from "@/services/CS/dashboard/laporan/getDeliverySummaryCs";
+
 import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const basePeriodOptions = [
@@ -36,7 +40,7 @@ function Page() {
   const [filters, setFilters] = useState({});
 
   // Fetching data using the SWR hook
-  const { data, isLoading } = useGetCsDeliverySummary({
+  const { data, isLoading, isError } = useGetCsDeliverySummary({
     page: currentPage,
     limit: perPage,
     search: searchValue,
@@ -232,45 +236,58 @@ function Page() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] p-6">
-      <BreadCrumb data={breadcrumbItems} />
-      <div className="flex flex-row items-center justify-between pt-4">
-        <PageTitle>Laporan Ringkasan Pengiriman</PageTitle>
-        <div className="flex flex-row gap-3 pb-3">
-          <DropdownPeriode
-            options={finalOptions}
-            onSelect={handlePeriodSelect}
-            value={selectedOption}
-          />
-          <Button
-            iconLeft={<Download size={16} />}
-            disabled={isLoading || !data?.hasData}
-          >
-            Unduh
-          </Button>
+    <>
+      <div className="mx-auto w-full max-w-[1280px] p-6">
+        <BreadCrumb data={breadcrumbItems} />
+        <div className="flex flex-row items-center justify-between pt-4">
+          <PageTitle>Laporan Ringkasan Pengiriman</PageTitle>
+          <div className="flex flex-row gap-3 pb-3">
+            <DropdownPeriode
+              options={finalOptions}
+              onSelect={handlePeriodSelect}
+              value={selectedOption}
+            />
+            <Button
+              iconLeft={<Download size={16} />}
+              disabled={isLoading || !data?.hasData}
+            >
+              Unduh
+            </Button>
+          </div>
         </div>
+        {isError ||
+        (!isLoading &&
+          (!data?.deliveries || data?.deliveries?.length === 0)) ? (
+          <DataEmpty
+            title="Oops, laporan ringkasan pengiriman masih kosong"
+            subtitle="Belum ada transporter yang menyelesaikan pesanan"
+            className="h-[280px]"
+          />
+        ) : (
+          <DataTable
+            data={data?.deliveries || []}
+            columns={columns}
+            loading={isLoading}
+            searchPlaceholder="Cari No. Pesanan / No. Polisi"
+            totalCountLabel="Pengiriman"
+            currentPage={data?.currentPage || 1}
+            totalPages={data?.totalPages || 1}
+            totalItems={data?.totalItems || 0}
+            perPage={data?.itemsPerPage || perPage}
+            onPageChange={handlePageChange}
+            onPerPageChange={handlePerPageChange}
+            onSearch={handleSearch}
+            onSort={handleSort}
+            showFilter={true}
+            showPagination={true}
+            showTotalCount={false}
+            filterConfig={filterConfig}
+            onFilter={handleFilter}
+            paginationCounter={true}
+          />
+        )}
       </div>
-      <DataTable
-        data={data?.deliveries || []}
-        columns={columns}
-        loading={isLoading}
-        searchPlaceholder="Cari No. Pesanan / No. Polisi"
-        totalCountLabel="Pengiriman"
-        currentPage={data?.currentPage || 1}
-        totalPages={data?.totalPages || 1}
-        totalItems={data?.totalItems || 0}
-        perPage={data?.itemsPerPage || perPage}
-        onPageChange={handlePageChange}
-        onPerPageChange={handlePerPageChange}
-        onSearch={handleSearch}
-        onSort={handleSort}
-        showFilter={true}
-        showPagination={true}
-        showTotalCount={false}
-        filterConfig={filterConfig}
-        onFilter={handleFilter}
-      />
-    </div>
+    </>
   );
 }
 

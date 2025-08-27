@@ -7,6 +7,17 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import * as v from "valibot";
 
+import {
+  postNewVehicle,
+  useGetBrandsVehicles,
+  useGetDataJenisTruk,
+  useGetDataTypeCarrier,
+  useGetVehiclesDocumentExample,
+  useGetVehiclesExamplePhoto,
+  useGetVehiclesTypes,
+} from "@/services/Transporter/manajemen-armada/getDataFormArmada";
+import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
+
 import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -21,19 +32,11 @@ import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Toaster from "@/components/Toaster/Toaster";
+
 import { useDocumentUpload } from "@/hooks/use-document-upload";
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
-import {
-  postNewVehicle,
-  useGetBrandsVehicles,
-  useGetDataJenisTruk,
-  useGetDataTypeCarrier,
-  useGetVehiclesDocumentExample,
-  useGetVehiclesExamplePhoto,
-  useGetVehiclesTypes,
-} from "@/services/Transporter/manajemen-armada/getDataFormArmada";
-import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
 
 const createFleetInformationSchema = (t) =>
   v.object({

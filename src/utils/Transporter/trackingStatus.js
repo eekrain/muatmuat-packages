@@ -46,6 +46,38 @@ export const TRACKING_STATUS = {
 };
 
 export const getTrackingStatusConfig = (t) => ({
+  // Alias statuses for Fleet Change flow (to align with DriverStatusEnum codes)
+  // These are not part of TRACKING_STATUS but may appear from other modules
+
+  // ====================================== //
+
+  // Status when Fleet change
+  // masih belum fix
+  // status base armada
+  // menunggu, berjalan, pindah
+  // aku nggak paham
+  MENUNGGU_ARMADA_PENGGANTI: {
+    label: t(
+      "TrackingStatus.waitingChangeFleet",
+      {},
+      "Menunggu Armada Pengganti"
+    ),
+    variant: "primary",
+  },
+  ARMADA_PENGGANTI_BERJALAN: {
+    label: t(
+      "TrackingStatus.replacementFleetInTransit",
+      {},
+      "Armada Pengganti Berjalan"
+    ),
+    variant: "primary",
+  },
+
+  // ====================================== //
+  MUATAN_PINDAH_ARMADA: {
+    label: t("TrackingStatus.fleetFound", {}, "Muatan Pindah Armada"),
+    variant: "primary",
+  },
   [TRACKING_STATUS.LOADING]: {
     label: t("TrackingStatus.loading", {}, "Sedang Muat"),
     variant: "primary",

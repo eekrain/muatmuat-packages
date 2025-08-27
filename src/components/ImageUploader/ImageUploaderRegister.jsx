@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSWRConfig } from "swr";
 
-import { useTranslation } from "@/context/TranslationProvider";
-import { toast } from "@/lib/toast";
 import SWRHandler from "@/services/useSWRHook";
+
+import { toast } from "@/lib/toast";
+
+import { useTranslation } from "@/context/TranslationProvider";
 import { modal } from "@/store/zustand/modal";
 
 import Button from "../Button/Button";

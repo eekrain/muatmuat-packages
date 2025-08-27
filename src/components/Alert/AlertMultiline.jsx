@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 import { InfoTooltip } from "../Form/InfoTooltip";

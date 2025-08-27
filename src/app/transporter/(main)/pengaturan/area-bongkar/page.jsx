@@ -5,18 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ChevronDown, Info } from "lucide-react";
 
-import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
-import Button from "@/components/Button/Button";
-import Card, { CardContent } from "@/components/Card/Card";
-import Checkbox from "@/components/Form/Checkbox";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import Input from "@/components/Form/Input";
-import ProvinceSelectionModal from "@/components/Modal/ProvinceSelectionModal";
-import PageTitle from "@/components/PageTitle/PageTitle";
-import { SelectedProvinces } from "@/components/SelectedProvinces";
-import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useTranslation } from "@/hooks/use-translation";
 import {
   deleteProvinsiAreaBongkar,
   saveAreaBongkar,
@@ -26,6 +14,21 @@ import {
   useGetMasterProvinsi,
 } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
 import { useSearchAreaBongkar } from "@/services/Transporter/pengaturan/searchAreaBongkar";
+
+import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import Button from "@/components/Button/Button";
+import Card, { CardContent } from "@/components/Card/Card";
+import Checkbox from "@/components/Form/Checkbox";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import Input from "@/components/Form/Input";
+import ProvinceSelectionModal from "@/components/Modal/ProvinceSelectionModal";
+import PageTitle from "@/components/PageTitle/PageTitle";
+import { SelectedProvinces } from "@/components/SelectedProvinces";
+
+import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+
+import { useDebounce } from "@/hooks/use-debounce";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function Page() {
   const router = useRouter();

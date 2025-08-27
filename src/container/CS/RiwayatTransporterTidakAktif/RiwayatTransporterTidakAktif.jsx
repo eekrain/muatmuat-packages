@@ -1,14 +1,18 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import { useGetTransporterInactive } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactive";
+
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { TransporterInactiveTypeEnum } from "@/lib/constants/Transporter/laporan/transporterInactive.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetTransporterInactive } from "@/services/CS/laporan/riwayat-transporter-tidak-aktif/getTransporterInactive";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 import DataTable from "./DataTable";
 import ModalDetailTransporterTidakAktif from "./ModalDetailTransporterTidakAktif";

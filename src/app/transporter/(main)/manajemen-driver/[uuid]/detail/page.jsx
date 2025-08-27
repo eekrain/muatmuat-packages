@@ -7,6 +7,8 @@ import React from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+import { useGetDriverDetail } from "@/services/Transporter/manajemen-driver/getDriverDetail";
+
 import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -21,8 +23,8 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { cn } from "@/lib/utils";
-import { useGetDriverDetail } from "@/services/Transporter/manajemen-driver/getDriverDetail";
 
 const DetailRow = ({
   label,

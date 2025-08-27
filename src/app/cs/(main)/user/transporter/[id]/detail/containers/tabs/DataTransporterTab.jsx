@@ -4,14 +4,18 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import ModalLihatLokasi from "@/app/cs/(main)/user/components/ModalLihatLokasi";
+import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { TabsContent } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
-import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
+
+import ModalLihatLokasi from "@/app/cs/(main)/user/components/ModalLihatLokasi";
 
 const SectionHeader = ({ title }) => (
   <div className="flex items-center px-6 py-4">

@@ -2,12 +2,16 @@ import Image from "next/image";
 import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { resPaymentInstruction } from "@/container/Shipper/DetailPesanan/Web/PaymentInstruction/resPaymentInstruction";
+
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
-import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
+
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 
 const CaraPembayaranScreen = ({ dataRingkasanPembayaran }) => {
   const { t } = useTranslation();

@@ -1,3 +1,5 @@
+import { useGetDriverQRCodeById } from "@/services/Shipper/detailpesanan/getDriverQRCodeById";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
@@ -7,12 +9,13 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+
 import useDevice from "@/hooks/use-device";
 import { useTranslation } from "@/hooks/use-translation";
+
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetDriverQRCodeById } from "@/services/Shipper/detailpesanan/getDriverQRCodeById";
 
 export const ModalQRCodeDriver = ({
   title = "QR Code Lokasi Muat & Bongkar",

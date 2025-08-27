@@ -6,6 +6,7 @@ import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Table from "@/components/Table/Table";
+
 import { cn } from "@/lib/utils";
 
 import ActiveFiltersBar from "../ActiveFiltersBar/ActiveFiltersBar";

@@ -3,7 +3,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const IS_MOCK = true;
+const IS_MOCK = false;
 
 const apiResultInactiveTransporter = {
   Message: {

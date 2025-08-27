@@ -1,10 +1,13 @@
 "use client";
 
+import { useGetAllDashboardData } from "@/services/CS/dashboard/realtime/getDashboardData";
+
+import PageTitle from "@/components/PageTitle/PageTitle";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import DashboardSection from "@/app/transporter/(main)/dashboard/real-time/components/DashboardSection";
 import StatCard from "@/app/transporter/(main)/dashboard/real-time/components/StatCard";
-import PageTitle from "@/components/PageTitle/PageTitle";
-import { useTranslation } from "@/hooks/use-translation";
-import { useGetAllDashboardData } from "@/services/CS/dashboard/realtime/getDashboardData";
 
 import SkeletonLoading from "./components/SkeletonLoading";
 import TransporterRatingCard from "./components/TransporterRatingCard";

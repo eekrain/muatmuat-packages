@@ -2,12 +2,14 @@
 
 import { useParams, useRouter } from "next/navigation";
 
+import { useGetRevenueReportDetailById } from "@/services/Transporter/laporan/pendapatan/getRevenueDetail";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card, { CardContent } from "@/components/Card/Card";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetRevenueReportDetailById } from "@/services/Transporter/laporan/pendapatan/getRevenueDetail";
 
 export default function DetailPendapatanPage({ params }) {
   const { t } = useTranslation();

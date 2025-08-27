@@ -3,6 +3,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { TabsContent } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 export const TabContentInformasiLainnya = ({ dataRingkasanPesanan }) => {

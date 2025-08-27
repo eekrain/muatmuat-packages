@@ -1,5 +1,6 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ResponsiveSection from "@/components/Section/ResponsiveSection";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const Legend = () => {

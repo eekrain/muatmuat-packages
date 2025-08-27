@@ -1,10 +1,11 @@
 "use client";
 
+import { useGetTop10FleetTop3Carrier } from "@/services/CS/dashboard/analytics/getTop10FleetTop3Carrier";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import TableLeaderboard from "@/components/Table/TableLeaderboard";
-import { useGetTop10FleetTop3Carrier } from "@/services/CS/dashboard/analytics/getTop10FleetTop3Carrier";
 
 const LeaderboardCombo = () => {
   // 1. Fetch data using the SWR hook

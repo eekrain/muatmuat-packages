@@ -5,6 +5,8 @@ import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { useGetArchiveDriversData } from "@/services/Transporter/manajemen-driver/getArchiveDriversData";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -13,9 +15,10 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { getDriverStatusBadgeWithTranslation } from "@/lib/utils/driverStatus";
-import { useGetArchiveDriversData } from "@/services/Transporter/manajemen-driver/getArchiveDriversData";
 
 const DriverArsip = ({
   onPageChange,

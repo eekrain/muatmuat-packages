@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+
 import { useClientWidth } from "@/hooks/use-client-width";
 import { useTranslation } from "@/hooks/use-translation";
 

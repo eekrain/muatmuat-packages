@@ -16,13 +16,17 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import Pagination from "@/components/Pagination/Pagination";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
+
 import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
 import { formatLoadTime } from "@/lib/utils/dateFormat";
+
 import {
   ORDER_STATUS,
   getOrderStatusBadgeWithTranslation,
@@ -356,7 +360,8 @@ const DaftarPesanan = ({
                 </InfoTooltip>
               ) : null}
               {row.orderStatus === "NEED_RESPONSE_CHANGE"
-                ? getOrderStatusConfig(ORDER_STATUS.NEED_CHANGE_RESPONSE).label
+                ? getOrderStatusConfig(t)[ORDER_STATUS.NEED_CHANGE_RESPONSE]
+                    .label
                 : statusConfig.label}
             </div>
           </BadgeStatusPesanan>
@@ -392,7 +397,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- END */}
-          {row.orderStatus === ORDER_STATUS.NEED_RESPONSE_CHANGE ? (
+          {row.orderStatus === "NEED_RESPONSE_CHANGE" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"

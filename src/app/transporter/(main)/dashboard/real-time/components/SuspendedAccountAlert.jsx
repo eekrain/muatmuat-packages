@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Alert } from "@/components/Alert/Alert";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const SuspendedAccountAlert = ({ accountStatusData }) => {

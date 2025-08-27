@@ -37,8 +37,44 @@ export const mockAPIResult = {
                 address: "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
               },
               { address: "Jl. Wonorejo II/88, Kec. Wonorejo, Kota Surabaya" },
+              {
+                address: "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+              },
+              { address: "Jl. Wonorejo II/88, Kec. Wonorejo, Kota Surabaya" },
+              {
+                address: "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+              },
+              { address: "Jl. Wonorejo II/88, Kec. Wonorejo, Kota Surabaya" },
+              {
+                address: "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+              },
+              { address: "Jl. Wonorejo II/88, Kec. Wonorejo, Kota Surabaya" },
+              {
+                address: "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+              },
+              { address: "Jl. Wonorejo II/88, Kec. Wonorejo, Kota Surabaya" },
             ],
             unloading: [
+              {
+                address:
+                  "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+              },
+              { address: "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang" },
+              {
+                address:
+                  "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+              },
+              { address: "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang" },
+              {
+                address:
+                  "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+              },
+              { address: "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang" },
+              {
+                address:
+                  "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+              },
+              { address: "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang" },
               {
                 address:
                   "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",

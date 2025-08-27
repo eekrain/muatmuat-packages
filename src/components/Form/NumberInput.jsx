@@ -45,6 +45,7 @@ export const NumberInput = forwardRef(
       fixedDecimalScale = false,
       placeholder = "0",
       hideStepper = true,
+      errorMessage,
       ...props
     },
     ref

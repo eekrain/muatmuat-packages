@@ -6,14 +6,17 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import * as v from "valibot";
 
+// 1. Import hook untuk validasi
+import { useCheckTransporterField } from "@/services/CS/register/checkTransporterField";
+
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import FileUploadMultiple from "@/components/FileUpload/FileUploudMultiple";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
+
 import { toast } from "@/lib/toast";
-// 1. Import hook untuk validasi
-import { useCheckTransporterField } from "@/services/CS/register/checkTransporterField";
+
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;

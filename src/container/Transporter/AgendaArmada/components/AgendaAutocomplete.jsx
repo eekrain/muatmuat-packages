@@ -9,15 +9,18 @@ import {
   useState,
 } from "react";
 
+import { useGetSearchSuggestions } from "@/services/Transporter/agenda-armada-driver/getSearchSuggestions";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
-import { useGetSearchSuggestions } from "@/services/Transporter/agenda-armada-driver/getSearchSuggestions";
 
 import { useAgendaNavigatorStore } from "./AgendaCalendar/agendaNavigatorStore";
 

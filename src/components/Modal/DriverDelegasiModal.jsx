@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 
+import { useSaveDriverDelegationPopupPreference } from "@/services/Transporter/driver-delegation/savePopupPreference";
+
 import Checkbox from "@/components/Form/Checkbox";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
-import { useSaveDriverDelegationPopupPreference } from "@/services/Transporter/driver-delegation/savePopupPreference";
 
 const DriverDelegasiModal = ({ open, onOpenChange, onClose }) => {
   const [doNotShowAgain, setDoNotShowAgain] = useState(false);

@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { mutate } from "swr";
 
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { useTranslation } from "@/hooks/use-translation";
 import {
   useGetUrgentIssueCount,
   useGetUrgentIssueList,
 } from "@/services/Transporter/monitoring/getUrgentIssues";
+
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
+
+import { useTranslation } from "@/hooks/use-translation";
 
 import { UrgentIssueCardTransporter } from "./components/UrgentIssueCard";
 

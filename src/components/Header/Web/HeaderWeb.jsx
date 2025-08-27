@@ -14,8 +14,11 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import { useAuth } from "@/hooks/use-auth";
+
 import { cn } from "@/lib/utils";
+
 import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 import { DownloadPopover } from "./DownloadPopover";

@@ -5,8 +5,10 @@ import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import CropperResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/CropperResponsiveLayout";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+
+import CropperResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/CropperResponsiveLayout";
 import {
   useImageUploaderActions,
   useImageUploaderStore,

@@ -6,11 +6,14 @@ import { Suspense, useEffect, useRef } from "react";
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
+
 import { AuthenticationProvider } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
 import { TranslationProvider } from "@/hooks/use-translation";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { StackManagerInitializer } from "@/lib/stack-manager";
+
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 

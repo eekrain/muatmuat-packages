@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { useGetAvailableSchedulePeriods } from "@/services/Transporter/agenda-armada-driver/getAvailableSchedulePeriods";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetAvailableSchedulePeriods } from "@/services/Transporter/agenda-armada-driver/getAvailableSchedulePeriods";
 
 import { AgendaCalendar } from "./components/AgendaCalendar/AgendaCalendar";
 import { useDateNavigator } from "./components/AgendaCalendar/use-date-navigator";
@@ -110,7 +112,7 @@ const AgendaArmadaDriverPage = () => {
             {t(
               "AgendaArmadaPage.titleAgendaArmadaDriver",
               {},
-              "Agenda Armada & Driver"
+              "Agenda Armada-Driver"
             )}
           </h1>
           <div className="flex items-center gap-3">

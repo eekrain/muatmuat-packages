@@ -1,8 +1,10 @@
 import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import useDevice from "@/hooks/use-device";
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 const RatingInput = ({

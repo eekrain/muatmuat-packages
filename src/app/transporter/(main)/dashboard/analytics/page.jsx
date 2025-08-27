@@ -2,14 +2,17 @@
 
 import React from "react";
 
+import { useGetUserJourneyStatus } from "@/services/Transporter/dashboard/getUserJourneyStatus";
+
 import LoadingStatic from "@/components/Loading/LoadingStatic";
+
 import Analytics from "@/container/Transporter/Dashboard/Analytics/Analytics";
 import UserJourney from "@/container/Transporter/Dashboard/UserJourney";
-import { useGetUserJourneyStatus } from "@/services/Transporter/dashboard/getUserJourneyStatus";
 
 function Page() {
   const { data, isLoading, error } = useGetUserJourneyStatus();
 
+  console.log("user journey:", data);
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -28,7 +31,7 @@ function Page() {
 
   return (
     <div className="pt-8">
-      {data?.allStepsCompleted === true ? (
+      {data?.isComplete === true ? (
         <Analytics />
       ) : (
         <UserJourney journeyStatus={data} />
