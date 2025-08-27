@@ -45,6 +45,30 @@ import {
 import Onboarding from "../Onboarding/Onboarding";
 import AlertPerubahanLokasi from "./components/AlertPerubahanLokasi";
 
+// Component to handle truck name with conditional tooltip using character length
+const TruckNameWithTooltip = ({ name }) => {
+  const isLongName = name && name.length > 20;
+
+  if (isLongName) {
+    return (
+      <InfoTooltip
+        trigger={
+          <span className="line-clamp-1 cursor-pointer break-all text-xs font-bold">
+            {name}
+          </span>
+        }
+        side="top"
+      >
+        <p className="text-sm">{name}</p>
+      </InfoTooltip>
+    );
+  }
+
+  return (
+    <span className="line-clamp-1 break-all text-xs font-bold">{name}</span>
+  );
+};
+
 const DaftarPesananAktif = ({
   onToggleExpand,
   isExpanded,
@@ -567,9 +591,7 @@ const DaftarPesananAktif = ({
       className: "p-4 align-top",
       render: (row) => (
         <div className="flex w-[140px] flex-col gap-1">
-          <span className="line-clamp-1 break-all text-xs font-bold">
-            {row.truckType.name}
-          </span>
+          <TruckNameWithTooltip name={row.truckType.name} />
           <span className="line-clamp-1 break-all text-xs font-medium">
             <span className="text-neutral-600">
               {t("DaftarPesananAktif.carrierLabel", {}, "Carrier")} :
