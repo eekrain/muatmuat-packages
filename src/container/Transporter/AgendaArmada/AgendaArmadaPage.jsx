@@ -6,6 +6,7 @@ import { useGetAvailableSchedulePeriods } from "@/services/Transporter/agenda-ar
 
 import { useTranslation } from "@/hooks/use-translation";
 
+import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -184,7 +185,11 @@ const AgendaArmadaDriverPage = () => {
         )}
       </div>
 
-      <pre>{JSON.stringify(displaySchedules, null, 2)}</pre>
+      {isDev && (
+        <>
+          <pre>{JSON.stringify(displaySchedules, null, 2)}</pre>
+        </>
+      )}
     </>
   );
 };

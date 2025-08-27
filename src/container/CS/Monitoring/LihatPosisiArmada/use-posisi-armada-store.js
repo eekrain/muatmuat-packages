@@ -11,6 +11,8 @@ import { devtools } from "zustand/middleware";
 
 import { fetcherOrdersMultiFleetTracking } from "@/services/CS/monitoring/lacak-armada/getOrdersMultiFleetTracking";
 
+import { OrderStatusTitle } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+
 // Create context
 const PosisiArmadaContext = createContext(null);
 
@@ -101,7 +103,7 @@ const createPosisiArmadaStore = (props = {}) =>
         setSosPopoverData: (data) => set({ sosPopoverData: data }),
 
         // Fetch data
-        fetchData: async (orderId) => {
+        fetchData: async (orderId, t) => {
           if (!orderId) return;
 
           set({ isLoading: true, error: null });
@@ -110,7 +112,7 @@ const createPosisiArmadaStore = (props = {}) =>
             const data = await fetcherOrdersMultiFleetTracking(orderId);
 
             // Generate filter options from data
-            const filterOptions = generateFilterOptions(data);
+            const filterOptions = generateFilterOptions(data, t);
 
             set({
               data,
@@ -120,22 +122,21 @@ const createPosisiArmadaStore = (props = {}) =>
               error: null,
             });
           } catch (error) {
-            console.error("Error fetching fleet tracking data:", error);
             set({
-              error: error.message || "Failed to fetch data",
+              error: "Failed to fetch data",
               isLoading: false,
             });
           }
         },
 
         // Refresh data (for polling)
-        refreshData: async () => {
+        refreshData: async (t) => {
           const { orderId, isLoading } = get();
           if (!orderId || isLoading) return;
 
           try {
             const data = await fetcherOrdersMultiFleetTracking(orderId);
-            const filterOptions = generateFilterOptions(data);
+            const filterOptions = generateFilterOptions(data, t);
 
             set({
               data,
@@ -249,36 +250,26 @@ function usePosisiArmadaContext(selector) {
 }
 
 // Helper function to generate filter options from data
-const generateFilterOptions = (data) => {
+const generateFilterOptions = (data, t) => {
   if (!data?.vehicles) return { transporters: [], statuses: [] };
 
   const transporters = [...new Set(data.vehicles.map((v) => v.transporterName))]
     .filter(Boolean)
     .map((name) => ({ label: name, value: name }));
 
-  // Map actual vehicle statuses to filter options
-  const statusMap = {
-    available: "Tersedia",
-    in_transit: "Dalam Perjalanan",
-    maintenance: "Perlu Perbaikan",
-    inactive: "Tidak Aktif",
-    LOADING: "Sedang Muat",
-    UNLOADING: "Sedang Bongkar",
-  };
-
   const statuses = [
     ...new Set(data.vehicles.map((v) => v.driverStatus?.mainStatus)),
   ]
     .filter(Boolean)
     .map((status) => ({
-      label: statusMap[status] || status,
+      label: t(OrderStatusTitle[status]),
       value: status,
     }));
 
   return { transporters, statuses };
 };
 
-export const usePosisiArmada = (orderId) => {
+export const usePosisiArmada = (orderId, t) => {
   const intervalRef = useRef(null);
 
   // Get store instance from context using the custom hook
@@ -308,7 +299,7 @@ export const usePosisiArmada = (orderId) => {
   useEffect(() => {
     if (orderId) {
       setOrderId(orderId);
-      fetchData(orderId);
+      fetchData(orderId, t);
     } else {
       reset();
     }
@@ -318,13 +309,13 @@ export const usePosisiArmada = (orderId) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [orderId, setOrderId, fetchData, reset]);
+  }, [orderId, setOrderId, fetchData, reset, t]);
 
   // Set up polling for data refresh
   useEffect(() => {
     if (orderId && data) {
       intervalRef.current = setInterval(() => {
-        refreshData();
+        refreshData(t);
       }, 10000); // Refresh every 10 seconds
 
       return () => {
@@ -333,7 +324,7 @@ export const usePosisiArmada = (orderId) => {
         }
       };
     }
-  }, [orderId, data, refreshData]);
+  }, [orderId, data, refreshData, t]);
 
   // Handlers
   const handleSearchInputChange = useCallback(

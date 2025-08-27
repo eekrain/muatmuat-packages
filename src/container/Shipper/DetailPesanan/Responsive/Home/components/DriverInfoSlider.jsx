@@ -59,6 +59,8 @@ const Header = ({
   withMenu = true,
   mode = "driver-status",
   oldDriverData,
+  withHideStatusDriver = true,
+  className,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -78,11 +80,11 @@ const Header = ({
     return response;
   }, [driverStatus, mode, orderStatus, statusScan, t]);
 
-  const showStatusMetaStatus = !LIST_HIDE_STATUS_META.includes(orderStatus);
-  if (!showStatusMetaStatus) return null;
+  if (LIST_HIDE_STATUS_META.includes(orderStatus) && withHideStatusDriver)
+    return null;
 
   return (
-    <div className="flex w-full items-center justify-between">
+    <div className={cn("flex w-full items-center justify-between", className)}>
       {statusMeta?.scan && (
         <BadgeStatusPesanan
           variant={statusMeta.scan.hasScan ? "success" : "error"}
@@ -139,8 +141,8 @@ const Header = ({
   );
 };
 
-const Avatar = ({ driver }) => (
-  <div className="w-full">
+const Avatar = ({ driver, className }) => (
+  <div className={cn("w-full", className)}>
     <AvatarDriver
       name={driver.name}
       image={driver.driverImage}
@@ -169,6 +171,7 @@ const Actions = ({
   orderId,
   onDriverContactClicked,
   onLacakArmadaClicked,
+  className,
 }) => {
   const { t } = useTranslation();
   console.log("🚀 ~ orderId 2:", orderId);
@@ -179,7 +182,7 @@ const Actions = ({
     LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(driver?.orderStatus);
 
   return (
-    <div className="flex w-full gap-3">
+    <div className={cn("flex w-full gap-3", className)}>
       {showDetailStatusButton ? (
         <Button
           variant="muatparts-primary-secondary"
@@ -232,6 +235,15 @@ const Indicator = ({ count, activeIndex, className }) => {
       ))}
     </div>
   );
+};
+
+// Export the sub-components for reuse in other parts of the app
+export const DriverInfo = {
+  Root,
+  Header,
+  Avatar,
+  Actions,
+  Indicator,
 };
 
 /**
@@ -312,7 +324,7 @@ export default function DriverInfoSlider({
     const driver = items[0];
     return (
       <Root>
-        <div className="p-5">
+        <div className="px-4 pt-5">
           <div className="flex w-full flex-col items-start gap-4">
             <Header
               orderStatus={driver.orderStatus}
@@ -368,39 +380,42 @@ export default function DriverInfoSlider({
           {clonedItems.map((driver, index) => (
             <div
               key={`${driver?.driverId}-${index}`}
-              className={cn("w-full flex-shrink-0 p-5", !withActions && "pb-0")}
+              className={cn(
+                "w-full flex-shrink-0 px-4 pt-5",
+                !withActions && "pb-0"
+              )}
             >
-              <div className="flex w-full flex-col items-start gap-4">
-                <Header
-                  orderStatus={driver.orderStatus}
-                  driverStatus={driver.driverStatus}
-                  mode="driver-status"
-                  withMenu={withMenu}
-                  oldDriverData={oldDriverData}
-                />
-                <Avatar driver={driver} />
-                {withActions && (
-                  <Actions
-                    driver={driver}
-                    orderId={orderId}
-                    onDriverContactClicked={() =>
-                      alert(
-                        t(
-                          "DriverInfoSlider.contacting",
-                          { name: driver.name },
-                          "Contacting {name}"
-                        )
+              <Header
+                orderStatus={driver.orderStatus}
+                driverStatus={driver.driverStatus}
+                mode="driver-status"
+                withMenu={withMenu}
+                oldDriverData={oldDriverData}
+                className="mb-4"
+              />
+              <Avatar driver={driver} className="mb-4" />
+              {withActions && (
+                <Actions
+                  driver={driver}
+                  orderId={orderId}
+                  onDriverContactClicked={() =>
+                    alert(
+                      t(
+                        "DriverInfoSlider.contacting",
+                        { name: driver.name },
+                        "Contacting {name}"
                       )
-                    }
-                    onLacakArmadaClicked={() =>
-                      navigation.push("/LacakArmada", {
-                        orderId,
-                        driverId: driver.driverId,
-                      })
-                    }
-                  />
-                )}
-              </div>
+                    )
+                  }
+                  onLacakArmadaClicked={() =>
+                    navigation.push("/LacakArmada", {
+                      orderId,
+                      driverId: driver.driverId,
+                    })
+                  }
+                  className="mb-4"
+                />
+              )}
             </div>
           ))}
         </div>
@@ -413,12 +428,3 @@ export default function DriverInfoSlider({
     </Root>
   );
 }
-
-// Export the sub-components for reuse in other parts of the app
-export const DriverInfo = {
-  Root,
-  Header,
-  Avatar,
-  Actions,
-  Indicator,
-};

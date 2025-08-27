@@ -17,22 +17,27 @@ const apiResult = {
       route: {
         pickupPoints: [
           {
-            name: "Lokasi Muat 1",
+            name: "Lokasi Muat",
             latitude: -7.2445,
             longitude: 112.7723,
           },
-          {
-            name: "Lokasi Muat 2",
-            latitude: -7.2601,
-            longitude: 112.7589,
-          },
+          // {
+          //   name: "Lokasi Muat 2",
+          //   latitude: -7.2601,
+          //   longitude: 112.7589,
+          // },
         ],
         dropoffPoints: [
           {
-            name: "Lokasi Bongkar 1",
+            name: "Lokasi Bongkar",
             latitude: -7.2504,
             longitude: 112.7344,
           },
+          // {
+          //   name: "Lokasi Muat 2",
+          //   latitude: -7.2601,
+          //   longitude: 112.7589,
+          // },
         ],
       },
       fleets: [
@@ -72,6 +77,7 @@ const normalizeTrackingLocations = (data) => {
       position: { lat: point.latitude, lng: point.longitude },
       title: point.name,
       icon: "/icons/marker-lokasi-muat.svg",
+      type: "pickup",
     });
     locationPolyline.push({ lat: point.latitude, lng: point.longitude });
   }
@@ -80,6 +86,7 @@ const normalizeTrackingLocations = (data) => {
       position: { lat: point.latitude, lng: point.longitude },
       title: point.name,
       icon: "/icons/marker-lokasi-bongkar.svg",
+      type: "dropoff",
     });
     locationPolyline.push({ lat: point.latitude, lng: point.longitude });
   }

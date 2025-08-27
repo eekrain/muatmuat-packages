@@ -177,7 +177,15 @@ const VehicleTrackingCard = ({
             </h3>
             <DriverTimeline
               dataTimeline={vehicle.timeline}
-              onClickProof={(photos) => alert(`Viewing proof: ${photos}`)}
+              onClickProof={(photos) =>
+                alert(
+                  t(
+                    "LihatPosisiArmada.viewingProof",
+                    { photos: photos.join(", ") },
+                    "Melihat bukti: {photos}"
+                  )
+                )
+              }
             />
           </div>
         </div>
@@ -208,13 +216,22 @@ const LihatPosisiArmadaContent = ({ onClose: _onClose, orderId }) => {
     handleToggleVehicle,
     handleViewSos,
     handleCloseSos,
-  } = usePosisiArmada(orderId);
+  } = usePosisiArmada(orderId, t);
 
   const breadcrumbData = [
-    { name: "Monitoring", href: "/monitoring" },
-    { name: "Daftar Pesanan Aktif" },
-    { name: "Detail Pesanan" },
-    { name: "Lihat Posisi Armada" },
+    {
+      name: t("Breadcrumb.monitoring", {}, "Monitoring"),
+      href: "/monitoring",
+    },
+    {
+      name: t("Breadcrumb.daftarPesananAktif", {}, "Daftar Pesanan Aktif"),
+    },
+    {
+      name: t("Breadcrumb.detailPesanan", {}, "Detail Pesanan"),
+    },
+    {
+      name: t("Breadcrumb.lihatPosisiArmada", {}, "Lihat Posisi Armada"),
+    },
   ];
 
   return (
@@ -233,7 +250,11 @@ const LihatPosisiArmadaContent = ({ onClose: _onClose, orderId }) => {
             icon={{ left: "/icons/search.svg" }}
             appearance={{ iconClassName: "text-neutral-700" }}
             className="w-[332px] font-medium"
-            placeholder="Cari No. Polisi / Nama Driver / Transporter"
+            placeholder={t(
+              "LihatPosisiArmada.placeholderCariArmada",
+              {},
+              "Cari No. Polisi / Nama Driver / Transporter"
+            )}
             value={inputSearchTerm}
             onChange={handleSearchInputChange}
             onKeyDown={handleSearchKeyDown}
@@ -289,15 +310,30 @@ const LihatPosisiArmadaContent = ({ onClose: _onClose, orderId }) => {
                 {confirmedSearchTerm.trim() &&
                 activeFilters.transporters.length === 0 &&
                 activeFilters.statuses.length === 0 ? (
-                  <DataNotFound type="search" title="Keyword Tidak Ditemukan" />
+                  <DataNotFound
+                    type="search"
+                    title={t(
+                      "LihatPosisiArmada.keywordTidakDitemukan",
+                      {},
+                      "Keyword Tidak Ditemukan"
+                    )}
+                  />
                 ) : (
                   <DataNotFound
                     type="search"
                     title={
                       <>
-                        Data tidak Ditemukan.
+                        {t(
+                          "LihatPosisiArmada.dataTidakDitemukan",
+                          {},
+                          "Data tidak Ditemukan."
+                        )}
                         <br />
-                        Mohon coba hapus beberapa filter
+                        {t(
+                          "LihatPosisiArmada.mohonCobaHapusFilter",
+                          {},
+                          "Mohon coba hapus beberapa filter"
+                        )}
                       </>
                     }
                   />
