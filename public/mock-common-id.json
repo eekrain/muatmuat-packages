@@ -1373,6 +1373,7 @@
   "statusDibatalkan": "Dibatalkan",
   "statusMenungguKonfirmasi": "Menunggu Konfirmasi",
   "statusPergantianArmada": "Pergantian Armada",
+  "labelLihatBuktiStatus": "Lihat Bukti {statusName}",
   "labelLihatBuktiMuatBarangPOD": "Bukti Bongkar Barang & POD",
   "labelBuktiMuatBarangMulti": "Bukti Muat Barang di Lokasi {index}",
   "labelBuktiMuatBarang": "Bukti Muat Barang",

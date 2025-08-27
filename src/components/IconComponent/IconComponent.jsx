@@ -1,3 +1,5 @@
+import React, { useMemo } from "react";
+
 import PropTypes from "prop-types";
 import SVG from "react-inlinesvg";
 
@@ -10,90 +12,104 @@ const sizes = {
   large: 32,
 };
 
-function IconComponent({
-  src,
-  color = "default",
-  size,
-  title,
-  height = 16,
-  width = 16,
-  loader = true,
-  rotate = 0,
-  className,
-  onClick,
-  ref,
-}) {
-  // interactive element,
-  if (onClick)
-    return (
-      <button
-        style={{
-          width: `${sizes[size] ? sizes[size] : width}px`,
-          height: `${sizes[size] ? sizes[size] : height}px`,
-        }}
-        onClick={onClick}
-      >
-        <SVG
-          cacheRequests
-          loader={
-            loader && (
-              <span
-                className={"animate-pulse rounded-sm"}
-                style={{
-                  background: "gray",
-                  width: `${sizes[size] ? sizes[size] : width}px`,
-                  height: `${sizes[size] ? sizes[size] : height}px`,
-                  rotate: rotate,
-                }}
-              ></span>
-            )
-          }
-          src={
-            typeof src === "string"
-              ? process.env.NEXT_PUBLIC_ASSET_REVERSE + src
-              : process.env.NEXT_PUBLIC_ASSET_REVERSE + src.src
-          }
-          title={title}
-          width={sizes[size] ? sizes[size] : width}
-          height={sizes[size] ? sizes[size] : height}
-          className={`${className} ${style[color]}`}
-        />
-      </button>
+const IconComponent = React.memo(
+  ({
+    src,
+    color = "default",
+    size,
+    title,
+    height = 16,
+    width = 16,
+    loader = true,
+    rotate = 0,
+    className,
+    onClick,
+    ref,
+  }) => {
+    // Memoize computed values to prevent unnecessary re-renders
+    const computedSize = useMemo(
+      () => ({
+        width: sizes[size] ? sizes[size] : width,
+        height: sizes[size] ? sizes[size] : height,
+      }),
+      [size, width, height]
     );
-  // not interactive element
-  return (
-    <SVG
-      cacheRequests
-      loader={
-        loader && (
+
+    const iconSrc = useMemo(() => {
+      const srcPath = typeof src === "string" ? src : src.src;
+      return process.env.NEXT_PUBLIC_ASSET_REVERSE + srcPath;
+    }, [src]);
+
+    const loaderElement = useMemo(
+      () =>
+        loader ? (
           <span
-            className={"animate-pulse rounded-sm"}
+            className="animate-pulse rounded-sm"
             style={{
               background: "gray",
-              width: `${sizes[size] ? sizes[size] : width}px`,
-              height: `${sizes[size] ? sizes[size] : height}px`,
-              rotate: rotate,
+              width: `${computedSize.width}px`,
+              height: `${computedSize.height}px`,
+              transform: `rotate(${rotate}deg)`, // Use transform instead of rotate
             }}
-          ></span>
-        )
-      }
-      src={
-        typeof src === "string"
-          ? process.env.NEXT_PUBLIC_ASSET_REVERSE + src
-          : process.env.NEXT_PUBLIC_ASSET_REVERSE + src.src
-      }
-      title={title}
-      width={sizes[size] ? sizes[size] : width}
-      height={sizes[size] ? sizes[size] : height}
-      className={`${className} ${style[color]}`}
-    />
-  );
-}
+          />
+        ) : null,
+      [loader, computedSize.width, computedSize.height, rotate]
+    );
 
-export default IconComponent;
+    const buttonStyle = useMemo(
+      () => ({
+        width: `${computedSize.width}px`,
+        height: `${computedSize.height}px`,
+      }),
+      [computedSize.width, computedSize.height]
+    );
+
+    const svgClassName = useMemo(
+      () => `${className || ""} ${style[color] || ""}`.trim(),
+      [className, color]
+    );
+
+    // Interactive element
+    if (onClick) {
+      return (
+        <button style={buttonStyle} onClick={onClick} ref={ref}>
+          <SVG
+            cacheRequests
+            loader={loaderElement}
+            src={iconSrc}
+            title={title}
+            width={computedSize.width}
+            height={computedSize.height}
+            className={svgClassName}
+          />
+        </button>
+      );
+    }
+
+    // Non-interactive element
+    return (
+      <SVG
+        cacheRequests
+        loader={loaderElement}
+        src={iconSrc}
+        title={title}
+        width={computedSize.width}
+        height={computedSize.height}
+        className={svgClassName}
+        ref={ref}
+      />
+    );
+  }
+);
+IconComponent.displayName = "IconComponent";
 
 IconComponent.propTypes = {
-  src: PropTypes.string.isRequired,
+  src: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({
+      src: PropTypes.string.isRequired,
+    }),
+  ]).isRequired,
   color: PropTypes.oneOf([
     "primary",
     "secondary",
@@ -102,15 +118,14 @@ IconComponent.propTypes = {
     "white",
     "gray",
   ]),
-  size: PropTypes.oneOf(["small", "medium", "large"]),
+  size: PropTypes.oneOf(["xsmall", "small", "medium", "large"]),
   title: PropTypes.string,
   height: PropTypes.number,
   width: PropTypes.number,
   loader: PropTypes.bool,
-  rotate: PropTypes.oneOfType([
-    PropTypes.oneOf([0, 45, 90, 135, 180, 225, 270, 315, 360]),
-    PropTypes.number,
-  ]),
+  rotate: PropTypes.number,
   className: PropTypes.string,
   onClick: PropTypes.func,
 };
+
+export default IconComponent;

@@ -1437,6 +1437,7 @@
   "statusDibatalkan": "已取消",
   "statusMenungguKonfirmasi": "等待确认",
   "statusPergantianArmada": "车队变更",
+  "labelLihatBuktiStatus": "查看凭证 {statusName}",
   "labelLihatBuktiMuatBarangPOD": "卸货凭证及 POD",
   "labelBuktiMuatBarangMulti": "第{index}地点装货凭证",
   "labelBuktiMuatBarang": "装货凭证",
