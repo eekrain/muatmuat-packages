@@ -699,8 +699,8 @@ export const fetcherTransportRequestList = async (params = {}) => {
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `v1/transport-requests?${queryString}`
-    : "v1/transport-requests";
+    ? `v1/transporter/monitoring/transport-requests?${queryString}`
+    : "v1/transporter/monitoring/transport-requests";
 
   const result = await fetcherMuatrans.get(endpoint);
   return result?.data?.Data || {};

@@ -148,14 +148,14 @@ const apiResultAvailableFleet = {
   Type: "GET_AVAILABLE_FLEET_VEHICLES",
 };
 
-export const useGetAvailableFleet = (orderId, params = {}) => {
+export const useGetAvailableFleetVehicles = (orderId, params = {}) => {
   const cacheKey = params
     ? `available-fleet-${orderId}-${JSON.stringify(params)}`
     : `available-fleet-${orderId}`;
-  return useSWR(cacheKey, () => fetcherAvailableFleet(orderId, params));
+  return useSWR(cacheKey, () => fetcherAvailableFleetVehicles(orderId, params));
 };
 
-export const fetcherAvailableFleet = async (orderId, params = {}) => {
+export const fetcherAvailableFleetVehicles = async (orderId, params = {}) => {
   if (IS_MOCK) {
     const result = JSON.parse(JSON.stringify(apiResultAvailableFleet));
 
