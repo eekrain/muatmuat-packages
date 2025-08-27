@@ -323,7 +323,9 @@ const DaftarPesanan = ({
       sortable: true,
       render: (row, rowIndex) => {
         const statusConfig = getOrderStatusBadgeWithTranslation(
-          row.orderStatus,
+          row.orderStatus === "NEED_RESPONSE_CHANGE"
+            ? ORDER_STATUS.NEED_CHANGE_RESPONSE
+            : row.orderStatus,
           t
         );
         return (
@@ -350,7 +352,9 @@ const DaftarPesanan = ({
                   </p>
                 </InfoTooltip>
               ) : null}
-              {statusConfig.label}
+              {row.orderStatus === "NEED_RESPONSE_CHANGE"
+                ? getOrderStatusConfig(ORDER_STATUS.NEED_CHANGE_RESPONSE).label
+                : statusConfig.label}
             </div>
           </BadgeStatusPesanan>
         );
@@ -385,7 +389,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- END */}
-          {row.orderStatus === "NEED_CHANGE_RESPONSE" ? (
+          {row.orderStatus === "NEED_RESPONSE_CHANGE" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -429,70 +433,86 @@ const DaftarPesanan = ({
     }
   };
 
-  const handleSelectPeriod = (selectedPeriod) => {
-    if (selectedPeriod === "custom") {
-      // Handle custom date range - this would typically open a date picker
-      return;
+  const handleSelectPeriod = (selectedOption) => {
+    // For custom date range option
+    if (selectedOption?.range) {
+      const formattedStartDate = selectedOption.start_date;
+      const formattedEndDate = selectedOption.end_date;
+
+      onChangeQueryParams("startDate", formattedStartDate);
+      onChangeQueryParams("endDate", formattedEndDate);
+      onChangeQueryParams("period", "CUSTOM");
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
     }
+    // For default "Semua Periode" option
+    else if (selectedOption?.value === "") {
+      onChangeQueryParams("startDate", null);
+      onChangeQueryParams("endDate", null);
+      onChangeQueryParams("period", "ALL_PERIODS");
 
-    let startDate, endDate, periodValue;
-    const today = new Date();
-    const todayString = today.toISOString().split("T")[0];
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
+    }
+    // For predefined period options (today, last 7 days, etc.)
+    else if (selectedOption?.value !== undefined) {
+      const today = new Date();
+      const todayString = today.toISOString().split("T")[0];
 
-    if (selectedPeriod === "" || selectedPeriod === "all") {
-      // "Semua Periode" - clear date filters
-      startDate = "";
-      endDate = "";
-      periodValue = "ALL_PERIODS";
-    } else {
-      // Calculate date range based on period value
-      const daysAgo = parseInt(selectedPeriod);
-      if (daysAgo === 0) {
+      // Get today as end date
+      const endDate = todayString;
+
+      // Calculate start date and map to API period constants
+      let startDate, periodValue;
+      if (selectedOption.value === 0) {
         // Today
-        startDate = todayString;
-        endDate = todayString;
+        startDate = endDate;
         periodValue = "TODAY";
-      } else if (daysAgo === 7) {
-        // Last 7 days
-        const startDateObj = new Date(today);
-        startDateObj.setDate(today.getDate() - daysAgo);
+      } else if (selectedOption.value === 7) {
+        // Last 7 days -> week
+        const startDateObj = new Date();
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - 7);
         startDate = startDateObj.toISOString().split("T")[0];
-        endDate = todayString;
         periodValue = "LAST_7_DAYS";
-      } else if (daysAgo === 30) {
-        // Last 30 days
-        const startDateObj = new Date(today);
-        startDateObj.setDate(today.getDate() - daysAgo);
+      } else if (selectedOption.value === 30) {
+        // Last 30 days -> month
+        const startDateObj = new Date();
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - 30);
         startDate = startDateObj.toISOString().split("T")[0];
-        endDate = todayString;
         periodValue = "LAST_30_DAYS";
-      } else if (daysAgo === 90) {
+      } else if (selectedOption.value === 90) {
         // Last 90 days
-        const startDateObj = new Date(today);
-        startDateObj.setDate(today.getDate() - daysAgo);
+        const startDateObj = new Date();
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - 90);
         startDate = startDateObj.toISOString().split("T")[0];
-        endDate = todayString;
-        periodValue = "LAST_90_DAYS";
-      } else if (daysAgo === 365) {
-        // Last 1 year
-        const startDateObj = new Date(today);
-        startDateObj.setDate(today.getDate() - daysAgo);
+        periodValue = "CUSTOM";
+      } else if (selectedOption.value === 365) {
+        // Last 365 days
+        const startDateObj = new Date();
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - 365);
         startDate = startDateObj.toISOString().split("T")[0];
-        endDate = todayString;
-        periodValue = "LAST_1_YEAR";
+        periodValue = "CUSTOM";
       } else {
-        // Default case for other values
-        const startDateObj = new Date(today);
-        startDateObj.setDate(today.getDate() - daysAgo);
+        // Other periods -> custom
+        const startDateObj = new Date();
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - selectedOption.value);
         startDate = startDateObj.toISOString().split("T")[0];
-        endDate = todayString;
-        periodValue = `last_${daysAgo}_days`;
+        periodValue = "CUSTOM";
       }
-    }
 
-    onChangeQueryParams("startDate", startDate);
-    onChangeQueryParams("endDate", endDate);
-    setCurrentPeriodValue(periodValue);
+      onChangeQueryParams("startDate", startDate);
+      onChangeQueryParams("endDate", endDate);
+      onChangeQueryParams("period", periodValue);
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
+    }
   };
 
   return (
@@ -581,12 +601,7 @@ const DaftarPesanan = ({
                     // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
                     // isn't one of the specific tab values
                     const isActiveAllTab =
-                      tab.value === "" &&
-                      queryParams.status !==
-                        ORDER_STATUS.NEED_CHANGE_RESPONSE &&
-                      queryParams.status !==
-                        ORDER_STATUS.NEED_CONFIRMATION_READY &&
-                      queryParams.status !== ORDER_STATUS.NEED_ASSIGN_FLEET;
+                      tab.value === "" && queryParams.status === "";
 
                     return (
                       <div
@@ -638,7 +653,13 @@ const DaftarPesanan = ({
                       },
                     }}
                   >
-                    {getOrderStatusConfig(t)[queryParams.status].label}
+                    {
+                      getOrderStatusConfig(t)[
+                        queryParams.status === "NEED_RESPONSE_CHANGE"
+                          ? ORDER_STATUS.NEED_CHANGE_RESPONSE
+                          : queryParams.status
+                      ].label
+                    }
                   </TagBubble>
                 </div>
               ) : null}

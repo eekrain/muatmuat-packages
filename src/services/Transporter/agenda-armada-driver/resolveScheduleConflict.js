@@ -37,7 +37,7 @@ export const mockAPIResult = {
  * @returns {Promise<Object>} - Data hasil resolusi konflik
  */
 export const resolveScheduleConflict = async (conflictId, resolutionData) => {
-  const useMockData = true; // Set to true to use mock data for development
+  const useMockData = false; // Set to true to use mock data for development
 
   if (useMockData) {
     // Simulate API delay

@@ -309,7 +309,7 @@ const HubungiModal = ({
               onClick={() => {
                 setModalView("details");
               }}
-              className="box-border flex w-full flex-row items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-6 py-4 transition-colors hover:bg-gray-50"
+              className="box-border flex w-full flex-row items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-6 py-4 transition-colors"
             >
               <div className="h-6 w-6">
                 <IconComponent

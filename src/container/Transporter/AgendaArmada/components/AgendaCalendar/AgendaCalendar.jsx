@@ -24,8 +24,17 @@ export const AgendaCalendar = ({
   mutate,
 }) => {
   const viewType = useAgendaNavigatorStore((state) => state.viewType);
+  const { availablePeriods: storeAvailablePeriods } = useAgendaNavigatorStore();
   const { t } = useTranslation();
   const navigator = useDateNavigator();
+
+  // Use store data if available, otherwise fallback to props
+  const actualAvailablePeriods = useMemo(() => {
+    if (storeAvailablePeriods) {
+      return storeAvailablePeriods;
+    }
+    return availablePeriods;
+  }, [storeAvailablePeriods, availablePeriods]);
   const {
     displayedDates,
     displaySchedules,
@@ -222,7 +231,7 @@ export const AgendaCalendar = ({
         onSearchChange={onSearchChange}
         _filterAgendaStatus={filterAgendaStatus}
         onFilterChange={onFilterChange}
-        availablePeriods={availablePeriods}
+        availablePeriods={actualAvailablePeriods}
       />
       <CalendarHeader2
         calendarDates={calendarDates}

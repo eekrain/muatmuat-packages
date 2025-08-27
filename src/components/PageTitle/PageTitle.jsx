@@ -25,7 +25,12 @@ const PageTitle = ({
   };
 
   return (
-    <div className={cn("mb-4 flex items-center gap-3", className)}>
+    <div
+      className={cn(
+        "mb-4 flex items-center gap-3 text-xl font-bold",
+        className
+      )}
+    >
       {withBack && (
         <IconComponent
           onClick={handleBackClick}
@@ -34,7 +39,7 @@ const PageTitle = ({
           className="text-primary-700"
         />
       )}
-      <h1 className="capsize text-xl font-bold">{children}</h1>
+      <h1>{children}</h1>
     </div>
   );
 };

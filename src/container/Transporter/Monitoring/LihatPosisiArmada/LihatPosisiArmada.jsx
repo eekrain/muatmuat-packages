@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
-import BadgeSOSPopover from "@/components/Badge/BadgeSOSPopover";
+import { BadgeSOSPopover } from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -103,7 +103,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     </BadgeStatus>
                     {vehicle.sosStatus?.hasSos && (
                       <BadgeSOSPopover
-                        sosData={{
+                        data={{
                           licensePlate: vehicle.licensePlate,
                           truckIcon: `/img/mock-armada/${["one", "two", "three"][index % 3]}.png`,
                           reportTime: "10 Jan 2025 12:00 WIB",

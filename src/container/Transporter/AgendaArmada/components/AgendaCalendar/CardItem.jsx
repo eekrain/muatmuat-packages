@@ -17,6 +17,7 @@ import ChangeFleet from "./ChangeFleet";
 import EditSchedule from "./EditSchedule";
 import LocationPoint from "./LocationPoint";
 import InfoPopover from "./PopoverAgenda";
+import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 
 const cardEstimationStyles = {
   BERTUGAS: "bg-primary-50",
@@ -119,6 +120,8 @@ const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
 export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
   const { t } = useTranslation();
   const [showConflictModal, setShowConflictModal] = useState(false);
+  const [showEditEstimationModal, setShowEditEstimationModal] = useState(false);
+  const { mutate: mutateSchedules } = useAgendaNavigatorStore();
 
   // Fetch schedule conflicts when modal is opened
   const { data: conflictsData, mutate: mutateConflicts } =
@@ -410,9 +413,15 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
           {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(agendaStatus) &&
             !isConflicted &&
             !hasSosIssue && (
-              <Modal>
+              <Modal
+                open={showEditEstimationModal}
+                onOpenChange={setShowEditEstimationModal}
+              >
                 <ModalTrigger asChild>
-                  <button className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700">
+                  <button
+                    className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700"
+                    onClick={() => setShowEditEstimationModal(true)}
+                  >
                     <span>{t("CardItem.buttonUbah", {}, "Ubah")}</span>
                     <IconComponent
                       src="/icons/pencil-outline.svg"
@@ -454,6 +463,7 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                   <div className="p-6">
                     <EditSchedule
                       cardData={{
+                        id: item?.id || "schedule-123", // Add schedule ID
                         agendaStatus,
                         driverName,
                         estimation,
@@ -467,6 +477,11 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                         cellWidth,
                         viewType,
                         truckType,
+                      }}
+                      onClose={() => {
+                        setShowEditEstimationModal(false);
+                        // Refresh schedules data after successful update
+                        mutateSchedules();
                       }}
                     />
                   </div>
