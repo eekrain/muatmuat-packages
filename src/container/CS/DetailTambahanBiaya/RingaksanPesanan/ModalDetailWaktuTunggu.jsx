@@ -1,57 +1,51 @@
-import { useState } from "react";
-
-import { differenceInHours, differenceInMinutes } from "date-fns";
+import { useEffect, useState } from "react";
 
 import { Alert } from "@/components/Alert/Alert";
+import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
-const formatDuration = (startDate, endDate) => {
-  const hours = differenceInHours(endDate, startDate);
-  const minutes = differenceInMinutes(endDate, startDate) % 60;
-  return `${hours} Jam ${minutes} Menit`;
-};
-
 export const ModalDetailWaktuTunggu = ({
   open,
   onOpenChange,
   drivers = [],
+  grandTotal = 0,
 }) => {
-  // Use an array of booleans to track expanded state for each driver
-  const [expandedDrivers, setExpandedDrivers] = useState(
-    drivers.map(() => false)
-  );
+  console.log("drivers", drivers);
+
+  // Initialize expanded state
+  const [expandedDrivers, setExpandedDrivers] = useState([]);
+
+  // Sync expandedDrivers state when drivers array changes
+  useEffect(() => {
+    setExpandedDrivers(drivers.map(() => false));
+  }, [drivers]);
+
+  console.log("expandedDrivers", expandedDrivers);
 
   const toggleDriver = (idx) => {
-    setExpandedDrivers((prev) =>
-      prev.map((val, i) => (i === idx ? !val : val))
-    );
-  };
+    console.log("Toggling driver at index:", idx);
+    console.log("Current expandedDrivers:", expandedDrivers);
+    console.log("Drivers length:", drivers.length);
 
-  // Calculate total from all drivers' data
-  const totalAmount = drivers.reduce((driverAcc, driver) => {
-    return (
-      driverAcc +
-      driver.data.reduce((dataAcc, item) => {
-        return dataAcc + (item.totalPrice || 0);
-      }, 0)
-    );
-  }, 0);
+    setExpandedDrivers((prev) => {
+      const newState = prev.map((val, i) => (i === idx ? !val : val));
+      console.log("New expandedDrivers state:", newState);
+      return newState;
+    });
+  };
 
   return (
     // Conditionally render the modal as controlled or uncontrolled component
     <Modal {...(open && onOpenChange ? { open, onOpenChange } : {})}>
       {!open && !onOpenChange ? (
         <ModalTrigger asChild>
-          <button
-            type="button"
-            className="w-fit text-xs font-medium leading-[14.4px] text-primary-700"
-          >
+          <Button variant="link" className="text-xs font-semibold">
             Lihat Detail Waktu Tunggu
-          </button>
+          </Button>
         </ModalTrigger>
       ) : null}
 
@@ -90,13 +84,8 @@ export const ModalDetailWaktuTunggu = ({
                 >
                   <div className="flex flex-col items-start gap-2">
                     <h3 className="text-sm font-semibold text-neutral-900">
-                      {`Driver : ${driver.name}`}
+                      {`Driver : ${driver.name} (${driver.license_plate}, ${driver.transporter_name})`}
                     </h3>
-                    {/* {driver.durasiTotal && !expandedDrivers[idx] && (
-                    <span className="capsize text-xs font-medium text-neutral-600">
-                      Durasi Total: {driver.durasiTotal}
-                    </span>
-                  )} */}
                   </div>
                   <IconComponent
                     className={cn(
@@ -118,20 +107,19 @@ export const ModalDetailWaktuTunggu = ({
                   )}
                 >
                   {/* Loading Location Details */}
-                  {driver.data.map((item, dataIdx) => (
+                  {driver.waiting_locations?.map((item, dataIdx) => (
                     <div
                       key={dataIdx}
                       className="flex flex-col gap-y-2 text-xs font-medium"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-neutral-900">{`${item.detail} : ${formatDuration(item.startDate, item.endDate)}`}</span>
+                        <span className="text-neutral-900">{`${item.location_type} : ${item.duration}`}</span>
                         <span className="text-neutral-900">
-                          {idrFormat(item.totalPrice)}
+                          {idrFormat(item.cost)}
                         </span>
                       </div>
                       <div className="text-neutral-600">
-                        {formatDate(item.startDate)} s/d{" "}
-                        {formatDate(item.endDate)}
+                        {`${formatDate(item.start_time)} s/d ${formatDate(item.end_time)}`}
                       </div>
                     </div>
                   ))}
@@ -141,7 +129,7 @@ export const ModalDetailWaktuTunggu = ({
           </div>
           <div className="flex items-center justify-between text-base font-bold text-neutral-900">
             <span className="">Total</span>
-            <span className="">{idrFormat(totalAmount)}</span>
+            <span className="">{idrFormat(grandTotal)}</span>
           </div>
         </div>
       </ModalContent>
