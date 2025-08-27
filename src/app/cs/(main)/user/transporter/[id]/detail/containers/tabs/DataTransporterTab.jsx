@@ -34,8 +34,35 @@ const DataRow = ({ label, value, isOdd = false, isMultiline = false }) => (
   </div>
 );
 
-const FileRow = ({ label, fileName, isOdd = false }) => {
+const FileRow = ({ label, file, fileNameOverride, isOdd = false }) => {
   const { t } = useTranslation();
+
+  // Display name falls back to override or dash
+  const displayName = file?.name || fileNameOverride || "-";
+
+  // Try common fields for file URL; adapt if backend uses different key
+  const fileUrl = file?.url || file?.file || file?.path || null;
+
+  const handleDownload = async () => {
+    if (!fileUrl) return;
+
+    try {
+      const res = await fetch(fileUrl, { credentials: "include" });
+      if (!res.ok) throw new Error("Network response was not ok");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      const url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = file?.name || fileNameOverride || "file";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      // Fallback: open file in new tab
+      window.open(fileUrl, "_blank", "noopener,noreferrer");
+    }
+  };
 
   return (
     <div
@@ -45,14 +72,17 @@ const FileRow = ({ label, fileName, isOdd = false }) => {
         {label}
       </div>
       <div className="flex-1 text-xs font-medium text-success-500">
-        {fileName}
+        {displayName}
       </div>
-      <Button
-        variant="muattrans-primary-secondary"
-        className="h-8 rounded-full text-xs"
-      >
-        {t("DataTransporterTab.buttonViewFile", {}, "Lihat File")}
-      </Button>
+      {fileUrl ? (
+        <Button
+          variant="muattrans-primary-secondary"
+          className="h-8 rounded-full text-xs"
+          onClick={handleDownload}
+        >
+          {t("DataTransporterTab.buttonViewFile", {}, "Lihat File")}
+        </Button>
+      ) : null}
     </div>
   );
 };
@@ -90,7 +120,7 @@ const ContactRow = ({ picNumber, name, position, phone, isOdd = false }) => {
 
   return (
     <div
-      className={`flex items-center gap-11 px-6 py-4 ${isOdd ? "bg-neutral-100" : "bg-white"}`}
+      className={`flex items-center gap-11 px-6 py-4 ${isOdd ? "bg-white" : "bg-neutral-100"}`}
     >
       <div className="flex items-center gap-2">
         <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full">
@@ -125,16 +155,29 @@ const ContactRow = ({ picNumber, name, position, phone, isOdd = false }) => {
             className="h-[18px] w-[18px] text-primary-700"
           />
         </button>
-        <Link
-          href={`https://wa.me/${phone}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <IconComponent
-            src="/icons/driver-whatsapp.svg"
-            className="h-[18px] w-[18px] text-primary-700"
-          />
-        </Link>
+        {(() => {
+          const raw = phone || "";
+          let waNumber = raw.replace(/\D/g, "");
+
+          if (!waNumber) return null;
+
+          if (waNumber.startsWith("0")) {
+            waNumber = `62${waNumber.slice(1)}`;
+          } else if (waNumber.startsWith("8")) {
+            waNumber = `62${waNumber}`;
+          }
+
+          const waHref = `https://wa.me/${waNumber}`;
+
+          return (
+            <Link href={waHref} target="_blank" rel="noopener noreferrer">
+              <IconComponent
+                src="/icons/driver-whatsapp.svg"
+                className="h-[18px] w-[18px] text-primary-700"
+              />
+            </Link>
+          );
+        })()}
       </div>
     </div>
   );
@@ -479,9 +522,7 @@ const DataTransporterTab = () => {
           <div className="flex flex-col">
             <FileRow
               label={t("DataTransporterTab.labelNIB", {}, "NIB")}
-              fileName={
-                transporterData.documents?.nib?.files?.[0] ? "NIB.pdf" : "-"
-              }
+              file={transporterData.documents?.nib?.files?.[0]}
               isOdd={true}
             />
             <DataRow
@@ -494,9 +535,7 @@ const DataTransporterTab = () => {
                 {},
                 "NPWP Perusahaan"
               )}
-              fileName={
-                transporterData.documents?.npwp?.files?.[0] ? "NPWP.pdf" : "-"
-              }
+              file={transporterData.documents?.npwp?.files?.[0]}
               isOdd={true}
             />
             <DataRow
@@ -513,9 +552,7 @@ const DataTransporterTab = () => {
                 {},
                 "KTP Pendaftar/Pemegang Akun"
               )}
-              fileName={
-                transporterData.documents?.ktp?.files?.[0] ? "KTP.pdf" : "-"
-              }
+              file={transporterData.documents?.ktp?.files?.[0]}
               isOdd={true}
             />
             <DataRow
@@ -533,7 +570,7 @@ const DataTransporterTab = () => {
                 {},
                 "Cover Akta Pendirian"
               )}
-              fileName="akta_pendirian.pdf"
+              file={transporterData.documents?.aktaPendirian?.files?.[0]}
               isOdd={true}
             />
             <FileRow
@@ -542,7 +579,7 @@ const DataTransporterTab = () => {
                 {},
                 "SK Kemenkumham dari Akta Pendirian"
               )}
-              fileName="SK Pendirian.pdf"
+              file={transporterData.documents?.skKemenkumham?.files?.[0]}
             />
             <FileRow
               label={t(
@@ -550,7 +587,7 @@ const DataTransporterTab = () => {
                 {},
                 "Cover Akta Perubahan"
               )}
-              fileName="cover_akta_perubahan.pdf"
+              fileNameOverride="cover_akta_perubahan.pdf"
               isOdd={true}
             />
             <FileRow
@@ -559,7 +596,9 @@ const DataTransporterTab = () => {
                 {},
                 "SK Kemenkumham dari Akta Perubahan"
               )}
-              fileName="SK Perubahan.pdf"
+              file={
+                transporterData.documents?.skKemenkumhamPerubahan?.files?.[0]
+              }
             />
 
             {/* Multiple Files Row */}
@@ -572,28 +611,66 @@ const DataTransporterTab = () => {
                 )}
               </div>
               <div className="flex flex-1 flex-col gap-3">
-                <div className="text-xs font-medium text-success-500">
-                  123456789012...pdf
-                </div>
-                <div className="text-xs font-medium text-success-500">
-                  File2.pdf
-                </div>
-                <div className="text-xs font-medium text-success-500">
-                  File3.pdf
-                </div>
-                <div className="text-xs font-medium text-success-500">
-                  File4.pdf
-                </div>
-                <div className="text-xs font-medium text-success-500">
-                  File5.pdf
-                </div>
+                {transporterData.documents?.sertifikatStandar?.files?.length >
+                0 ? (
+                  transporterData.documents.sertifikatStandar.files.map(
+                    (fileObj, index) => {
+                      const fileUrl =
+                        fileObj?.url || fileObj?.file || fileObj?.path || null;
+                      return (
+                        <div
+                          key={`files-${index}`}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="text-xs font-medium text-success-500">
+                            {fileObj.name}
+                          </div>
+                          {fileUrl ? (
+                            <Button
+                              variant="muattrans-primary-secondary"
+                              className="h-8 rounded-full text-xs"
+                              onClick={async () => {
+                                try {
+                                  const res = await fetch(fileUrl, {
+                                    credentials: "include",
+                                  });
+                                  if (!res.ok)
+                                    throw new Error(
+                                      "Network response was not ok"
+                                    );
+                                  const blob = await res.blob();
+                                  const a = document.createElement("a");
+                                  const url = window.URL.createObjectURL(blob);
+                                  a.href = url;
+                                  a.download = fileObj.name || `file-${index}`;
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  a.remove();
+                                  window.URL.revokeObjectURL(url);
+                                } catch {
+                                  window.open(
+                                    fileUrl,
+                                    "_blank",
+                                    "noopener,noreferrer"
+                                  );
+                                }
+                              }}
+                            >
+                              {t(
+                                "DataTransporterTab.buttonViewFile",
+                                {},
+                                "Lihat File"
+                              )}
+                            </Button>
+                          ) : null}
+                        </div>
+                      );
+                    }
+                  )
+                ) : (
+                  <div className="text-xs text-success-500">-</div>
+                )}
               </div>
-              <Button
-                variant="muattrans-primary-secondary"
-                className="h-8 self-start rounded-full text-xs"
-              >
-                {t("DataTransporterTab.buttonViewFile", {}, "Lihat File")}
-              </Button>
             </div>
           </div>
         </div>
@@ -607,19 +684,25 @@ const DataTransporterTab = () => {
           </div>
 
           <div className="flex flex-col">
-            {transporterData.contacts?.map((contact, index) => (
-              <ContactRow
-                key={contact.level || index}
-                picNumber={`PIC ${contact.level || index + 1}`}
-                name={contact.name || "-"}
-                position={contact.position || "-"}
-                phone={contact.phoneNumber || "-"}
-                isOdd={index % 2 !== 0}
-              />
-            ))}
+            {[...transporterData.contact, transporterData.emergency]?.map(
+              (contact, index) => (
+                <ContactRow
+                  key={contact.level || index}
+                  picNumber={
+                    index === transporterData.contact.length
+                      ? `Emergency Contact`
+                      : `PIC ${index + 1}`
+                  }
+                  name={contact.name || "-"}
+                  position={contact.position || "-"}
+                  phone={contact.phoneNumber || "-"}
+                  isOdd={index % 2 !== 0}
+                />
+              )
+            )}
 
             {/* Emergency Contact */}
-            {transporterData.emergency && (
+            {/* {transporterData.emergency && (
               <>
                 <SectionHeader
                   title={t(
@@ -636,7 +719,7 @@ const DataTransporterTab = () => {
                   isOdd={true}
                 />
               </>
-            )}
+            )} */}
           </div>
         </div>
       </div>

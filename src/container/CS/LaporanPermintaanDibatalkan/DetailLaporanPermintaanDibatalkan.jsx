@@ -11,12 +11,14 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 
 import RingkasanPesanan from "./RingaksanPesanan/RingkasanPesanan";
 import { TabRiwayatAktivitas } from "./RiwayatAktivitas/TabRiwayatAktivitas";
 
 const DetailLaporanPermintaanDibatalkan = ({ breadcrumbData, detail = {} }) => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
 
@@ -26,11 +28,19 @@ const DetailLaporanPermintaanDibatalkan = ({ breadcrumbData, detail = {} }) => {
   const tabItems = [
     {
       value: "ringkasan-pesanan",
-      label: "Ringkasan Pesanan",
+      label: t(
+        "DetailLaporanPermintaanDibatalkan.tabRingkasanPesanan",
+        {},
+        "Ringkasan Pesanan"
+      ),
     },
     {
       value: "riwayat-aktivitas",
-      label: "Riwayat Aktivitas",
+      label: t(
+        "DetailLaporanPermintaanDibatalkan.tabRiwayatAktivitas",
+        {},
+        "Riwayat Aktivitas"
+      ),
     },
   ];
 
@@ -44,7 +54,13 @@ const DetailLaporanPermintaanDibatalkan = ({ breadcrumbData, detail = {} }) => {
           size="medium"
           className="text-primary-700"
         />
-        <h1 className="text-xl font-bold text-neutral-900">Detail Pesanan</h1>
+        <h1 className="text-xl font-bold text-neutral-900">
+          {t(
+            "DetailLaporanPermintaanDibatalkan.titleDetailPesanan",
+            {},
+            "Detail Pesanan"
+          )}
+        </h1>
       </div>
 
       <Tabs

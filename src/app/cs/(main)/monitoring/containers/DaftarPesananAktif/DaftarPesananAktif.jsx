@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -24,8 +25,12 @@ import {
 } from "@/services/CS/active-orders/getOrderContacts";
 import { useGetActiveOrdersByOrdersWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByOrders";
 import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-pesanan-active/getActiveOrdersByTransporter";
+import { useGetCSImportantNotifications } from "@/services/CS/getCSImportantNotifications";
+import { useGetCSTutorialStatus } from "@/services/CS/getCSTutorialStatus";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { useGetCsActiveOrdersUrgentStatusCounts } from "@/services/CS/monitoring/daftar-pesanan-active/getCsActiveOrdersUrgentStatusCounts";
+import { usePutCSImportantNotificationsDismiss } from "@/services/CS/putCSImportantNotificationsDismiss";
+import { usePutCSTutorialStatus } from "@/services/CS/putCSTutorialStatus";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
@@ -35,6 +40,8 @@ import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
 import DaftarPesananAktifListItemByTransporter from "./components/DaftarPesananAktifListItemByTransporter";
 import UrgentStatusFilter from "./components/UrgentStatusFilter";
+
+/* eslint-disable no-console */
 
 // Mock data for OrderChangeInfoModal
 const mockChangeDetails = {
@@ -95,13 +102,16 @@ const DaftarPesananAktif = ({
   isExpanded,
   onViewFleetStatus,
   onTrackFleet,
-  hasShownOnboarding,
-  onOnboardingShown,
 }) => {
   const router = useRouter();
+
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const { data: urgentStatusCountsData } =
     useGetCsActiveOrdersUrgentStatusCounts();
+  const { data: importantNotification } = useGetCSImportantNotifications(
+    `/v1/cs/active-orders/important-notifications`
+  );
+
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatusFilter, setSelectedStatusFilter] =
     useState("ALL_STATUS");
@@ -127,8 +137,6 @@ const DaftarPesananAktif = ({
     useState([]);
   const [orderChangeInfoModalOpen, setOrderChangeInfoModalOpen] =
     useState(false);
-
-  // Hubungi modal state
   const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
   const [hubungiModalProps, setHubungiModalProps] = useState({
     showInitialChoice: false,
@@ -138,12 +146,72 @@ const DaftarPesananAktif = ({
   });
   const [selectedOrderForContacts, setSelectedOrderForContacts] =
     useState(null);
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-
   // Fetch contacts data when orderId is selected
   const { data: contactsData, isLoading: isContactsLoading } =
     useGetOrderContacts(selectedOrderForContacts?.orderId);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [hasShownOnboarding, setHasShownOnboarding] = useState(false);
+
+  // Tutorial onboarding state and API
+  const { data: tutorialStatusData, mutate: mutateTutorial } =
+    useGetCSTutorialStatus();
+  const { trigger: triggerPutCSTutorialStatus } = usePutCSTutorialStatus();
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+
+  const onOnboardingShown = () => {
+    setHasShownOnboarding(true);
+  };
+
+  // Open onboarding when API says so and hasn't been shown yet
+  useEffect(() => {
+    const shouldShow =
+      !!tutorialStatusData?.Data?.showTutorialDaftarPesananAktif;
+    if (shouldShow && !hasShownOnboarding) {
+      setOnboardingOpen(true);
+    } else if (!shouldShow) {
+      setOnboardingOpen(false);
+    }
+  }, [tutorialStatusData, hasShownOnboarding]);
+
+  const handleOnboardingControlledClose = async (dontShowAgain) => {
+    // Close locally
+    setOnboardingOpen(false);
+    setHasShownOnboarding(true);
+
+    // If user chose to not show again, persist via PUT
+    if (dontShowAgain) {
+      try {
+        const payload = {
+          showTutorialDaftarPesananAktif: false,
+          action: "DISABLE_TUTORIAL",
+        };
+        const res = await triggerPutCSTutorialStatus(payload);
+        if (res?.Message?.Code === 200) {
+          // update local SWR cache
+          mutateTutorial(
+            {
+              ...tutorialStatusData,
+              Data: {
+                ...tutorialStatusData?.Data,
+                showTutorialDaftarPesananAktif: false,
+                updatedAt: res.Data?.updatedAt ?? new Date().toISOString(),
+                success: res.Data?.success ?? true,
+              },
+            },
+            false
+          );
+        } else {
+          toast.error(
+            res?.Message?.Text || "Gagal memperbarui preferensi tutorial"
+          );
+        }
+      } catch (err) {
+        console.error("PUT tutorial status failed:", err);
+        toast.error("Gagal memperbarui preferensi tutorial");
+      }
+    }
+  };
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
@@ -307,7 +375,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
-        console.log("Detail Pesanan", row);
+        // Navigate to order detail
         if (row.sosUnit > 0) {
           router.push(`/monitoring/riwayat-sos/${row.orderId}/detail-pesanan`);
           break;
@@ -349,7 +417,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       default:
-        // console.log("Unknown action:", actionType, row);
+        // Unknown action
         break;
     }
   };
@@ -438,15 +506,36 @@ const DaftarPesananAktif = ({
   const shouldShowControls = !isFirstTimer;
 
   useEffect(() => {
-    if (true) {
+    if (
+      importantNotification &&
+      importantNotification.Data &&
+      !importantNotification.Data.isRead
+    ) {
       setIsAlertOpen(true);
     }
-  }, []);
+  }, [importantNotification]);
+
+  // SWR mutation hook to dismiss important notification
+  const { trigger: triggerDismissNotification } =
+    usePutCSImportantNotificationsDismiss(
+      importantNotification?.Data?.notificationId
+    );
+
+  const handleDismissAlert = async () => {
+    setIsAlertOpen(false);
+    try {
+      // Call the API to mark notification as READ
+      await triggerDismissNotification?.({ action: "READ" });
+    } catch {
+      setIsAlertOpen(true);
+      toast.error("Gagal menandai notifikasi sebagai dibaca");
+    }
+  };
 
   // Open HubungiModal helper — caller should supply order data for contact fetching
   const openHubungiModal = (orderData) => {
     if (!orderData || !orderData.orderId) {
-      console.error("Order data or orderId is required for contact fetching");
+      toast.error("Order data atau orderId diperlukan untuk membuka kontak");
       return;
     }
 
@@ -491,6 +580,8 @@ const DaftarPesananAktif = ({
           <Onboarding
             hasShownOnboarding={hasShownOnboarding}
             onOnboardingShown={onOnboardingShown}
+            controlledOpen={onboardingOpen}
+            onControlledClose={handleOnboardingControlledClose}
           />
         </div>
         {shouldShowControls && (
@@ -595,14 +686,16 @@ const DaftarPesananAktif = ({
                   </span>{" "}
                   telah melakukan pembatalan pesanan.
                 </div>
-                <Button variant="link" className="ml-1 text-xs">
+                <Link
+                  href="/daftar-pesanan/pesanan-aktif"
+                  variant="link"
+                  className="ml-1 text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800"
+                >
                   Lihat Pesanan
-                </Button>
+                </Link>
               </div>
               <Button
-                onClick={() => {
-                  setIsAlertOpen(false);
-                }}
+                onClick={handleDismissAlert}
                 variant="link"
                 className="ml-1 text-xs"
               >
