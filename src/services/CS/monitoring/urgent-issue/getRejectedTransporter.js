@@ -43,7 +43,7 @@ export const mockRejectedTransporterList = {
         inactiveReason: null,
         current: 20,
         total: 40,
-        inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
+        inactivityStatus: "ARMADA_INACTIVE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
       },
       vehicle_count: {
         matching: 2,
@@ -65,7 +65,7 @@ export const mockRejectedTransporterList = {
         inactiveReason: null,
         current: 20,
         total: 40,
-        inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
+        inactivityStatus: "ARMADA_INACTIVE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
       },
       vehicle_count: {
         matching: 1,

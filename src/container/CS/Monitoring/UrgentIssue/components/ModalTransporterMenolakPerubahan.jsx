@@ -227,7 +227,7 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
                               >
                                 {transporter.status.inactivityStatus ===
                                   "ARMADA_INACTIVE" &&
-                                  "Armada Nonanktif terlalu banyak"}
+                                  "Armada Nonanktif Terlalu Banyak"}
                                 {transporter.status.inactivityStatus ===
                                   "TRANSPORTER_IDLE" &&
                                   "Armada Tersedia Sering Idle"}
@@ -241,6 +241,7 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
                                 ].includes(
                                   transporter.status.inactivityStatus
                                 ) && transporter.status.inactivityStatus}
+                                {` (${transporter.status.current}/${transporter.status.total})`}
                               </span>
                               {transporter.showDetail && (
                                 <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
