@@ -347,9 +347,7 @@ const Page = () => {
   // PilihArmada handlers are now imported from useMonitoringHandlers hook
 
   useEffect(() => {
-    console.log("fleetData", fleetData);
     if (fleetData && fleetData.data.Data) {
-      console.log("fleetData has Data", fleetData);
       setHasFleet(true);
     }
   }, [fleetData]);
