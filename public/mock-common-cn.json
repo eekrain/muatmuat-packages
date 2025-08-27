@@ -3009,5 +3009,16 @@
   "DaftarPesananAktif.dataNotFound": "未找到数据。",
   "DaftarPesananAktif.tryRemoveFilters": "请尝试移除一些筛选条件",
   "DaftarPesananAktif.emptyTitle": "抱歉，订单列表为空",
-  "DaftarPesananAktif.emptySubtitle": "还没有承运方接受请求"
+  "DaftarPesananAktif.emptySubtitle": "还没有承运方接受请求",
+  "MapInterfaceOverlay.tooltip.shrink": "缩小",
+  "MapInterfaceOverlay.tooltip.expand": "放大",
+  "MapInterfaceOverlay.tooltip.center": "居中",
+  "MapInterfaceOverlay.tooltip.zoomIn": "放大",
+  "MapInterfaceOverlay.tooltip.zoomOut": "缩小",
+  "NoFleetOverlay.subtitle": "还没有承运方添加车队",
+  "MapInterfaceOverlay.button.back": "返回",
+  "MapInterfaceOverlay.button.fleetList": "车队列表",
+  "MapInterfaceOverlay.button.sos.history": "SOS 历史",
+  "MapInterfaceOverlay.button.sos.count": "SOS（{count}）",
+  "MapInterfaceOverlay.label.licenseAndTransporter": "车牌号 & 承运方"
 }

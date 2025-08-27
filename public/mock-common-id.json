@@ -2974,5 +2974,16 @@
   "DaftarPesananAktif.dataNotFound": "Data Tidak Ditemukan.",
   "DaftarPesananAktif.tryRemoveFilters": "Mohon coba hapus beberapa filter",
   "DaftarPesananAktif.emptyTitle": "Oops, daftar pesanan masih kosong",
-  "DaftarPesananAktif.emptySubtitle": "Belum ada Transporter yang menerima permintaan"
+  "DaftarPesananAktif.emptySubtitle": "Belum ada Transporter yang menerima permintaan",
+  "MapInterfaceOverlay.tooltip.shrink": "Kecilkan",
+  "MapInterfaceOverlay.tooltip.expand": "Besarkan",
+  "MapInterfaceOverlay.tooltip.center": "Pusatkan",
+  "MapInterfaceOverlay.tooltip.zoomIn": "Zoom In",
+  "MapInterfaceOverlay.tooltip.zoomOut": "Zoom Out",
+  "NoFleetOverlay.subtitle": "Belum ada Transporter yang menambahkan armada",
+  "MapInterfaceOverlay.button.back": "Kembali",
+  "MapInterfaceOverlay.button.fleetList": "Daftar Armada",
+  "MapInterfaceOverlay.button.sos.history": "Riwayat SOS",
+  "MapInterfaceOverlay.button.sos.count": "SOS ({count})",
+  "MapInterfaceOverlay.label.licenseAndTransporter": "No. Polisi & Transporter"
 }

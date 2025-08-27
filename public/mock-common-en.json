@@ -2973,5 +2973,16 @@
   "DaftarPesananAktif.dataNotFound": "Data Not Found.",
   "DaftarPesananAktif.tryRemoveFilters": "Please try removing some filters",
   "DaftarPesananAktif.emptyTitle": "Oops, the order list is empty",
-  "DaftarPesananAktif.emptySubtitle": "No transporter has accepted requests yet"
+  "DaftarPesananAktif.emptySubtitle": "No transporter has accepted requests yet",
+  "MapInterfaceOverlay.tooltip.shrink": "Shrink",
+  "MapInterfaceOverlay.tooltip.expand": "Expand",
+  "MapInterfaceOverlay.tooltip.center": "Center",
+  "MapInterfaceOverlay.tooltip.zoomIn": "Zoom In",
+  "MapInterfaceOverlay.tooltip.zoomOut": "Zoom Out",
+  "NoFleetOverlay.subtitle": "No transporter has added fleets yet",
+  "MapInterfaceOverlay.button.back": "Back",
+  "MapInterfaceOverlay.button.fleetList": "Fleet List",
+  "MapInterfaceOverlay.button.sos.history": "SOS History",
+  "MapInterfaceOverlay.button.sos.count": "SOS ({count})",
+  "MapInterfaceOverlay.label.licenseAndTransporter": "License Plate & Transporter"
 }
