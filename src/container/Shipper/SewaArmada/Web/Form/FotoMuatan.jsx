@@ -72,6 +72,7 @@ export const FotoMuatan = () => {
                     isLoading={isMutating && activeIndex === key}
                     isNull={formErrors.cargoPhotos}
                     cropperTitle="Upload Foto Muatan"
+                    variant="muatparts"
                   />
                 </Fragment>
               ))}

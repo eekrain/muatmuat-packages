@@ -52,6 +52,8 @@ const ProvinceSelectionModal = ({
         provinceId: result.provinceId,
         provinceName: result.provinceName,
         sortOrder: result.provinceName.charAt(0).toUpperCase(),
+        alphabetGroup:
+          result.alphabetGroup || result.provinceName.charAt(0).toUpperCase(),
         displayText: result.displayText,
         highlightedName: result.highlightedName,
       }));
@@ -83,9 +85,12 @@ const ProvinceSelectionModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchProvince]);
 
-  // Group provinces by sortOrder (alphabetical grouping)
+  // Group provinces by sortOrder or alphabetGroup (alphabetical grouping)
   const groupedProvinces = filteredProvinces.reduce((acc, province) => {
-    const group = province.sortOrder;
+    const group =
+      province.alphabetGroup ||
+      province.sortOrder ||
+      province.provinceName.charAt(0).toUpperCase();
     if (!acc[group]) {
       acc[group] = [];
     }
