@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -27,6 +28,7 @@ import { useGetActiveOrdersByTransporterWithParams } from "@/services/CS/daftar-
 import { useGetCSImportantNotifications } from "@/services/CS/getCSImportantNotifications";
 import { useGetActiveOrdersCount } from "@/services/CS/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { useGetCsActiveOrdersUrgentStatusCounts } from "@/services/CS/monitoring/daftar-pesanan-active/getCsActiveOrdersUrgentStatusCounts";
+import { usePutCSImportantNotificationsDismiss } from "@/services/CS/putCSImportantNotificationsDismiss";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
@@ -310,7 +312,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
-        console.log("Detail Pesanan", row);
+        // Navigate to order detail
         if (row.sosUnit > 0) {
           router.push(`/monitoring/riwayat-sos/${row.orderId}/detail-pesanan`);
           break;
@@ -352,7 +354,7 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       default:
-        // console.log("Unknown action:", actionType, row);
+        // Unknown action
         break;
     }
   };
@@ -450,10 +452,27 @@ const DaftarPesananAktif = ({
     }
   }, [importantNotification]);
 
+  // SWR mutation hook to dismiss important notification
+  const { trigger: triggerDismissNotification } =
+    usePutCSImportantNotificationsDismiss(
+      importantNotification?.Data?.notificationId
+    );
+
+  const handleDismissAlert = async () => {
+    setIsAlertOpen(false);
+    try {
+      // Call the API to mark notification as READ
+      await triggerDismissNotification?.({ action: "READ" });
+    } catch {
+      setIsAlertOpen(true);
+      toast.error("Gagal menandai notifikasi sebagai dibaca");
+    }
+  };
+
   // Open HubungiModal helper — caller should supply order data for contact fetching
   const openHubungiModal = (orderData) => {
     if (!orderData || !orderData.orderId) {
-      console.error("Order data or orderId is required for contact fetching");
+      toast.error("Order data atau orderId diperlukan untuk membuka kontak");
       return;
     }
 
@@ -602,14 +621,16 @@ const DaftarPesananAktif = ({
                   </span>{" "}
                   telah melakukan pembatalan pesanan.
                 </div>
-                <Button variant="link" className="ml-1 text-xs">
+                <Link
+                  href="/daftar-pesanan/pesanan-aktif"
+                  variant="link"
+                  className="ml-1 text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800"
+                >
                   Lihat Pesanan
-                </Button>
+                </Link>
               </div>
               <Button
-                onClick={() => {
-                  setIsAlertOpen(false);
-                }}
+                onClick={handleDismissAlert}
                 variant="link"
                 className="ml-1 text-xs"
               >
