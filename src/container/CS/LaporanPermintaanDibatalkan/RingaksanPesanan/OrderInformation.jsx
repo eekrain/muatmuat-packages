@@ -7,11 +7,13 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import InfoItem from "@/container/CS/DetailTambahanBiaya/components/InfoItem";
+import { useTranslation } from "@/hooks/use-translation";
 
 // --- Helper Components ---
 
 const ContactDetail = ({ icon, name, phone, address, fleet }) => {
   const [isContactModalOpen, setContactModalOpen] = useState(false);
+  const { t } = useTranslation();
   const infoData = [
     ...(fleet ? [{ icon: "/icons/transporter16.svg", value: fleet }] : []),
     { icon: "/icons/phone16.svg", value: phone },
@@ -54,7 +56,7 @@ const ContactDetail = ({ icon, name, phone, address, fleet }) => {
             onClick={() => setContactModalOpen(true)}
             className="mb-2"
           >
-            Hubungi
+            {t("OrderInformation.contactButton", {}, "Hubungi")}
           </Button>
         )}
       </div>
@@ -67,14 +69,27 @@ const ContactDetail = ({ icon, name, phone, address, fleet }) => {
 };
 
 const OrderInformation = ({ order, shipper }) => {
+  const { t } = useTranslation();
   const getStatusText = (status) => {
     switch (status) {
       case "CANCELED_BY_SHIPPER":
-        return "Dibatalkan Shipper";
+        return t(
+          "OrderInformation.statusCanceledByShipper",
+          {},
+          "Dibatalkan Shipper"
+        );
       case "CANCELED_BY_SYSTEM":
-        return "Dibatalkan System";
+        return t(
+          "OrderInformation.statusCanceledBySystem",
+          {},
+          "Dibatalkan System"
+        );
       default:
-        return "Dibatalkan Transporter";
+        return t(
+          "OrderInformation.statusCanceledByTransporter",
+          {},
+          "Dibatalkan Transporter"
+        );
     }
   };
 
@@ -82,23 +97,28 @@ const OrderInformation = ({ order, shipper }) => {
     <Card className="rounded-xl border-none">
       <div className="flex flex-col gap-y-6 px-8 py-6">
         <div className="flex items-center gap-x-3">
-          <InfoItem label="No. Pesanan" value={order.orderCode || "-"} />
+          <InfoItem
+            label={t("OrderInformation.orderNumber", {}, "No. Pesanan")}
+            value={order.orderCode || "-"}
+          />
           <div className="flex w-[300px] flex-col gap-y-2">
             <span className="text-xs font-medium text-neutral-600">
-              Status Pesanan
+              {t("OrderInformation.orderStatus", {}, "Status Pesanan")}
             </span>
             <BadgeStatusPesanan variant="error" className="w-fit">
               {getStatusText(order.orderStatus)}
             </BadgeStatusPesanan>
           </div>
           <InfoItem
-            label="Jumlah Armada"
-            value={`${order.truckCount || 0} Unit`}
+            label={t("OrderInformation.fleetCount", {}, "Jumlah Armada")}
+            value={`${order.truckCount || 0} ${t("OrderInformation.unit", {}, "Unit")}`}
           />
         </div>
         <div className="flex h-[104px] flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-3.5">
           <div className="flex flex-col gap-y-3">
-            <h3 className="text-sm font-bold">Informasi Shipper</h3>
+            <h3 className="text-sm font-bold">
+              {t("OrderInformation.shipperInfo", {}, "Informasi Shipper")}
+            </h3>
             <ContactDetail
               icon="/icons/business-user.svg"
               name={shipper.companyName || "-"}
