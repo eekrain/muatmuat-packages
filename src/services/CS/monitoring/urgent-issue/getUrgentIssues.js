@@ -73,8 +73,9 @@ export const mockUrgentIssueList = {
           issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
           description: "deskripsi1",
-          detected_at: "2025-08-26T16:30:00Z",
-          processed_at: null,
+          detected_at: "2025-08-26T13:00:00Z",
+          processed_at: "2025-08-27T13:02:00Z",
+          completed_at: "2025-08-28T13:15:00Z",
           rejection_count: 5,
           contact_attempts: 3,
           last_contact_at: "2025-01-15T10:00:00Z",
@@ -597,7 +598,7 @@ export const serverErrorResponse = {
 };
 
 export const updateUrgentIssueStatus = async (cacheKey) => {
-  const [_, urgentIssueId, params] = cacheKey?.split("/") || [];
+  const [, urgentIssueId, params] = cacheKey?.split("/") || []; // Removed unused variable _
   const bodyParams = params ? JSON.parse(decodeURIComponent(params)) : {};
 
   let result;

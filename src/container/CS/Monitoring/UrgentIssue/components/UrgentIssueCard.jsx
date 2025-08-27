@@ -37,6 +37,7 @@ export const UrgentIssueCard = ({
     orderCode,
     status,
     completedAt,
+    processedAt,
     orderId,
     issue_type,
     countdown,
@@ -274,7 +275,7 @@ export const UrgentIssueCard = ({
             {t("UrgentIssueCard.buttonContact", {}, "Hubungi")}
           </Button>
         </div>
-        <div className="border-b border-neutral-400 p-4 md:p-5">
+        <div className="border-b border-neutral-400 p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {statusDisplay !== "selesai" && (
@@ -289,7 +290,7 @@ export const UrgentIssueCard = ({
                   }
                 />
               )}
-              <span className="text-xs font-bold text-neutral-900">
+              <span className="text-xs font-semibold text-neutral-900">
                 {issue_type === "FLEET_NOT_READY"
                   ? "Armada Tidak Siap Untuk Muat"
                   : issue_type === "FLEET_NOT_MOVING"
@@ -312,7 +313,7 @@ export const UrgentIssueCard = ({
             {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
             {statusDisplay === "selesai" && (
               <div className="text-xs font-medium text-neutral-600">
-                {detectedAt ? formatDate(detectedAt) : "-"}
+                {completedAt ? formatDate(completedAt) : "-"}
               </div>
             )}
           </div>
@@ -344,10 +345,12 @@ export const UrgentIssueCard = ({
             />
           )}
 
-          <div className="my-3 h-px w-full bg-neutral-400" />
+          {statusDisplay !== "selesai" && (
+            <div className="my-3 h-px w-full bg-neutral-400" />
+          )}
           {/* Selesai - Lihat Detail */}
           {statusDisplay === "selesai" && !isDetailOpen && (
-            <div className="flex items-center justify-between">
+            <div className="mt-2 flex items-center justify-between">
               <button
                 type="button"
                 className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
@@ -370,7 +373,7 @@ export const UrgentIssueCard = ({
           {/* Selesai - Detail */}
           {statusDisplay === "selesai" && isDetailOpen && (
             <div>
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="flex min-w-[140px] items-center gap-2">
                   <IconComponent
                     src="/icons/document.svg"
@@ -429,7 +432,7 @@ export const UrgentIssueCard = ({
                     )}
                   </span>
                   <span className="text-xs font-semibold text-neutral-900">
-                    {formatDate(completedAt)}
+                    {formatDate(processedAt)}
                   </span>
                 </div>
               </div>
@@ -495,16 +498,22 @@ export const UrgentIssueCard = ({
         {showGroupSection && groupIssues.length > 0 && (
           <>
             {groupIssues.map((issue, idx) => (
-              <div key={idx} className="border-b border-neutral-400 p-4 md:p-5">
+              <div key={idx} className="border-b border-neutral-400 p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {statusDisplay !== "selesai" && (
                       <NotificationDot
                         size="md"
-                        color={status === "PROCESSING" ? "orange" : "red"}
+                        color={
+                          statusDisplay === "baru"
+                            ? "red"
+                            : statusDisplay === "diproses"
+                              ? "orange"
+                              : "red"
+                        }
                       />
                     )}
-                    <span className="text-xs font-bold text-neutral-900">
+                    <span className="text-xs font-semibold text-neutral-900">
                       {issue.issue_type === "FLEET_NOT_READY"
                         ? "Armada Tidak Siap Untuk Muat"
                         : issue.issue_type === "FLEET_NOT_MOVING"
@@ -514,15 +523,23 @@ export const UrgentIssueCard = ({
                             : issue.issue_type}
                     </span>
                   </div>
-                  {isCountDown && (
-                    <BadgeStatus
-                      variant={
-                        isNegative ? "outlineWarning" : "outlineSecondary"
-                      }
-                      className="w-max text-sm font-semibold"
-                    >
-                      {isNegative ? `-${formatted}` : formatted}
-                    </BadgeStatus>
+                  {(statusDisplay === "baru" || statusDisplay === "diproses") &&
+                    isCountDown && (
+                      <BadgeStatus
+                        variant={
+                          isNegative ? "outlineWarning" : "outlineSecondary"
+                        }
+                        className="w-max text-sm font-semibold"
+                      >
+                        {isNegative ? `-${formatted}` : formatted}
+                      </BadgeStatus>
+                    )}
+
+                  {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
+                  {statusDisplay === "selesai" && (
+                    <div className="text-xs font-medium text-neutral-600">
+                      {detectedAt ? formatDate(detectedAt) : "-"}
+                    </div>
                   )}
                 </div>
                 <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
@@ -535,10 +552,12 @@ export const UrgentIssueCard = ({
                   </span>{" "}
                   {issue?.description}
                 </div>
-                <div className="my-3 h-px w-full bg-neutral-400" />
+                {statusDisplay !== "selesai" && (
+                  <div className="my-3 h-px w-full bg-neutral-400" />
+                )}
                 {/* Selesai - Lihat Detail */}
                 {statusDisplay === "selesai" && !isDetailOpen && (
-                  <div className="flex items-center justify-between">
+                  <div className="mt-2 flex items-center justify-between">
                     <button
                       type="button"
                       className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
@@ -598,7 +617,7 @@ export const UrgentIssueCard = ({
                           </span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-semibold text-neutral-900">
-                              {formatDate(detectedAt)}
+                              {formatDate(processedAt)}
                             </span>
                           </div>
                         </div>

@@ -91,6 +91,10 @@ const RequestList = ({
               item.issues && item.issues[0]
                 ? item.issues[0].detected_at
                 : item.detected_at,
+            processedAt:
+              item.issues && item.issues[0]
+                ? item.issues[0].processed_at
+                : item.processed_at,
             completedAt:
               item.issues && item.issues[0]
                 ? item.issues[0].completed_at
@@ -366,7 +370,7 @@ const UrgentIssue = () => {
           />
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
+      <div className="mx-2 flex-1 overflow-y-auto bg-white pl-2 pr-1">
         <RequestList
           requests={data}
           isLoading={currentLoading}

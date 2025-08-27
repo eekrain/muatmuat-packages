@@ -47,22 +47,43 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
     }
   };
 
-  // FIXED: Removed useState and useEffect for filteredTransporters.
-  // Instead, derive the filtered list directly using useMemo to prevent infinite loops.
-  const filteredTransporters = useMemo(() => {
-    if (!searchValue) {
-      return allTransporters;
-    }
-    const lowercasedValue = searchValue.toLowerCase();
-    return allTransporters.filter((t) =>
-      t.transporterName.toLowerCase().includes(lowercasedValue)
-    );
-  }, [allTransporters, searchValue]);
+  // Search logic similar to ModalTransportTersedia
+  const [filteredTransporters, setFilteredTransporters] =
+    useState(allTransporters);
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
-  // FIXED: Simplified the search handler. It only needs to update the search value state.
   const handleSearch = (value) => {
     setSearchValue(value);
+    if (searchTimeout) clearTimeout(searchTimeout);
+    const timeout = setTimeout(() => {
+      if (!value || value.length < 3) {
+        setFilteredTransporters(allTransporters);
+        return;
+      }
+      const lower = value.toLowerCase();
+      setFilteredTransporters(
+        allTransporters.filter(
+          (t) =>
+            t.transporterName?.toLowerCase().includes(lower) ||
+            (t.fleet &&
+              (String(t.fleet.matchingUnits).includes(lower) ||
+                String(t.fleet.activeUnits).includes(lower) ||
+                String(t.fleet.inactiveUnits).includes(lower))) ||
+            t.expandedDetails?.fleetDetails?.some(
+              (fleet) =>
+                fleet.licensePlate?.toLowerCase().includes(lower) ||
+                fleet.driver?.name?.toLowerCase().includes(lower)
+            )
+        )
+      );
+    }, 300);
+    setSearchTimeout(timeout);
   };
+
+  // Update filteredTransporters when allTransporters changes
+  useMemo(() => {
+    setFilteredTransporters(allTransporters);
+  }, [allTransporters]);
 
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
@@ -131,7 +152,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
                   alt="Not Found"
                   className="mb-4 h-[140px] w-[140px]"
                 />
-                <div className="text-lg font-medium text-neutral-500">
+                <div className="text-lg font-medium text-[#868686]">
                   {t(
                     "ModalTransporterTidakAktif.textKeywordTidakDitemukan",
                     {},
