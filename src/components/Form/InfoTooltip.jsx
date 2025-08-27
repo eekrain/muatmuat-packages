@@ -33,7 +33,9 @@ export function InfoTooltip({
           {trigger ? (
             trigger
           ) : (
-            <div className={cn("h-4 w-4", appearance.iconClassName)}>
+            <div
+              className={cn("h-4 w-4 cursor-pointer", appearance.iconClassName)}
+            >
               <IconComponent
                 loader={false}
                 src={{ src: icon }}

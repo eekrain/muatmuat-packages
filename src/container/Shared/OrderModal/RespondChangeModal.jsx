@@ -432,7 +432,7 @@ const RespondChangeModal = ({
                           "Penyesuaian Pendapatan"
                         )}
                       </h3>
-                      <InfoTooltip side="top">
+                      <InfoTooltip side="top" className={"z-[52]"}>
                         <p>
                           {t(
                             "RespondChangeModal.incomeAdjustmentTooltip",
