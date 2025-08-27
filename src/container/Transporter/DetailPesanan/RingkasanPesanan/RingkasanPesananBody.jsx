@@ -180,7 +180,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
             alt="Muatan Icon"
           />
           <p className="text-xs font-medium text-neutral-900">
-            {item.name}
+            {item?.name || "Unnamed Item"}
             <span className="text-neutral-600">
               {` (${formattedWeight} kg)${dimensionText}`}
             </span>

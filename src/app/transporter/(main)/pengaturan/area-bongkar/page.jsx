@@ -11,6 +11,7 @@ import Card, { CardContent } from "@/components/Card/Card";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
+import ProvinceSelectionModal from "@/components/Modal/ProvinceSelectionModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
@@ -36,6 +37,7 @@ export default function Page() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isProvinceModalOpen, setIsProvinceModalOpen] = useState(false);
 
   // Local state to manage checkbox selections
   const [localProvinces, setLocalProvinces] = useState([]);
@@ -70,41 +72,46 @@ export default function Page() {
   );
 
   // Fetch master provinsi data for reference (only when needed for province selection popup)
-  const { provinsi: masterProvinsi } = useGetMasterProvinsi(
-    {
-      search: "", // Can be used for province search in popup
-      page: 1,
-      limit: 50,
-      excludeSelected: false,
-    },
-    { enabled: false } // Disabled by default, enable when province selection modal is needed
-  );
+  const { provinsi: masterProvinsi, isLoading: isLoadingMasterProvinsi } =
+    useGetMasterProvinsi(
+      {
+        search: "", // Can be used for province search in popup
+        page: 1,
+        limit: 50,
+        excludeSelected: false,
+      },
+      {
+        enabled: isProvinceModalOpen, // Only fetch when modal is opened
+        retry: 2, // Limit retry attempts
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+        staleTime: 5 * 60 * 1000, // 5 minutes - consider data fresh for 5 minutes
+        cacheTime: 10 * 60 * 1000, // 10 minutes - keep in cache for 10 minutes
+      }
+    );
 
-  // Get selected province IDs for fetching kota/kabupaten
-  // Use stable reference to prevent unnecessary recalculations
+  // Get selected province IDs from localProvinces for fetching kota/kabupaten
   const selectedProvinceIds = useMemo(() => {
-    if (!provinces || provinces.length === 0) return "";
+    if (!localProvinces || localProvinces.length === 0) return "";
 
     const ids =
-      provinces
-        .filter((province) => province.cities?.some((city) => city.isSelected))
+      localProvinces
+        .filter(
+          (province) =>
+            province.cities?.some((city) => city.isSelected) ||
+            province.cities?.length === 0
+        )
         .map((province) => province.id)
         .join(",") || "";
 
     return ids;
-  }, [provinces]);
+  }, [localProvinces]);
 
   // Determine if master kota/kabupaten should be fetched
-  // Only when provinces exist and we need to filter or search cities
   const shouldFetchMasterKotaKabupaten = useMemo(() => {
-    return (
-      selectedProvinceIds.length > 0 &&
-      (debouncedSearchCity.length > 0 || showSelectedOnly)
-    );
-  }, [selectedProvinceIds, debouncedSearchCity, showSelectedOnly]);
+    return selectedProvinceIds.length > 0;
+  }, [selectedProvinceIds]);
 
   // Fetch master kota/kabupaten data based on selected provinces
-  // Only enabled when there are selected provinces and search/filter is needed
   const {
     cities: masterKotaKabupaten,
     isLoading: isLoadingMasterKotaKabupaten,
@@ -137,6 +144,42 @@ export default function Page() {
     }
   }, [provinces]);
 
+  // Merge localStorage provinces with API data
+  useEffect(() => {
+    const stored = localStorage.getItem("areaBongkarProvinces");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        const storedProvinces = parsed.data || [];
+
+        // Add stored provinces that are not in current localProvinces
+        if (storedProvinces.length > 0 && localProvinces.length > 0) {
+          setLocalProvinces((prev) => {
+            const updated = [...prev];
+            storedProvinces.forEach((storedProvince) => {
+              if (!updated.find((p) => p.id === storedProvince.provinceId)) {
+                updated.push({
+                  id: storedProvince.provinceId,
+                  province: storedProvince.provinceName,
+                  allSelected: false,
+                  cities: [],
+                  pagination: {
+                    defaultShow: 12,
+                    hasMore: false,
+                    totalPages: 1,
+                  },
+                });
+              }
+            });
+            return updated;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing stored provinces:", error);
+      }
+    }
+  }, [localProvinces.length]); // Only run when localProvinces is first populated
+
   // Log master data for demonstration
   useEffect(() => {
     if (masterProvinsi && masterProvinsi.length > 0) {
@@ -146,7 +189,25 @@ export default function Page() {
 
   useEffect(() => {
     if (masterKotaKabupaten && masterKotaKabupaten.length > 0) {
-      // Master Kota/Kabupaten data loaded
+      // Update localProvinces with cities data from masterKotaKabupaten
+      setLocalProvinces((prev) => {
+        return prev.map((province) => {
+          const masterData = masterKotaKabupaten.find(
+            (master) => master.provinceId === parseInt(province.id)
+          );
+          if (masterData) {
+            return {
+              ...province,
+              cities: masterData.kota.map((kota) => ({
+                cityId: kota.cityId,
+                cityName: kota.cityName,
+                isSelected: kota.isSelected || false,
+              })),
+            };
+          }
+          return province;
+        });
+      });
     }
   }, [masterKotaKabupaten]);
 
@@ -351,6 +412,73 @@ export default function Page() {
     }));
   };
 
+  // Handle save provinces from modal
+  const handleSaveProvinces = (
+    _selectedProvincesData,
+    _selectedProvinceIds,
+    saveContext
+  ) => {
+    // Store selected provinces in localStorage for area bongkar
+    if (saveContext === "area-bongkar") {
+      const existingData = localStorage.getItem("areaBongkarProvinces");
+      let storedProvinces = [];
+
+      if (existingData) {
+        try {
+          const parsed = JSON.parse(existingData);
+          storedProvinces = parsed.data || [];
+        } catch (error) {
+          console.error("Error parsing stored provinces:", error);
+        }
+      }
+
+      // Add new provinces to existing ones
+      _selectedProvincesData.forEach((province) => {
+        if (
+          !storedProvinces.find((p) => p.provinceId === province.provinceId)
+        ) {
+          storedProvinces.push({
+            provinceId: province.provinceId,
+            provinceName: province.provinceName,
+          });
+        }
+      });
+
+      localStorage.setItem(
+        "areaBongkarProvinces",
+        JSON.stringify({
+          data: storedProvinces,
+        })
+      );
+
+      // Create new province entries in localProvinces state
+      const newProvinces = _selectedProvincesData.map((province) => ({
+        id: province.provinceId,
+        province: province.provinceName,
+        allSelected: false,
+        cities: [], // Will be populated when cities are fetched
+        pagination: {
+          defaultShow: 12,
+          hasMore: false,
+          totalPages: 1,
+        },
+      }));
+
+      // Add to local state if not already exists
+      setLocalProvinces((prev) => {
+        const updated = [...prev];
+        newProvinces.forEach((newProvince) => {
+          if (!updated.find((p) => p.id === newProvince.id)) {
+            updated.push(newProvince);
+          }
+        });
+        return updated;
+      });
+    }
+
+    setIsProvinceModalOpen(false);
+  };
+
   // Handle save area bongkar
   const handleSaveAreaBongkar = async () => {
     try {
@@ -395,6 +523,12 @@ export default function Page() {
       if (result.saved) {
         // TODO: Replace with toast notification instead of alert
         console.log("Save result:", result);
+        // Clear localStorage after successful save
+        localStorage.removeItem("areaBongkarProvinces");
+        // Navigate back or to redirect URL if provided
+        if (result?.redirectTo) {
+          router.push(result.redirectTo);
+        }
       } else {
         // TODO: Replace with toast notification instead of alert
         console.error("Failed to save area bongkar");
@@ -456,7 +590,13 @@ export default function Page() {
         <div className="mx-auto py-6">
           <BreadCrumb data={BREADCRUMB} />
           <div className="mt-4 flex items-center gap-2">
-            <PageTitle withBack={true} onClick={() => router.back()}>
+            <PageTitle
+              withBack={true}
+              onClick={() => {
+                localStorage.removeItem("areaBongkarProvinces");
+                router.back();
+              }}
+            >
               {t(
                 "AreaBongkarPage.titleAturAreaBongkar",
                 {},
@@ -489,12 +629,7 @@ export default function Page() {
                   province.cities.some((city) => city.isSelected)
                 )}
                 onRemove={handleRemoveProvince}
-                onAdd={() => {
-                  console.log("Open province selection modal");
-                  // alert(
-                  //   "Fitur modal pemilihan provinsi akan segera diimplementasikan"
-                  // );
-                }}
+                onAdd={() => setIsProvinceModalOpen(true)}
                 isDeleting={isDeleting}
               />
 
@@ -580,13 +715,7 @@ export default function Page() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => {
-                              // Province added to selection
-                              // TODO: Implement add province logic
-                              console.log(
-                                `Add province ${result.provinceName} - feature coming soon`
-                              );
-                            }}
+                            onClick={() => setIsProvinceModalOpen(true)}
                           >
                             Tambah
                           </Button>
@@ -748,6 +877,17 @@ export default function Page() {
           </div>
         </div>
       </LayoutOverlayButton>
+
+      <ProvinceSelectionModal
+        isOpen={isProvinceModalOpen}
+        onClose={() => setIsProvinceModalOpen(false)}
+        onSave={handleSaveProvinces}
+        title="Tambah Provinsi"
+        provinces={masterProvinsi || []}
+        isLoading={isLoadingMasterProvinsi}
+        onSearch={() => {}}
+        saveContext="area-bongkar"
+      />
     </>
   );
 }

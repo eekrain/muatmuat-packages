@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockOrderChangeDetail = true;
+const isMockOrderChangeDetail = false;
 
 const apiResultOrderChangeDetail = {
   Message: {
@@ -148,7 +148,7 @@ const apiResultOrderChangeDetail = {
 export const fetcherOrderChangeDetail = async (cacheKey) => {
   // Extract orderId from cache key
   const orderId = cacheKey.split("/").pop();
-  const url = `/v1/orders/${orderId}/change-details`;
+  const url = `/v1/transporter/orders/${orderId}/change-information`;
 
   if (isMockOrderChangeDetail) {
     // Simulate API delay
