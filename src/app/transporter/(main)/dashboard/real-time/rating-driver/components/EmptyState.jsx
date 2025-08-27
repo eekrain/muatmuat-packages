@@ -31,6 +31,10 @@ import DataEmpty from "@/components/DataEmpty/DataEmpty";
 
 // app/(shipper)/dashboard/real-time/rating-driver/components/EmptyState.jsx
 
+// app/(shipper)/dashboard/real-time/rating-driver/components/EmptyState.jsx
+
+// app/(shipper)/dashboard/real-time/rating-driver/components/EmptyState.jsx
+
 const EmptyState = ({ data }) => {
   const router = useRouter();
 

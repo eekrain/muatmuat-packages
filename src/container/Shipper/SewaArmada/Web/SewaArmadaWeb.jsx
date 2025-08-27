@@ -35,13 +35,8 @@ import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/Welc
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 
-import { isDev } from "@/lib/constants/is-dev";
-
 import { useLoadingAction } from "@/store/Shared/loadingStore";
-import {
-  useSewaArmadaActions,
-  useSewaArmadaStore,
-} from "@/store/Shipper/forms/sewaArmadaStore";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 import UpdateOrderSummaryPanel from "./SummaryPanel/UpdateOrderSummaryPanel";
@@ -209,25 +204,6 @@ export default function SewaArmadaWeb({
       <LoginModal />
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
-
-      <Dev />
     </>
   );
 }
-
-const Dev = () => {
-  const formValues = useSewaArmadaStore((state) => state.formValues);
-  const { validateForm } = useSewaArmadaActions();
-  const testSubmit = () => {
-    const isValidForm = validateForm();
-    console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
-  };
-
-  if (!isDev) return null;
-  return (
-    <>
-      <pre>{JSON.stringify(formValues, null, 2)}</pre>
-      <button onClick={testSubmit}>Test Submit</button>
-    </>
-  );
-};
