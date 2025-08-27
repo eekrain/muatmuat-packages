@@ -109,12 +109,20 @@ const TransporterVehicles = ({
   );
 };
 
-const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
+const ModalUbahTransporter = ({
+  open,
+  onClose,
+  issueId,
+  issueData,
+  selectedVehicleId,
+}) => {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState(null);
   const [selectedTransporter, setSelectedTransporter] = useState(null);
-  const [selectedArmada, setSelectedArmada] = useState(null);
+  // Mapping: transporterId -> armada yang dipilih
+  const [selectedArmadaMap, setSelectedArmadaMap] = useState({});
   const [showDetail, setShowDetail] = useState(false);
+  // Hapus selectedIssueIndex, tidak dipakai
   const [showArmadaAlert, setShowArmadaAlert] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy] = useState("recommendation"); // 'recommendation', 'distance', 'name'
@@ -141,9 +149,7 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
 
   const handleSelectTransporter = (transporter) => {
     setSelectedTransporter(transporter);
-    // Reset pilihan armada jika transporter berubah
-    setSelectedArmada(null);
-    // Buka expander untuk transporter yang dipilih
+    // Reset pilihan armada untuk transporter yang baru
     setExpandedId(transporter.id);
   };
 
@@ -152,9 +158,11 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
   };
 
   const handleNext = () => {
+    const selectedArmada = selectedArmadaMap[selectedTransporter?.id];
     if (!selectedArmada) {
       setShowArmadaAlert(true);
     } else {
+      // Tidak perlu setSelectedIssueIndex, langsung show detail
       setShowDetail(true);
       setShowArmadaAlert(false);
     }
@@ -197,25 +205,37 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
                   Transporter Awal
                 </div>
                 <div className="mb-4 flex items-center gap-3">
-                  <img
-                    src={
-                      issueData?.transporter?.logo || "/logo-placeholder.png"
-                    }
-                    alt="Logo"
-                    className="h-12 w-12 rounded-full border"
-                  />
-                  <div>
-                    <div className="mb-2 text-xs font-bold text-neutral-900">
-                      {issueData?.transporter?.name || "-"}
-                    </div>
-                    <div className="flex items-center gap-1 text-xs font-medium text-neutral-900">
-                      <IconComponent
-                        src="/icons/phone16.svg"
-                        className="h-4 w-4"
-                      />
-                      {issueData?.transporter?.phone || "-"}
-                    </div>
-                  </div>
+                  {(() => {
+                    // Cari issue yang sesuai dengan selectedVehicleId
+                    const selectedIssue = Array.isArray(issueData?.issues)
+                      ? issueData.issues.find(
+                          (iss) => iss?.vehicle?.id === selectedVehicleId
+                        )
+                      : null;
+                    const transporter =
+                      selectedIssue?.transporter || issueData?.transporter;
+                    return (
+                      <>
+                        <img
+                          src={transporter?.logo || "/logo-placeholder.png"}
+                          alt="Logo"
+                          className="h-12 w-12 rounded-full border"
+                        />
+                        <div>
+                          <div className="mb-2 text-xs font-bold text-neutral-900">
+                            {transporter?.name || "-"}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs font-medium text-neutral-900">
+                            <IconComponent
+                              src="/icons/phone16.svg"
+                              className="h-4 w-4"
+                            />
+                            {transporter?.phone || "-"}
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <div className="mb-4 text-xs font-medium text-neutral-600">
                   Armada Awal
@@ -227,16 +247,28 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
                     className="h-12 w-12 rounded-lg border"
                   />
                   <div>
-                    <div className="mb-2 text-xs font-bold text-neutral-900">
-                      {selectedArmada?.plate_number || "-"}
-                    </div>
-                    <div className="flex items-center gap-1 text-xs font-medium text-neutral-900">
-                      <IconComponent
-                        src="/icons/profile16.svg"
-                        className="h-4 w-4 shrink-0"
-                      />
-                      {selectedArmada?.driver_name || "-"}
-                    </div>
+                    {(() => {
+                      // Cari issue yang sesuai dengan selectedVehicleId
+                      const selectedIssue = Array.isArray(issueData?.issues)
+                        ? issueData.issues.find(
+                            (iss) => iss?.vehicle?.id === selectedVehicleId
+                          )
+                        : null;
+                      return (
+                        <>
+                          <div className="mb-2 text-xs font-bold text-neutral-900">
+                            {selectedIssue?.vehicle?.plate_number || "-"}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs font-medium text-neutral-900">
+                            <IconComponent
+                              src="/icons/profile16.svg"
+                              className="h-4 w-4 shrink-0"
+                            />
+                            {selectedIssue?.vehicle?.driver_name || "-"}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
@@ -266,7 +298,7 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
                   </div>
                 </div>
                 <div className="mb-4 text-xs font-medium text-neutral-600">
-                  Armada Awal
+                  Armada Baru
                 </div>
                 <div className="flex items-center gap-3">
                   <img
@@ -276,14 +308,16 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
                   />
                   <div>
                     <div className="mb-2 text-xs font-bold text-neutral-900">
-                      {selectedArmada?.plate_number || "-"}
+                      {selectedArmadaMap[selectedTransporter?.id]
+                        ?.plate_number || "-"}
                     </div>
                     <div className="flex items-center gap-1 text-xs font-medium text-neutral-900">
                       <IconComponent
                         src="/icons/profile16.svg"
                         className="h-4 w-4 shrink-0"
                       />
-                      {selectedArmada?.driver_name || "-"}
+                      {selectedArmadaMap[selectedTransporter?.id]
+                        ?.driver_name || "-"}
                     </div>
                   </div>
                 </div>
@@ -435,8 +469,13 @@ const ModalUbahTransporter = ({ open, onClose, issueId, issueData }) => {
                     <TransporterVehicles
                       transporterId={transporter.id}
                       issueId={issueId}
-                      selectedArmada={selectedArmada}
-                      onSelectArmada={setSelectedArmada}
+                      selectedArmada={selectedArmadaMap[transporter.id]}
+                      onSelectArmada={(armada) => {
+                        setSelectedArmadaMap((prev) => ({
+                          ...prev,
+                          [transporter.id]: armada,
+                        }));
+                      }}
                     />
                   )}
                 </div>
