@@ -343,15 +343,15 @@ const Page = () => {
     console.log("fleetLocationsData", fleetLocationsData);
   }, [fleetLocationsData]);
 
-  useEffect(() => {
-    panelsDispatch({
-      type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
-    });
-    selectionsDispatch({
-      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
-      payload: { id: "kocak" },
-    });
-  }, []);
+  // useEffect(() => {
+  //   panelsDispatch({
+  //     type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
+  //   });
+  //   selectionsDispatch({
+  //     type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+  //     payload: { id: "kocak" },
+  //   });
+  // }, []);
 
   return (
     <>
