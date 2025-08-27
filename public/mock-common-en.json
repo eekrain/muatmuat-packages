@@ -2949,7 +2949,6 @@
   "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Order Details",
   "FleetChange.replacementFleet": "Replacement Fleet",
   "LihatPosisiArmada.replacingFleet": "Replacing Fleet",
-  "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Order Details",
   "DaftarPesananAktif.toast.tutorialUpdateError": "Failed to update tutorial preference",
   "DaftarPesananAktif.toast.cancelFleetsError": "Failed to cancel fleets. Please try again.",
   "DaftarPesananAktif.toast.cancelFleetError": "Failed to cancel fleet. Please try again.",
@@ -2984,5 +2983,18 @@
   "MapInterfaceOverlay.button.fleetList": "Fleet List",
   "MapInterfaceOverlay.button.sos.history": "SOS History",
   "MapInterfaceOverlay.button.sos.count": "SOS ({count})",
-  "MapInterfaceOverlay.label.licenseAndTransporter": "License Plate & Transporter"
+  "MapInterfaceOverlay.label.licenseAndTransporter": "License Plate & Transporter",
+  "LaporanPermintaanDibatalkan.headerTanggalDibatalkan": "Cancelled Date",
+  "LaporanPermintaanDibatalkan.headerNoPesanan": "Order No.",
+  "LaporanPermintaanDibatalkan.headerWaktuMuat": "Load Time",
+  "LaporanPermintaanDibatalkan.labelMuatBesok": "Load Tomorrow",
+  "LaporanPermintaanDibatalkan.headerRuteMuatBongkar": "Load & Unload Route",
+  "LaporanPermintaanDibatalkan.headerArmada": "Fleet",
+  "LaporanPermintaanDibatalkan.headerPermintaanKe": "Request No.",
+  "LaporanPermintaanDibatalkan.buttonDetail": "Detail",
+  "LaporanPermintaanDibatalkan.titleLaporanPermintaanDibatalkan": "Cancelled Request Report",
+  "LaporanPermintaanDibatalkan.buttonUnduh": "Download",
+  "LaporanPermintaanDibatalkan.labelPermintaanDibatalkanInfo": "Cancelled shipping requests by the shipper will be displayed here",
+  "LaporanPermintaanDibatalkan.placeholderCariPermintaan": "Search Request",
+  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "Total : {total} Cancelled Requests"
 }
