@@ -301,6 +301,7 @@ Query Parameters
 | resolution_status | string | Tidak |PENDING |status resolusi: PENDING/RESLVED |
 
 Request Headers
+Request Headers
 | Header | Nilai | Wajib | Deskripsi |
 | :------------ | :------------- | :---- | :-------------------------- |
 | Authorization | Bearer {token} | Ya | JWT token untuk autentikasi |
