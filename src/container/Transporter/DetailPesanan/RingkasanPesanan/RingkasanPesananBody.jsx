@@ -91,15 +91,15 @@ const PICLocationCard = ({ locations = [], title }) => {
                   {/* Detail items */}
                   <PICDetailItem
                     icon="/icons/lokasi16.svg"
-                    text={location.fullAddress}
+                    text={location?.fullAddress}
                   />
                   <PICDetailItem
                     icon="/icons/topik-amandemen16.svg"
-                    text={location.detailAddress}
+                    text={location?.detailAddress}
                   />
                   <PICDetailItem
                     icon="/icons/profile16.svg"
-                    text={location.pic.name}
+                    text={location?.picName || "-"}
                   />
                 </div>
               </Fragment>

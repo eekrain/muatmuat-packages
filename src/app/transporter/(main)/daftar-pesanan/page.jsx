@@ -72,6 +72,7 @@ const DaftarPesananPage = () => {
   const {
     data: { isFirstTimer = true, orders = [], pagination = {} } = {},
     isLoading,
+    mutate,
   } = useGetOrderList(queryString);
   // TODO: Replace with actual userId from auth context/store
   const userId = "user-id-placeholder"; // This should come from authentication context
@@ -182,6 +183,7 @@ const DaftarPesananPage = () => {
       filterType={filterType}
       setFilterType={setFilterType}
       onChangeQueryParams={handleChangeQueryParams}
+      mutate={mutate}
     />
   );
 };
