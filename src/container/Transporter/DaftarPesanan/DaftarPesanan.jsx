@@ -354,7 +354,8 @@ const DaftarPesanan = ({
                 </InfoTooltip>
               ) : null}
               {row.orderStatus === "NEED_RESPONSE_CHANGE"
-                ? getOrderStatusConfig(ORDER_STATUS.NEED_CHANGE_RESPONSE).label
+                ? getOrderStatusConfig(t)[ORDER_STATUS.NEED_CHANGE_RESPONSE]
+                    .label
                 : statusConfig.label}
             </div>
           </BadgeStatusPesanan>

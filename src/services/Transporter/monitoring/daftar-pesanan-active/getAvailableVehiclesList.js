@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockAvailableVehicles = true;
+const isMockAvailableVehicles = false;
 
 // Get dynamic dates for testing
 const today = new Date();

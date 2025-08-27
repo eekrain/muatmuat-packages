@@ -16,10 +16,10 @@ export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
   const [selectedDriverId, setSelectedDriverId] = useState(null);
 
   const breadcrumbItems = [
-    { name: t("Daftar Pesanan"), href: "/daftarpesanan" },
+    { name: t("Daftar Pesanan"), href: "/daftar-pesanan" },
     {
       name: t("Detail Pesanan"),
-      href: `/daftarpesanan/detailpesanan/${params.orderId}`,
+      href: `/daftar-pesanan/${params.orderId}/detail-pesanan`,
     },
     { name: t("Detail Status Armada") },
   ];
@@ -55,7 +55,7 @@ export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
     return (
       <div className="grid h-[596px] w-[480px] grid-cols-1 grid-rows-[auto_auto_1fr] gap-6 rounded-l-[20px] rounded-r-xl bg-white pb-6 pl-6 pr-3 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
         <BreadCrumb data={breadcrumbItems} />
-        <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
+        <PageTitle className="mb-0">Detail Status Armada</PageTitle>
 
         <div className="flex h-fit max-h-full flex-col gap-4 overflow-y-auto pr-3 [background-clip:content-box] [scrollbar-gutter:stable]">
           <div className="flex flex-col gap-4">
@@ -97,7 +97,7 @@ export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
   return (
     <div className="grid h-[596px] w-[480px] grid-cols-1 grid-rows-[auto_auto_1fr] gap-6 rounded-l-[20px] rounded-r-xl bg-white pb-6 pl-6 pr-3 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       <BreadCrumb data={breadcrumbItems} />
-      <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
+      <PageTitle className="mb-0">Detail Status Armada</PageTitle>
 
       <div className="flex h-fit max-h-full flex-col gap-4 overflow-y-auto pr-3 [background-clip:content-box] [scrollbar-gutter:stable]">
         <div className="flex flex-col gap-4">
