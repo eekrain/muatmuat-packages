@@ -78,13 +78,19 @@ const TransportRequestCard = ({
   };
 
   const getCountdownSeconds = () => {
-    if (!request.timeLabels?.countdown || !request.shipperInfo?.createdAt)
+    // If countdown is null or empty, return 0 immediately
+    if (
+      !request.timeLabels?.countdown ||
+      request.timeLabels?.countdown === "00:00:00" ||
+      !request.shipperInfo?.createdAt
+    )
       return 0;
     const start = new Date(request.shipperInfo.createdAt);
     const now = new Date();
     const initial = parseCountdownToSeconds(request.timeLabels.countdown);
     const elapsed = Math.floor((now - start) / 1000);
-    return initial - elapsed;
+    const remaining = initial - elapsed;
+    return Math.max(0, remaining); // Ensure non-negative value
   };
 
   const [countdown, setCountdown] = useState(getCountdownSeconds());
@@ -98,22 +104,26 @@ const TransportRequestCard = ({
   }, [request.timeLabels?.countdown, request.shipperInfo?.createdAt]);
 
   const formatHHMMSS = (seconds) => {
-    const absSec = Math.abs(seconds);
+    // Always ensure seconds is non-negative here as a safety measure
+    const nonNegativeSeconds = Math.max(0, seconds);
+    const absSec = nonNegativeSeconds;
+
+    // Check if the time is zero, special case
+    if (absSec === 0) {
+      return "00:00";
+    }
+
     const days = Math.floor(absSec / 86400);
     if (days > 0) {
-      return `${seconds < 0 ? "-" : ""}${t("TransportRequestCard.timeDays", { days }, "{days} Hari")}`;
+      return `${t("TransportRequestCard.timeDays", { days }, "{days} Hari")}`;
     }
     const hours = Math.floor((absSec % 86400) / 3600);
     const minutes = Math.floor((absSec % 3600) / 60);
     const secs = absSec % 60;
     if (absSec < 3600) {
-      return `${
-        seconds < 0 ? "-" : ""
-      }${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
     }
-    return `${
-      seconds < 0 ? "-" : ""
-    }${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
   // The rest of the component remains the same...

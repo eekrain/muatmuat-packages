@@ -9,6 +9,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { useUpdatePicContacts } from "@/services/Transporter/profil/updatePicContacts";
 
@@ -43,18 +44,26 @@ const initialPicData = [
 ];
 
 // --- Confirmation Modal (Tidak perlu diubah) ---
-const modalConfig = {
+const getModalConfig = (t) => ({
   confirmSave: {
-    text: "Apakah kamu yakin ingin menyimpan perubahan?",
+    text: t(
+      "PicContactInfo.confirmSaveText",
+      {},
+      "Apakah kamu yakin ingin menyimpan perubahan?"
+    ),
     yesButtonVariant: "muattrans-primary",
     noButtonVariant: "muattrans-primary-secondary",
   },
   confirmCancel: {
-    text: "Apakah kamu yakin ingin membatalkan perubahan?",
+    text: t(
+      "PicContactInfo.confirmCancelText",
+      {},
+      "Apakah kamu yakin ingin membatalkan perubahan?"
+    ),
     yesButtonVariant: "muattrans-primary-secondary",
     noButtonVariant: "muattrans-primary",
   },
-};
+});
 
 const ConfirmationModal = ({
   open,
@@ -63,6 +72,8 @@ const ConfirmationModal = ({
   onConfirm,
   onCancel,
 }) => {
+  const { t } = useTranslation();
+  const modalConfig = getModalConfig(t);
   const currentConfig = modalConfig[type];
 
   return (
@@ -80,7 +91,7 @@ const ConfirmationModal = ({
               className="w-[195px]"
               type="muatparts"
             >
-              Tidak
+              {t("PicContactInfo.no", {}, "Tidak")}
             </Button>
             <Button
               variant={currentConfig.yesButtonVariant}
@@ -88,7 +99,7 @@ const ConfirmationModal = ({
               className="w-[195px]"
               type="muatparts"
             >
-              Ya
+              {t("PicContactInfo.yes", {}, "Ya")}
             </Button>
           </div>
         </div>
@@ -126,62 +137,73 @@ const ensureThreePICData = (existingData) => {
   return picArray;
 };
 
-const showSuccessCopyToast = () => {
-  toast.success("Kontak PIC Berhasil disalin");
+const showSuccessCopyToast = (t) => {
+  toast.success(
+    t("PicContactInfo.copySuccess", {}, "Kontak PIC Berhasil disalin")
+  );
 };
 
 // --- Sub-components (Tidak perlu diubah) ---
-const PicContactRow = ({ index, pic }) => (
-  <div
-    className={`grid grid-cols-[1fr,2fr,2fr,2fr,auto] items-center gap-x-4 px-9 py-4 ${
-      index % 2 === 0 ? "bg-neutral-100" : "bg-white"
-    }`}
-  >
-    <div className="flex items-center gap-3 text-sm font-medium text-neutral-600">
-      <IconComponent
-        src="/icons/user16.svg"
-        alt="PIC Icon"
-        width={24}
-        height={24}
-      />
-      <span>PIC {index + 1}</span>
-    </div>
-    <span className="text-sm font-semibold text-neutral-900">
-      {pic.picName}
-    </span>
-    <span className="text-sm font-medium text-neutral-600">
-      {pic.picPosition}
-    </span>
-    <span className="text-sm font-medium text-neutral-900">
-      {pic.phoneNumber}
-    </span>
-    <div className="me-7 flex items-center justify-end gap-4">
-      <button
-        onClick={showSuccessCopyToast}
-        aria-label={`Copy phone number for ${pic.picName}`}
-        className="text-primary-700 transition-opacity hover:opacity-80"
-      >
+const PicContactRow = ({ index, pic }) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={`grid grid-cols-[1fr,2fr,2fr,2fr,auto] items-center gap-x-4 px-9 py-4 ${
+        index % 2 === 0 ? "bg-neutral-100" : "bg-white"
+      }`}
+    >
+      <div className="flex items-center gap-3 text-sm font-medium text-neutral-600">
         <IconComponent
-          src="/icons/salin.svg"
-          alt="Copy Icon"
-          width={20}
-          height={20}
+          src="/icons/user16.svg"
+          alt="PIC Icon"
+          width={24}
+          height={24}
         />
-      </button>
-      <button
-        aria-label={`Contact ${pic.picName} on WhatsApp`}
-        className="text-primary-700 transition-opacity hover:opacity-80"
-      >
-        <IconComponent
-          src="/icons/verify-whatsapp.svg"
-          alt="WhatsApp Icon"
-          width={20}
-          height={20}
-        />
-      </button>
+        <span>
+          {t(
+            "PicContactInfo.picLabel",
+            { number: index + 1 },
+            `PIC ${index + 1}`
+          )}
+        </span>
+      </div>
+      <span className="text-sm font-semibold text-neutral-900">
+        {pic.picName}
+      </span>
+      <span className="text-sm font-medium text-neutral-600">
+        {pic.picPosition}
+      </span>
+      <span className="text-sm font-medium text-neutral-900">
+        {pic.phoneNumber}
+      </span>
+      <div className="me-7 flex items-center justify-end gap-4">
+        <button
+          onClick={() => showSuccessCopyToast(t)}
+          aria-label={`Copy phone number for ${pic.picName}`}
+          className="text-primary-700 transition-opacity hover:opacity-80"
+        >
+          <IconComponent
+            src="/icons/salin.svg"
+            alt="Copy Icon"
+            width={20}
+            height={20}
+          />
+        </button>
+        <button
+          aria-label={`Contact ${pic.picName} on WhatsApp`}
+          className="text-primary-700 transition-opacity hover:opacity-80"
+        >
+          <IconComponent
+            src="/icons/verify-whatsapp.svg"
+            alt="WhatsApp Icon"
+            width={20}
+            height={20}
+          />
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const PICFormSection = ({
   index,
@@ -190,54 +212,86 @@ const PICFormSection = ({
   isRequired,
   className,
   validationErrors = {},
-}) => (
-  <div className={`px-9 py-4 ${className}`}>
-    <div className="grid grid-cols-1 gap-6">
-      <FormContainer className={className}>
-        <FormLabel required={isRequired}>{`Nama PIC ${index + 1}`}</FormLabel>
-        <Input
-          name="picName"
-          value={pic.picName}
-          onChange={(e) => handleInputChange(index, e)}
-          placeholder={`Nama PIC ${index + 1}`}
-          status={validationErrors[`${index}-picName`] ? "error" : "default"}
-          errorMessage={validationErrors[`${index}-picName`]}
-        />
-      </FormContainer>
-      <FormContainer className={className}>
-        <FormLabel
-          required={isRequired}
-        >{`Jabatan PIC ${index + 1}`}</FormLabel>
-        <Input
-          name="picPosition"
-          value={pic.picPosition}
-          onChange={(e) => handleInputChange(index, e)}
-          placeholder={`Jabatan PIC ${index + 1}`}
-          status={
-            validationErrors[`${index}-picPosition`] ? "error" : "default"
-          }
-          errorMessage={validationErrors[`${index}-picPosition`]}
-        />
-      </FormContainer>
-      <FormContainer className={className}>
-        <FormLabel required={isRequired}>{`No. HP PIC ${index + 1}`}</FormLabel>
-        <Input
-          name="phoneNumber"
-          value={pic.phoneNumber}
-          onChange={(e) => handleInputChange(index, e)}
-          placeholder={"Contoh : 08xxxxxxxxxx"}
-          status={
-            validationErrors[`${index}-phoneNumber`] ? "error" : "default"
-          }
-          errorMessage={validationErrors[`${index}-phoneNumber`]}
-        />
-      </FormContainer>
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className={`px-9 py-4 ${className}`}>
+      <div className="grid grid-cols-1 gap-6">
+        <FormContainer className={className}>
+          <FormLabel required={isRequired}>
+            {t(
+              "PicContactInfo.picName",
+              { number: index + 1 },
+              `Nama PIC ${index + 1}`
+            )}
+          </FormLabel>
+          <Input
+            name="picName"
+            value={pic.picName}
+            onChange={(e) => handleInputChange(index, e)}
+            placeholder={t(
+              "PicContactInfo.picNamePlaceholder",
+              { number: index + 1 },
+              `Nama PIC ${index + 1}`
+            )}
+            status={validationErrors[`${index}-picName`] ? "error" : "default"}
+            errorMessage={validationErrors[`${index}-picName`]}
+          />
+        </FormContainer>
+        <FormContainer className={className}>
+          <FormLabel required={isRequired}>
+            {t(
+              "PicContactInfo.picPosition",
+              { number: index + 1 },
+              `Jabatan PIC ${index + 1}`
+            )}
+          </FormLabel>
+          <Input
+            name="picPosition"
+            value={pic.picPosition}
+            onChange={(e) => handleInputChange(index, e)}
+            placeholder={t(
+              "PicContactInfo.picPositionPlaceholder",
+              { number: index + 1 },
+              `Jabatan PIC ${index + 1}`
+            )}
+            status={
+              validationErrors[`${index}-picPosition`] ? "error" : "default"
+            }
+            errorMessage={validationErrors[`${index}-picPosition`]}
+          />
+        </FormContainer>
+        <FormContainer className={className}>
+          <FormLabel required={isRequired}>
+            {t(
+              "PicContactInfo.picPhone",
+              { number: index + 1 },
+              `No. HP PIC ${index + 1}`
+            )}
+          </FormLabel>
+          <Input
+            name="phoneNumber"
+            value={pic.phoneNumber}
+            onChange={(e) => handleInputChange(index, e)}
+            placeholder={t(
+              "PicContactInfo.phoneNumberPlaceholder",
+              {},
+              "Contoh : 08xxxxxxxxxx"
+            )}
+            status={
+              validationErrors[`${index}-phoneNumber`] ? "error" : "default"
+            }
+            errorMessage={validationErrors[`${index}-phoneNumber`]}
+          />
+        </FormContainer>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- Main Component (MODIFIED) ---
 const PicContactInfo = ({ picContacts, banks, mutate }) => {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [pics, setPics] = useState(picContacts || initialPicData);
   const [formState, setFormState] = useState(null);
@@ -256,13 +310,25 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
     const errors = {};
     const pic1 = formData[0];
     if (!pic1.picName.trim()) {
-      errors["0-picName"] = "Nama PIC 1 wajib diisi";
+      errors["0-picName"] = t(
+        "PicContactInfo.pic1NameRequired",
+        {},
+        "Nama PIC 1 wajib diisi"
+      );
     }
     if (!pic1.picPosition.trim()) {
-      errors["0-picPosition"] = "Jabatan PIC 1 wajib diisi";
+      errors["0-picPosition"] = t(
+        "PicContactInfo.pic1PositionRequired",
+        {},
+        "Jabatan PIC 1 wajib diisi"
+      );
     }
     if (!pic1.phoneNumber.trim()) {
-      errors["0-phoneNumber"] = "No. HP PIC 1 wajib diisi";
+      errors["0-phoneNumber"] = t(
+        "PicContactInfo.pic1PhoneRequired",
+        {},
+        "No. HP PIC 1 wajib diisi"
+      );
     }
 
     formData.forEach((pic, index) => {
@@ -273,13 +339,23 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
 
         if (hasName || hasPosition || hasPhone) {
           if (!hasName)
-            errors[`${index}-picName`] = `Nama PIC ${index + 1} wajib diisi`;
+            errors[`${index}-picName`] = t(
+              "PicContactInfo.picNameRequired",
+              { number: index + 1 },
+              `Nama PIC ${index + 1} wajib diisi`
+            );
           if (!hasPosition)
-            errors[`${index}-picPosition`] =
-              `Jabatan PIC ${index + 1} wajib diisi`;
+            errors[`${index}-picPosition`] = t(
+              "PicContactInfo.picPositionRequired",
+              { number: index + 1 },
+              `Jabatan PIC ${index + 1} wajib diisi`
+            );
           if (!hasPhone)
-            errors[`${index}-phoneNumber`] =
-              `No. HP PIC ${index + 1} wajib diisi`;
+            errors[`${index}-phoneNumber`] = t(
+              "PicContactInfo.picPhoneRequired",
+              { number: index + 1 },
+              `No. HP PIC ${index + 1} wajib diisi`
+            );
         }
       }
     });
@@ -294,7 +370,11 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
       pic3.picName.trim() || pic3.picPosition.trim() || pic3.phoneNumber.trim();
 
     if (isPic3Filled && isPic2Empty) {
-      const errorMessage = "PIC 2 harus diisi sebelum mengisi PIC 3";
+      const errorMessage = t(
+        "PicContactInfo.pic2RequiredBeforePic3",
+        {},
+        "PIC 2 harus diisi sebelum mengisi PIC 3"
+      );
       errors["1-picName"] = errorMessage;
       errors["1-picPosition"] = errorMessage;
       errors["1-phoneNumber"] = errorMessage;
@@ -316,7 +396,13 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
     setValidationErrors({});
     setIsEditing(false);
     setIsModalOpen(false); // Tutup modal
-    toast.success("Berhasil membtalkan perubahan kontak PIC");
+    toast.success(
+      t(
+        "PicContactInfo.cancelSuccess",
+        {},
+        "Berhasil membtalkan perubahan kontak PIC"
+      )
+    );
   };
 
   const executeSave = async () => {
@@ -369,7 +455,13 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
         setIsEditing(false);
         setFormState(null);
         setIsModalOpen(false);
-        toast.success("Berhasil menyimpan perubahan kontak PIC");
+        toast.success(
+          t(
+            "PicContactInfo.saveSuccess",
+            {},
+            "Berhasil menyimpan perubahan kontak PIC"
+          )
+        );
         mutate();
       }
     } catch (error) {
@@ -396,7 +488,13 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
           setValidationErrors(apiErrors);
         }
       } else {
-        toast.error("Gagal menyimpan perubahan kontak PIC");
+        toast.error(
+          t(
+            "PicContactInfo.saveError",
+            {},
+            "Gagal menyimpan perubahan kontak PIC"
+          )
+        );
       }
 
       setIsModalOpen(false);
@@ -451,7 +549,7 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
           <div className="flex items-end justify-between gap-3 border-b border-neutral-200 p-6">
             <div className="">
               <h1 className="text-xl font-bold text-neutral-900">
-                Data Kontak PIC Transporter
+                {t("PicContactInfo.title", {}, "Data Kontak PIC Transporter")}
               </h1>
               <Alert
                 variant="warning"
@@ -465,8 +563,11 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
                   className="text-yellow-500"
                 />
                 <span className="text-xs text-neutral-800">
-                  Data PIC Transporter akan ditampilkan pada profilmu di
-                  pengguna lainnya untuk menghubungi kamu
+                  {t(
+                    "PicContactInfo.infoMessage",
+                    {},
+                    "Data PIC Transporter akan ditampilkan pada profilmu di pengguna lainnya untuk menghubungi kamu"
+                  )}
                 </span>
               </Alert>
             </div>
@@ -477,7 +578,7 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
                 className="w-28"
                 onClick={handleCancelClick}
               >
-                Batal
+                {t("PicContactInfo.cancel", {}, "Batal")}
               </Button>
               {/* ⬇️ onClick diubah ke handleSaveClick */}
               <Button
@@ -486,7 +587,9 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
                 onClick={handleSaveClick}
                 disabled={isUpdating}
               >
-                {isUpdating ? "Menyimpan..." : "Simpan Data"}
+                {isUpdating
+                  ? t("PicContactInfo.saving", {}, "Menyimpan...")
+                  : t("PicContactInfo.saveData", {}, "Simpan Data")}
               </Button>
             </div>
           </div>
@@ -522,7 +625,7 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
       <div className="flex items-start justify-between p-6">
         <div className="flex flex-col gap-2">
           <h2 className="text-xl font-bold text-neutral-900">
-            Data Kontak PIC Transporter
+            {t("PicContactInfo.title", {}, "Data Kontak PIC Transporter")}
           </h2>
           <Alert
             variant="warning"
@@ -536,8 +639,11 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
               className="text-yellow-500"
             />
             <span className="text-xs font-medium text-neutral-800">
-              Data PIC Transporter akan ditampilkan pada profilmu di pengguna
-              lainnya untuk menghubungi kamu
+              {t(
+                "PicContactInfo.infoMessage",
+                {},
+                "Data PIC Transporter akan ditampilkan pada profilmu di pengguna lainnya untuk menghubungi kamu"
+              )}
             </span>
           </Alert>
         </div>
@@ -546,7 +652,7 @@ const PicContactInfo = ({ picContacts, banks, mutate }) => {
           variant="muattrans-primary"
           className="flex-shrink-0 px-8 py-2"
         >
-          Ubah Data
+          {t("PicContactInfo.editData", {}, "Ubah Data")}
         </Button>
       </div>
       <div className="mt-2 border-t border-neutral-200">

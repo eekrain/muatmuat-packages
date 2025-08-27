@@ -89,7 +89,7 @@ const mockErrorResponses = {
  * @param {Object} arg.arg.payload - Request payload with acceptType, vehicleCount, and acceptTerms
  * @returns {Promise} API response
  */
-export const fetcherAcceptScheduledTransportRequest = async (key, { arg }) => {
+export const fetcherAcceptScheduledTransport = async (key, { arg }) => {
   if (IS_MOCK) {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -159,7 +159,7 @@ export const fetcherAcceptScheduledTransportRequest = async (key, { arg }) => {
  * @param {Object} payload - Request payload with acceptType, vehicleCount, and acceptTerms
  * @returns {Promise} API response
  */
-export const postAcceptScheduledTransportRequest = async (id, payload) => {
+export const postAcceptScheduledTransport = async (id, payload) => {
   if (IS_MOCK) {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -225,10 +225,10 @@ export const postAcceptScheduledTransportRequest = async (id, payload) => {
  * Hook to accept scheduled transport request
  * @returns {Object} SWR mutation object
  */
-export const usePostAcceptScheduledTransportRequest = () => {
+export const usePostAcceptScheduledTransport = () => {
   const { trigger, isMutating, data, error } = useSWRMutation(
     "accept-scheduled-transport-request",
-    fetcherAcceptScheduledTransportRequest
+    fetcherAcceptScheduledTransport
   );
 
   return {
