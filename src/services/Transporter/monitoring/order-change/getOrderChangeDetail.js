@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockOrderChangeDetail = false;
+const isMockOrderChangeDetail = true;
 
 const apiResultOrderChangeDetail = {
   Message: {

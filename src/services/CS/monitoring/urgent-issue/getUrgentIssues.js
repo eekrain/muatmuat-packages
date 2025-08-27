@@ -97,7 +97,7 @@ export const mockUrgentIssueList = {
           description: "deskripsi2",
           detected_at: "2025-01-15T09:15:00Z",
           processed_at: null,
-          rejection_count: 2,
+          rejection_count: 0,
           contact_attempts: 3,
           last_contact_at: "2025-01-15T10:00:00Z",
           has_rejection_history: true,

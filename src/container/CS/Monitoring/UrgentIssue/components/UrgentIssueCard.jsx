@@ -322,7 +322,7 @@ export const UrgentIssueCard = ({
             </span>{" "}
             {description}
           </div>
-          {isNegative && (
+          {data?.rejection_count > 0 && (
             <div
               className="mt-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
               onClick={openTransporterMenolakModal}

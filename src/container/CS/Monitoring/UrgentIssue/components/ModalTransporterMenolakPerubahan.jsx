@@ -5,80 +5,28 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import { useTranslation } from "@/hooks/use-translation";
+import { mockAvailableTransporterList } from "@/services/CS/monitoring/urgent-issue/getAvailableTransporter";
+import { useGetRejectedTransporterList } from "@/services/CS/monitoring/urgent-issue/getRejectedTransporter";
 
-const mockFleets = [
-  {
-    id: 1,
-    licensePlate: "L 1111 LBA",
-    driver: { name: "Rizky Aditya Pratama" },
-    lastLocation: {
-      distance: 1.2,
-      District: "Lowokwaru",
-      City: "Kota Malang",
-    },
-    operationalStatus: "INACTIVE",
-  },
-  {
-    id: 2,
-    licensePlate: "L 2222 LBA",
-    driver: { name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho" },
-    lastLocation: {
-      distance: 2.1,
-      District: "Kepulauan Seribu Selatan",
-      City: "DKI Jakarta",
-    },
-    operationalStatus: "INACTIVE",
-  },
-  {
-    id: 3,
-    licensePlate: "L 4444 LBA",
-    driver: { name: "Yoel Gallaher" },
-    lastLocation: null,
-    operationalStatus: "READY_FOR_ORDER",
-  },
-];
-
-const mockTransporters = [
-  {
-    id: 1,
-    transporterName: "PT Batavia Prosperindo Angkut Teknologi Indone...",
-    cocok: 4,
-    aktif: 0,
-    nonaktif: 4,
-    status: "ARMADA_NONAKTIF_BANYAK",
-    statusText: "Armada Nonaktif Terlalu Banyak (4/4)",
-    statusColor: "text-error-400",
-    showDetail: true,
-    logo: "/icons/company-placeholder.svg",
-    fleets: mockFleets,
-  },
-  {
-    id: 2,
-    transporterName: "PT Siba Surya",
-    cocok: 3,
-    aktif: 1,
-    nonaktif: 2,
-    status: "ADMIN_IDLE",
-    statusText: "Admin Terdeteksi Sering Idle (5/7 Order)",
-    statusColor: "text-error-400",
-    showDetail: true,
-    logo: "/icons/company-placeholder.svg",
-    fleets: mockFleets,
-  },
-  {
-    id: 3,
-    transporterName: "PT Batavia Prosperindo Angkut Teknologi Indone...",
-    cocok: 4,
-    aktif: 0,
-    nonaktif: 4,
-    status: "ARMADA_NONAKTIF_BANYAK",
-    statusText: "Armada Nonaktif Terlalu Banyak (4/4)",
-    statusColor: "text-error-400",
-    showDetail: true,
-    logo: "/icons/company-placeholder.svg",
-    fleets: mockFleets,
-  },
-];
+// Mapping mockAvailableTransporterList.data ke format armada yang cocok
+const getMatchingFleets = (transporterId) => {
+  // Di mockAvailableTransporterList, setiap transporter adalah armada yang cocok
+  // Untuk demo, filter berdasarkan id transporter
+  return mockAvailableTransporterList.data
+    .filter((tr) => tr.id === transporterId)
+    .map((tr) => ({
+      id: tr.id,
+      licensePlate: `N/A`, // Tidak ada di mock, bisa diisi placeholder
+      driver: { name: tr.name },
+      lastLocation: {
+        distance: tr.distance_km,
+        District: "-",
+        City: "-",
+      },
+      operationalStatus:
+        tr.vehicle_count.active > 0 ? "READY_FOR_ORDER" : "INACTIVE",
+    }));
+};
 
 const ModalTransporterMenolakPerubahan = ({ onClose }) => {
   const { t } = useTranslation();
@@ -87,13 +35,33 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
   const [selectedTransporter, setSelectedTransporter] = useState(null);
   const [expandedCardId, setExpandedCardId] = useState(null);
 
+  // Ambil data dari hook
+  const { items: transporterItems, isLoading } =
+    useGetRejectedTransporterList();
+
+  // Mapping API data ke format yang digunakan komponen
+  const transporters = transporterItems.map((t) => ({
+    id: t.id,
+    transporterName: t.name,
+    cocok: t.vehicle_count?.matching ?? 0,
+    aktif: t.vehicle_count?.active ?? 0,
+    nonaktif: t.vehicle_count?.inactive ?? 0,
+    status: t.status || {},
+    statusText: t.rejection_reason || "Transporter menolak perubahan",
+    statusColor:
+      t.status === "inactive" ? "text-error-400" : "text-success-400",
+    showDetail: t.can_expand,
+    logo: t.logo || "/icons/company-placeholder.svg",
+    fleets: getMatchingFleets(t.id),
+  }));
+
   const filteredTransporters = useMemo(() => {
-    if (!searchValue) return mockTransporters;
+    if (!searchValue) return transporters;
     const lower = searchValue.toLowerCase();
-    return mockTransporters.filter((t) =>
+    return transporters.filter((t) =>
       t.transporterName.toLowerCase().includes(lower)
     );
-  }, [searchValue]);
+  }, [searchValue, transporters]);
 
   const handleToggleExpand = (id) => {
     setExpandedCardId((prev) => (prev === id ? null : id));
@@ -136,7 +104,13 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
             className="h-[337px] overflow-y-auto pr-2"
             style={{ minWidth: "calc(100% + 12px)" }}
           >
-            {filteredTransporters.length === 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="text-lg font-medium text-neutral-500">
+                  Loading...
+                </div>
+              </div>
+            ) : filteredTransporters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <img
                   src="/icons/keyword-not-found.svg"
@@ -244,21 +218,37 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
                     </div>
                     <div className="px-4 pb-4">
                       <div className="text-xs">
-                        {transporter.statusText && (
-                          <>
-                            <div className="mb-3 border-b border-neutral-400"></div>
-                            <span
-                              className={`font-medium ${transporter.statusColor}`}
-                            >
-                              {transporter.statusText}
-                            </span>
-                            {transporter.showDetail && (
-                              <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
-                                Detail
+                        {transporter.status &&
+                          transporter.status.inactivityStatus && (
+                            <>
+                              <div className="mb-3 border-b border-neutral-400"></div>
+                              <span
+                                className={`text-xs font-medium text-error-400`}
+                              >
+                                {transporter.status.inactivityStatus ===
+                                  "ARMADA_INACTIVE" &&
+                                  "Armada Nonanktif terlalu banyak"}
+                                {transporter.status.inactivityStatus ===
+                                  "TRANSPORTER_IDLE" &&
+                                  "Armada Tersedia Sering Idle"}
+                                {transporter.status.inactivityStatus ===
+                                  "TRANSPORTER_INACTIVE" &&
+                                  "Transporter Inactive"}
+                                {![
+                                  "ARMADA_INACTIVE",
+                                  "TRANSPORTER_IDLE",
+                                  "TRANSPORTER_INACTIVE",
+                                ].includes(
+                                  transporter.status.inactivityStatus
+                                ) && transporter.status.inactivityStatus}
                               </span>
-                            )}
-                          </>
-                        )}
+                              {transporter.showDetail && (
+                                <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
+                                  Detail
+                                </span>
+                              )}
+                            </>
+                          )}
                       </div>
                     </div>
                   </div>

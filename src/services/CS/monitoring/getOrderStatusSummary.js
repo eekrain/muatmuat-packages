@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // CS order status summary
+const useMockData = true; // CS order status summary
 
 // GET /api/v1/cs/orders/{orderId}/status-summary
 const apiResult = {

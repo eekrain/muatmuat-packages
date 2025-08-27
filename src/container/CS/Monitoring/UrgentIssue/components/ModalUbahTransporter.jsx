@@ -327,13 +327,12 @@ const ModalUbahTransporter = ({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button
-              onClick={() => setShowDetail(false)}
-              variant="muattrans-primary-secondary"
-            >
-              {t("ModalUbahTransporter.buttonKembali", {}, "Kembali")}
-            </Button>
-            <Button
-              onClick={() => setShowConfirmModal(true)}
+              onClick={() => {
+                setShowConfirmModal(true);
+                toast.success(
+                  `Perubahan Transporter berhasil dikirim ke Transporter ${selectedTransporter?.name || "-"}`
+                );
+              }}
               variant="muattrans-primary"
             >
               {t(
@@ -584,11 +583,21 @@ const ModalUbahTransporter = ({
                           setCatatanError("Alasan pembatalan wajib diisi");
                         } else {
                           setCatatanError("");
+                          const selectedIssue = Array.isArray(issueData?.issues)
+                            ? issueData.issues.find(
+                                (iss) => iss?.vehicle?.id === selectedVehicleId
+                              )
+                            : null;
+                          const plateNumber =
+                            selectedIssue?.vehicle?.plate_number || "-";
+                          const transporterName =
+                            issueData?.transporter?.name || "-";
+                          const orderCode = issueData?.orderCode || "-";
                           toast.success(
-                            `Armada ${issueData?.vehicle?.plate_number || "-"} dari transporter ${issueData?.transporter?.name || "-"} pada Pesanan ${issueData?.orderCode || "-"} berhasil dibatalkan`
+                            `Armada ${plateNumber} dari transporter ${transporterName} pada Pesanan ${orderCode} berhasil dibatalkan`
                           );
                           setShowAlasanModal(false);
-                          onClose();
+                          // onClose();
                           // TODO: handle submit logic here
                         }
                       }}
