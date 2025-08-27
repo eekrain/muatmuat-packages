@@ -55,7 +55,8 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
       t.status === "inactive" ? "text-error-400" : "text-success-400",
     showDetail: t.can_expand,
     logo: t.logo || "/icons/company-placeholder.svg",
-    fleets: getMatchingFleets(t.id),
+    fleets: t.expandedDetails?.fleetDetails || [], // ambil dari mock getRejectedTransporter
+    expandedDetails: t.expandedDetails || {},
   }));
 
   const filteredTransporters = useMemo(() => {
@@ -267,91 +268,71 @@ const ModalTransporterMenolakPerubahan = ({ onClose }) => {
                           )}
                         </div>
                         <div className="space-y-3">
-                          {transporter.fleets &&
-                          transporter.fleets.length > 0 ? (
-                            transporter.fleets.map((fleet) => (
-                              <div
-                                key={fleet.id}
-                                className="flex items-center justify-between border-b border-neutral-400 pb-3"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <img
-                                    src="/truck-placeholder.png"
-                                    alt="Truck"
-                                    className="h-14 w-14 rounded border"
-                                  />
-                                  <div>
-                                    <div className="text-xs font-bold text-neutral-900">
-                                      {fleet.licensePlate} -{" "}
-                                      <span className="font-semibold">
-                                        {fleet.driver.name.length > 43
-                                          ? `${fleet.driver.name.slice(0, 43)}...`
-                                          : fleet.driver.name}
-                                      </span>
-                                    </div>
-                                    <div className="mt-1 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
-                                      <IconComponent
-                                        src="/icons/location-driver.svg"
-                                        className="h-[14px] w-[14px]"
-                                      />
-                                      {fleet.lastLocation?.distance
-                                        ? t(
-                                            "ModalTransporterMenolakPerubahan.textDistanceFromLocation",
-                                            {
-                                              distance:
-                                                fleet.lastLocation.distance,
-                                            },
-                                            `${fleet.lastLocation.distance} km dari lokasi muat -`
-                                          )
-                                        : "-"}
-                                      <span className="font-semibold text-neutral-900">
-                                        {(() => {
-                                          const lokasi = `${fleet.lastLocation?.District || "-"}, ${fleet.lastLocation?.City || "-"}`;
-                                          return lokasi.length > 48
-                                            ? `${lokasi.slice(0, 48)}...`
-                                            : lokasi;
-                                        })()}
-                                      </span>
+                          {transporter.expandedDetails?.fleetDetails?.length >
+                          0 ? (
+                            transporter.expandedDetails.fleetDetails.map(
+                              (fleet) => (
+                                <div
+                                  key={fleet.id}
+                                  className="flex items-center justify-between border-b border-neutral-400 pb-3"
+                                >
+                                  {/* ...render fleet details as needed... */}
+                                  <div className="flex items-center gap-3">
+                                    <img
+                                      src="/truck-placeholder.png"
+                                      alt="Truck"
+                                      className="h-14 w-14 rounded border"
+                                    />
+                                    <div>
+                                      <div className="text-xs font-bold text-neutral-900">
+                                        {fleet.licensePlate} -{" "}
+                                        <span className="font-semibold">
+                                          {fleet.driver.name.length > 43
+                                            ? `${fleet.driver.name.slice(0, 43)}...`
+                                            : fleet.driver.name}
+                                        </span>
+                                      </div>
+                                      {/* Add other fleet info as needed */}
                                     </div>
                                   </div>
-                                </div>
-                                <span
-                                  className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
-                                    [
+                                  <span
+                                    className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
+                                      [
+                                        "READY_FOR_ORDER",
+                                        "ON_DUTY",
+                                        "WAITING_LOADING_TIME",
+                                      ].includes(fleet.operationalStatus)
+                                        ? "bg-success-50 text-success-400"
+                                        : ["NOT_PAIRED", "INACTIVE"].includes(
+                                              fleet.operationalStatus
+                                            )
+                                          ? "bg-neutral-200 text-neutral-600"
+                                          : "bg-neutral-200 text-neutral-600"
+                                    }`}
+                                  >
+                                    {[
                                       "READY_FOR_ORDER",
                                       "ON_DUTY",
                                       "WAITING_LOADING_TIME",
                                     ].includes(fleet.operationalStatus)
-                                      ? "bg-success-50 text-success-400"
+                                      ? t(
+                                          "ModalTransportTersedia.statusActive",
+                                          {},
+                                          "Aktif"
+                                        )
                                       : ["NOT_PAIRED", "INACTIVE"].includes(
                                             fleet.operationalStatus
                                           )
-                                        ? "bg-neutral-200 text-neutral-600"
-                                        : "bg-neutral-200 text-neutral-600"
-                                  }`}
-                                >
-                                  {[
-                                    "READY_FOR_ORDER",
-                                    "ON_DUTY",
-                                    "WAITING_LOADING_TIME",
-                                  ].includes(fleet.operationalStatus)
-                                    ? t(
-                                        "ModalTransporterMenolakPerubahan.statusActive",
-                                        {},
-                                        "Aktif"
-                                      )
-                                    : ["NOT_PAIRED", "INACTIVE"].includes(
-                                          fleet.operationalStatus
-                                        )
-                                      ? t(
-                                          "ModalTransporterMenolakPerubahan.statusInactive",
-                                          {},
-                                          "Nonaktif"
-                                        )
-                                      : "Nonaktif"}
-                                </span>
-                              </div>
-                            ))
+                                        ? t(
+                                            "ModalTransportTersedia.statusInactive",
+                                            {},
+                                            "Nonaktif"
+                                          )
+                                        : "-"}
+                                  </span>
+                                </div>
+                              )
+                            )
                           ) : (
                             <div className="text-xs text-neutral-500">
                               Belum ada detail armada untuk mock data.

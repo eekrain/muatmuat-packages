@@ -28,7 +28,58 @@ export const mockRejectedTransporterList = {
         active: 1,
         inactive: 2,
       },
-      can_expand: true,
+      expandedDetails: {
+        fleetDetails: [
+          {
+            id: "fleet-uuid-1",
+            licensePlate: "B 1234 XYZ",
+            truckType: "Truk Fuso",
+            carrierType: "Box",
+            operationalStatus: "READY_FOR_ORDER",
+            lastLocation: {
+              distance: 10,
+              latitude: -6.2088,
+              longitude: 106.8456,
+              lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+            },
+            driver: {
+              name: "Rizky Aditya Pratama",
+              phone: "+628987654321",
+            },
+            inactivityInfo: {
+              lastActiveAt: "2025-01-15T12:00:00Z",
+              inactiveDuration: 180,
+              inactivityReason: "Maintenance",
+            },
+          },
+          {
+            id: "fleet-uuid-2",
+            licensePlate: "B 1234 XYZ",
+            truckType: "Truk Fuso",
+            carrierType: "Box",
+            operationalStatus: "INACTIVE",
+            lastLocation: {
+              distance: 10,
+              latitude: -6.2088,
+              longitude: 106.8456,
+              lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+            },
+            driver: {
+              name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+              phone: "+628987654321",
+            },
+            inactivityInfo: {
+              lastActiveAt: "2025-01-15T12:00:00Z",
+              inactiveDuration: 180,
+              inactivityReason: "Maintenance",
+            },
+          },
+        ],
+      },
     },
     {
       id: "tr002",
@@ -50,7 +101,58 @@ export const mockRejectedTransporterList = {
         active: 0,
         inactive: 2,
       },
-      can_expand: false,
+      expandedDetails: {
+        fleetDetails: [
+          {
+            id: "fleet-uuid-1",
+            licensePlate: "B 1234 XYZ",
+            truckType: "Truk Fuso",
+            carrierType: "Box",
+            operationalStatus: "READY_FOR_ORDER",
+            lastLocation: {
+              distance: 10,
+              latitude: -6.2088,
+              longitude: 106.8456,
+              lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+            },
+            driver: {
+              name: "Rizky Aditya Pratama",
+              phone: "+628987654321",
+            },
+            inactivityInfo: {
+              lastActiveAt: "2025-01-15T12:00:00Z",
+              inactiveDuration: 180,
+              inactivityReason: "Maintenance",
+            },
+          },
+          {
+            id: "fleet-uuid-2",
+            licensePlate: "B 1234 XYZ",
+            truckType: "Truk Fuso",
+            carrierType: "Box",
+            operationalStatus: "INACTIVE",
+            lastLocation: {
+              distance: 10,
+              latitude: -6.2088,
+              longitude: 106.8456,
+              lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+            },
+            driver: {
+              name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+              phone: "+628987654321",
+            },
+            inactivityInfo: {
+              lastActiveAt: "2025-01-15T12:00:00Z",
+              inactiveDuration: 180,
+              inactivityReason: "Maintenance",
+            },
+          },
+        ],
+      },
     },
     {
       id: "tr003",
@@ -72,7 +174,58 @@ export const mockRejectedTransporterList = {
         active: 0,
         inactive: 1,
       },
-      can_expand: true,
+      expandedDetails: {
+        fleetDetails: [
+          {
+            id: "fleet-uuid-1",
+            licensePlate: "B 1234 XYZ",
+            truckType: "Truk Fuso",
+            carrierType: "Box",
+            operationalStatus: "READY_FOR_ORDER",
+            lastLocation: {
+              distance: 10,
+              latitude: -6.2088,
+              longitude: 106.8456,
+              lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+            },
+            driver: {
+              name: "Rizky Aditya Pratama",
+              phone: "+628987654321",
+            },
+            inactivityInfo: {
+              lastActiveAt: "2025-01-15T12:00:00Z",
+              inactiveDuration: 180,
+              inactivityReason: "Maintenance",
+            },
+          },
+          {
+            id: "fleet-uuid-2",
+            licensePlate: "B 1234 XYZ",
+            truckType: "Truk Fuso",
+            carrierType: "Box",
+            operationalStatus: "INACTIVE",
+            lastLocation: {
+              distance: 10,
+              latitude: -6.2088,
+              longitude: 106.8456,
+              lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+            },
+            driver: {
+              name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
+              phone: "+628987654321",
+            },
+            inactivityInfo: {
+              lastActiveAt: "2025-01-15T12:00:00Z",
+              inactiveDuration: 180,
+              inactivityReason: "Maintenance",
+            },
+          },
+        ],
+      },
     },
   ],
   pagination: {
