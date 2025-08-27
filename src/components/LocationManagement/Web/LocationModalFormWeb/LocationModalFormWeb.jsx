@@ -11,6 +11,7 @@ import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
@@ -26,6 +27,7 @@ const InnerLocationModalFormWeb = ({
   index,
   needValidateLocationChange,
 }) => {
+  const { t } = useTranslation();
   const {
     formValues,
     formErrors,
@@ -98,7 +100,13 @@ const InnerLocationModalFormWeb = ({
 
             <div className="w-full flex-1 pr-[8px]">
               <h2 className="h-[43px] text-base font-semibold">
-                {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
+                {formMode === "muat"
+                  ? t("LocationModalFormWeb.titleMuat", {}, "Lokasi Muat")
+                  : t(
+                      "LocationModalFormWeb.titleBongkar",
+                      {},
+                      "Lokasi Bongkar"
+                    )}
               </h2>
 
               <form
@@ -109,7 +117,17 @@ const InnerLocationModalFormWeb = ({
                 <div className="flex w-full flex-col gap-4 overflow-y-auto pr-[7px]">
                   <div className="w-full">
                     <label className="mb-3 block text-xs font-medium text-neutral-600">
-                      {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
+                      {formMode === "muat"
+                        ? t(
+                            "LocationModalFormWeb.labelLokasiMuat",
+                            {},
+                            "Lokasi Muat*"
+                          )
+                        : t(
+                            "LocationModalFormWeb.labelLokasiBongkar",
+                            {},
+                            "Lokasi Bongkar*"
+                          )}
                     </label>
                     <InputLocationManagementDropdown
                       needValidateLocationChange={needValidateLocationChange}
@@ -121,19 +139,38 @@ const InnerLocationModalFormWeb = ({
                       }
                       placeholder={
                         formMode === "muat"
-                          ? "Masukkan Lokasi Muat"
-                          : "Masukkan Lokasi Bongkar"
+                          ? t(
+                              "LocationModalFormWeb.placeholderLokasiMuat",
+                              {},
+                              "Masukkan Lokasi Muat"
+                            )
+                          : t(
+                              "LocationModalFormWeb.placeholderLokasiBongkar",
+                              {},
+                              "Masukkan Lokasi Bongkar"
+                            )
                       }
                     />
                   </div>
                   <div>
                     <label className="mb-3 block text-xs font-medium text-neutral-600">
-                      Detail Lokasi <i className="font-normal">(Opsional)</i>
+                      {t(
+                        "LocationModalFormWeb.detailLokasi",
+                        {},
+                        "Detail Lokasi"
+                      )}{" "}
+                      <i className="font-normal">
+                        {t("LocationModalFormWeb.opsional", {}, "(Opsional)")}
+                      </i>
                     </label>
                     <MyTextArea
                       value={formValues.detailLokasi}
                       onChange={(e) => setField("detailLokasi", e.target.value)}
-                      placeholder="Masukkan Detail Lokasi"
+                      placeholder={t(
+                        "LocationModalFormWeb.placeholderDetailLokasi",
+                        {},
+                        "Masukkan Detail Lokasi"
+                      )}
                       maxLength={500}
                       errorMessage={formErrors?.detailLokasi}
                       appearance={{
@@ -144,20 +181,46 @@ const InnerLocationModalFormWeb = ({
                   </div>
                   <div>
                     <label className="mb-3 block text-xs font-medium text-neutral-600">
-                      Nama PIC{" "}
-                      {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
+                      {t("LocationModalFormWeb.namaPIC", {}, "Nama PIC")}{" "}
+                      {formMode === "muat"
+                        ? t(
+                            "LocationModalFormWeb.lokasiMuat",
+                            {},
+                            "Lokasi Muat"
+                          )
+                        : t(
+                            "LocationModalFormWeb.lokasiBongkar",
+                            {},
+                            "Lokasi Bongkar"
+                          )}
+                      *
                     </label>
                     <Input
                       value={formValues.namaPIC}
-                      placeholder="Masukkan Nama PIC Lokasi Muat"
+                      placeholder={t(
+                        "LocationModalFormWeb.placeholderNamaPICMuat",
+                        {},
+                        "Masukkan Nama PIC Lokasi Muat"
+                      )}
                       onChange={(e) => setField("namaPIC", e.target.value)}
                       errorMessage={formErrors?.namaPIC}
                     />
                   </div>
                   <div>
                     <label className="mb-3 block text-xs font-medium text-neutral-600">
-                      No. HP PIC{" "}
-                      {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
+                      {t("LocationModalFormWeb.noHPPIC", {}, "No. HP PIC")}{" "}
+                      {formMode === "muat"
+                        ? t(
+                            "LocationModalFormWeb.lokasiMuat",
+                            {},
+                            "Lokasi Muat"
+                          )
+                        : t(
+                            "LocationModalFormWeb.lokasiBongkar",
+                            {},
+                            "Lokasi Bongkar"
+                          )}
+                      *
                     </label>
                     <Input
                       value={formValues.noHPPIC}
@@ -166,7 +229,11 @@ const InnerLocationModalFormWeb = ({
                         if (val.length > 14) return;
                         setField("noHPPIC", val);
                       }}
-                      placeholder="Contoh: 08xxxxxxxx"
+                      placeholder={t(
+                        "LocationModalFormWeb.placeholderNoHPPIC",
+                        {},
+                        "Contoh: 08xxxxxxxx"
+                      )}
                       errorMessage={formErrors?.noHPPIC}
                     />
                   </div>
@@ -177,7 +244,7 @@ const InnerLocationModalFormWeb = ({
                   variant="muatparts-primary"
                   className="mx-auto w-[112px] rounded-full"
                 >
-                  Simpan
+                  {t("LocationModalFormWeb.save", {}, "Simpan")}
                 </Button>
               </form>
             </div>

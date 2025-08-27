@@ -41,10 +41,18 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
     }
     return [
       {
-        title: "Biaya Perubahan Rute",
+        title: t(
+          "UpdateOrderSummaryPanel.routeChangeCost",
+          {},
+          "Biaya Perubahan Rute"
+        ),
         items: [
           {
-            label: "Selisih Jarak Perubahan Lokasi Bongkar",
+            label: t(
+              "UpdateOrderSummaryPanel.distanceDifference",
+              {},
+              "Selisih Jarak Perubahan Lokasi Bongkar"
+            ),
             price:
               calculatedPrice.costDifference > 0
                 ? calculatedPrice.costDifference
@@ -53,29 +61,41 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
         ],
       },
       {
-        title: "Biaya Administrasi",
+        title: t(
+          "UpdateOrderSummaryPanel.administrationCost",
+          {},
+          "Biaya Administrasi"
+        ),
         items: [
           {
-            label: "Admin Ubah Pesanan",
+            label: t(
+              "UpdateOrderSummaryPanel.orderChangeAdmin",
+              {},
+              "Admin Ubah Pesanan"
+            ),
             price: calculatedPrice.penaltyFee,
           },
         ],
       },
       {
-        title: "Biaya Lainnya",
+        title: t("UpdateOrderSummaryPanel.otherCosts", {}, "Biaya Lainnya"),
         items: [
           {
-            label: "Admin Layanan",
+            label: t(
+              "UpdateOrderSummaryPanel.serviceAdmin",
+              {},
+              "Admin Layanan"
+            ),
             price: calculatedPrice.adminFee,
           },
           {
-            label: "Pajak",
+            label: t("UpdateOrderSummaryPanel.tax", {}, "Pajak"),
             price: calculatedPrice.taxAmount,
           },
         ],
       },
     ];
-  }, [calculatedPrice, formValues.hasUpdatedForm]);
+  }, [calculatedPrice, formValues.hasUpdatedForm, t]);
 
   const handleUpdateOrder = async () => {
     // setUpdateOrderSuccess(true);
@@ -97,7 +117,13 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
       if (err?.response?.data) {
         alert(`Error: ${err.response.data.message?.text || "Unknown error"}`);
       } else {
-        alert("Terjadi kesalahan. Silakan coba lagi.");
+        alert(
+          t(
+            "UpdateOrderSummaryPanel.errorMessage",
+            {},
+            "Terjadi kesalahan. Silakan coba lagi."
+          )
+        );
       }
     }
   };
@@ -114,7 +140,11 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
             )}
           >
             <span className="text-base font-bold leading-[19.2px]">
-              Detail Tambahan Biaya
+              {t(
+                "UpdateOrderSummaryPanel.additionalCostDetails",
+                {},
+                "Detail Tambahan Biaya"
+              )}
             </span>
             {/* Detail Pesanan - Integrated from old file logic */}
             {priceSummary.length > 0 ? (
@@ -161,7 +191,11 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
         >
           <div className="flex justify-between">
             <div className="max-w-[148px] text-base font-bold leading-[19.2px]">
-              Total Tambahan Biaya
+              {t(
+                "UpdateOrderSummaryPanel.totalAdditionalCost",
+                {},
+                "Total Tambahan Biaya"
+              )}
             </div>
             <span className="text-base font-bold leading-[19.2px]">
               {calculatedPrice?.totalPrice > 0
@@ -175,7 +209,7 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
               variant="muatparts-primary"
               onClick={() => setConfirmationModalOpen(true)}
             >
-              Lanjut
+              {t("UpdateOrderSummaryPanel.continueButton", {}, "Lanjut")}
             </Button>
           ) : null}
         </div>

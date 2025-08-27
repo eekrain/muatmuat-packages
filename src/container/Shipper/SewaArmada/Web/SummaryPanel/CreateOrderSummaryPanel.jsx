@@ -231,6 +231,8 @@ export const CreateOrderSummaryPanel = ({
     truckCount,
     selectedVoucherDetails,
     voucherDiscount,
+    isBusinessEntity,
+    t,
   ]);
 
   // Also create detailPesanan structure for new logic integration
@@ -356,14 +358,22 @@ export const CreateOrderSummaryPanel = ({
     if (!orderData.loadTimeStart) {
       errors.push({
         field: "loadTimeStart",
-        message: "Waktu muat tidak boleh kosong",
+        message: t(
+          "CreateOrderSummaryPanel.errorLoadTimeRequired",
+          {},
+          "Waktu muat tidak boleh kosong"
+        ),
       });
     }
 
     if (!orderData.loadTimeEnd) {
       errors.push({
         field: "loadTimeEnd",
-        message: "Waktu muat akhir tidak boleh kosong",
+        message: t(
+          "CreateOrderSummaryPanel.errorLoadTimeEndRequired",
+          {},
+          "Waktu muat akhir tidak boleh kosong"
+        ),
       });
     }
 
@@ -378,7 +388,11 @@ export const CreateOrderSummaryPanel = ({
     if (pickupLocations.length === 0 || dropoffLocations.length === 0) {
       errors.push({
         field: "locations",
-        message: "Minimal harus ada 1 lokasi pickup dan 1 lokasi dropoff",
+        message: t(
+          "CreateOrderSummaryPanel.errorLocationsRequired",
+          {},
+          "Minimal harus ada 1 lokasi pickup dan 1 lokasi dropoff"
+        ),
       });
     }
 
@@ -386,14 +400,22 @@ export const CreateOrderSummaryPanel = ({
     if (!orderData.cargos || orderData.cargos.length === 0) {
       errors.push({
         field: "cargos",
-        message: "Minimal harus ada 1 muatan",
+        message: t(
+          "CreateOrderSummaryPanel.errorCargoRequired",
+          {},
+          "Minimal harus ada 1 muatan"
+        ),
       });
     } else {
       orderData.cargos.forEach((cargo, index) => {
         if (!cargo.weight || cargo.weight <= 0) {
           errors.push({
             field: `cargos.${index}.weight`,
-            message: "Berat muatan harus lebih dari 0",
+            message: t(
+              "CreateOrderSummaryPanel.errorCargoWeightInvalid",
+              {},
+              "Berat muatan harus lebih dari 0"
+            ),
           });
         }
       });
@@ -403,7 +425,11 @@ export const CreateOrderSummaryPanel = ({
     if (!orderData.paymentMethodId) {
       errors.push({
         field: "paymentMethodId",
-        message: "Metode pembayaran wajib dipilih",
+        message: t(
+          "CreateOrderSummaryPanel.errorPaymentMethodRequired",
+          {},
+          "Metode pembayaran wajib dipilih"
+        ),
       });
     }
 
@@ -456,7 +482,13 @@ export const CreateOrderSummaryPanel = ({
           `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
         );
       } else {
-        alert("Validation error from server");
+        alert(
+          t(
+            "CreateOrderSummaryPanel.errorValidationFromServer",
+            {},
+            "Validation error from server"
+          )
+        );
       }
     } catch (error) {
       console.error("Error creating order:", error);
@@ -464,7 +496,13 @@ export const CreateOrderSummaryPanel = ({
       if (error.response && error.response.data) {
         alert(`Error: ${error.response.data.Message?.Text || "Unknown error"}`);
       } else {
-        alert("Terjadi kesalahan. Silakan coba lagi.");
+        alert(
+          t(
+            "CreateOrderSummaryPanel.errorGeneral",
+            {},
+            "Terjadi kesalahan. Silakan coba lagi."
+          )
+        );
       }
     }
 

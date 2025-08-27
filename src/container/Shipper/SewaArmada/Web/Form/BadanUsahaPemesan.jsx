@@ -9,6 +9,8 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
 
@@ -26,6 +28,7 @@ export const BadanUsahaPemesan = () => {
   const { isBusinessEntity, name, taxId } = businessEntity;
 
   const { setField } = useSewaArmadaActions();
+  const { t } = useTranslation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -68,19 +71,43 @@ export const BadanUsahaPemesan = () => {
     const newErrors = {};
     const { name, taxId } = formData;
     if (!name) {
-      newErrors.name = "Nama badan usaha/perusahaan wajib diisi";
+      newErrors.name = t(
+        "BadanUsahaPemesan.errorNameRequired",
+        {},
+        "Nama badan usaha/perusahaan wajib diisi"
+      );
     } else if (name.length < 3) {
-      newErrors.name = "Nama badan usaha/perusahaan minimal 3 karakter";
+      newErrors.name = t(
+        "BadanUsahaPemesan.errorNameMinLength",
+        {},
+        "Nama badan usaha/perusahaan minimal 3 karakter"
+      );
     } else if (/[^a-zA-Z\s]/.test(name)) {
-      newErrors.name = "Nama badan usaha/perusahaan tidak valid";
+      newErrors.name = t(
+        "BadanUsahaPemesan.errorNameInvalid",
+        {},
+        "Nama badan usaha/perusahaan tidak valid"
+      );
     }
 
     if (!taxId) {
-      newErrors.taxId = "Nomor NPWP wajib diisi";
+      newErrors.taxId = t(
+        "BadanUsahaPemesan.errorTaxIdRequired",
+        {},
+        "Nomor NPWP wajib diisi"
+      );
     } else if (taxId.length < 15) {
-      newErrors.taxId = "Nomor NPWP minimal 15 digit";
+      newErrors.taxId = t(
+        "BadanUsahaPemesan.errorTaxIdMinLength",
+        {},
+        "Nomor NPWP minimal 15 digit"
+      );
     } else if (taxId.length > 16) {
-      newErrors.taxId = "Nomor NPWP maksimal 16 digit";
+      newErrors.taxId = t(
+        "BadanUsahaPemesan.errorTaxIdMaxLength",
+        {},
+        "Nomor NPWP maksimal 16 digit"
+      );
     }
 
     if (Object.keys(newErrors).length === 0) {
@@ -100,9 +127,9 @@ export const BadanUsahaPemesan = () => {
       <FormContainer>
         {/* 25. 18 - Web - LB - 0001 */}
         <div className="text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600">
-          <span>Badan Usaha Pemesan</span>
+          <span>{t("BadanUsahaPemesan.label", {}, "Badan Usaha Pemesan")}</span>
           <span className="block text-xxs md:text-xs md:font-medium md:italic md:text-neutral-500">
-            (Opsional)
+            {t("BadanUsahaPemesan.optional", {}, "(Opsional)")}
           </span>
         </div>
         <div className="flex flex-col gap-y-3">
@@ -113,14 +140,21 @@ export const BadanUsahaPemesan = () => {
                 handleFirstTime(() => handleToggleCheckbox(checked))
               }
               // 25. 18 - Web - LB - 0001
-              label="Centang jika kamu merupakan suatu badan usaha/perusahan"
+              label={t(
+                "BadanUsahaPemesan.checkboxLabel",
+                {},
+                "Centang jika kamu merupakan suatu badan usaha/perusahan"
+              )}
               checked={isBusinessEntity || isModalOpen}
               value="isBusinessEntity"
             />
             <InfoTooltip className="w-[336px]" side="right">
               <p>
-                Jika kamu mencentang opsi ini kamu akan dikenakan PPh 23
-                terhadap pembayaran sewa jasa angkut yang kamu lakukan
+                {t(
+                  "BadanUsahaPemesan.tooltipText",
+                  {},
+                  "Jika kamu mencentang opsi ini kamu akan dikenakan PPh 23 terhadap pembayaran sewa jasa angkut yang kamu lakukan"
+                )}
               </p>
             </InfoTooltip>
           </div>
@@ -143,7 +177,7 @@ export const BadanUsahaPemesan = () => {
                     <IconComponent src="/icons/nomor-amandemen16.svg" />
                     <div>
                       <div className="text-xs font-medium leading-[14.4px] text-neutral-900">
-                        {"Nomor NPWP :"}
+                        {t("BadanUsahaPemesan.taxIdLabel", {}, "Nomor NPWP :")}
                       </div>
                       <div className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                         {taxId}
@@ -161,7 +195,7 @@ export const BadanUsahaPemesan = () => {
                   }}
                 >
                   <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-                    Ubah
+                    {t("BadanUsahaPemesan.editButton", {}, "Ubah")}
                   </span>
                   <IconComponent
                     className="icon-fill-primary-700"
@@ -191,7 +225,7 @@ export const BadanUsahaPemesan = () => {
           <div className="flex flex-col gap-y-4 px-6 py-8">
             <div className="flex w-[424px] justify-center">
               <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
-                Informasi Badan Usaha
+                {t("BadanUsahaPemesan.modalTitle", {}, "Informasi Badan Usaha")}
               </h1>
             </div>
             {/* Form Container */}
@@ -199,11 +233,19 @@ export const BadanUsahaPemesan = () => {
               {/* Field 1 - Nama Badan Usaha */}
               <div className="flex w-full flex-col gap-3">
                 <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Nama Badan Usaha/Perusahaan*
+                  {t(
+                    "BadanUsahaPemesan.companyNameLabel",
+                    {},
+                    "Nama Badan Usaha/Perusahaan*"
+                  )}
                 </label>
                 <Input
                   name="name"
-                  placeholder="Masukkan Nama Badan Usaha/Perusahaan"
+                  placeholder={t(
+                    "BadanUsahaPemesan.companyNamePlaceholder",
+                    {},
+                    "Masukkan Nama Badan Usaha/Perusahaan"
+                  )}
                   value={formData.name}
                   onChange={handleInputChange}
                   errorMessage={formErrors.name}
@@ -213,11 +255,15 @@ export const BadanUsahaPemesan = () => {
               {/* Field 2 - Nomor NPWP */}
               <div className="flex w-full flex-col gap-3">
                 <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Nomor NPWP*
+                  {t("BadanUsahaPemesan.taxIdFormLabel", {}, "Nomor NPWP*")}
                 </label>
                 <Input
                   name="taxId"
-                  placeholder="Masukkan Nomor NPWP"
+                  placeholder={t(
+                    "BadanUsahaPemesan.taxIdPlaceholder",
+                    {},
+                    "Masukkan Nomor NPWP"
+                  )}
                   value={formData.taxId}
                   onChange={handleInputChange}
                   errorMessage={formErrors.taxId}
@@ -232,7 +278,7 @@ export const BadanUsahaPemesan = () => {
                 onClick={handleSimpan}
                 className="min-w-[112px]"
               >
-                Simpan
+                {t("BadanUsahaPemesan.saveButton", {}, "Simpan")}
               </Button>
             </div>
           </div>

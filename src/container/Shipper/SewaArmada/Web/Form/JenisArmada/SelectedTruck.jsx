@@ -4,6 +4,8 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 export const SelectedTruck = ({
   image,
   carrierName,
@@ -13,6 +15,7 @@ export const SelectedTruck = ({
   weightUnit,
   dimensions,
 }) => {
+  const { t } = useTranslation();
   // Format capacity and dimensions from API data
   const capacity =
     maxWeight && weightUnit ? `${maxWeight} ${weightUnit}` : "N/A";
@@ -28,22 +31,29 @@ export const SelectedTruck = ({
     // },
     {
       iconSrc: "/icons/estimasi-kapasitas16.svg",
-      title: "Estimasi Kapasitas : ",
+      title: t("SelectedTruck.capacityLabel", {}, "Estimasi Kapasitas : "),
       value: capacity,
     },
     {
       iconSrc: "/icons/kapasitas16.svg",
-      title: "Estimasi Dimensi (p x l x t) : ",
+      title: t(
+        "SelectedTruck.dimensionLabel",
+        {},
+        "Estimasi Dimensi (p x l x t) : "
+      ),
       value: dimension,
     },
   ];
 
   return (
     <div className="flex gap-x-4 text-neutral-900">
-      <LightboxProvider image={image} title="Jenis Truk">
+      <LightboxProvider
+        image={image}
+        title={t("SelectedTruck.truckType", {}, "Jenis Truk")}
+      >
         <LightboxPreview
           image={image}
-          alt="Jenis Truk"
+          alt={t("SelectedTruck.truckTypeAlt", {}, "Jenis Truk")}
           className="size-[96px] overflow-hidden rounded-md object-cover"
         />
       </LightboxProvider>

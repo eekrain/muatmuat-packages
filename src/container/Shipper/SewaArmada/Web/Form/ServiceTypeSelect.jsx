@@ -2,6 +2,8 @@ import { usePathname } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +17,7 @@ export const ServiceTypeSelect = () => {
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setOrderType } = useSewaArmadaActions();
+  const { t } = useTranslation();
 
   return (
     <div className="flex justify-center gap-3">
@@ -38,10 +41,15 @@ export const ServiceTypeSelect = () => {
             height={32}
           />
         </div>
-        <h3 className="text-sm font-semibold text-black">Instan</h3>
+        <h3 className="text-sm font-semibold text-black">
+          {t("ServiceTypeSelect.instantTitle", {}, "Instan")}
+        </h3>
         <p className="max-w-[294px] text-center text-xs font-medium text-neutral-600">
-          Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di
-          Hari+1.
+          {t(
+            "ServiceTypeSelect.instantDescription",
+            {},
+            "Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di Hari+1."
+          )}
         </p>
       </button>
 
@@ -65,10 +73,15 @@ export const ServiceTypeSelect = () => {
             height={32}
           />
         </div>
-        <h3 className="text-sm font-semibold text-black">Terjadwal</h3>
+        <h3 className="text-sm font-semibold text-black">
+          {t("ServiceTypeSelect.scheduledTitle", {}, "Terjadwal")}
+        </h3>
         <p className="max-w-[294px] text-center text-xs font-medium text-neutral-600">
-          Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai
-          dengan Hari+30.
+          {t(
+            "ServiceTypeSelect.scheduledDescription",
+            {},
+            "Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai dengan Hari+30."
+          )}
         </p>
       </button>
     </div>

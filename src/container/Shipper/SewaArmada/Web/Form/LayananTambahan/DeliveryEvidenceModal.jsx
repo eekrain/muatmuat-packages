@@ -11,6 +11,7 @@ import TextArea from "@/components/TextArea/TextArea";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRMutateHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import {
@@ -31,6 +32,7 @@ const DeliveryEvidenceModalContent = ({
   const [deliveryEvidenceFormErrors, setDeliveryEvidenceFormErrors] = useState(
     {}
   );
+  const { t } = useTranslation();
 
   const additionalServices = useSewaArmadaStore(
     (s) => s.formValues.additionalServices
@@ -109,7 +111,11 @@ const DeliveryEvidenceModalContent = ({
     const newErrors = {};
 
     if (!selectedShippingOptions) {
-      newErrors.shippingOption = "Ekspedisi wajib dipilih";
+      newErrors.shippingOption = t(
+        "DeliveryEvidenceModal.shippingRequired",
+        {},
+        "Ekspedisi wajib dipilih"
+      );
     }
 
     setDeliveryEvidenceFormErrors(newErrors);
@@ -172,7 +178,11 @@ const DeliveryEvidenceModalContent = ({
   return (
     <div className="flex w-[472px] flex-col items-center gap-4 px-6 py-8">
       <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
-        Kirim Bukti Fisik Penerimaan Barang
+        {t(
+          "DeliveryEvidenceModal.title",
+          {},
+          "Kirim Bukti Fisik Penerimaan Barang"
+        )}
       </h2>
 
       {/* Form Container */}
@@ -180,11 +190,19 @@ const DeliveryEvidenceModalContent = ({
         <div className="grid grid-cols-1 gap-y-3">
           {/* Nama Penerima Field */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Nama Penerima*
+            {t(
+              "DeliveryEvidenceModal.recipientNameLabel",
+              {},
+              "Nama Penerima*"
+            )}
           </label>
           <Input
             name="namaPIC"
-            placeholder="Masukkan Nama Penerima"
+            placeholder={t(
+              "DeliveryEvidenceModal.recipientNamePlaceholder",
+              {},
+              "Masukkan Nama Penerima"
+            )}
             value={locationFormValues.namaPIC}
             onChange={(e) => setLocationField("namaPIC", e.target.value)}
             errorMessage={locationFormErrors.namaPIC}
@@ -193,11 +211,19 @@ const DeliveryEvidenceModalContent = ({
 
           {/* Nomor Handphone Field */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Nomor Handphone Penerima*
+            {t(
+              "DeliveryEvidenceModal.recipientPhoneLabel",
+              {},
+              "Nomor Handphone Penerima*"
+            )}
           </label>
           <Input
             name="noHPPIC"
-            placeholder="Contoh: 08xxxxxxxx"
+            placeholder={t(
+              "DeliveryEvidenceModal.recipientPhonePlaceholder",
+              {},
+              "Contoh: 08xxxxxxxx"
+            )}
             type="tel"
             value={locationFormValues.noHPPIC}
             onChange={(e) => setLocationField("noHPPIC", e.target.value)}
@@ -206,7 +232,11 @@ const DeliveryEvidenceModalContent = ({
           />
           {/* Alamat Tujuan Field */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Alamat Tujuan*
+            {t(
+              "DeliveryEvidenceModal.destinationAddressLabel",
+              {},
+              "Alamat Tujuan*"
+            )}
           </label>
 
           <InputLocationManagementDropdown
@@ -215,11 +245,19 @@ const DeliveryEvidenceModalContent = ({
 
           {/* Detail Alamat Field */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Detail Alamat Tujuan*
+            {t(
+              "DeliveryEvidenceModal.detailAddressLabel",
+              {},
+              "Detail Alamat Tujuan*"
+            )}
           </label>
           <TextArea
             name="detailLokasi"
-            placeholder="Masukkan Detail Alamat Tujuan"
+            placeholder={t(
+              "DeliveryEvidenceModal.detailAddressPlaceholder",
+              {},
+              "Masukkan Detail Alamat Tujuan"
+            )}
             value={locationFormValues.detailLokasi}
             onChange={(e) => setLocationField("detailLokasi", e.target.value)}
             maxLength={500}
@@ -235,11 +273,15 @@ const DeliveryEvidenceModalContent = ({
 
           {/* Kecamatan Dropdown */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Kecamatan*
+            {t("DeliveryEvidenceModal.districtLabel", {}, "Kecamatan*")}
           </label>
 
           <Select
-            placeholder="Pilih Kecamatan Tujuan"
+            placeholder={t(
+              "DeliveryEvidenceModal.districtPlaceholder",
+              {},
+              "Pilih Kecamatan Tujuan"
+            )}
             options={
               dataLokasi?.kecamatanList && dataLokasi?.kecamatanList.length > 0
                 ? dataLokasi?.kecamatanList.map((item) => ({
@@ -265,23 +307,31 @@ const DeliveryEvidenceModalContent = ({
 
           {/* Kota & Provinsi Display */}
 
-          <span className="text-xs font-medium text-neutral-600">Kota</span>
+          <span className="text-xs font-medium text-neutral-600">
+            {t("DeliveryEvidenceModal.cityLabel", {}, "Kota")}
+          </span>
           <span className="text-xs font-medium text-neutral-900">
             {dataLokasi?.city?.name || "-"}
           </span>
 
-          <span className="text-xs font-medium text-neutral-600">Provinsi</span>
+          <span className="text-xs font-medium text-neutral-600">
+            {t("DeliveryEvidenceModal.provinceLabel", {}, "Provinsi")}
+          </span>
           <span className="text-xs font-medium text-neutral-900">
             {dataLokasi?.province?.name || "-"}
           </span>
 
           {/* Kode Pos Dropdown */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Kode Pos*
+            {t("DeliveryEvidenceModal.postalCodeLabel", {}, "Kode Pos*")}
           </label>
 
           <Select
-            placeholder="Pilih Kode Pos"
+            placeholder={t(
+              "DeliveryEvidenceModal.postalCodePlaceholder",
+              {},
+              "Pilih Kode Pos"
+            )}
             options={
               dataLokasi?.postalCodeList &&
               dataLokasi?.postalCodeList.length > 0
@@ -308,7 +358,7 @@ const DeliveryEvidenceModalContent = ({
 
           {/* Ekspedisi Dropdown */}
           <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Pilih Ekspedisi*
+            {t("DeliveryEvidenceModal.expeditionLabel", {}, "Pilih Ekspedisi*")}
           </label>
           <DropdownJasaPengiriman
             shippingOptions={shippingOptions}
@@ -330,8 +380,16 @@ const DeliveryEvidenceModalContent = ({
                 shippingOption: undefined,
               }));
             }}
-            placeholder="Pilih Ekspedisi"
-            insuranceText="Pakai Asuransi Pengiriman"
+            placeholder={t(
+              "DeliveryEvidenceModal.expeditionPlaceholder",
+              {},
+              "Pilih Ekspedisi"
+            )}
+            insuranceText={t(
+              "DeliveryEvidenceModal.insuranceText",
+              {},
+              "Pakai Asuransi Pengiriman"
+            )}
             errorMessage={deliveryEvidenceFormErrors.shippingOption}
           />
         </div>
@@ -343,7 +401,7 @@ const DeliveryEvidenceModalContent = ({
         className="h-8 w-[112px]"
         onClick={handleSubmit}
       >
-        Simpan
+        {t("DeliveryEvidenceModal.saveButton", {}, "Simpan")}
       </Button>
     </div>
   );
