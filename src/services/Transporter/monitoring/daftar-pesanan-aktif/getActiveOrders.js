@@ -54,7 +54,7 @@ const apiResultActiveOrders = {
           },
         ],
         truckType: { id: "uuid", name: "Tronton" },
-        carrierTruck: { id: "uuid", name: "Wing Box" },
+        carrierTruck: { id: "uuid", description: "Wing Box" },
         truckCount: 2,
         totalWeight: 14,
         weightUnit: "ton",

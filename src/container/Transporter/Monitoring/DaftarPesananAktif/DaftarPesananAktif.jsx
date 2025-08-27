@@ -32,8 +32,8 @@ import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitMod
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
-import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
+import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrders";
+import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrdersCount";
 import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 import {
   ORDER_STATUS,
@@ -574,7 +574,7 @@ const DaftarPesananAktif = ({
             <span className="text-neutral-600">
               {t("DaftarPesananAktif.carrierLabel", {}, "Carrier")} :
             </span>{" "}
-            {row.carrierTruck.name}
+            {row.carrierTruck.description}
           </span>
           <div className="mt-1 flex items-center gap-4">
             <div className="flex items-center gap-1">
