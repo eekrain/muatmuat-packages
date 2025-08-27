@@ -8,6 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { FilterPopover } from "@/container/Shared/Map/components/FilterPopover";
 import { LegendButton } from "@/container/Shared/Map/components/LegendButton";
 import { SearchWithSuggestions } from "@/container/Shared/Map/components/SearchWithSuggestions";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
@@ -32,6 +33,7 @@ export const MapInterfaceOverlay = ({
   fleetLocationsData,
 }) => {
   const { data: sosStatusSummary } = useGetSosStatusSummary();
+  const { t } = useTranslation();
   const [centerButtonClicked, setCenterButtonClicked] =
     useState(!hasMapInteraction);
 
@@ -61,22 +63,24 @@ export const MapInterfaceOverlay = ({
       icon: isFullscreen
         ? "/icons/monitoring/min-screen.svg"
         : "/icons/monitoring/full-screen.svg",
-      tooltip: isFullscreen ? "Kecilkan" : "Besarkan",
+      tooltip: isFullscreen
+        ? t("MapInterfaceOverlay.tooltip.shrink", {}, "Kecilkan")
+        : t("MapInterfaceOverlay.tooltip.expand", {}, "Besarkan"),
       onClick: onToggleFullscreen,
     },
     {
       icon: "/icons/monitoring/center.svg",
-      tooltip: "Pusatkan",
+      tooltip: t("MapInterfaceOverlay.tooltip.center", {}, "Pusatkan"),
       onClick: handleCenterClick,
     },
     {
       icon: "/icons/monitoring/plus.svg",
-      tooltip: "Zoom In",
+      tooltip: t("MapInterfaceOverlay.tooltip.zoomIn", {}, "Zoom In"),
       onClick: handleZoomIn,
     },
     {
       icon: "/icons/monitoring/minus.svg",
-      tooltip: "Zoom Out",
+      tooltip: t("MapInterfaceOverlay.tooltip.zoomOut", {}, "Zoom Out"),
       onClick: handleZoomOut,
     },
   ];
@@ -87,7 +91,7 @@ export const MapInterfaceOverlay = ({
       {!hasData && (
         <div className="absolute left-1/2 top-40 z-30 flex h-[52px] w-[300px] -translate-x-1/2 transform items-center justify-center rounded-md border border-neutral-400 bg-white px-[10px] py-[22px] shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
           <span className="text-center text-xs font-medium text-black">
-            Data Tidak Ditemukan
+            {t("MapInterfaceOverlay.dataNotFound", {}, "Data Tidak Ditemukan")}
           </span>
         </div>
       )}
@@ -102,12 +106,18 @@ export const MapInterfaceOverlay = ({
             iconRight={!showPilihArmada ? <ChevronRight size={16} /> : null}
             onClick={onClickDaftarArmada}
           >
-            {showPilihArmada ? "Kembali" : "Daftar Armada"}
+            {showPilihArmada
+              ? t("MapInterfaceOverlay.button.back", {}, "Kembali")
+              : t("MapInterfaceOverlay.button.fleetList", {}, "Daftar Armada")}
           </Button>
 
           {/* Search Input with Suggestions */}
           <SearchWithSuggestions
-            placeholder="Cari No. Polisi / Nama Driver / Nama Transporter"
+            placeholder={t(
+              "MapInterfaceOverlay.searchPlaceholder",
+              {},
+              "Cari No. Polisi / Nama Driver / Nama Transporter"
+            )}
             onSearch={onSearch}
             containerClassName="max-w-[300px] flex-1"
             inputClassName="w-full"
@@ -139,8 +149,12 @@ export const MapInterfaceOverlay = ({
             onClick={onClickSOS}
           >
             {sosStatusSummary?.Data?.active === 0
-              ? "Riwayat SOS"
-              : `SOS (${sosStatusSummary?.Data?.active})`}
+              ? t("MapInterfaceOverlay.button.sos.history", {}, "Riwayat SOS")
+              : t(
+                  "MapInterfaceOverlay.button.sos.count",
+                  { count: sosStatusSummary?.Data?.active },
+                  "SOS ({count})"
+                )}
           </Button>
         </div>
       )}
@@ -202,7 +216,13 @@ export const MapInterfaceOverlay = ({
             />
             <div className="peer h-6 w-11 rounded-full bg-neutral-800 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-700 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
           </label>
-          <span className="text-xs font-medium">No. Polisi & Transporter</span>
+          <span className="text-xs font-medium">
+            {t(
+              "MapInterfaceOverlay.label.licenseAndTransporter",
+              {},
+              "No. Polisi & Transporter"
+            )}
+          </span>
         </div>
       </div>
     </>

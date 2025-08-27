@@ -41,7 +41,6 @@ const RingkasanPendapatan = ({ dataOrderDetail }) => {
             )}
           </CardPayment.CollapsibleSection>
           <CardPayment.LineItem
-            className="mt-3"
             labelClassName="text-sm font-semibold text-neutral-900"
             valueClassName="text-sm font-semibold text-neutral-900"
             label="Sub Total"
