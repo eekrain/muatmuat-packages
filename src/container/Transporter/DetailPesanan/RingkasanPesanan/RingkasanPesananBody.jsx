@@ -59,7 +59,6 @@ const PICDetailItem = ({ icon, text, className = "" }) => (
 
 // Component untuk kartu lokasi individual
 const PICLocationCard = ({ locations = [], title }) => {
-  console.log("locations", locations);
   return (
     <div className={"flex w-full flex-row gap-8"}>
       <div className="flex h-8 min-w-[178px] items-center">
@@ -225,7 +224,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
             <div>
               <h3 className="text-xs font-bold text-neutral-900">
                 {/* Carrier name menyusul */}
-                {`${dataOrderDetail?.vehicle?.truckTypeName} - Box`}
+                {`${dataOrderDetail?.vehicle?.truckTypeName} - ${dataOrderDetail?.vehicle?.carrierName}`}
               </h3>
               <p className="mt-2 text-xs font-medium text-neutral-900">
                 Kebutuhan : {dataOrderDetail?.truckCount} Unit
@@ -282,17 +281,14 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
 
                 <SectionRow label="Foto Muatan">
                   <LightboxProvider
-                    images={
-                      dataOrderDetail?.photos?.map((photo) => photo.photoUrl) ||
-                      []
-                    }
+                    images={dataOrderDetail?.photos || []}
                     title="Foto Muatan"
                   >
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                       {dataOrderDetail?.photos?.map((photo, index) => (
                         <LightboxPreview
                           key={index}
-                          image={photo.photoUrl}
+                          image={photo}
                           index={index}
                           alt={`Foto Muatan ${index + 1}`}
                           className="size-[124px] rounded-xl object-cover"
@@ -323,7 +319,10 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                               src="/icons/layanan-tambahan16.svg"
                             />
                             <span className="text-xs font-semibold">
-                              {service.serviceName}
+                              {service.serviceName ===
+                              "Kirim Bukti Fisik Penerimaan Barang"
+                                ? "Kirim Berkas"
+                                : service.serviceName}
                             </span>
                           </div>
                         )

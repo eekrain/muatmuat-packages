@@ -11,6 +11,11 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+// Import the required services
+import { useAcceptInstantTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postAcceptInstantTransport";
+import { usePostAcknowledgeRequest } from "@/services/Transporter/monitoring/permintaan-angkut/postAcknowledgeRequest";
+import { usePostRejectTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postRejectTransport";
+import { usePostToggleSaveTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postToggleSaveTransport";
 
 import ModalTerimaPermintaan from "./ModalTerimaPermintaan";
 import ModalTolakPermintaan from "./ModalTolakPermintaan";
@@ -37,10 +42,123 @@ const TransportRequestCard = ({
     }
   }, [isBookmarked]);
 
-  const handleSave = () => {
-    const newSavedState = !isSaved;
-    setIsSaved(newSavedState);
-    if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
+  // Use the save transport service
+  const { toggleSave, isToggling } = usePostToggleSaveTransport();
+
+  // Use the reject transport service
+  const { rejectRequest, isRejecting } = usePostRejectTransport();
+
+  // Use the accept instant transport service
+  const { acceptTransport, isAccepting } = useAcceptInstantTransport();
+
+  // Use the acknowledge request service
+  const { acknowledgeRequest, isAcknowledging } = usePostAcknowledgeRequest();
+
+  const handleSave = async () => {
+    try {
+      const newSavedState = !isSaved;
+
+      // Call the API to toggle save status
+      const response = await toggleSave({
+        id: request.id,
+        payload: { save: newSavedState },
+      });
+
+      // Update local state
+      setIsSaved(newSavedState);
+
+      // Call the prop callback if provided
+      if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
+
+      // Show success toast
+      toast.success(
+        t(
+          "TransportRequestCard.toastSuccessSaveToggle",
+          {
+            orderCode: request.orderCode,
+            action: newSavedState ? "disimpan" : "dihapus",
+          },
+          `Permintaan ${request.orderCode} berhasil ${newSavedState ? "disimpan" : "dihapus"}`
+        )
+      );
+    } catch (error) {
+      // Handle error response
+      if (error.response?.status === 409) {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorSaveConflict",
+            {},
+            "Permintaan tidak tersedia untuk disimpan"
+          )
+        );
+      } else {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorSaveGeneric",
+            {},
+            "Gagal menyimpan permintaan"
+          )
+        );
+      }
+
+      // Revert the UI state if API call fails
+      setIsSaved(isSaved);
+    }
+  };
+
+  // Handle reject action with API integration
+  const handleReject = async (rejectData) => {
+    try {
+      // Call the API to reject the transport request
+      const response = await rejectRequest({
+        id: request.id,
+        payload: {
+          reason: rejectData.reason,
+          notes: rejectData.notes,
+        },
+      });
+
+      // Show success toast
+      toast.success(
+        t(
+          "TransportRequestCard.toastSuccessReject",
+          { orderCode: request.orderCode },
+          `Permintaan ${request.orderCode} berhasil ditolak`
+        )
+      );
+
+      // Close the modal
+      setShowTolakModal(false);
+
+      // Update URL
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", "/monitoring");
+      }
+    } catch (error) {
+      // Handle error response
+      if (error.response?.status === 404) {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorRejectNotFound",
+            {},
+            "Permintaan tidak ditemukan"
+          )
+        );
+      } else {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorRejectGeneric",
+            {},
+            "Gagal menolak permintaan"
+          )
+        );
+      }
+    }
+  };
+
+  // Handle accept action - open modal for both SCHEDULED and INSTANT requests
+  const handleAccept = () => {
+    setShowModal(true);
   };
 
   const handleDetail = () => {
@@ -59,29 +177,48 @@ const TransportRequestCard = ({
     setShowTolakModal(true);
   };
 
-  const handleUnderstand = () => {
-    toast.success(
-      t(
-        "TransportRequestCard.toastSuccessRequestClosed",
-        { orderCode: request.orderCode },
-        `Permintaan ${request.orderCode} berhasil ditutup`
-      )
-    );
-    if (onUnderstand) onUnderstand(request.id);
+  const handleUnderstand = async () => {
+    try {
+      // Call the API to acknowledge the taken request
+      const response = await acknowledgeRequest({
+        id: request.id,
+      });
+
+      // Show success toast
+      toast.success(
+        t(
+          "TransportRequestCard.toastSuccessRequestClosed",
+          { orderCode: request.orderCode },
+          `Permintaan ${request.orderCode} berhasil ditutup`
+        )
+      );
+
+      // Call the prop callback if provided
+      if (onUnderstand) onUnderstand(request.id);
+    } catch (error) {
+      // Handle error response
+      if (error.response?.status === 404) {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorRequestNotFound",
+            {},
+            "Permintaan tidak ditemukan"
+          )
+        );
+      } else {
+        toast.error(
+          t(
+            "TransportRequestCard.toastErrorGeneric",
+            {},
+            "Gagal menutup permintaan. Silakan coba lagi."
+          )
+        );
+      }
+    }
   };
 
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
-  const handleAccept = () => {
-    if (request.orderType === "SCHEDULED") {
-      setShowModal(true);
-    } else {
-      if (onAccept) {
-        onAccept(request);
-      }
-      router.push(`/monitoring/pilih-armada?id=${request.id}`);
-    }
-  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("id-ID", {
@@ -141,11 +278,7 @@ const TransportRequestCard = ({
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         request={request}
-        onAccept={(data) => {
-          setShowModal(false);
-          if (onAccept) onAccept(data);
-          router.push(`/monitoring?id=${request.id}`);
-        }}
+        onAccept={handleAccept}
       />
       {/* Modal for rejecting request */}
       <ModalTolakPermintaan
@@ -157,6 +290,7 @@ const TransportRequestCard = ({
           }
         }}
         request={tolakRequest}
+        onReject={handleReject}
       />
       <div
         className={cn(
@@ -324,9 +458,11 @@ const TransportRequestCard = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleSave}
+                disabled={isToggling}
                 className={cn(
                   "flex h-6 w-6 items-center justify-center rounded-full hover:opacity-75",
-                  isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white"
+                  isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white",
+                  isToggling && "cursor-not-allowed opacity-50"
                 )}
               >
                 <IconComponent
@@ -620,15 +756,29 @@ const TransportRequestCard = ({
                       variant="muattrans-error-secondary"
                       className="h-8 w-[83px] rounded-[24px] px-4 text-[14px] font-semibold"
                       onClick={handleTolakClick}
+                      disabled={isRejecting}
                     >
-                      {t("TransportRequestCard.buttonReject", {}, "Tolak")}
+                      {isRejecting
+                        ? t(
+                            "TransportRequestCard.buttonRejecting",
+                            {},
+                            "Menolak..."
+                          )
+                        : t("TransportRequestCard.buttonReject", {}, "Tolak")}
                     </Button>
                     <Button
                       variant="muattrans-warning"
                       className="h-8 w-[92px] rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
-                      onClick={handleAccept}
+                      onClick={() => setShowModal(true)}
+                      disabled={isAccepting}
                     >
-                      {t("TransportRequestCard.buttonAccept", {}, "Terima")}
+                      {isAccepting
+                        ? t(
+                            "TransportRequestCard.buttonAccepting",
+                            {},
+                            "Menerima..."
+                          )
+                        : t("TransportRequestCard.buttonAccept", {}, "Terima")}
                     </Button>
                   </>
                 )}
@@ -678,7 +828,9 @@ const TransportRequestCard = ({
             }}
             onClick={handleUnderstand}
           >
-            {t("TransportRequestCard.buttonUnderstand", {}, "Mengerti")}
+            {isAcknowledging
+              ? t("TransportRequestCard.buttonAcknowledging", {}, "Menutup...")
+              : t("TransportRequestCard.buttonUnderstand", {}, "Mengerti")}
             <NotificationDot
               position="absolute"
               positionClasses="right-[1px] top-[-1px]"

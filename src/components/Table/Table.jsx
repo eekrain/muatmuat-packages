@@ -1,3 +1,5 @@
+import React from "react";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
@@ -86,6 +88,11 @@ const Table = ({
   };
 
   const renderEmpty = () => {
+    // Check if emptyComponent is already a <tr> element
+    if (React.isValidElement(emptyComponent) && emptyComponent.type === "tr") {
+      return emptyComponent;
+    }
+
     return (
       <tr>
         <td colSpan={columns.length} className="px-6 py-9">

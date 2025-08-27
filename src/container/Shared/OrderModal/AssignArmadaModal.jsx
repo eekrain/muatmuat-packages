@@ -18,7 +18,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
 import { useAssignFleetToOrder } from "@/services/Transporter/daftar-pesanan/detail-pesanan/assignFleetToOrder";
-import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
+import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getAvailableVehiclesList";
 
 import ImageArmada from "./components/ImageArmada";
 

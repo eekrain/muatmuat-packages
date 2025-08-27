@@ -8,14 +8,14 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 import { ChevronDown } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
 import { DownloadPopover } from "@/components/Header/Web/DownloadPopover";
 import LanguageDropdown from "@/components/Header/Web/LanguageDropdown";
-import {
-  SimpleHover,
-  SimpleHoverContent,
-  SimpleHoverItem,
-  SimpleHoverTrigger,
-} from "@/components/HoverMenu/SimpleHoverMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useAuth } from "@/hooks/Transporter/use-auth";
@@ -44,7 +44,7 @@ const MenuItem = ({ imgUrl, title, variant, onClick }) => {
 
 const NotificationIcon = ({ src, count }) => (
   <Link href="#" className="relative" aria-label={count}>
-    <div className="absolute bottom-3 left-3 z-20 flex h-4 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1">
+    <div className="absolute bottom-3 left-3 z-50 flex h-4 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1">
       <span className="text-xxs font-medium leading-[8px] text-neutral-50">
         {count}
       </span>
@@ -119,7 +119,7 @@ const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content
-          className="z-20 flex w-[174px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50 shadow-muat"
+          className="z-50 flex w-[174px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50 shadow-muat"
           side="bottom"
           align="end"
           sideOffset={4}
@@ -143,13 +143,22 @@ const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
 
 const NavigationMenuItem = ({ item, pathname }) => {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const { setIsOverlayActive } = useOverlayAction();
+
+  useEffect(() => {
+    if (item.isDropdown) {
+      setIsOverlayActive(open);
+    }
+  }, [open, setIsOverlayActive, item.isDropdown]);
+
   if (item.isDropdown) {
     const isActive =
       (item.activePattern && pathname.startsWith(item.activePattern)) ||
       (item.href && pathname.startsWith(item.href));
     return (
-      <SimpleHover>
-        <SimpleHoverTrigger asChild>
+      <SimpleDropdown open={open} onOpenChange={setOpen}>
+        <SimpleDropdownTrigger asChild>
           <button
             className={cn(
               "flex h-8 items-center gap-1 border-b-2 outline-none",
@@ -160,15 +169,20 @@ const NavigationMenuItem = ({ item, pathname }) => {
             <span>
               {t(`HeaderLayout.navigation.${item.id}`, {}, item.label)}
             </span>
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform duration-300",
+                open && "rotate-180"
+              )}
+            />
           </button>
-        </SimpleHoverTrigger>
-        <SimpleHoverContent>
+        </SimpleDropdownTrigger>
+        <SimpleDropdownContent className="w-[240px]">
           {item.dropdownItems.map((dropdownItem) => {
             const isSelected =
               dropdownItem.href && pathname.startsWith(dropdownItem.href);
             return (
-              <SimpleHoverItem
+              <SimpleDropdownItem
                 key={dropdownItem.id}
                 onClick={dropdownItem.onClick}
               >
@@ -176,6 +190,7 @@ const NavigationMenuItem = ({ item, pathname }) => {
                   <Link
                     href={dropdownItem.href}
                     className="flex w-full items-center justify-between"
+                    onClick={() => setOpen(false)}
                   >
                     <span>
                       {t(
@@ -201,11 +216,11 @@ const NavigationMenuItem = ({ item, pathname }) => {
                     )}
                   </span>
                 )}
-              </SimpleHoverItem>
+              </SimpleDropdownItem>
             );
           })}
-        </SimpleHoverContent>
-      </SimpleHover>
+        </SimpleDropdownContent>
+      </SimpleDropdown>
     );
   }
 
@@ -358,7 +373,7 @@ const HeaderLayout = ({ notifCounter = { notification: 0, chat: 0 } }) => {
   ];
 
   return (
-    <header className="sticky left-0 top-0 z-20 w-full">
+    <header className="sticky left-0 top-0 z-40 w-full">
       <div className="flex h-[60px] w-full items-center justify-between bg-muat-trans-primary-400 px-10 text-neutral-900">
         <div className="flex items-center gap-x-6">
           <ImageComponent src="/icons/muattrans.svg" width={136} height={27} />

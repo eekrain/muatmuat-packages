@@ -10,6 +10,7 @@ import { useGetUserJourneyStatus } from "@/services/Transporter/dashboard/getUse
 function Page() {
   const { data, isLoading, error } = useGetUserJourneyStatus();
 
+  console.log("user journey:", data);
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -28,7 +29,7 @@ function Page() {
 
   return (
     <div className="pt-8">
-      {data?.allStepsCompleted === true ? (
+      {data?.isComplete === true ? (
         <Analytics />
       ) : (
         <UserJourney journeyStatus={data} />
