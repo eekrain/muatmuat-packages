@@ -1,0 +1,321 @@
+{
+  "CreateOrderSummaryPanel.toastVoucherApplied": {
+    "id": "Voucher {code} berhasil diterapkan!",
+    "en": "Voucher {code} applied successfully!",
+    "cn": "优惠券 {code} 已成功应用！"
+  },
+  "CreateOrderSummaryPanel.transportFeeTitle": {
+    "id": "Biaya Pesan Jasa Angkut",
+    "en": "Transport Service Fee",
+    "cn": "运输服务费用"
+  },
+  "CreateOrderSummaryPanel.transportFeeLabel": {
+    "id": "Nominal Pesan Jasa Angkut ({truckCount} Unit)",
+    "en": "Transport Service Amount ({truckCount} Units)",
+    "cn": "运输服务金额（{truckCount} 辆）"
+  },
+  "CreateOrderSummaryPanel.insuranceTitle": {
+    "id": "Biaya Asuransi Barang",
+    "en": "Cargo Insurance Fee",
+    "cn": "货物保险费"
+  },
+  "CreateOrderSummaryPanel.insuranceLabel": {
+    "id": "Nominal Premi Asuransi (1 Unit)",
+    "en": "Insurance Premium Amount (1 Unit)",
+    "cn": "保险费金额（1 单位）"
+  },
+  "CreateOrderSummaryPanel.additionalServiceTitle": {
+    "id": "Biaya Layanan Tambahan",
+    "en": "Additional Service Fees",
+    "cn": "附加服务费用"
+  },
+  "CreateOrderSummaryPanel.voucherDiscountTitle": {
+    "id": "Diskon Voucher",
+    "en": "Voucher Discount",
+    "cn": "优惠券折扣"
+  },
+  "CreateOrderSummaryPanel.voucherDiscountLabel": {
+    "id": "Voucher ({code})",
+    "en": "Voucher ({code})",
+    "cn": "优惠券（{code}）"
+  },
+  "CreateOrderSummaryPanel.otherFeesTitle": {
+    "id": "Biaya Lainnya",
+    "en": "Other Fees",
+    "cn": "其他费用"
+  },
+  "CreateOrderSummaryPanel.adminFeeLabel": {
+    "id": "Admin Layanan",
+    "en": "Admin Fee",
+    "cn": "管理费"
+  },
+  "CreateOrderSummaryPanel.taxLabel": {
+    "id": "Pajak",
+    "en": "Tax",
+    "cn": "税费"
+  },
+  "CreateOrderSummaryPanel.transactionSummary": {
+    "id": "Ringkasan Transaksi",
+    "en": "Transaction Summary",
+    "cn": "交易摘要"
+  },
+  "CreateOrderSummaryPanel.oneVoucherApplied": {
+    "id": "1 Voucher Terpakai",
+    "en": "1 Voucher Applied",
+    "cn": "已使用 1 张优惠券"
+  },
+  "CreateOrderSummaryPanel.altVoucher": {
+    "id": "Voucher",
+    "en": "Voucher",
+    "cn": "优惠券"
+  },
+  "CreateOrderSummaryPanel.saveMoreWithVoucher": {
+    "id": "Makin hemat pakai voucher",
+    "en": "Save more with voucher",
+    "cn": "使用优惠券更省"
+  },
+  "CreateOrderSummaryPanel.appliedSuccess": {
+    "id": "✅ Berhasil diterapkan!",
+    "en": "Applied successfully!",
+    "cn": "已成功应用！"
+  },
+  "CreateOrderSummaryPanel.remove": {
+    "id": "Hapus",
+    "en": "Remove",
+    "cn": "移除"
+  },
+  "CreateOrderSummaryPanel.orderDetails": {
+    "id": "Detail Pesanan",
+    "en": "Order Details",
+    "cn": "订单详情"
+  },
+  "CreateOrderSummaryPanel.subtotal": {
+    "id": "Sub Total",
+    "en": "Subtotal",
+    "cn": "小计"
+  },
+  "CreateOrderSummaryPanel.total": {
+    "id": "Total",
+    "en": "Total",
+    "cn": "合计"
+  },
+  "CreateOrderSummaryPanel.infoVoucherPopup": {
+    "id": "Info Voucher Popup",
+    "en": "Voucher Info Popup",
+    "cn": "优惠券信息弹窗"
+  },
+  "VoucherModal.errorLoadVouchers": {
+    "id": "Gagal memuat daftar voucher",
+    "en": "Failed to load voucher list",
+    "cn": "加载优惠券列表失败"
+  },
+  "VoucherModal.errorInvalidVoucher": {
+    "id": "Voucher tidak valid",
+    "en": "Voucher is not valid",
+    "cn": "优惠券无效"
+  },
+  "VoucherModal.errorValidateVoucher": {
+    "id": "Gagal memvalidasi voucher",
+    "en": "Failed to validate voucher",
+    "cn": "验证优惠券失败"
+  },
+  "VoucherModal.close": {
+    "id": "Tutup",
+    "en": "Close",
+    "cn": "关闭"
+  },
+  "VoucherModal.titleSelectVoucher": {
+    "id": "Pilih Voucher",
+    "en": "Select Voucher",
+    "cn": "选择优惠券"
+  },
+  "VoucherModal.placeholderSearchVoucher": {
+    "id": "Cari Kode Voucher",
+    "en": "Search Voucher Code",
+    "cn": "搜索优惠券代码"
+  },
+  "VoucherModal.messageLoadingVoucher": {
+    "id": "Memuat voucher...",
+    "en": "Loading voucher...",
+    "cn": "正在加载优惠券..."
+  },
+  "VoucherModal.errorLoadVoucher": {
+    "id": "Gagal memuat voucher.",
+    "en": "Failed to load voucher.",
+    "cn": "加载优惠券失败。"
+  },
+  "VoucherModal.messageOneVoucherOnly": {
+    "id": "Hanya bisa dipilih 1 Voucher",
+    "en": "Only 1 Voucher can be selected",
+    "cn": "只能选择 1 张优惠券"
+  },
+  "VoucherCard.timeRemainingHours": {
+    "id": "Sisa {countdown} jam lagi",
+    "en": "Remaining {countdown} hours",
+    "cn": "剩余 {countdown} 小时"
+  },
+  "VoucherCard.altVoucher": {
+    "id": "Voucher",
+    "en": "Voucher",
+    "cn": "优惠券"
+  },
+  "VoucherCard.altInfo": {
+    "id": "VoucherInfo",
+    "en": "Voucher Info",
+    "cn": "优惠券信息"
+  },
+  "VoucherCard.expiresInDays": {
+    "id": "Berakhir {days} hari lagi",
+    "en": "Expires in {days} days",
+    "cn": "将在 {days} 天后到期"
+  },
+  "VoucherEmptyState.titleNoVouchers": {
+    "id": "Belum Ada Voucher",
+    "en": "No Vouchers Available",
+    "cn": "暂无优惠券"
+  },
+  "VoucherSearchEmpty.keywordNotFound": {
+    "id": "Keyword Tidak Ditemukan",
+    "en": "Keyword Not Found",
+    "cn": "未找到关键字"
+  },
+  "VoucherPopup.loading": {
+    "id": "Loading voucher...",
+    "en": "Loading voucher...",
+    "cn": "正在加载优惠券..."
+  },
+  "VoucherPopup.errorLoad": {
+    "id": "Gagal load voucher",
+    "en": "Failed to load voucher",
+    "cn": "加载优惠券失败"
+  },
+  "VoucherPopup.title": {
+    "id": "Pilih Voucher",
+    "en": "Select Voucher",
+    "cn": "选择优惠券"
+  },
+  "VoucherPopup.placeholder": {
+    "id": "Cari kode voucher",
+    "en": "Search voucher code",
+    "cn": "搜索优惠券代码"
+  },
+  "VoucherPopup.emptyState": {
+    "id": "Belum Ada Voucher",
+    "en": "No Vouchers Yet",
+    "cn": "还没有优惠券"
+  },
+  "VoucherPopup.buttonUse": {
+    "id": "Pakai",
+    "en": "Use",
+    "cn": "使用"
+  },
+  "VoucherPopup.buttonClose": {
+    "id": "Tutup",
+    "en": "Close",
+    "cn": "关闭"
+  },
+  "VoucherInfoPopup.until": {
+    "id": "hingga",
+    "en": "until",
+    "cn": "至"
+  },
+  "VoucherInfoPopup.validUntil": {
+    "id": "Berlaku hingga",
+    "en": "Valid until",
+    "cn": "有效期至"
+  },
+  "VoucherInfoPopup.minTransaction": {
+    "id": "Minimum transaksi",
+    "en": "Minimum transaction",
+    "cn": "最低交易额"
+  },
+  "VoucherInfoPopup.termsTitle": {
+    "id": "Syarat Dan Ketentuan",
+    "en": "Terms and Conditions",
+    "cn": "条款与条件"
+  },
+  "VoucherInfoPopup.usageTitle": {
+    "id": "Cara Pemakaian",
+    "en": "How to Use",
+    "cn": "使用方法"
+  },
+  "VoucherInfoPopup.buttonBack": {
+    "id": "Kembali",
+    "en": "Back",
+    "cn": "返回"
+  },
+  "DetailPendapatanPage.labelDetails": {
+    "id": "Rincian",
+    "en": "Details",
+    "cn": "详细信息"
+  },
+  "DetailPencairanDanaPage.sourceOrderRevenue": {
+    "id": "Pendapatan Pesanan",
+    "en": "Order Revenue",
+    "cn": "订单收入"
+  },
+  "DetailPencairanDanaPage.sourceRevenueAdjustment": {
+    "id": "Penyesuaian Pendapatan",
+    "en": "Revenue Adjustment",
+    "cn": "收入调整"
+  },
+  "labelDiscount": { "id": "Diskon", "en": "Discount", "cn": "折扣" },
+  "descMaxApplicable": {
+    "id": "Dapatkan diskon maksimal",
+    "en": "Get up to discount",
+    "cn": "最高可享折扣"
+  },
+  "descMinPurchase": {
+    "id": "Minimum transaksi",
+    "en": "Minimum transaction",
+    "cn": "最低交易额"
+  },
+  "descPaymentMethod": {
+    "id": "Pembayaran yang berlaku: BCA Virtual Account",
+    "en": "Applicable payment: BCA Virtual Account",
+    "cn": "适用支付方式：BCA 虚拟账户"
+  },
+  "descPromoLimit": {
+    "id": "1 promo berlaku untuk 2 kali transaksi selama periode promo",
+    "en": "1 promo valid for 2 transactions during the promo period",
+    "cn": "每个促销在促销期间可使用 2 次"
+  },
+  "descPromoNotCombinable": {
+    "id": "Promo tidak dapat digunakan untuk produk Muatparts",
+    "en": "Promo cannot be used for Muatparts products",
+    "cn": "促销不可用于 Muatparts 产品"
+  },
+  "descAppCompatibility": {
+    "id": "Promo berlaku di aplikasi Muatparts berbasis iOS dan/atau Android versi terbaru",
+    "en": "Promo valid on the latest iOS/Android versions of the Muatparts app",
+    "cn": "促销仅适用于 Muatparts 最新版 iOS/Android 应用"
+  },
+  "descUsageInstruction": {
+    "id": "Masuk ke halaman Voucher Saya dan pilih Voucher",
+    "en": "Go to My Vouchers page and select a voucher",
+    "cn": "进入“我的优惠券”页面并选择优惠券"
+  },
+  "labelMinTransaction": {
+    "id": "Min. Transaksi",
+    "en": "Min. Transaction",
+    "cn": "最低交易"
+  },
+  "labelQuota": { "id": "Kuota", "en": "Quota", "cn": "配额" },
+  "descQuotaUsed": {
+    "id": "Kuota Voucher Telah Terpakai",
+    "en": "Voucher Quota Used",
+    "cn": "优惠券配额已使用"
+  },
+  "buttonValidating": {
+    "id": "Memvalidasi...",
+    "en": "Validating...",
+    "cn": "校验中..."
+  },
+  "buttonApplied": { "id": "Terpakai", "en": "Applied", "cn": "已使用" },
+  "buttonUse": { "id": "Pakai", "en": "Use", "cn": "使用" },
+  "errorVoucherOutOfStock": {
+    "id": "Kuota Voucher sudah habis",
+    "en": "Voucher quota is exhausted",
+    "cn": "优惠券配额已用完"
+  }
+}

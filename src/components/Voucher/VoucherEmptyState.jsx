@@ -15,7 +15,7 @@ const VoucherEmptyState = () => {
         height={122}
       />
       <p className="text-base font-medium text-neutral-600">
-        {t("titleNoVouchers")}
+        {t("VoucherEmptyState.titleNoVouchers", {}, "Belum Ada Voucher")}
       </p>
     </div>
   );

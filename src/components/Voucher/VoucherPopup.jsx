@@ -2,32 +2,40 @@
 
 import { useState } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { useVouchers } from "@/hooks/useVoucher";
 
 export default function VoucherPopup({ token, onSelect, onClose }) {
   const { vouchers, loading, error } = useVouchers(token);
   const [search, setSearch] = useState("");
+  const { t } = useTranslation();
 
   const filtered = vouchers.filter((v) =>
     v.code.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) return <div>Loading voucher...</div>;
-  if (error) return <div>Gagal load voucher</div>;
+  if (loading)
+    return <div>{t("VoucherPopup.loading", {}, "Loading voucher...")}</div>;
+  if (error)
+    return <div>{t("VoucherPopup.errorLoad", {}, "Gagal load voucher")}</div>;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/30">
       <div className="max-h-[80vh] w-[400px] overflow-auto rounded-xl bg-white p-4">
-        <h2 className="mb-2 text-lg font-bold">Pilih Voucher</h2>
+        <h2 className="mb-2 text-lg font-bold">
+          {t("VoucherPopup.title", {}, "Pilih Voucher")}
+        </h2>
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cari kode voucher"
+          placeholder={t("VoucherPopup.placeholder", {}, "Cari kode voucher")}
           className="mb-2 w-full rounded border p-2"
         />
         {filtered.length === 0 ? (
-          <div className="text-center text-gray-500">Belum Ada Voucher</div>
+          <div className="text-center text-gray-500">
+            {t("VoucherPopup.emptyState", {}, "Belum Ada Voucher")}
+          </div>
         ) : (
           filtered.map((v) => (
             <div
@@ -45,7 +53,7 @@ export default function VoucherPopup({ token, onSelect, onClose }) {
                   onClose();
                 }}
               >
-                Pakai
+                {t("VoucherPopup.buttonUse", {}, "Pakai")}
               </button>
             </div>
           ))
@@ -54,7 +62,7 @@ export default function VoucherPopup({ token, onSelect, onClose }) {
           onClick={onClose}
           className="mt-2 text-sm text-gray-600 underline"
         >
-          Tutup
+          {t("VoucherPopup.buttonClose", {}, "Tutup")}
         </button>
       </div>
     </div>
