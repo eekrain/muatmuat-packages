@@ -2946,5 +2946,6 @@
   "RingkasanPesananBody.seeMore": "See More",
   "RingkasanPesananBody.truckCountLabel": "Required: {count} Unit(s)",
   "DetailLaporanPermintaanDibatalkan.breadcrumbReportTitle": "Canceled Order Report",
-  "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Order Details"
+  "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Order Details",
+  "FleetChange.replacementFleet": "Replacement Fleet"
 }
