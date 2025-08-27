@@ -18,7 +18,7 @@ import BottomSheetPreviousDriver from "@/container/Shipper/DetailPesanan/Respons
 import { useDrag } from "@/hooks/use-drag";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getStatusDriverMetadata } from "@/lib/normalizers/detailpesanan/getStatusDriverMetadata";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
@@ -66,7 +66,7 @@ const Header = ({
     if (mode === "status-scan" && statusScan) {
       response.scan = getStatusScanMetadata(statusScan);
     } else if (mode === "driver-status" && driverStatus && orderStatus) {
-      response.status = getDriverStatusMetadata({
+      response.status = getStatusDriverMetadata({
         driverStatus,
         orderStatus,
         t,

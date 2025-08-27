@@ -12,7 +12,7 @@ import { ModalQRCodeDriver } from "@/components/Modal/ModalQRCodeDriver";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getStatusDriverMetadata } from "@/lib/normalizers/detailpesanan/getStatusDriverMetadata";
 import { cn } from "@/lib/utils";
 
 import ModalDetailStatusDriver from "./ModalDetailStatusDriver";
@@ -155,7 +155,7 @@ export const DriverStatusCardItem = ({
     !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
     !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus);
 
-  const statusMeta = getDriverStatusMetadata({
+  const statusMeta = getStatusDriverMetadata({
     driverStatus: driver.driverStatus,
     orderStatus: driver.orderStatus,
     t,

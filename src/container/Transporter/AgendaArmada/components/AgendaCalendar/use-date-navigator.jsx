@@ -14,6 +14,25 @@ export const useDateNavigator = (options = {}) => {
   } = options;
 
   const store = useAgendaNavigatorStore();
+
+  // Use store data if available, otherwise fallback to props
+  const actualAvailablePeriods = useMemo(() => {
+    if (store.availablePeriods) {
+      return store.availablePeriods;
+    }
+    return availablePeriods;
+  }, [store.availablePeriods, availablePeriods]);
+
+  // Fetch available periods on mount
+  useEffect(() => {
+    if (!store.availablePeriods && !store.isLoadingPeriods) {
+      store.fetchAvailablePeriods();
+    }
+  }, [
+    store.availablePeriods,
+    store.isLoadingPeriods,
+    store.fetchAvailablePeriods,
+  ]);
   const {
     isInitialized,
     initialize,
@@ -139,7 +158,7 @@ export const useDateNavigator = (options = {}) => {
     canNextMonth: derivedDateState.canNext,
     currentDayIndex: derivedDateState.todayIndex,
     displayedDates: derivedDateState.dates, // For backward compatibility
-    availablePeriods, // Pass through the availablePeriods option
+    availablePeriods: actualAvailablePeriods, // Pass through the availablePeriods from API
     todayDate, // Add todayDate for use in components
   };
 

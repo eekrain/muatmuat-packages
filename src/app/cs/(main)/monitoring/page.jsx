@@ -32,6 +32,7 @@ import {
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
 import DaftarArmadaCs from "@/container/CS/Monitoring/DaftarArmada/DaftarArmadaCs";
+import LihatPosisiArmada from "@/container/CS/Monitoring/LihatPosisiArmada/LihatPosisiArmada";
 import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import SOSCSContainer from "@/container/CS/Monitoring/SOS/SOSCSContainer";
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
@@ -342,6 +343,16 @@ const Page = () => {
     console.log("fleetLocationsData", fleetLocationsData);
   }, [fleetLocationsData]);
 
+  // useEffect(() => {
+  //   panelsDispatch({
+  //     type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
+  //   });
+  //   selectionsDispatch({
+  //     type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+  //     payload: { id: "kocak" },
+  //   });
+  // }, []);
+
   return (
     <>
       <div
@@ -353,7 +364,14 @@ const Page = () => {
         )}
       >
         {/* Left Section - Map and Bottom Panel */}
-        <div className="flex h-full flex-col gap-4 pt-4 transition-all duration-300 ease-in-out">
+        <div
+          className={cn(
+            "flex h-full flex-col gap-4 pt-4 transition-all duration-300 ease-in-out",
+            {
+              "pb-4": panels.leftPanelMode === "posisi",
+            }
+          )}
+        >
           {/* Map Container */}
           <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out">
             <MapMonitoring
@@ -365,11 +383,24 @@ const Page = () => {
               onMapZoom={handleMapZoomChange}
               onMapCenterChange={handleMapCenterChange}
               mapContainerStyle={{
-                height: panels.isBottomExpanded
-                  ? `calc((100vh - 92px - 16px - 16px) / 2)`
-                  : `calc(100vh - 92px - 16px - 16px - 64px)`,
-                width: panels.showLeftPanel ? "calc(100% - 332px)" : "100%",
-                marginLeft: panels.showLeftPanel ? "332px" : "0",
+                height:
+                  panels.leftPanelMode === "posisi"
+                    ? `calc(100vh - 92px - 16px - 16px)`
+                    : panels.isBottomExpanded
+                      ? `calc((100vh - 92px - 16px - 16px) / 2)`
+                      : `calc(100vh - 92px - 16px - 16px - 64px)`,
+                width:
+                  panels.leftPanelMode === "posisi"
+                    ? "calc(100% - 468px)"
+                    : panels.showLeftPanel
+                      ? "calc(100% - 332px)"
+                      : "100%",
+                marginLeft:
+                  panels.leftPanelMode === "posisi"
+                    ? "468px"
+                    : panels.showLeftPanel
+                      ? "332px"
+                      : "0",
                 transition:
                   "height 300ms ease-in-out, width 300ms ease-in-out, margin-left 300ms ease-in-out",
               }}
@@ -415,11 +446,27 @@ const Page = () => {
             <div
               className={cn(
                 "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
-                panels.showLeftPanel ? "translate-x-0" : "-translate-x-full"
+                panels.showLeftPanel ? "translate-x-0" : "-translate-x-full",
+                panels.leftPanelMode && "w-[480px]"
               )}
             >
               {panels.leftPanelMode === "sos" ? (
                 <SOSCSContainer onClose={handleCloseLeftPanel} />
+              ) : panels.leftPanelMode === "posisi" ? (
+                <LihatPosisiArmada
+                  onClose={() => {
+                    // Hide position view and restore normal state
+                    panelsDispatch({
+                      type: PANEL_ACTIONS.HIDE_POSISI_ARMADA,
+                    });
+                    // Clear the selected order
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                      payload: null,
+                    });
+                  }}
+                  orderId={selections.selectedOrderForTracking?.id}
+                />
               ) : (
                 <DaftarArmadaCs
                   onClose={handleCloseLeftPanel}
@@ -437,45 +484,57 @@ const Page = () => {
           </div>
 
           {/* Bottom Panel - PilihArmada and Daftar Pesanan Aktif */}
-          <div
-            className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
-            style={{
-              height: panels.isBottomExpanded
-                ? "calc((100vh - 92px - 16px - 16px) / 2)"
-                : "calc(100vh - 100vh + 64px)",
-            }}
-          >
-            {panels.showPilihArmada ? (
-              <PilihArmada
-                onToggleExpand={handleTogglePilihArmada}
-                isExpanded={panels.isBottomExpanded}
-                selectedRequest={selections.selectedRequestForFleet}
-              />
-            ) : (
-              <DaftarPesananAktif
-                onToggleExpand={handleToggleBottomPanel}
-                isExpanded={panels.isBottomExpanded}
-                hasShownOnboarding={hasShownOnboarding}
-                onOnboardingShown={() => setHasShownOnboarding(true)}
-                onViewFleetStatus={(order) => {
-                  panelsDispatch({
-                    type: PANEL_ACTIONS.SHOW_LACAK_ARMADA,
-                  });
-                  selectionsDispatch({
-                    type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
-                    payload: order,
-                  });
-                  // Automatically exit fullscreen mode when opening LacakArmada
-                  if (panels.isFullscreen) {
+          {panels.leftPanelMode !== "posisi" && (
+            <div
+              className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
+              style={{
+                height: panels.isBottomExpanded
+                  ? "calc((100vh - 92px - 16px - 16px) / 2)"
+                  : "calc(100vh - 100vh + 64px)",
+              }}
+            >
+              {panels.showPilihArmada ? (
+                <PilihArmada
+                  onToggleExpand={handleTogglePilihArmada}
+                  isExpanded={panels.isBottomExpanded}
+                  selectedRequest={selections.selectedRequestForFleet}
+                />
+              ) : (
+                <DaftarPesananAktif
+                  onToggleExpand={handleToggleBottomPanel}
+                  isExpanded={panels.isBottomExpanded}
+                  hasShownOnboarding={hasShownOnboarding}
+                  onOnboardingShown={() => setHasShownOnboarding(true)}
+                  onTrackFleet={(order) => {
+                    // Show fleet position tracking view
                     panelsDispatch({
-                      type: PANEL_ACTIONS.SET_FULLSCREEN,
-                      payload: false,
+                      type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
                     });
-                  }
-                }}
-              />
-            )}
-          </div>
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                      payload: order,
+                    });
+                  }}
+                  onViewFleetStatus={(order) => {
+                    panelsDispatch({
+                      type: PANEL_ACTIONS.SHOW_LACAK_ARMADA,
+                    });
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                      payload: order,
+                    });
+                    // Automatically exit fullscreen mode when opening LacakArmada
+                    if (panels.isFullscreen) {
+                      panelsDispatch({
+                        type: PANEL_ACTIONS.SET_FULLSCREEN,
+                        payload: false,
+                      });
+                    }
+                  }}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar */}

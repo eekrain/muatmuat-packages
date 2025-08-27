@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
-import BadgeSOSPopover from "@/components/Badge/BadgeSOSPopover";
+import { BadgeSOSPopover } from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
@@ -59,7 +59,7 @@ const FleetChange = () => {
               </BadgeStatus>
               {vehicle.sosStatus === "ACTIVE" && (
                 <BadgeSOSPopover
-                  sosData={{
+                  data={{
                     licensePlate: vehicle.licensePlate,
                     truckIcon: `/img/mock-armada/${["one", "two", "three"][index % 3]}.png`,
                     reportTime: "10 Jan 2025 12:00 WIB",

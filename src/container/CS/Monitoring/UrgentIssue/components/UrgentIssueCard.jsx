@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import CheckBoxGroup from "./CheckboxGroup";
+import ModalTransporterMenolakPerubahan from "./ModalTransporterMenolakPerubahan";
 import ModalUbahTransporter from "./ModalUbahTransporter";
 
 export const UrgentIssueCard = ({
@@ -33,8 +34,10 @@ export const UrgentIssueCard = ({
     completedAt,
     orderId,
     issue_type,
+    countdown,
   } = data || {};
 
+  // =================== ALL HOOKS AT THE TOP ===================
   const { t } = useTranslation();
   const router = useRouter();
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
@@ -43,25 +46,19 @@ export const UrgentIssueCard = ({
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
   const [selectedIssueData, setSelectedIssueData] = useState(null);
   const [showGroupSection, setShowGroupSection] = useState(false);
-  // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
+  const [remainingTime, setRemainingTime] = useState(countdown);
+  const [showTransporterMenolakModal, setShowTransporterMenolakModal] =
+    useState(false);
+
+  const openTransporterMenolakModal = useCallback(() => {
+    setShowTransporterMenolakModal(true);
+  }, []);
+
   const { message, isError } = useUpdateUrgentIssueStatus(
     updateParams.id,
     updateParams.body
   );
-  const isCountDown = true;
-  // Show alert if this card's id is in overdue_issues from meta
-  const isNegative =
-    Array.isArray(meta?.overdue_issues) && meta.overdue_issues.includes(id);
-
-  // The rest of your component logic can now safely assume 't' is a function.
-  let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
-  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
-    statusDisplay = t("UrgentIssueCard.statusProcessing", {}, "diproses");
-  }
-  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
-    statusDisplay = t("UrgentIssueCard.statusCompleted", {}, "selesai");
-  }
 
   useEffect(() => {
     if (!updateParams.id || !updateParams.body) return;
@@ -86,9 +83,40 @@ export const UrgentIssueCard = ({
     }
   }, [message, isError, updateParams, orderCode]);
 
-  // Early return setelah semua hooks
+  useEffect(() => {
+    if (!countdown || countdown <= 0) {
+      setRemainingTime(0);
+      return;
+    }
+    setRemainingTime(countdown);
+    const timerId = setInterval(() => {
+      setRemainingTime((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timerId);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [countdown]);
+  // ==========================================================
+
+  // Early return after all hooks are called
   if (typeof t !== "function") {
-    return null; // Or return a loading spinner, e.g., <p>Loading...</p>
+    return null;
+  }
+
+  const isCountDown = true;
+  const isNegative =
+    Array.isArray(meta?.overdue_issues) && meta.overdue_issues.includes(id);
+
+  let statusDisplay = t("UrgentIssueCard.statusNew", {}, "baru");
+  if (status?.toLowerCase() === "processing" || statusTab === "proses") {
+    statusDisplay = t("UrgentIssueCard.statusProcessing", {}, "diproses");
+  }
+  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
+    statusDisplay = t("UrgentIssueCard.statusCompleted", {}, "selesai");
   }
 
   const handleClickOrder = (orderId) => {
@@ -124,13 +152,29 @@ export const UrgentIssueCard = ({
   };
 
   const issues = data?.issues || [];
+  const mainIssue = data;
+  // Sort groupIssues: overdue issues first
+  let groupIssues = issues.slice(1);
+  if (Array.isArray(meta?.overdue_issues)) {
+    groupIssues = groupIssues.slice().sort((a, b) => {
+      const aIsNegative = meta.overdue_issues.includes(a.id);
+      const bIsNegative = meta.overdue_issues.includes(b.id);
+      if (aIsNegative === bIsNegative) return 0;
+      return aIsNegative ? -1 : 1;
+    });
+  }
 
-  // Tampilkan data issues yang pertama
-  const mainIssue = issues[0];
-
-  // Tampilkan data issues yang kedua dan seterusnya
-  const groupIssues = issues.slice(1);
-  // ...existing code...
+  const formatTime = (totalSeconds) => {
+    if (!totalSeconds || totalSeconds <= 0) {
+      return "00:00";
+    }
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+    return `${formattedMinutes}:${formattedSeconds}`;
+  };
+  const formatted = formatTime(remainingTime);
 
   return (
     <>
@@ -209,7 +253,13 @@ export const UrgentIssueCard = ({
               {statusDisplay !== "selesai" && (
                 <NotificationDot
                   size="md"
-                  color={status === "PROCESSING" ? "orange" : "red"}
+                  color={
+                    statusDisplay === "baru"
+                      ? "red"
+                      : statusDisplay === "diproses"
+                        ? "orange"
+                        : "red"
+                  }
                 />
               )}
               <span className="text-xs font-bold text-neutral-900">
@@ -222,13 +272,21 @@ export const UrgentIssueCard = ({
                       : issue_type}
               </span>
             </div>
-            {isCountDown && (
-              <BadgeStatus
-                variant={isNegative ? "outlineWarning" : "outlineSecondary"}
-                className="w-max text-sm font-semibold"
-              >
-                {/* {isNegative ? `-${formatted}` : formatted} */}
-              </BadgeStatus>
+            {(statusDisplay === "baru" || statusDisplay === "diproses") &&
+              isCountDown && (
+                <BadgeStatus
+                  variant={isNegative ? "outlineWarning" : "outlineSecondary"}
+                  className="w-max text-sm font-semibold"
+                >
+                  {isNegative ? `-${formatted}` : formatted}
+                </BadgeStatus>
+              )}
+
+            {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
+            {statusDisplay === "selesai" && (
+              <div className="text-xs font-medium text-neutral-600">
+                {detectedAt ? formatDate(detectedAt) : "-"}
+              </div>
             )}
           </div>
           <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
@@ -241,6 +299,24 @@ export const UrgentIssueCard = ({
             </span>{" "}
             {description}
           </div>
+          {isNegative && (
+            <div
+              className="mt-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
+              onClick={openTransporterMenolakModal}
+            >
+              {data?.rejection_count} Transporter Menolak Perubahan Armada
+            </div>
+          )}
+
+          {showTransporterMenolakModal && (
+            <ModalTransporterMenolakPerubahan
+              // transporter={data?.transporter}
+              // detail={data?.detail}
+              // latestNote={data?.latestNote}
+              onClose={() => setShowTransporterMenolakModal(false)}
+            />
+          )}
+
           <div className="my-3 h-px w-full bg-neutral-400" />
           {/* Selesai - Lihat Detail */}
           {statusDisplay === "selesai" && !isDetailOpen && (
@@ -415,7 +491,7 @@ export const UrgentIssueCard = ({
                       }
                       className="w-max text-sm font-semibold"
                     >
-                      {/* {isNegative ? `-${formatted}` : formatted} */}
+                      {isNegative ? `-${formatted}` : formatted}
                     </BadgeStatus>
                   )}
                 </div>
