@@ -554,7 +554,7 @@ const DaftarPesananAktif = ({
           pickupLocations={row.pickupLocations}
           dropoffLocations={row.dropoffLocations}
           appearance={{
-            titleClassName: "text-xxs font-semibold",
+            titleClassName: "line-clamp-2 break-all",
           }}
         />
       ),
