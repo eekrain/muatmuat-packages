@@ -126,12 +126,6 @@ export default function SewaArmadaWeb({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, isLoadingUserPreferences]);
 
-  const { validateForm } = useSewaArmadaActions();
-  const testSubmit = () => {
-    const isValidForm = validateForm();
-    console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
-  };
-
   return (
     <>
       <main className="mx-auto flex min-h-full max-w-[1280px] flex-col items-center gap-6 px-10 py-8">
@@ -211,7 +205,24 @@ export default function SewaArmadaWeb({
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
 
-      {isDev && <button onClick={testSubmit}>Test Submit</button>}
+      <Dev />
     </>
   );
 }
+
+const Dev = () => {
+  const formValues = useSewaArmadaStore((state) => state.formValues);
+  const { validateForm } = useSewaArmadaActions();
+  const testSubmit = () => {
+    const isValidForm = validateForm();
+    console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
+  };
+
+  if (!isDev) return null;
+  return (
+    <>
+      <pre>{JSON.stringify(formValues, null, 2)}</pre>
+      <button onClick={testSubmit}>Test Submit</button>
+    </>
+  );
+};

@@ -343,10 +343,15 @@ export const CardItem = ({ item, cellWidth, viewType = "armada" }) => {
                       className="basis-1/2"
                     />
                     <div className="relative basis-1/2">
-                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-nowrap rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold leading-none text-neutral-900">
+                      <span
+                        className={cn(
+                          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 truncate text-nowrap rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold leading-none text-neutral-900",
+                          cellConfig?.total <= 1 && "max-w-[60px]"
+                        )}
+                      >
                         {t(
                           "CardItem.labelEstKm",
-                          { km: estimatedTotalDistanceKm },
+                          { estimatedTotalDistanceKm },
                           `Est. ${estimatedTotalDistanceKm} km`
                         )}
                       </span>

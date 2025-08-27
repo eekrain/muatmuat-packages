@@ -2198,7 +2198,7 @@
   "DashboardPage.stepsDesc": "Ayo lengkapi informasi armada dan driver kamu untuk mulai menerima pesanan di muatrans",
   "AgendaArmadaPage.messageSuccessJadwalBerhasilDiperbarui": "Jadwal berhasil diperbarui!",
   "AgendaArmadaPage.messageErrorJadwalTidakAdaPerubahan": "Jadwal tidak ada perubahan",
-  "AgendaArmadaPage.titleAgendaArmadaDriver": "Agenda Armada & Driver",
+  "AgendaArmadaPage.titleAgendaArmadaDriver": "Agenda Armada-Driver",
   "AgendaArmadaPage.labelTerakhirDiUpdate": "Terakhir di update:",
   "AgendaArmadaPage.altLoading": "loading",
   "AgendaArmadaPage.labelMemuatAgenda": "Memuat agenda...",
@@ -2910,7 +2910,6 @@
   "DaftarPesananAktif.locationChangeTooltip": "Terdapat perubahan lokasi muat dan jam muat oleh shipper, klik pada aksi untuk melihat perubahan",
   "DaftarPesananAktif.hasChanges": "Terdapat perubahan",
   "DaftarPesananAktif.noOrdersWithChanges": "Tidak ada pesanan dengan perubahan lokasi/waktu",
-  "DaftarPesananAktif.changeOrdersWillAppear": "Pesanan dengan perubahan akan muncul di sini",
   "Dropzone.invalidFormat": "Format file tidak sesuai ketentuan",
   "Dropzone.maxSizeExceeded": "Ukuran file maksimal {maxSize}MB",
   "Dropzone.browseFile": "Browse File",
@@ -3085,5 +3084,11 @@
   "LaporanPermintaanDibatalkan.buttonUnduh": "Unduh",
   "LaporanPermintaanDibatalkan.labelPermintaanDibatalkanInfo": "Permintaan jasa angkut yang telah dibatalkan oleh shipper akan ditampilkan disini",
   "LaporanPermintaanDibatalkan.placeholderCariPermintaan": "Cari Permintaan",
-  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "Total : {total} Permintaan Dibatalkan"
+  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "Total : {total} Permintaan Dibatalkan",
+  "DaftarPesananAktif.changeOrdersWillAppear": "Pesanan dengan perubahan akan muncul di sini",
+  "labelSangatBuruk": "Sangat Buruk",
+  "labelBuruk": "Buruk",
+  "labelCukup": "Cukup",
+  "labelBaik": "Baik",
+  "labelSangatBaik": "Sangat Baik"
 }

@@ -2261,7 +2261,7 @@
   "PilihArmadaBatalkan.cancelFleet": "Cancel Fleet",
   "AgendaArmadaPage.messageSuccessJadwalBerhasilDiperbarui": "Schedule successfully updated!",
   "AgendaArmadaPage.messageErrorJadwalTidakAdaPerubahan": "No changes to schedule",
-  "AgendaArmadaPage.titleAgendaArmadaDriver": "Fleet & Driver Schedule",
+  "AgendaArmadaPage.titleAgendaArmadaDriver": "Fleet-Driver Schedule",
   "AgendaArmadaPage.labelTerakhirDiUpdate": "Last updated:",
   "AgendaArmadaPage.altLoading": "loading",
   "AgendaArmadaPage.labelMemuatAgenda": "Loading schedule...",
@@ -2909,7 +2909,6 @@
   "MuatanDilayaniPage.modalConfirmLeave": "Served cargo will not be saved if you leave this page",
   "MuatanDilayaniPage.buttonBatal": "Cancel",
   "MuatanDilayaniPage.buttonYa": "Yes",
-  "MuatanDilayaniPage.configNotes": "Cargo configuration for regular services",
   "Dropzone.invalidFormat": "Invalid file format",
   "Dropzone.maxSizeExceeded": "Maximum file size {maxSize}MB",
   "Dropzone.browseFile": "Browse File",
@@ -3084,5 +3083,11 @@
   "LaporanPermintaanDibatalkan.buttonUnduh": "Download",
   "LaporanPermintaanDibatalkan.labelPermintaanDibatalkanInfo": "Cancelled shipping requests by the shipper will be displayed here",
   "LaporanPermintaanDibatalkan.placeholderCariPermintaan": "Search Request",
-  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "Total : {total} Cancelled Requests"
+  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "Total : {total} Cancelled Requests",
+  "MuatanDilayaniPage.configNotes": "Cargo configuration for regular services",
+  "labelSangatBuruk": "Very Bad",
+  "labelBuruk": "Bad",
+  "labelCukup": "Fair",
+  "labelBaik": "Good",
+  "labelSangatBaik": "Very Good"
 }
