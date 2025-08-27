@@ -38,7 +38,7 @@ const LocationItem = ({ location, isLast, appearance }) => (
     {/* Location text */}
     <span
       className={cn(
-        "line-clamp-2 break-before-all text-xxs font-semibold text-neutral-900",
+        "text-xxs font-semibold text-neutral-900",
         appearance?.titleClassName
       )}
     >
