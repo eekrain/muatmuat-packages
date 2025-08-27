@@ -11,6 +11,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
+import { getShipperContact } from "@/services/CS/monitoring/urgent-issue/getShipperContact";
 import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import CheckBoxGroup from "./CheckboxGroup";
@@ -43,6 +44,7 @@ export const UrgentIssueCard = ({
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
+  const [hubungiContacts, setHubungiContacts] = useState(null);
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
   const [selectedIssueData, setSelectedIssueData] = useState(null);
   const [showGroupSection, setShowGroupSection] = useState(false);
@@ -120,7 +122,7 @@ export const UrgentIssueCard = ({
   }
 
   const handleClickOrder = (orderId) => {
-    router.push(`/daftarpesanan/detailpesanan/${orderId}`);
+    router.push(`/monitoring/urgent-issue/${orderId}/detail-pesanan`);
   };
 
   const handleConfirmStatus = (status) => {
@@ -241,7 +243,28 @@ export const UrgentIssueCard = ({
           </div>
           <Button
             type="button"
-            onClick={() => setShowHubungiModal(true)}
+            onClick={async () => {
+              const shipperId = data?.transporter?.id || "uuid";
+              const contactRes = await getShipperContact(shipperId);
+              const contacts = {
+                pics: (contactRes.data.picContacts || []).map((pic, idx) => ({
+                  name: pic.name,
+                  position: pic.position,
+                  phoneNumber: pic.phone,
+                  Level: idx + 1,
+                })),
+                emergencyContact: {
+                  name: contactRes.data.emergencyContact?.name,
+                  position:
+                    contactRes.data.emergencyContact?.relationship ||
+                    "Emergency Contact",
+                  phoneNumber: contactRes.data.emergencyContact?.phone,
+                },
+                companyContact: contactRes.data.primaryContact?.phone,
+              };
+              setHubungiContacts(contacts);
+              setShowHubungiModal(true);
+            }}
             variant="muattrans-primary"
           >
             {t("UrgentIssueCard.buttonContact", {}, "Hubungi")}
@@ -715,7 +738,7 @@ export const UrgentIssueCard = ({
         <HubungiModal
           isOpen={showHubungiModal}
           onClose={() => setShowHubungiModal(false)}
-          transporterData={null} // TODO: pass actual transporter data if available
+          contacts={hubungiContacts}
         />
 
         <ModalUbahTransporter
