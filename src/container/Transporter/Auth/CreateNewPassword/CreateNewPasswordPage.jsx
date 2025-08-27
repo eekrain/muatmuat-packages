@@ -9,13 +9,16 @@ import { useEffect, useState } from "react";
 // import * as v from "valibot";
 import { useForm } from "react-hook-form";
 
+import { useChangePasswordForgotPassword } from "@/services/Transporter/auth/changePasswordForgotPassword";
+
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
-import { useChangePasswordForgotPassword } from "@/services/Transporter/auth/changePasswordForgotPassword";
 
 const CreateNewPasswordPage = () => {
   const { t } = useTranslation();

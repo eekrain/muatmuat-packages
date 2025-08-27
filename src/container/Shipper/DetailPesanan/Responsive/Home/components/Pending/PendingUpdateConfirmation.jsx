@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 
 const PendingUpdateConfirmation = () => {

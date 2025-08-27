@@ -6,6 +6,7 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import { ModalDetailKontak } from "./ModalDetailKontak";

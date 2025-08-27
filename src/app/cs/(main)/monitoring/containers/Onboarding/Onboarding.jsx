@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
+import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
+
 import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -11,8 +14,6 @@ import {
   ModalTitle,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
-import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
-import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
 /* eslint-disable no-console */
 

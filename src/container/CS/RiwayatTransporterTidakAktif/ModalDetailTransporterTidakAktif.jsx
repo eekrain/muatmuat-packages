@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -8,8 +7,12 @@ import {
   LightboxProvider,
   useLightbox,
 } from "@/components/Lightbox/Lightbox";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { formatDate } from "@/lib/utils/dateFormat";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 const LightboxStateBridge = ({ onChange }) => {
   const { open } = useLightbox();

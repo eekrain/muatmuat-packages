@@ -2,12 +2,14 @@
 
 import { useMemo } from "react";
 
+import { useGetDashboardAnalyticsOrders } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsOrder";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CustomBarChart from "@/components/Chart/BarChart";
 import DonutChart from "@/components/Chart/DonutChart";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetDashboardAnalyticsOrders } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsOrder";
+
 import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const dataKeys = [

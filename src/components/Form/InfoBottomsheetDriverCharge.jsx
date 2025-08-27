@@ -3,6 +3,8 @@ import { useParams } from "next/navigation";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
 
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
+
 import {
   BottomSheet,
   BottomSheetClose,
@@ -12,8 +14,8 @@ import {
   BottomSheetTrigger,
 } from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { cn } from "@/lib/utils";
-import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 export const InfoBottomsheetDriverCharge = ({ className, title }) => {
   const params = useParams();

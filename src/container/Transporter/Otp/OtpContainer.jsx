@@ -6,6 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { isAfter } from "date-fns";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
+import { useCancelEmailVerification } from "@/services/Transporter/auth/cancelEmailVerification";
+import { useVerifyOtp } from "@/services/Transporter/auth/verifyOtp";
+
 import Button from "@/components/Button/Button";
 import {
   InputOTP,
@@ -14,13 +17,14 @@ import {
 } from "@/components/Form/OtpInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { useCountdown } from "@/hooks/use-countdown";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useCancelEmailVerification } from "@/services/Transporter/auth/cancelEmailVerification";
-import { useVerifyOtp } from "@/services/Transporter/auth/verifyOtp";
+
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useRequestOtpActions,

@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
+import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
+
 import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -11,9 +14,8 @@ import {
   ModalTitle,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
-import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
 const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
   const { t } = useTranslation();

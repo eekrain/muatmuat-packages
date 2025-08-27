@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   Modal,
@@ -10,8 +12,8 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
 export default function PopUpInformasi({
   popupPreference,

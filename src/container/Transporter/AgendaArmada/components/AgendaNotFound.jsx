@@ -1,4 +1,5 @@
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 export const AgendaNotFound = () => {

@@ -2,15 +2,19 @@ import { useEffect, useState } from "react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
+
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { FilterPopover } from "@/container/Shared/Map/components/FilterPopover";
 import { LegendButton } from "@/container/Shared/Map/components/LegendButton";
 import { SearchWithSuggestions } from "@/container/Shared/Map/components/SearchWithSuggestions";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
-import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
 export const MapInterfaceOverlay = ({
   onZoomIn,

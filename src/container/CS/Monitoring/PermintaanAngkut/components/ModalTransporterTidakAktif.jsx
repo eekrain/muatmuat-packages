@@ -1,14 +1,17 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
+import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+
 // ++ ADDED: useMemo
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
-import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 import ModalDetailTransporterTidakAktif from "./ModalDetailTransporterTidakAktif";
 

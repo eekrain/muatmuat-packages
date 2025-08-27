@@ -3,6 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
+import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
+
 import {
   MonitoringTabTrigger,
   MonitoringTabs,
@@ -10,6 +13,7 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
+
 import { MapInterfaceOverlay } from "@/container/Shared/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Shared/Map/NoFleetOverlay";
@@ -18,9 +22,8 @@ import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngku
 import RiwayatLaporanSOS from "@/container/Transporter/Monitoring/RiwayatLaporanSOS/RiwayatLaporanSOS";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
+
 import { cn } from "@/lib/utils";
-import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
-import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 
 const Page = () => {
   const router = useRouter();

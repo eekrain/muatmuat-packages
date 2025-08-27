@@ -1,5 +1,6 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 // Accept the new handler functions as props

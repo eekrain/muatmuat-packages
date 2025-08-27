@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 
+import { useGetScheduleConflicts } from "@/services/Transporter/agenda-armada-driver/getScheduleConflicts";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -8,10 +10,11 @@ import {
   ModalTitle,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { StatusArmadaTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
-import { useGetScheduleConflicts } from "@/services/Transporter/agenda-armada-driver/getScheduleConflicts";
 
 import ChangeFleet from "./ChangeFleet";
 import EditSchedule from "./EditSchedule";

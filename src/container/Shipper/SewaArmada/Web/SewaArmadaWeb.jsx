@@ -3,9 +3,12 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
+import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
+
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
+
 import { FirstTimer } from "@/container/Shipper/SewaArmada/Web/FirstTimer/FirstTimer";
 import LoginModal from "@/container/Shipper/SewaArmada/Web/FirstTimer/LoginModal";
 import WaitingSettlementModal from "@/container/Shipper/SewaArmada/Web/FirstTimer/WaitingSettlementModal";
@@ -28,10 +31,12 @@ import SelectArmadaModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArma
 import SertifikasiHalal from "@/container/Shipper/SewaArmada/Web/Form/SertifikasiHalal";
 import { CreateOrderSummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/CreateOrderSummaryPanel";
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
+
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
+
 import { isDev } from "@/lib/constants/is-dev";
-import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
+
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useSewaArmadaActions,

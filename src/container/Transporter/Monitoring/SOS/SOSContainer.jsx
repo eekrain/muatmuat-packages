@@ -4,13 +4,15 @@ import { useCallback, useMemo, useState } from "react";
 
 import { AlertTriangle, Loader2, X } from "lucide-react";
 
+import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
+import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
+
 import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
-import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
 

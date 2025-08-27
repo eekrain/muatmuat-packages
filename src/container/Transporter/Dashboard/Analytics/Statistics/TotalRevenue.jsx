@@ -2,12 +2,14 @@
 
 import { useMemo } from "react";
 
+import { useGetDashboardAnalyticsIncome } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsIncome";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import LineChart from "@/components/Chart/LineChart";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
-import { useGetDashboardAnalyticsIncome } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsIncome";
+
 import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const TotalRevenue = () => {

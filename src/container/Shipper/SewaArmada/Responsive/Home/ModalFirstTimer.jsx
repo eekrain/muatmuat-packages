@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
-import Checkbox from "@/components/Form/Checkbox";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { useAuth } from "@/hooks/use-auth";
 import {
   useGetUserPreferences,
   useSaveUserPreferences,
 } from "@/services/Shipper/sewaarmada/userPreferences";
+
+import Checkbox from "@/components/Form/Checkbox";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
+
+import { useAuth } from "@/hooks/use-auth";
+
 import { useFirstTimerSewaArmadaApp } from "@/store/Shipper/first-timer/sewaArmadaApp";
 
 export const ModalFirstTimer = () => {

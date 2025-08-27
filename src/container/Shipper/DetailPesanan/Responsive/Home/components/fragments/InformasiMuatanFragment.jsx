@@ -1,6 +1,7 @@
 import { ButtonMini } from "@/components/Button/ButtonMini";
 import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 export const InformasiMuatanFragment = ({ dataRingkasanPesanan }) => {

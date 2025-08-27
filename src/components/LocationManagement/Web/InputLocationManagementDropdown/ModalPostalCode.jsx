@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import { InputSearch } from "../../../InputSearch/InputSearch";

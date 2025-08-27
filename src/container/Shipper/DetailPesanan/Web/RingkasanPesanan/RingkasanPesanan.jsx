@@ -12,6 +12,7 @@ import {
 import { Modal, ModalContent } from "@/components/Modal";
 import { ModalTrigger } from "@/components/Modal/Modal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+
 import { formatDate } from "@/lib/utils/dateFormat";
 
 /**

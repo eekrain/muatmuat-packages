@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import Period from "@/app/transporter/(main)/dashboard/real-time/components/Period";
 import Button from "@/components/Button/Button";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -13,7 +12,10 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
+
+import Period from "@/app/transporter/(main)/dashboard/real-time/components/Period";
 
 import RiwayatTab from "../components/RiwayatTab";
 

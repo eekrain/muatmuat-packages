@@ -1,12 +1,14 @@
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
 const ModalDetailStatusDriver = ({ driver }) => {
   const { t } = useTranslation();

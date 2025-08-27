@@ -5,6 +5,8 @@ import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -13,9 +15,10 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
-import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 
 const ArmadaArsip = ({ onPageChange, onPerPageChange, count }) => {
   const { t } = useTranslation();

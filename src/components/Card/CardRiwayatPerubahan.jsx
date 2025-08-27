@@ -13,7 +13,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/Collapsible";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 import { TimelineChangeRow } from "../Timeline";

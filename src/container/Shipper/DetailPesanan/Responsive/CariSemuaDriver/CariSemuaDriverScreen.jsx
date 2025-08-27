@@ -2,8 +2,10 @@ import { useParams } from "next/navigation";
 import { useMemo } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+
+import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 import { DriverInfo } from "../Home/components/DriverInfoSlider";

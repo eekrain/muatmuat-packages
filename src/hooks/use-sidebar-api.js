@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 import SidebarService from "@/services/sidebar/sidebarService";
+
 import { useNotificationCounterStore } from "@/store/notificationCounterStore";
 
 /**

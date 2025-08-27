@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import Dropdown from "@/components/Form/Dropdown";
 import { useGetMasterTrucks } from "@/services/Transporter/manajemen-armada/getMasterTrucks";
+
+import Dropdown from "@/components/Form/Dropdown";
 
 export default function DropdownJenisTruk({
   url,

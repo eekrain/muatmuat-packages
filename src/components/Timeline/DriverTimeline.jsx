@@ -3,8 +3,10 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { LightboxProvider, useLightbox } from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+
 import useDevice from "@/hooks/use-device";
 import { useTranslation } from "@/hooks/use-translation";
+
 import {
   OrderStatusEnum,
   OrderStatusIcon,

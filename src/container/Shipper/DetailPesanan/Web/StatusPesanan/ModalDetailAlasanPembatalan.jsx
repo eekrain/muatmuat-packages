@@ -1,4 +1,5 @@
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+
 import { formatDate } from "@/lib/utils/dateFormat";
 
 export const ModalDetailAlasanPembatalan = ({ cancellationHistory }) => {

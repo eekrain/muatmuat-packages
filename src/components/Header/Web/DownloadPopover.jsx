@@ -6,7 +6,9 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 export const DownloadPopover = () => {

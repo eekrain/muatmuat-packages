@@ -6,11 +6,14 @@ import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 
+import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
+
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useVerifyEmailVerification } from "@/services/Transporter/auth/verifyEmailVerification";
+
 import { useRequestOtpProfilActions } from "@/store/Transporter/forms/requestOtpProfilStore";
 
 const SetPasswordPage = () => {

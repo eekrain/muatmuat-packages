@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import IconComponent from "@/components/IconComponent/IconComponent";
-import { useTranslation } from "@/hooks/use-translation";
-import { cn } from "@/lib/utils";
 import { useGetCompletedIssueList } from "@/services/CS/monitoring/urgent-issue/getCompletedIssue";
 import { useGetProcessingIssueList } from "@/services/CS/monitoring/urgent-issue/getProccessingIssue";
 import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useGetUrgentIssueList } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
+
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import IconComponent from "@/components/IconComponent/IconComponent";
+
+import { useTranslation } from "@/hooks/use-translation";
+
+import { cn } from "@/lib/utils";
 
 import FilterPopoverUrgentIssue from "./components/FilterPopoverUrgentIssue";
 import { UrgentIssueCard } from "./components/UrgentIssueCard";

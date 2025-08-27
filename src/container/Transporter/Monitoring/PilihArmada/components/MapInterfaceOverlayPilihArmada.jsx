@@ -3,16 +3,20 @@ import { useEffect, useState } from "react";
 
 import { ChevronLeft } from "lucide-react";
 
+import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
+
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+
 import { FilterPopover } from "@/container/Shared/Map/components/FilterPopover";
 import { LegendButton } from "@/container/Shared/Map/components/LegendButton";
 import { SearchWithSuggestions } from "@/container/Shared/Map/components/SearchWithSuggestions";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
-import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
 export const MapInterfaceOverlayPilihArmada = ({
   onZoomIn,

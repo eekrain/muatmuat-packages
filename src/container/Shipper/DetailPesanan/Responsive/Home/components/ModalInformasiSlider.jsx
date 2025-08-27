@@ -3,6 +3,7 @@
 // Assuming Slider is in this path
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 /**
