@@ -1,9 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Download, MapPin, Phone, Truck } from "lucide-react";
+import { Download, MapPin, Truck } from "lucide-react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -22,9 +22,13 @@ import Table from "@/components/Table/Table";
 import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetDetailData } from "@/services/Transporter/laporan/aktivitas/getArmadaDetailData";
 
-export default function DetailArmadaPage({ params }) {
+export default function DetailArmadaPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const id = params.id;
+
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -32,12 +36,49 @@ export default function DetailArmadaPage({ params }) {
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [hasInitialData, setHasInitialData] = useState(false);
+  const [breadcrumbData, setBreadcrumbData] = useState([]);
 
-  // Helper function untuk mendapatkan startDate dan endDate dari periode
+  useEffect(() => {
+    const defaultBreadcrumbData = [
+      {
+        name: t("breadcrumbs.activityReport", "Laporan Aktivitas"),
+        href: "/laporan/aktivitas-armada-driver",
+      },
+      {
+        name: t("breadcrumbs.fleetActivity", "Aktivitas Armada"),
+        href: "/laporan/aktivitas-armada-driver",
+      },
+      { name: t("breadcrumbs.activityDetail", "Detail Aktivitas") },
+    ];
+
+    const breadcrumbDataDashboard = [
+      {
+        name: t("breadcrumbs.dashboardAnalytics", "Dashboard Analytics"),
+        href: "/dashboard/analytics",
+      },
+      {
+        name: t(
+          "breadcrumbs.deliverySummaryReport",
+          "Laporan Ringkasan Pengiriman"
+        ),
+        href: "/dashboard/analytics/laporan",
+      },
+      { name: t("breadcrumbs.fleetActivity", "Aktivitas Armada") },
+    ];
+
+    const from = searchParams.get("from");
+    if (from === "dashboard") {
+      setBreadcrumbData(breadcrumbDataDashboard);
+    } else {
+      setBreadcrumbData(defaultBreadcrumbData);
+    }
+  }, [searchParams, t]);
+
+  // Helper function to get startDate and endDate from the period
   const getPeriodDates = () => {
     if (!currentPeriodValue) return { startDate: "", endDate: "" };
 
-    // Handle custom date range (dari modal)
+    // Handle custom date range (from modal)
     if (currentPeriodValue?.range && currentPeriodValue?.iso_start_date) {
       return {
         startDate: currentPeriodValue.iso_start_date,
@@ -69,7 +110,7 @@ export default function DetailArmadaPage({ params }) {
 
   // Get fleet detail activities
   const { data: detailData, isLoading: detailLoading } = useGetFleetDetailData(
-    params.id,
+    id,
     {
       limit: perPage,
       page: currentPage,
@@ -83,15 +124,15 @@ export default function DetailArmadaPage({ params }) {
     }
   );
 
-  // Get fleet data from sessionStorage (passed from main table)
   // Get fleet data from detailData.fleetInfo
   const armadaData = {
-    id: params.id,
-    fleetId: params.id,
+    id: id,
+    fleetId: id,
     licensePlate: detailData?.fleetInfo?.licensePlate || "Loading...",
     vehicleType: detailData?.fleetInfo
-      ? `${detailData.fleetInfo.truckType || ""} - ${detailData.fleetInfo.carrierType || ""}`.trim() ||
-        "Loading..."
+      ? `${detailData.fleetInfo.truckType || ""} - ${
+          detailData.fleetInfo.carrierType || ""
+        }`.trim() || "Loading..."
       : "Loading...",
     currentLocation: detailData?.fleetInfo?.currentLocation || "Loading...",
     status: detailData?.fleetInfo?.status || "Loading...",
@@ -100,69 +141,12 @@ export default function DetailArmadaPage({ params }) {
   };
 
   // Get activities from detail API
-  const activitiesData = detailData.activities || [];
-  // {
-  //   id: 1,
-  //   orderCode: "INV/MTR/210504/001/AAA",
-  //   route: {
-  //     origin: "Kab. Jombang, Kec. Wonosal...",
-  //     destination: "Kab. Jombang, Kec. Wonosal...",
-  //     estimate: "121 km",
-  //   },
-  //   driverName: "Daffa Toldo",
-  //   loadDate: null,
-  //   unloadDate: null,
-  //   status: "Dijadwalkan",
-  //   statusType: "scheduled",
-  // },
-  // {
-  //   id: 2,
-  //   orderCode: "INV/MTR/210504/002/BBB",
-  //   route: {
-  //     origin: "Kab. Jombang, Kec. Wonosal...",
-  //     destination: "Kab. Jombang, Kec. Wonosal...",
-  //     estimate: "121 km",
-  //   },
-  //   driverName: "Daffa Toldo",
-  //   loadDate: "24 Sep 2024 12:00 WIB",
-  //   unloadDate: null,
-  //   status: "Bertugas",
-  //   statusType: "on_duty",
-  // },
-  // {
-  //   id: 3,
-  //   orderCode: "INV/MTR/210504/003/CCC",
-  //   route: {
-  //     origin: "Kab. Jombang, Kec. Wonosal...",
-  //     destination: "Kab. Jombang, Kec. Wonosal...",
-  //     estimate: "121 km",
-  //   },
-  //   driverName: "Daffa Toldo",
-  //   loadDate: "24 Sep 2024 12:00 WIB",
-  //   unloadDate: "24 Sep 2024 12:00 WIB",
-  //   status: "Pengiriman Selesai",
-  //   statusType: "completed",
-  // },
-  // {
-  //   id: 4,
-  //   orderCode: "INV/MTR/210504/004/DDD",
-  //   route: {
-  //     origin: "Kab. Jombang, Kec. Wonosal...",
-  //     destination: "Kab. Jombang, Kec. Wonosal...",
-  //     estimate: "121 km",
-  //   },
-  //   driverName: "Daffa Toldo",
-  //   loadDate: "24 Sep 2024 12:00 WIB",
-  //   unloadDate: "24 Sep 2024 12:00 WIB",
-  //   status: "Pengiriman Selesai",
-  //   statusType: "completed",
-  // },
-  // ];
+  const activitiesData = detailData?.activities || [];
 
   // Table columns for activities
   const columns = [
     {
-      header: "Kode Pesanan",
+      header: t("DetailFleetPage.table.orderCode", "Kode Pesanan"),
       key: "invoiceNumber",
       sortable: true,
       width: "170px",
@@ -182,7 +166,7 @@ export default function DetailArmadaPage({ params }) {
       },
     },
     {
-      header: "Rute Pesanan",
+      header: t("DetailFleetPage.table.orderRoute", "Rute Pesanan"),
       key: "orderInfo",
       sortable: false,
       width: "280px",
@@ -191,7 +175,8 @@ export default function DetailArmadaPage({ params }) {
         <div className="space-y-2">
           {row.orderInfo?.estimatedDistance && (
             <div className="text-xs font-medium">
-              Estimasi: {row.orderInfo.estimatedDistance} km
+              {t("DetailFleetPage.table.estimation", "Estimasi")}:{" "}
+              {row.orderInfo.estimatedDistance} km
             </div>
           )}
           <MuatBongkarStepper
@@ -208,7 +193,7 @@ export default function DetailArmadaPage({ params }) {
       ),
     },
     {
-      header: "Nama Driver",
+      header: t("DetailFleetPage.table.driverName", "Nama Driver"),
       key: "driverName",
       sortable: true,
       width: "170px",
@@ -221,7 +206,7 @@ export default function DetailArmadaPage({ params }) {
       },
     },
     {
-      header: "Tanggal Muat",
+      header: t("DetailFleetPage.table.loadDate", "Tanggal Muat"),
       key: "loadingTime",
       sortable: true,
       width: "150px",
@@ -238,7 +223,7 @@ export default function DetailArmadaPage({ params }) {
       },
     },
     {
-      header: "Tanggal Bongkar",
+      header: t("DetailFleetPage.table.unloadDate", "Tanggal Bongkar"),
       key: "unloadingTime",
       sortable: true,
       width: "150px",
@@ -255,7 +240,7 @@ export default function DetailArmadaPage({ params }) {
       },
     },
     {
-      header: "Status",
+      header: t("DetailFleetPage.table.status", "Status"),
       key: "status",
       sortable: true,
       width: "180px",
@@ -264,7 +249,7 @@ export default function DetailArmadaPage({ params }) {
         getStatusBadge(row.orderInfo?.status, row.orderInfo?.status),
     },
     {
-      header: "Action",
+      header: t("DetailFleetPage.table.action", "Action"),
       key: "action",
       sortable: false,
       width: "100px",
@@ -277,28 +262,28 @@ export default function DetailArmadaPage({ params }) {
             // TODO: Implement detail activity navigation
           }}
         >
-          Detail
+          {t("DetailFleetPage.buttonDetail", "Detail")}
         </Button>
       ),
     },
   ];
 
-  // Konfigurasi periode dengan startDate dan endDate
+  // Period configuration with startDate and endDate
   const periodOptions = [
     {
-      name: "Semua Periode (Default)",
+      name: t("periods.all", "Semua Periode (Default)"),
       value: "",
       format: "day",
     },
     {
-      name: "Hari Ini",
+      name: t("periods.today", "Hari Ini"),
       value: 0,
       format: "day",
       startDate: new Date().toISOString().split("T")[0], // YYYY-MM-DD
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "1 Minggu Terakhir",
+      name: t("periods.last7Days", "1 Minggu Terakhir"),
       value: 7,
       format: "day",
       startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -307,7 +292,7 @@ export default function DetailArmadaPage({ params }) {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "30 Hari Terakhir",
+      name: t("periods.last30Days", "30 Hari Terakhir"),
       value: 30,
       format: "month",
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -316,7 +301,7 @@ export default function DetailArmadaPage({ params }) {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "90 Hari Terakhir",
+      name: t("periods.last90Days", "90 Hari Terakhir"),
       value: 90,
       format: "month",
       startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
@@ -325,7 +310,7 @@ export default function DetailArmadaPage({ params }) {
       endDate: new Date().toISOString().split("T")[0],
     },
     {
-      name: "1 Tahun Terakhir",
+      name: t("periods.lastYear", "1 Tahun Terakhir"),
       value: 365,
       format: "year",
       startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
@@ -333,13 +318,6 @@ export default function DetailArmadaPage({ params }) {
         .split("T")[0],
       endDate: new Date().toISOString().split("T")[0],
     },
-  ];
-
-  // Breadcrumb data
-  const breadcrumbData = [
-    { name: "Laporan Aktivitas", href: "/laporan/aktivitas-armada-driver" },
-    { name: "Aktivitas Armada", href: "/laporan/aktivitas-armada-driver" },
-    { name: "Detail Aktivitas" },
   ];
 
   const handleBack = () => {
@@ -420,43 +398,43 @@ export default function DetailArmadaPage({ params }) {
     if (status === "LOADING") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-      displayStatus = "Sedang Muat";
+      displayStatus = t("status.loading", "Sedang Muat");
     } else if (status === "COMPLETED") {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
-      displayStatus = "Selesai";
+      displayStatus = t("status.completed", "Selesai");
     } else if (status === "PENDING") {
       bgColor = "bg-yellow-100";
       textColor = "text-yellow-900";
-      displayStatus = "Menunggu";
+      displayStatus = t("status.pending", "Menunggu");
     } else if (status === "CANCELLED") {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
-      displayStatus = "Dibatalkan";
+      displayStatus = t("status.cancelled", "Dibatalkan");
     } else if (status === "ON_DUTY") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-      displayStatus = "Bertugas";
+      displayStatus = t("status.onDuty", "Bertugas");
     } else if (status === "READY_FOR_ORDER") {
       bgColor = "bg-green-100";
       textColor = "text-green-900";
-      displayStatus = "Siap Menerima Order";
+      displayStatus = t("status.readyForOrder", "Siap Menerima Order");
     } else if (status === "NOT_PAIRED") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-600";
-      displayStatus = "Belum Dipasangkan";
+      displayStatus = t("status.notPaired", "Belum Dipasangkan");
     } else if (status === "INACTIVE") {
       bgColor = "bg-red-100";
       textColor = "text-red-900";
-      displayStatus = "Nonaktif";
+      displayStatus = t("status.inactive", "Nonaktif");
     } else if (status === "WAITING_PAYMENT_1") {
       bgColor = "bg-orange-100";
       textColor = "text-orange-900";
-      displayStatus = "Menunggu Pembayaran";
+      displayStatus = t("status.waitingPayment", "Menunggu Pembayaran");
     } else if (status === null || status === "") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-500";
-      displayStatus = "Tidak Ada Status";
+      displayStatus = t("status.noStatus", "Tidak Ada Status");
     }
 
     return (
@@ -473,10 +451,10 @@ export default function DetailArmadaPage({ params }) {
 
   // Set hasInitialData when data is first loaded
   useEffect(() => {
-    if (activitiesData.length > 0 && !hasInitialData) {
+    if (detailData && !hasInitialData) {
       setHasInitialData(true);
     }
-  }, [activitiesData.length, hasInitialData]);
+  }, [detailData, hasInitialData]);
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
@@ -488,10 +466,10 @@ export default function DetailArmadaPage({ params }) {
         {/* Title and Download Button in one row */}
         <div className="flex items-center justify-between">
           <PageTitle className={`mt-3`} onClick={handleBack}>
-            {t("DetailFleetPage.titleActivityDetails", {}, "Detail Aktivitas")}
+            {t("DetailFleetPage.titleActivityDetails", "Detail Aktivitas")}
           </PageTitle>
           <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
-            {t("DetailFleetPage.buttonDownload", {}, "Unduh")}
+            {t("DetailFleetPage.buttonDownload", "Unduh")}
           </Button>
         </div>
       </div>
@@ -506,11 +484,7 @@ export default function DetailArmadaPage({ params }) {
               <div className="flex-shrink-0">
                 <LightboxProvider
                   image={armadaData.image}
-                  title={t(
-                    "DetailFleetPage.fleetImageTitle",
-                    {},
-                    "Gambar Armada"
-                  )}
+                  title={t("DetailFleetPage.fleetImageTitle", "Gambar Armada")}
                 >
                   <LightboxPreview
                     image={armadaData.image}
@@ -567,7 +541,6 @@ export default function DetailArmadaPage({ params }) {
               <Search
                 placeholder={t(
                   "DetailFleetPage.searchPlaceholder",
-                  {},
                   "Cari Kode Pesanan, Rute atau lainnya"
                 )}
                 onSearch={handleSearch}
@@ -583,8 +556,10 @@ export default function DetailArmadaPage({ params }) {
             <div className="text-sm font-semibold text-neutral-900">
               {t(
                 "DetailFleetPage.totalActivities",
-                { count: activitiesData.length },
-                `Total : ${activitiesData.length} Aktivitas`
+                `Total : ${activitiesData.length} Aktivitas`,
+                {
+                  count: activitiesData.length,
+                }
               )}
             </div>
           </div>
@@ -594,14 +569,35 @@ export default function DetailArmadaPage({ params }) {
       {/* Activities Table */}
       <Card className="border-t-none rounded-t-none border-none bg-white">
         <CardContent className="p-0">
-          {activitiesData.length === 0 && !hasInitialData ? (
-            // Show DataNotFound only when there's no initial data at all
+          {activitiesData.length === 0 && hasInitialData ? (
+            <Table
+              columns={columns}
+              data={[]}
+              onSort={handleSort}
+              sortConfig={sortConfig}
+              emptyComponent={
+                <div className="px-6 py-8">
+                  <DataNotFound
+                    type="search"
+                    title={t(
+                      "DetailFleetPage.dataNotFound",
+                      "Data tidak ditemukan"
+                    )}
+                    description={t(
+                      "DetailFleetPage.dataNotFoundDesc",
+                      "Coba ubah kata kunci pencarian atau filter periode"
+                    )}
+                    className="gap-y-3"
+                  />
+                </div>
+              }
+            />
+          ) : activitiesData.length === 0 && !hasInitialData ? (
             <div className="flex h-64 flex-col items-center justify-center px-6 py-12">
               <DataNotFound
                 type="data"
                 title={t(
                   "DetailFleetPage.emptyFleetActivities",
-                  {},
                   "Belum ada Aktivitas Armada"
                 )}
                 className="gap-y-3"
@@ -610,7 +606,6 @@ export default function DetailArmadaPage({ params }) {
                 <p className="text-sm font-medium text-neutral-500">
                   {t(
                     "DetailFleetPage.emptyFleetActivitiesDesc",
-                    {},
                     "Pastikan Armada aktif dan siap menerima pesanan."
                   )}
                 </p>
@@ -628,12 +623,10 @@ export default function DetailArmadaPage({ params }) {
                     type="search"
                     title={t(
                       "DetailFleetPage.dataNotFound",
-                      {},
                       "Data tidak ditemukan"
                     )}
                     description={t(
                       "DetailFleetPage.dataNotFoundDesc",
-                      {},
                       "Coba ubah kata kunci pencarian atau filter periode"
                     )}
                     className="gap-y-3"
@@ -645,18 +638,20 @@ export default function DetailArmadaPage({ params }) {
         </CardContent>
       </Card>
 
-      {/* Pagination - always show */}
-      <div className="mt-4">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(activitiesData.length / perPage)}
-          perPage={perPage}
-          onPageChange={handlePageChange}
-          onPerPageChange={handlePerPageChange}
-          variants="muatrans"
-          className="pb-0"
-        />
-      </div>
+      {/* Pagination - only show if there is data */}
+      {activitiesData.length > 0 && (
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            onPerPageChange={handlePerPageChange}
+            variants="muatrans"
+            className="pb-0"
+          />
+        </div>
+      )}
     </div>
   );
 }

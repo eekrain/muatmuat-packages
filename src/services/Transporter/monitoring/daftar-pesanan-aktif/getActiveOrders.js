@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockActiveOrders = true;
+const isMockActiveOrders = false;
 
 // Get dynamic dates for testing different conditions
 const today = new Date();
@@ -54,7 +54,7 @@ const apiResultActiveOrders = {
           },
         ],
         truckType: { id: "uuid", name: "Tronton" },
-        carrierTruck: { id: "uuid", name: "Wing Box" },
+        carrierTruck: { id: "uuid", description: "Wing Box" },
         truckCount: 2,
         totalWeight: 14,
         weightUnit: "ton",
@@ -851,8 +851,8 @@ export const fetcherActiveOrders = async (cacheKey) => {
   // Extract query string from cache key
   const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
   const url = queryString
-    ? `/v1/active-orders?${queryString}`
-    : "/v1/active-orders";
+    ? `/v1/transporter/orders/list/active?${queryString}`
+    : "/v1/transporter/orders/list/active";
 
   if (isMockActiveOrders) {
     // Parse search parameter from query string

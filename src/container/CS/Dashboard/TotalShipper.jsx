@@ -11,6 +11,7 @@ const TotalShipper = () => {
   // 1. Fetch data using the SWR hook
   const { data, isLoading, isError } = useGetDashboardAnalyticsTotalShipper();
 
+  console.log("Total Shipper:", data);
   const hasData = data && data.TotalShipper > 0;
   // 2. Transform the API data into the format required by the DonutChart component
   const chartData = useMemo(() => {

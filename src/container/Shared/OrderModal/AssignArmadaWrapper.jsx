@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
+import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getAvailableVehiclesList";
 
 import ArmadaTidakCukupiModal from "./ArmadaTidakCukupiModal";
 import ArmadaTidakTersediaModal from "./ArmadaTidakTersediaModal";

@@ -356,7 +356,8 @@ const DaftarPesanan = ({
                 </InfoTooltip>
               ) : null}
               {row.orderStatus === "NEED_RESPONSE_CHANGE"
-                ? getOrderStatusConfig(ORDER_STATUS.NEED_CHANGE_RESPONSE).label
+                ? getOrderStatusConfig(t)[ORDER_STATUS.NEED_CHANGE_RESPONSE]
+                    .label
                 : statusConfig.label}
             </div>
           </BadgeStatusPesanan>
@@ -392,7 +393,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- END */}
-          {row.orderStatus === ORDER_STATUS.NEED_RESPONSE_CHANGE ? (
+          {row.orderStatus === "NEED_RESPONSE_CHANGE" ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
