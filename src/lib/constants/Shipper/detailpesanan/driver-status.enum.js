@@ -14,7 +14,11 @@ export const DriverStatusEnum = {
     },
     MUAT: {
       code: "SEDANG_MUAT",
-      name: "labelSedangMuat",
+      name: "Sedang Muat",
+    },
+    MUAT_MULTIPLE: {
+      code: "SEDANG_MUAT_MULTIPLE",
+      name: "Sedang Muat di Lokasi",
     },
   },
   UNLOADING: {
@@ -33,6 +37,10 @@ export const DriverStatusEnum = {
     BONGKAR: {
       code: "SEDANG_BONGKAR",
       name: "labelSedangBongkar",
+    },
+    BONGKAR_MULTIPLE: {
+      code: "SEDANG_BONGKAR_MULTIPLE",
+      name: "Sedang Bongkar di Lokasi",
     },
     SELESAI: {
       code: "PENGIRIMAN_MUATAN_SELESAI",

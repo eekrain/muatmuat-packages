@@ -29,7 +29,7 @@ export default function DesktopLayout({ children }) {
       <main
         className={cn(
           "relative",
-          isLoggedIn ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"
+          true ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"
         )}
       >
         {children}

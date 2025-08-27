@@ -17,7 +17,7 @@ const BreadCrumb = ({
 }) => {
   const getItemClasses = (idx) =>
     cn(
-      "capsize select-none text-xs font-medium capitalize text-neutral-600",
+      "text-xs font-medium capitalize text-neutral-600",
       "hover:text-primary-700",
       idx === data.length - 1
         ? "!max-w-none"
@@ -36,7 +36,7 @@ const BreadCrumb = ({
             </Link>
           ) : (
             <div
-              style={{ maxWidth: maxWidth ? `${maxWidth}px` : "86px" }}
+              style={{ maxWidth: maxWidth ? `${maxWidth}px` : "" }}
               className={getItemClasses(idx)}
             >
               {val.name}

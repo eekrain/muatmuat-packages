@@ -61,11 +61,14 @@ const Content = React.forwardRef(
 Content.displayName = PopoverPrimitive.Content.displayName;
 
 // 4. Item Component (An item in the first-level dropdown that triggers a sub-menu on hover)
-const HoverRoot = ({ title, children }) => (
+const HoverRoot = ({ title, children, className }) => (
   <HoverCardPrimitive.Root openDelay={100} closeDelay={100}>
     <HoverCardPrimitive.Trigger asChild>
       <div
-        className="flex cursor-pointer items-center justify-between px-3 py-2 text-xs font-medium hover:bg-neutral-200 focus:outline-none"
+        className={cn(
+          "flex cursor-pointer items-center justify-between px-3 py-2 text-xs font-medium hover:bg-neutral-200 focus:outline-none",
+          className
+        )}
         tabIndex={0}
       >
         <span>{title}</span>

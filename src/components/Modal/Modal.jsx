@@ -94,7 +94,7 @@ export const ModalContent = ({
       <Dialog.Overlay
         data-stack-item="true"
         className={cn(
-          "fixed inset-0 z-50 bg-black/25",
+          "fixed inset-0 z-[50] bg-black/25",
           "data-[state=open]:animate-overlay-show",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
           appearance.backgroudClassname
@@ -133,7 +133,7 @@ export const ModalContent = ({
         }}
         {...props}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
+          "fixed left-1/2 top-1/2 z-[51] -translate-x-1/2 -translate-y-1/2",
           "rounded-xl bg-neutral-50 shadow-lg",
           "data-[state=open]:animate-content-show",
           // --- THIS LINE IS THE ONLY CHANGE ---

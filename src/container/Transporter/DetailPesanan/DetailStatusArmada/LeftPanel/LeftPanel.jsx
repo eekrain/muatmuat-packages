@@ -8,7 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useTranslation } from "@/hooks/use-translation";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getStatusDriverMetadata } from "@/lib/normalizers/detailpesanan/getStatusDriverMetadata";
 
 export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
       )
     : dataDriverTimeline;
   console.log(currentDriverData?.dataDriver?.driverStatus, "tes");
-  const statusMeta = getDriverStatusMetadata({
+  const statusMeta = getStatusDriverMetadata({
     driverStatus: currentDriverData?.dataDriver?.driverStatus,
     orderStatus: currentDriverData?.dataDriver?.orderStatus,
     t,
@@ -102,7 +102,7 @@ export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
       <div className="flex h-fit max-h-full flex-col gap-4 overflow-y-auto pr-3 [background-clip:content-box] [scrollbar-gutter:stable]">
         <div className="flex flex-col gap-4">
           {allDriversData?.drivers?.map((driver) => {
-            const driverStatusMeta = getDriverStatusMetadata({
+            const driverStatusMeta = getStatusDriverMetadata({
               driverStatus: driver.dataDriver.driverStatus,
               orderStatus: driver.dataDriver.orderStatus,
               t,

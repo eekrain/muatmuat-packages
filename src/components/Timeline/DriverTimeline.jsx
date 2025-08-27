@@ -11,7 +11,7 @@ import {
   OrderStatusTitle,
 } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { DriverStatusLabel } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getStatusDriverMetadata } from "@/lib/normalizers/detailpesanan/getStatusDriverMetadata";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -124,6 +124,7 @@ export const DriverTimeline = ({ dataTimeline, onClickProof }) => {
                     setLightboxActiveIndex={setLightboxActiveIndex}
                     onSetLightboxData={handleSetLightboxData}
                     onMobileClick={onClickProof}
+                    index={index}
                   />
                 ))}
               </TimelineContainer>
@@ -149,6 +150,7 @@ const ItemWithLightbox = ({
   setLightboxActiveIndex,
   onSetLightboxData,
   onMobileClick,
+  index,
 }) => {
   const { item, isActive, isLastInGroup } = data;
   const { t } = useTranslation();
@@ -168,7 +170,7 @@ const ItemWithLightbox = ({
     openLightbox(0);
   };
 
-  const statusMeta = getDriverStatusMetadata({
+  const statusMeta = getStatusDriverMetadata({
     driverStatus: item.statusCode,
     t,
   });
@@ -177,6 +179,7 @@ const ItemWithLightbox = ({
     <NewTimelineItem
       variant="bullet-driver-status"
       activeIndex={isActive ? 0 : -1}
+      index={index}
       title={statusMeta.label}
       isLast={isLastInGroup}
       timestamp={item.date}
@@ -194,7 +197,7 @@ const ItemWithLightbox = ({
             item.statusCode.startsWith("PENGIRIMAN_")
               ? t("labelLihatBuktiMuatBarangPOD")
               : t("labelLihatBuktiStatus", {
-                  statusName: getDriverStatusMetadata({
+                  statusName: getStatusDriverMetadata({
                     driverStatus: item.statusCode,
                     t,
                   }).label,

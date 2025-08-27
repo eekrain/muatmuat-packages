@@ -7,18 +7,12 @@ import {
   DriverStatusLabel,
 } from "@/lib/constants/Shipper/detailpesanan/driver-status.enum";
 
-const SHOULD_RETURNS_ORDER_STATUS = [
-  OrderStatusEnum.WAITING_REPAYMENT_1,
-  OrderStatusEnum.WAITING_REPAYMENT_2,
-  OrderStatusEnum.PREPARE_DOCUMENT,
-  OrderStatusEnum.DOCUMENT_DELIVERY,
-  OrderStatusEnum.COMPLETED,
-  OrderStatusEnum.CANCELED_BY_SHIPPER,
-  OrderStatusEnum.CANCELED_BY_SYSTEM,
-  OrderStatusEnum.CANCELED_BY_TRANSPORTER,
+const SHOULD_RETURNS_DRIVER_STATUS = [
+  OrderStatusEnum.LOADING,
+  OrderStatusEnum.UNLOADING,
 ];
 
-export const getDriverStatusMetadata = ({
+export const getStatusDriverMetadata = ({
   driverStatus = null,
   orderStatus = null,
   t,
@@ -38,7 +32,7 @@ export const getDriverStatusMetadata = ({
   else if (orderStatus?.startsWith("CANCELED")) variant = "error";
   else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
 
-  if (SHOULD_RETURNS_ORDER_STATUS.includes(orderStatus)) {
+  if (!SHOULD_RETURNS_DRIVER_STATUS.includes(orderStatus)) {
     label = t(OrderStatusTitle[orderStatus]);
     return { variant, label };
   }
@@ -49,7 +43,9 @@ export const getDriverStatusMetadata = ({
     return { variant, label };
   }
 
-  const newStatus = splitStatus.slice(0, -1).join("_");
+  let newStatus = splitStatus.slice(0, -1).join("_");
+  if (newStatus.includes("SEDANG")) newStatus = `${newStatus}_MULTIPLE`;
+
   label = `${t(DriverStatusLabel[newStatus])} ${locationIndex}`;
   return { variant, label };
 };
