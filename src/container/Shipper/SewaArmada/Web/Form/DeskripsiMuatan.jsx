@@ -3,6 +3,8 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import TextArea from "@/components/TextArea/TextArea";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { handleFirstTime } from "@/lib/utils/form";
 
 import {
@@ -11,6 +13,7 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const DeskripsiMuatan = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const cargoDescription = useSewaArmadaStore(
@@ -21,7 +24,9 @@ const DeskripsiMuatan = () => {
 
   return (
     <FormContainer>
-      <FormLabel required>Deskripsi Muatan</FormLabel>
+      <FormLabel required>
+        {t("DeskripsiMuatan.title", {}, "Deskripsi Muatan")}
+      </FormLabel>
       <div className="flex flex-1 flex-col gap-2">
         <TextArea
           disabled={isEditPage}
@@ -32,9 +37,11 @@ const DeskripsiMuatan = () => {
             title: formErrors.cargoDescription,
           }}
           resize="none"
-          placeholder={
+          placeholder={t(
+            "DeskripsiMuatan.placeholder",
+            {},
             "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
-          }
+          )}
           value={cargoDescription}
           onChange={({ target: { name, value } }) =>
             handleFirstTime(() => setField(name, value))

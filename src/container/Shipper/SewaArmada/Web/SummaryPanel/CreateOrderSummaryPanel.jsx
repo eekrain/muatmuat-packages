@@ -9,6 +9,7 @@ import FleetOrderConfirmationModal from "@/container/Shipper/SewaArmada/Web/Flee
 import { VoucherContainer } from "@/container/Shipper/Voucher/Voucher";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { normalizeFleetOrder } from "@/lib/normalizers/sewaarmada";
@@ -34,6 +35,7 @@ export const CreateOrderSummaryPanel = ({
   paymentMethods,
   calculatedPrice,
 }) => {
+  const { t } = useTranslation();
   // Ambil token yang valid dari auth store
   const authToken = useTokenStore((state) => state.token);
   const token = authToken ? `Bearer ${authToken}` : null;
@@ -91,7 +93,13 @@ export const CreateOrderSummaryPanel = ({
     setVoucherDiscount(discount);
 
     // Show success toast
-    setToastMessage(`Voucher ${voucher.code} berhasil diterapkan!`);
+    setToastMessage(
+      t(
+        "CreateOrderSummaryPanel.toastVoucherApplied",
+        { code: voucher.code },
+        `Voucher ${voucher.code} berhasil diterapkan!`
+      )
+    );
     setShowVoucherSuccess(true);
     setTimeout(() => setToastMessage(""), 3000);
     setTimeout(() => setShowVoucherSuccess(false), 5000);
@@ -125,19 +133,35 @@ export const CreateOrderSummaryPanel = ({
     }
     return [
       {
-        title: "Biaya Pesan Jasa Angkut",
+        title: t(
+          "CreateOrderSummaryPanel.transportFeeTitle",
+          {},
+          "Biaya Pesan Jasa Angkut"
+        ),
         items: [
           {
-            label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
+            label: t(
+              "CreateOrderSummaryPanel.transportFeeLabel",
+              { truckCount },
+              `Nominal Pesan Jasa Angkut (${truckCount} Unit)`
+            ),
             price: calculatedPrice.transportFee,
           },
         ],
       },
       {
-        title: "Biaya Asuransi Barang",
+        title: t(
+          "CreateOrderSummaryPanel.insuranceTitle",
+          {},
+          "Biaya Asuransi Barang"
+        ),
         items: [
           {
-            label: "Nominal Premi Asuransi (1 Unit)",
+            label: t(
+              "CreateOrderSummaryPanel.insuranceLabel",
+              {},
+              "Nominal Premi Asuransi (1 Unit)"
+            ),
             price: calculatedPrice.insuranceFee,
           },
         ],
@@ -145,7 +169,11 @@ export const CreateOrderSummaryPanel = ({
       ...(calculatedPrice.additionalServiceFee.length > 0
         ? [
             {
-              title: "Biaya Layanan Tambahan",
+              title: t(
+                "CreateOrderSummaryPanel.additionalServiceTitle",
+                {},
+                "Biaya Layanan Tambahan"
+              ),
               items: calculatedPrice.additionalServiceFee.map((item) => ({
                 label: item.name,
                 price: item.totalCost,
@@ -156,10 +184,18 @@ export const CreateOrderSummaryPanel = ({
       ...(selectedVoucherDetails
         ? [
             {
-              title: "Diskon Voucher",
+              title: t(
+                "CreateOrderSummaryPanel.voucherDiscountTitle",
+                {},
+                "Diskon Voucher"
+              ),
               items: [
                 {
-                  label: `Voucher (${selectedVoucherDetails.code})`,
+                  label: t(
+                    "CreateOrderSummaryPanel.voucherDiscountLabel",
+                    { code: selectedVoucherDetails.code },
+                    `Voucher (${selectedVoucherDetails.code})`
+                  ),
                   price: calculatedPrice.voucher || voucherDiscount,
                 },
               ],
@@ -167,17 +203,21 @@ export const CreateOrderSummaryPanel = ({
           ]
         : []),
       {
-        title: "Biaya Lainnya",
+        title: t("CreateOrderSummaryPanel.otherFeesTitle", {}, "Biaya Lainnya"),
         items: [
           {
-            label: "Admin Layanan",
+            label: t(
+              "CreateOrderSummaryPanel.adminFeeLabel",
+              {},
+              "Admin Layanan"
+            ),
             price: calculatedPrice.adminFee,
           },
           // 25. 18 - Web - LB - 0302
           ...(isBusinessEntity
             ? [
                 {
-                  label: "Pajak",
+                  label: t("CreateOrderSummaryPanel.taxLabel", {}, "Pajak"),
                   price: calculatedPrice.taxAmount,
                 },
               ]
@@ -191,6 +231,8 @@ export const CreateOrderSummaryPanel = ({
     truckCount,
     selectedVoucherDetails,
     voucherDiscount,
+    isBusinessEntity,
+    t,
   ]);
 
   // Also create detailPesanan structure for new logic integration
@@ -316,14 +358,22 @@ export const CreateOrderSummaryPanel = ({
     if (!orderData.loadTimeStart) {
       errors.push({
         field: "loadTimeStart",
-        message: "Waktu muat tidak boleh kosong",
+        message: t(
+          "CreateOrderSummaryPanel.errorLoadTimeRequired",
+          {},
+          "Waktu muat tidak boleh kosong"
+        ),
       });
     }
 
     if (!orderData.loadTimeEnd) {
       errors.push({
         field: "loadTimeEnd",
-        message: "Waktu muat akhir tidak boleh kosong",
+        message: t(
+          "CreateOrderSummaryPanel.errorLoadTimeEndRequired",
+          {},
+          "Waktu muat akhir tidak boleh kosong"
+        ),
       });
     }
 
@@ -338,7 +388,11 @@ export const CreateOrderSummaryPanel = ({
     if (pickupLocations.length === 0 || dropoffLocations.length === 0) {
       errors.push({
         field: "locations",
-        message: "Minimal harus ada 1 lokasi pickup dan 1 lokasi dropoff",
+        message: t(
+          "CreateOrderSummaryPanel.errorLocationsRequired",
+          {},
+          "Minimal harus ada 1 lokasi pickup dan 1 lokasi dropoff"
+        ),
       });
     }
 
@@ -346,14 +400,22 @@ export const CreateOrderSummaryPanel = ({
     if (!orderData.cargos || orderData.cargos.length === 0) {
       errors.push({
         field: "cargos",
-        message: "Minimal harus ada 1 muatan",
+        message: t(
+          "CreateOrderSummaryPanel.errorCargoRequired",
+          {},
+          "Minimal harus ada 1 muatan"
+        ),
       });
     } else {
       orderData.cargos.forEach((cargo, index) => {
         if (!cargo.weight || cargo.weight <= 0) {
           errors.push({
             field: `cargos.${index}.weight`,
-            message: "Berat muatan harus lebih dari 0",
+            message: t(
+              "CreateOrderSummaryPanel.errorCargoWeightInvalid",
+              {},
+              "Berat muatan harus lebih dari 0"
+            ),
           });
         }
       });
@@ -363,7 +425,11 @@ export const CreateOrderSummaryPanel = ({
     if (!orderData.paymentMethodId) {
       errors.push({
         field: "paymentMethodId",
-        message: "Metode pembayaran wajib dipilih",
+        message: t(
+          "CreateOrderSummaryPanel.errorPaymentMethodRequired",
+          {},
+          "Metode pembayaran wajib dipilih"
+        ),
       });
     }
 
@@ -416,7 +482,13 @@ export const CreateOrderSummaryPanel = ({
           `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
         );
       } else {
-        alert("Validation error from server");
+        alert(
+          t(
+            "CreateOrderSummaryPanel.errorValidationFromServer",
+            {},
+            "Validation error from server"
+          )
+        );
       }
     } catch (error) {
       console.error("Error creating order:", error);
@@ -424,7 +496,13 @@ export const CreateOrderSummaryPanel = ({
       if (error.response && error.response.data) {
         alert(`Error: ${error.response.data.Message?.Text || "Unknown error"}`);
       } else {
-        alert("Terjadi kesalahan. Silakan coba lagi.");
+        alert(
+          t(
+            "CreateOrderSummaryPanel.errorGeneral",
+            {},
+            "Terjadi kesalahan. Silakan coba lagi."
+          )
+        );
       }
     }
 
@@ -436,7 +514,11 @@ export const CreateOrderSummaryPanel = ({
       <Card className="sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white shadow-muat">
         <div className="flex flex-col gap-y-6 px-5 py-6">
           <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
-            Ringkasan Transaksi
+            {t(
+              "CreateOrderSummaryPanel.transactionSummary",
+              {},
+              "Ringkasan Transaksi"
+            )}
           </h3>
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
             <button
@@ -449,17 +531,33 @@ export const CreateOrderSummaryPanel = ({
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
                       1
                     </div>
-                    <span>1 Voucher Terpakai</span>
+                    <span>
+                      {t(
+                        "CreateOrderSummaryPanel.oneVoucherApplied",
+                        {},
+                        "1 Voucher Terpakai"
+                      )}
+                    </span>
                   </>
                 ) : (
                   <>
                     <Image
                       src="/img/iconVoucher2.png"
-                      alt="Voucher"
+                      alt={t(
+                        "CreateOrderSummaryPanel.altVoucher",
+                        {},
+                        "Voucher"
+                      )}
                       width={25}
                       height={25}
                     />
-                    <span>Makin hemat pakai voucher</span>
+                    <span>
+                      {t(
+                        "CreateOrderSummaryPanel.saveMoreWithVoucher",
+                        {},
+                        "Makin hemat pakai voucher"
+                      )}
+                    </span>
                   </>
                 )}
               </div>
@@ -485,11 +583,21 @@ export const CreateOrderSummaryPanel = ({
                     {selectedVoucherDetails.code}
                   </span>
                   <span className="text-xs text-green-600">
-                    Hemat Rp {voucherDiscount.toLocaleString("id-ID")}
+                    {t(
+                      "CreateOrderSummaryPanel.savings",
+                      {
+                        amount: `Rp ${voucherDiscount.toLocaleString("id-ID")}`,
+                      },
+                      `Hemat Rp ${voucherDiscount.toLocaleString("id-ID")}`
+                    )}
                   </span>
                   {showVoucherSuccess && (
                     <span className="animate-pulse text-xs font-semibold text-green-700">
-                      ✅ Berhasil diterapkan!
+                      {t(
+                        "CreateOrderSummaryPanel.appliedSuccess",
+                        {},
+                        "✅ Berhasil diterapkan!"
+                      )}
                     </span>
                   )}
                 </div>
@@ -501,7 +609,7 @@ export const CreateOrderSummaryPanel = ({
                   }}
                   className="text-sm text-red-500 hover:text-red-700"
                 >
-                  Hapus
+                  {t("CreateOrderSummaryPanel.remove", {}, "Hapus")}
                 </button>
               </div>
             )}
@@ -510,7 +618,11 @@ export const CreateOrderSummaryPanel = ({
             {priceSummary.length > 0 ? (
               <>
                 <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                  Detail Pesanan
+                  {t(
+                    "CreateOrderSummaryPanel.orderDetails",
+                    {},
+                    "Detail Pesanan"
+                  )}
                 </span>
                 {priceSummary.map(({ title, items }, key) => {
                   const isDiscountSection = title
@@ -553,7 +665,7 @@ export const CreateOrderSummaryPanel = ({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                    Sub Total
+                    {t("CreateOrderSummaryPanel.subtotal", {}, "Sub Total")}
                   </span>
                   <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
                     {calculatedPrice
@@ -573,7 +685,9 @@ export const CreateOrderSummaryPanel = ({
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-base font-bold text-black">Total</span>
+            <span className="text-base font-bold text-black">
+              {t("CreateOrderSummaryPanel.total", {}, "Total")}
+            </span>
             <span className="text-base font-bold text-black">
               {calculatedPrice
                 ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
@@ -595,7 +709,15 @@ export const CreateOrderSummaryPanel = ({
       {voucherContainer.VoucherModal}
 
       {/* POPUP INFO VOUCHER */}
-      {showInfoPopup && <div className="voucher-popup">Info Voucher Popup</div>}
+      {showInfoPopup && (
+        <div className="voucher-popup">
+          {t(
+            "CreateOrderSummaryPanel.infoVoucherPopup",
+            {},
+            "Info Voucher Popup"
+          )}
+        </div>
+      )}
 
       <FleetOrderConfirmationModal
         isOpen={isModalConfirmationOpen}

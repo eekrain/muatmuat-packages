@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useUpdateUserJourneyStep } from "@/services/Transporter/dashboard/updateUserJourneyStep";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardMenu from "@/components/Card/CardMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
@@ -53,6 +55,7 @@ const menuItems = [
 
 const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
   const router = useRouter();
+  const { trigger: updateJourneyStep, isMutating } = useUpdateUserJourneyStep();
   const [modal, setModal] = useState({
     isOpen: false,
     message: "",
@@ -71,6 +74,61 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
       modalContentClassname: "",
       onConfirm: () => {},
     });
+
+  /**
+   * Update user journey step status via API
+   * @param {string} stepName - The name of the step to update
+   * @param {boolean} isCompleted - Whether the step is completed
+   */
+  const handleUpdateJourneyStep = async (stepName, isCompleted) => {
+    try {
+      const requestBody = {
+        stepName,
+        isCompleted,
+        completedAt: isCompleted ? new Date().toISOString() : null,
+      };
+
+      const response = await updateJourneyStep(
+        "v1/transporter/user/journey-step",
+        { arg: requestBody }
+      );
+
+      if (response?.data?.Message?.Code === 200) {
+        console.log(`✅ Journey step ${stepName} updated successfully`);
+        // Optionally refresh the journey status or update local state
+      } else {
+        console.error(`❌ Failed to update journey step ${stepName}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error updating journey step ${stepName}:`, error);
+    }
+  };
+
+  /**
+   * Mark a specific journey step as completed
+   * This function can be called from external components or pages
+   * @param {string} stepName - The name of the step to mark as completed
+   */
+  const markStepAsCompleted = async (stepName) => {
+    await handleUpdateJourneyStep(stepName, true);
+  };
+
+  /**
+   * Mark a specific journey step as in progress
+   * This function can be called from external components or pages
+   * @param {string} stepName - The name of the step to mark as in progress
+   */
+  const markStepAsInProgress = async (stepName) => {
+    await handleUpdateJourneyStep(stepName, false);
+  };
+
+  // Expose functions for external use
+  if (typeof window !== "undefined") {
+    window.updateUserJourneyStep = {
+      markStepAsCompleted,
+      markStepAsInProgress,
+    };
+  }
 
   const handleMenuClick = (item) => {
     // Logic updated to use the new statusKey and data structure

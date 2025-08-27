@@ -15,6 +15,7 @@ import {
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
@@ -32,6 +33,7 @@ import {
 // Main Popup Component
 const SelectArmadaModal = ({ carrierData, truckData }) => {
   const [search, setSearch] = useState("");
+  const { t } = useTranslation();
 
   const { isOpen, isDimensionOrWeightChanged, type } =
     useSelectArmadaModalStore();
@@ -90,7 +92,13 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
       setField("truckTypeId", null);
     }
     if (isDimensionOrWeightChanged) {
-      toast.success("Informasi muatan dan jenis armada telah berhasil diubah");
+      toast.success(
+        t(
+          "SelectArmadaModal.updateSuccess",
+          {},
+          "Informasi muatan dan jenis armada telah berhasil diubah"
+        )
+      );
     }
     setField(type, item);
     setIsDimensionOrWeightChanged(false);
@@ -100,8 +108,12 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
   const handleSearchChange = (e) => setSearch(e.target.value);
 
   const modalTitles = {
-    carrierId: "Pilih Jenis Carrier",
-    truckTypeId: "Pilih Jenis Truk",
+    carrierId: t(
+      "SelectArmadaModal.selectCarrierType",
+      {},
+      "Pilih Jenis Carrier"
+    ),
+    truckTypeId: t("SelectArmadaModal.selectTruckType", {}, "Pilih Jenis Truk"),
   };
   const modalTitle = modalTitles[type] || modalTitles.carrierId;
 
@@ -131,17 +143,31 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
             {isTruckOptionsEmpty ? (
               <WarningBadge
                 className="bg-warning-100"
-                message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan."
+                message={t(
+                  "SelectArmadaModal.noSuitableTrucks",
+                  {},
+                  "Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan."
+                )}
               />
             ) : null}
             {isDimensionOrWeightChanged ? (
-              <WarningBadge message="Berat / dimensi muatan melebihi kapasitas truk yang telah dipilih. Mohon pilih truk dengan kapasitas yang sesuai." />
+              <WarningBadge
+                message={t(
+                  "SelectArmadaModal.capacityExceeded",
+                  {},
+                  "Berat / dimensi muatan melebihi kapasitas truk yang telah dipilih. Mohon pilih truk dengan kapasitas yang sesuai."
+                )}
+              />
             ) : null}
 
             {/* Search Field */}
             <Input
               disabled={isTruckOptionsEmpty}
-              placeholder={`Cari Jenis ${type === "carrierId" ? "Carrier" : "Truk"}`}
+              placeholder={t(
+                "SelectArmadaModal.searchPlaceholder",
+                { type: type === "carrierId" ? "Carrier" : "Truk" },
+                `Cari Jenis ${type === "carrierId" ? "Carrier" : "Truk"}`
+              )}
               icon={{
                 left: "/icons/search16.svg",
                 right: search ? (
@@ -164,7 +190,11 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
                 <DataNotFound
                   className="gap-y-3"
                   textClass="text-[#868686]"
-                  title="Tidak ada rekomendasi truk"
+                  title={t(
+                    "SelectArmadaModal.noTruckRecommendations",
+                    {},
+                    "Tidak ada rekomendasi truk"
+                  )}
                   width={96}
                   height={77}
                 />
@@ -206,8 +236,16 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
                       className="mt-3"
                       message={
                         type === "carrierId"
-                          ? "Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
-                          : "Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak sesuai dengan informasi muatan"
+                          ? t(
+                              "SelectArmadaModal.carrierRiskWarning",
+                              {},
+                              "Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
+                            )
+                          : t(
+                              "SelectArmadaModal.truckRiskWarning",
+                              {},
+                              "Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak sesuai dengan informasi muatan"
+                            )
                       }
                     />
 
@@ -239,14 +277,18 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
                 )}
               >
                 <span className="text-base font-bold leading-[19.2px]">
-                  Hasil Pencarian
+                  {t("SelectArmadaModal.searchResults", {}, "Hasil Pencarian")}
                 </span>
                 {filteredData.length === 0 ? (
                   <div className="flex h-[302px] items-center justify-center">
                     <DataNotFound
                       className="gap-y-5"
                       textClass="text-[#868686] leading-[19.2px]"
-                      title="Keyword Tidak Ditemukan"
+                      title={t(
+                        "SelectArmadaModal.keywordNotFound",
+                        {},
+                        "Keyword Tidak Ditemukan"
+                      )}
                       width={71}
                       height={61}
                     />

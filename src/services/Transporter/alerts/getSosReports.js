@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWRMutateHook from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
@@ -114,12 +114,12 @@ export const fetcherSosReports = async (_cacheKey) => {
 
 /**
  * SWR hook to fetch SOS reports.
- * @returns {Object} An object containing the fetched data, loading state, and error state from useSWR.
+ * @returns {Object} An object containing the fetched data, loading state, and error state from useSWRMutateHook.
  */
 export const useGetSosReports = () => {
   const cacheKey = "sos-reports";
 
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWRMutateHook(
     cacheKey,
     fetcherSosReports,
     {

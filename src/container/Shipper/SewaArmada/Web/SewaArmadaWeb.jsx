@@ -34,14 +34,10 @@ import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/Welc
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
-
-import { isDev } from "@/lib/constants/is-dev";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { useLoadingAction } from "@/store/Shared/loadingStore";
-import {
-  useSewaArmadaActions,
-  useSewaArmadaStore,
-} from "@/store/Shipper/forms/sewaArmadaStore";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 import UpdateOrderSummaryPanel from "./SummaryPanel/UpdateOrderSummaryPanel";
@@ -65,6 +61,7 @@ export default function SewaArmadaWeb({
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setIsOpen } = useWaitingSettlementModalAction();
+  const { t } = useTranslation();
 
   const { data: dataBanner, isLoading } = useSWRHook("v1/orders/banner-ads");
   const { data: userPreferences, isLoading: isLoadingUserPreferences } =
@@ -76,10 +73,10 @@ export default function SewaArmadaWeb({
     return data?.map((item) => ({
       id: item.id,
       imageUrl: item.imageUrl,
-      altText: "Banner Muatrans",
+      altText: t("SewaArmadaWeb.bannerAltText", {}, "Banner Muatrans"),
       linkUrl: item.link,
     }));
-  }, [dataBanner]);
+  }, [dataBanner, t]);
 
   const alertItems = useShallowMemo(() => {
     if (!settlementAlertInfo) return [];
@@ -104,7 +101,7 @@ export default function SewaArmadaWeb({
                 className="text-xs font-medium text-primary-700"
                 onClick={() => setIsOpen(true)}
               >
-                Lihat Pesanan
+                {t("SewaArmadaWeb.viewOrder", {}, "Lihat Pesanan")}
               </button>
             ),
           };
@@ -112,7 +109,7 @@ export default function SewaArmadaWeb({
         return {
           label: item.alertText,
           link: {
-            label: "Lihat Pesanan",
+            label: t("SewaArmadaWeb.viewOrder", {}, "Lihat Pesanan"),
             link:
               item.orderId.length === 1
                 ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
@@ -209,25 +206,6 @@ export default function SewaArmadaWeb({
       <LoginModal />
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
-
-      <Dev />
     </>
   );
 }
-
-const Dev = () => {
-  const formValues = useSewaArmadaStore((state) => state.formValues);
-  const { validateForm } = useSewaArmadaActions();
-  const testSubmit = () => {
-    const isValidForm = validateForm();
-    console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
-  };
-
-  if (!isDev) return null;
-  return (
-    <>
-      <pre>{JSON.stringify(formValues, null, 2)}</pre>
-      <button onClick={testSubmit}>Test Submit</button>
-    </>
-  );
-};

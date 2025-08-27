@@ -117,7 +117,7 @@ export default function VoucherCard({
             <div className="relative flex h-16 w-16 overflow-hidden rounded">
               <Image
                 src="/img/iconVoucher2.png"
-                alt="Voucher"
+                alt={t("VoucherCard.altVoucher", {}, "Voucher")}
                 width={64}
                 height={64}
                 className="object-cover"
@@ -137,7 +137,7 @@ export default function VoucherCard({
               >
                 <Image
                   src="/icons/information.png"
-                  alt="VoucherInfo"
+                  alt={t("VoucherCard.altInfo", {}, "VoucherInfo")}
                   width={16}
                   height={16}
                   className="object-cover"
@@ -238,11 +238,19 @@ export default function VoucherCard({
               const diffMs = expiry - now;
               const diffHours = diffMs / (1000 * 60 * 60);
               if (diffHours < 24) {
-                return `${t("descTimeRemaining")} ${countdown} ${t("descAgain")}`;
+                return t(
+                  "VoucherCard.timeRemainingHours",
+                  { countdown },
+                  `Sisa ${countdown} jam lagi`
+                );
               } else {
                 // Otherwise, show days left
                 const diffDays = Math.ceil(diffHours / 24);
-                return `${t("descExpiresIn")} ${diffDays} ${t("descDaysAgain")}`;
+                return t(
+                  "VoucherCard.expiresInDays",
+                  { days: diffDays },
+                  `Berakhir ${diffDays} hari lagi`
+                );
               }
             })()}
           </div>

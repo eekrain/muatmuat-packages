@@ -8,6 +8,8 @@ import {
   WarningBadge,
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 
@@ -17,6 +19,7 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
+  const { t } = useTranslation();
   const [selectedTruckTypeId, setSelectedTruckTypeId] = useState(null);
 
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -33,7 +36,13 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
     setField("minTruckCount", selectedTruck.unit);
     setField("truckTypeId", selectedTruckTypeId);
     setIsOpen(false);
-    toast.success("Jenis armada telah berhasil diubah");
+    toast.success(
+      t(
+        "RecommendedTruckModal.successMessage",
+        {},
+        "Jenis armada telah berhasil diubah"
+      )
+    );
   };
 
   return (
@@ -41,9 +50,15 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
       <ModalContent type="muatmuat">
         <div className="flex flex-col items-center gap-y-4 px-6 py-9">
           <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
-            Rekomendasi Kami
+            {t("RecommendedTruckModal.title", {}, "Rekomendasi Kami")}
           </h1>
-          <WarningBadge message="Pastikan lokasi muat dan bongkar dapat dijangkau truk rekomendasi kami untuk kelancaran proses" />
+          <WarningBadge
+            message={t(
+              "RecommendedTruckModal.warningMessage",
+              {},
+              "Pastikan lokasi muat dan bongkar dapat dijangkau truk rekomendasi kami untuk kelancaran proses"
+            )}
+          />
           {recommendedTrucks?.map((item, key) => {
             const isSelected = selectedTruckTypeId === item.truckTypeId;
             return (
@@ -62,7 +77,7 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
             variant="muatparts-primary"
             onClick={handleSelectRecommendedTruck}
           >
-            Terapkan
+            {t("RecommendedTruckModal.applyButton", {}, "Terapkan")}
           </Button>
         </div>
       </ModalContent>

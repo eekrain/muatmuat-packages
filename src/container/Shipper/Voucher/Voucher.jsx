@@ -16,6 +16,8 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { formatShortDate } from "@/lib/utils/dateFormat";
 
 const MOCK_EMPTY = false;
@@ -26,6 +28,7 @@ export const VoucherContainer = ({
   onVoucherSelect,
   useMockData = false, // Add flag for testing
 }) => {
+  const { t } = useTranslation();
   // Voucher related state and hooks
   const [voucherList, setVoucherList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,7 +57,9 @@ export const VoucherContainer = ({
           : await muatTransGetAvailableVouchers();
         setVoucherList(vouchers);
       } catch (err) {
-        setError("Gagal memuat daftar voucher");
+        setError(
+          t("VoucherModal.errorLoadVouchers", {}, "Gagal memuat daftar voucher")
+        );
         console.error("Error fetching vouchers:", err);
       } finally {
         setLoading(false);
@@ -140,13 +145,17 @@ export const VoucherContainer = ({
         setValidationErrors({
           [voucher.id]:
             validationResult.validationMessages?.join(", ") ||
-            "Voucher tidak valid",
+            t("VoucherModal.errorInvalidVoucher", {}, "Voucher tidak valid"),
         });
       }
     } catch (err) {
       console.error("Error validating voucher:", err);
       setValidationErrors({
-        [voucher.id]: "Gagal memvalidasi voucher",
+        [voucher.id]: t(
+          "VoucherModal.errorValidateVoucher",
+          {},
+          "Gagal memvalidasi voucher"
+        ),
       });
     }
   };
@@ -157,15 +166,15 @@ export const VoucherContainer = ({
       <>
         {/* MODAL PILIH VOUCHER */}
         <Modal open={showVoucherPopup} onOpenChange={setShowVoucherPopup}>
-          <ModalContent className="max-h-[80vh] min-h-fit w-[386px] rounded-xl bg-white px-6 py-6 shadow-2xl">
+          <ModalContent className="max-h-[80vh] min-h-fit w-[472px] rounded-xl bg-white px-6 py-6 shadow-2xl">
             <button
               onClick={() => setShowVoucherPopup(false)}
               className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 focus:outline-none"
-              aria-label="Close"
+              aria-label={t("VoucherModal.close", {}, "Tutup")}
             ></button>
 
             <h2 className="mb-4 text-center text-base font-semibold">
-              Pilih Voucher
+              {t("VoucherModal.titleSelectVoucher", {}, "Pilih Voucher")}
             </h2>
 
             <div className="relative mb-4">
@@ -175,7 +184,11 @@ export const VoucherContainer = ({
               <input
                 disabled={voucherList.length === 0}
                 type="text"
-                placeholder="Cari Kode Voucher"
+                placeholder={t(
+                  "VoucherModal.placeholderSearchVoucher",
+                  {},
+                  "Cari Kode Voucher"
+                )}
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 className="h-[32px] w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -185,11 +198,19 @@ export const VoucherContainer = ({
             <div className="max-h-[400px] space-y-3 overflow-y-auto pb-6 pr-3">
               {loading ? (
                 <div className="text-center text-sm text-gray-500">
-                  Memuat voucher...
+                  {t(
+                    "VoucherModal.messageLoadingVoucher",
+                    {},
+                    "Memuat voucher..."
+                  )}
                 </div>
               ) : error ? (
                 <div className="text-center text-sm text-red-500">
-                  Gagal memuat voucher.
+                  {t(
+                    "VoucherModal.errorLoadVoucher",
+                    {},
+                    "Gagal memuat voucher."
+                  )}
                 </div>
               ) : searchKeyword.length > 0 && filteredVouchers.length === 0 ? (
                 <VoucherSearchEmpty />
@@ -198,7 +219,11 @@ export const VoucherContainer = ({
               ) : (
                 <>
                   <p className="mb-4 text-xs text-gray-500">
-                    Hanya bisa dipilih 1 Voucher
+                    {t(
+                      "VoucherModal.messageOneVoucherOnly",
+                      {},
+                      "Hanya bisa dipilih 1 Voucher"
+                    )}
                   </p>
                   {filteredVouchers.map((v) => (
                     <VoucherCard

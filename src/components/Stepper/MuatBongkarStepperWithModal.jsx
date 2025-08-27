@@ -7,46 +7,71 @@ import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import Button from "../Button/Button";
+import { InfoTooltip } from "../Form/InfoTooltip";
 import { Modal, ModalContent, ModalTitle, ModalTrigger } from "../Modal/Modal";
 
-const LocationItem = ({ location, isLast, appearance }) => (
-  <div className="relative flex items-center gap-3">
-    {/* Bullet with custom colors */}
-    <div className="relative flex flex-shrink-0 justify-center">
-      {/* Dashed line connector */}
-      {!isLast && (
-        <div className="absolute left-1/2 top-[5px] z-0 h-[30px] w-0 -translate-x-1/2 border-l-[1.5px] border-dashed border-neutral-400" />
-      )}
-      {/* Bullet */}
-      <div
-        className={cn(
-          "relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full",
-          location.type === "pickup"
-            ? "bg-[#FFC217]" // MuatTrans primary yellow
-            : "bg-[#461B02]" // MuatTrans secondary brown
+const LocationItem = ({ location, isLast, appearance }) => {
+  // Check if location title is too long (you can adjust the threshold)
+  const isLongTitle = location.title && location.title.length > 40;
+
+  return (
+    <div className="relative flex items-center gap-3">
+      {/* Bullet with custom colors */}
+      <div className="relative flex flex-shrink-0 justify-center">
+        {/* Dashed line connector */}
+        {!isLast && (
+          <div className="absolute left-1/2 top-[5px] z-0 h-[30px] w-0 -translate-x-1/2 border-l-[1.5px] border-dashed border-neutral-400" />
         )}
-      >
+        {/* Bullet */}
         <div
           className={cn(
-            "h-1.5 w-1.5 rounded-full",
+            "relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full",
             location.type === "pickup"
-              ? "bg-[#461B02]" // Brown dot for pickup
-              : "bg-neutral-50" // White dot for dropoff
+              ? "bg-[#FFC217]" // MuatTrans primary yellow
+              : "bg-[#461B02]" // MuatTrans secondary brown
           )}
-        />
+        >
+          <div
+            className={cn(
+              "h-1.5 w-1.5 rounded-full",
+              location.type === "pickup"
+                ? "bg-[#461B02]" // Brown dot for pickup
+                : "bg-neutral-50" // White dot for dropoff
+            )}
+          />
+        </div>
       </div>
-    </div>
-    {/* Location text */}
-    <span
-      className={cn(
-        "text-xxs font-semibold text-neutral-900",
-        appearance?.titleClassName
+      {/* Location text with tooltip if long */}
+      {isLongTitle ? (
+        <InfoTooltip
+          trigger={
+            <span
+              className={cn(
+                "line-clamp-2 cursor-pointer break-all text-xxs font-semibold text-neutral-900",
+                appearance?.titleClassName
+              )}
+            >
+              {location.title}
+            </span>
+          }
+          side="top"
+          className="max-w-xs"
+        >
+          <p className="text-sm">{location.title}</p>
+        </InfoTooltip>
+      ) : (
+        <span
+          className={cn(
+            "line-clamp-2 break-all text-xxs font-semibold text-neutral-900",
+            appearance?.titleClassName
+          )}
+        >
+          {location.title}
+        </span>
       )}
-    >
-      {location.title}
-    </span>
-  </div>
-);
+    </div>
+  );
+};
 
 const MuatBongkarStepperWithModal = ({
   pickupLocations = [],

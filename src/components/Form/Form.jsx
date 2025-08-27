@@ -1,3 +1,5 @@
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 export const FormContainer = ({ children, className }) => (
@@ -18,32 +20,36 @@ export const FormLabel = ({
   className,
   children,
   tooltip,
-}) => (
-  <div
-    className={cn(
-      "flex w-full items-center gap-1 text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
-      variant === "big" && "md:h-8",
-      className
-    )}
-  >
-    {typeof children === "string" ? (
-      <label>
-        {children}
-        {required && <span>*</span>}
-        {optional && (
-          <>
-            &nbsp;
-            <span className="text-xxs md:text-xs md:font-normal md:italic md:text-neutral-500">
-              (Opsional)
-            </span>
-          </>
-        )}
-      </label>
-    ) : (
-      children
-    )}
+}) => {
+  const { t } = useTranslation();
 
-    {/* If you need to add like InfoTooltip, you can add via tooltip props */}
-    <div className="flex-shrink-0">{tooltip}</div>
-  </div>
-);
+  return (
+    <div
+      className={cn(
+        "flex w-full items-center gap-1 text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
+        variant === "big" && "md:h-8",
+        className
+      )}
+    >
+      {typeof children === "string" ? (
+        <label>
+          {children}
+          {required && <span>*</span>}
+          {optional && (
+            <>
+              &nbsp;
+              <span className="text-xxs md:text-xs md:font-normal md:italic md:text-neutral-500">
+                {t("FormLabel.optional", {}, "(Opsional)")}
+              </span>
+            </>
+          )}
+        </label>
+      ) : (
+        children
+      )}
+
+      {/* If you need to add like InfoTooltip, you can add via tooltip props */}
+      <div className="flex-shrink-0">{tooltip}</div>
+    </div>
+  );
+};

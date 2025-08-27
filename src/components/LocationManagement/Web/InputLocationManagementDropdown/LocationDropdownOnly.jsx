@@ -8,6 +8,8 @@ import {
   PopoverTrigger,
 } from "@/components/Popover/Popover";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 /**
@@ -32,6 +34,13 @@ export const LocationDropdownOnly = ({
   placeholder = "Masukkan Lokasi",
   needValidateLocationChange,
 }) => {
+  const { t } = useTranslation();
+
+  // Use translated placeholder if default is used, otherwise use the passed placeholder
+  const translatedPlaceholder =
+    placeholder === "Masukkan Lokasi"
+      ? t("LocationDropdownOnly.placeholder", {}, "Masukkan Lokasi")
+      : placeholder;
   const handleOpenChange = (open) => {
     // If trying to close the popover, check if user is still actively using the input
     if (!open) {
@@ -61,7 +70,7 @@ export const LocationDropdownOnly = ({
           <div className="relative w-full">
             <Input
               type="text"
-              placeholder={placeholder}
+              placeholder={translatedPlaceholder}
               value={searchLocationAutoComplete}
               onChange={(e) => {
                 setSearchLocationAutoComplete(e.currentTarget.value);
@@ -110,7 +119,13 @@ export const LocationDropdownOnly = ({
                 width={20}
                 height={20}
               />
-              <span>Pilih Lokasi</span>
+              <span>
+                {t(
+                  "LocationDropdownOnly.selectCurrentLocation",
+                  {},
+                  "Pilih Lokasi"
+                )}
+              </span>
             </button>
             <div className="px-[4px]">
               <hr className="border-[#C4C4C4]" />
@@ -118,7 +133,7 @@ export const LocationDropdownOnly = ({
 
             <div className="space-y-3 px-[20px] py-[12px]">
               <div className="text-xxs font-semibold text-gray-600">
-                Hasil Pencarian
+                {t("LocationDropdownOnly.searchResults", {}, "Hasil Pencarian")}
               </div>
               {locationAutoCompleteResult?.map((location) => (
                 <button
@@ -165,14 +180,22 @@ export const LocationDropdownOnly = ({
                   />
                 </div>
                 <p className="capsize text-xxs font-semibold leading-[14.4px] text-[#176CF7]">
-                  Input Lokasi yang terdekat dengan Anda
+                  {t(
+                    "LocationDropdownOnly.nearestLocationInfo",
+                    {},
+                    "Input Lokasi yang terdekat dengan Anda"
+                  )}
                 </p>
               </div>
 
               {userSavedLocations?.length > 0 && (
                 <>
                   <div className="text-xxs font-medium leading-[1.3] text-neutral-600">
-                    Manajemen Lokasi
+                    {t(
+                      "LocationDropdownOnly.locationManagement",
+                      {},
+                      "Manajemen Lokasi"
+                    )}
                   </div>
                   <div className="space-y-2">
                     {userSavedLocations.slice(0, 3).map((location) => (
@@ -223,7 +246,11 @@ export const LocationDropdownOnly = ({
                       onClick={onLocationManagementClicked}
                       className="text-xxs font-medium text-[#176CF7]"
                     >
-                      Lihat Manajemen Lokasi
+                      {t(
+                        "LocationDropdownOnly.viewLocationManagement",
+                        {},
+                        "Lihat Manajemen Lokasi"
+                      )}
                     </button>
                   </div>
                 </>
