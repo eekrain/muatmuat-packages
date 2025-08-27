@@ -52,7 +52,11 @@ const LaporanPermintaanDibatalkan = ({
   const columns = [
     {
       key: "cancelledDate",
-      header: "Tanggal Dibatalkan",
+      header: t(
+        "LaporanPermintaanDibatalkan.headerTanggalDibatalkan",
+        {},
+        "Tanggal Dibatalkan"
+      ),
       width: "174px",
       className: "align-top !pl-6 !pr-2.5",
       headerClassName: "pl-6 pr-2.5",
@@ -64,7 +68,11 @@ const LaporanPermintaanDibatalkan = ({
     },
     {
       key: "invoice",
-      header: "No. Pesanan",
+      header: t(
+        "LaporanPermintaanDibatalkan.headerNoPesanan",
+        {},
+        "No. Pesanan"
+      ),
       width: "132px",
       className: "align-top !px-2.5",
       headerClassName: "px-2.5",
@@ -74,7 +82,11 @@ const LaporanPermintaanDibatalkan = ({
     },
     {
       key: "loadTime",
-      header: "Waktu Muat",
+      header: t(
+        "LaporanPermintaanDibatalkan.headerWaktuMuat",
+        {},
+        "Waktu Muat"
+      ),
       width: "180px",
       className: "align-top !px-2.5",
       headerClassName: "px-2.5",
@@ -82,7 +94,11 @@ const LaporanPermintaanDibatalkan = ({
         <div className="mt-1 flex flex-col gap-y-3">
           {index % 2 === 0 ? (
             <span className="text-xs font-semibold text-success-400">
-              Muat Besok
+              {t(
+                "LaporanPermintaanDibatalkan.labelMuatBesok",
+                {},
+                "Muat Besok"
+              )}
             </span>
           ) : null}
           <span className="text-xs font-medium">
@@ -93,7 +109,11 @@ const LaporanPermintaanDibatalkan = ({
     },
     {
       key: "location",
-      header: "Rute Muat & Bongkar",
+      header: t(
+        "LaporanPermintaanDibatalkan.headerRuteMuatBongkar",
+        {},
+        "Rute Muat & Bongkar"
+      ),
       // width: "244px",
       headerClassName: "px-2.5",
       className: "align-top !px-2.5",
@@ -156,7 +176,7 @@ const LaporanPermintaanDibatalkan = ({
     },
     {
       key: "fleet",
-      header: "Armada",
+      header: t("LaporanPermintaanDibatalkan.headerArmada", {}, "Armada"),
       // width: "244px",
       headerClassName: "px-2.5",
       className: "align-top !px-2.5",
@@ -211,7 +231,11 @@ const LaporanPermintaanDibatalkan = ({
     },
     {
       key: "numberOfRequest",
-      header: "Permintaan Ke",
+      header: t(
+        "LaporanPermintaanDibatalkan.headerPermintaanKe",
+        {},
+        "Permintaan Ke"
+      ),
       width: "116px",
       headerClassName: "px-2.5",
       className: "align-top !px-2.5",
@@ -233,11 +257,11 @@ const LaporanPermintaanDibatalkan = ({
           variant="muattrans-primary"
           onClick={() =>
             router.push(
-              `/laporan/permintaan-dibatalkan.${row.id}}/detail-permintaan-dibatalkan`
+              `/laporan/permintaan-dibatalkan/${row.id}}/detail-permintaan-dibatalkan`
             )
           }
         >
-          Detail
+          {t("LaporanPermintaanDibatalkan.buttonDetail", {}, "Detail")}
         </Button>
       ),
     },
@@ -358,7 +382,13 @@ const LaporanPermintaanDibatalkan = ({
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Laporan Permintaan Dibatalkan</h1>
+        <h1 className="text-xl font-bold">
+          {t(
+            "LaporanPermintaanDibatalkan.titleLaporanPermintaanDibatalkan",
+            {},
+            "Laporan Permintaan Dibatalkan"
+          )}
+        </h1>
         <div className="flex items-center gap-x-3">
           <DropdownPeriode
             disable={orders.length === 0}
@@ -373,7 +403,7 @@ const LaporanPermintaanDibatalkan = ({
             variant="muattrans-primary"
             onClick={() => {}}
           >
-            Unduh
+            {t("LaporanPermintaanDibatalkan.buttonUnduh", {}, "Unduh")}
           </Button>
         </div>
       </div>
@@ -390,8 +420,11 @@ const LaporanPermintaanDibatalkan = ({
                 height={77}
               />
               <span className="text-xs font-medium text-neutral-600">
-                Permintaan jasa angkut yang telah dibatalkan oleh shipper akan
-                ditampilkan disini
+                {t(
+                  "LaporanPermintaanDibatalkan.labelPermintaanDibatalkanInfo",
+                  {},
+                  "Permintaan jasa angkut yang telah dibatalkan oleh shipper akan ditampilkan disini"
+                )}
               </span>
             </div>
           </div>
@@ -404,7 +437,11 @@ const LaporanPermintaanDibatalkan = ({
                     className="gap-0"
                     disabled={orders.length === 0 && !queryParams.search}
                     appearance={{ containerClassName: "w-[262px]" }}
-                    placeholder="Cari Permintaan"
+                    placeholder={t(
+                      "LaporanPermintaanDibatalkan.placeholderCariPermintaan",
+                      {},
+                      "Cari Permintaan"
+                    )}
                     icon={{
                       left: "/icons/search16.svg",
                       right: tempSearch ? (
@@ -420,7 +457,11 @@ const LaporanPermintaanDibatalkan = ({
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${orders.length} Permintaan Dibatalkan`}
+                  {t(
+                    "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan",
+                    { total: orders.length },
+                    "Total : {total} Permintaan Dibatalkan"
+                  )}
                 </span>
               </div>
             </div>

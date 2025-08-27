@@ -2950,7 +2950,6 @@
   "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Detail Pesanan",
   "FleetChange.replacementFleet": "Menggantikan Armada",
   "LihatPosisiArmada.replacingFleet": "Menggantikan Armada",
-  "DetailLaporanPermintaanDibatalkan.breadcrumbOrderDetail": "Detail Pesanan",
   "DaftarPesananAktif.toast.tutorialUpdateError": "Gagal memperbarui preferensi tutorial",
   "DaftarPesananAktif.toast.cancelFleetsError": "Gagal membatalkan armada. Silakan coba lagi.",
   "DaftarPesananAktif.toast.cancelFleetError": "Gagal membatalkan armada. Silakan coba lagi.",
@@ -2985,5 +2984,18 @@
   "MapInterfaceOverlay.button.fleetList": "Daftar Armada",
   "MapInterfaceOverlay.button.sos.history": "Riwayat SOS",
   "MapInterfaceOverlay.button.sos.count": "SOS ({count})",
-  "MapInterfaceOverlay.label.licenseAndTransporter": "No. Polisi & Transporter"
+  "MapInterfaceOverlay.label.licenseAndTransporter": "No. Polisi & Transporter",
+  "LaporanPermintaanDibatalkan.headerTanggalDibatalkan": "Tanggal Dibatalkan",
+  "LaporanPermintaanDibatalkan.headerNoPesanan": "No. Pesanan",
+  "LaporanPermintaanDibatalkan.headerWaktuMuat": "Waktu Muat",
+  "LaporanPermintaanDibatalkan.labelMuatBesok": "Muat Besok",
+  "LaporanPermintaanDibatalkan.headerRuteMuatBongkar": "Rute Muat & Bongkar",
+  "LaporanPermintaanDibatalkan.headerArmada": "Armada",
+  "LaporanPermintaanDibatalkan.headerPermintaanKe": "Permintaan Ke",
+  "LaporanPermintaanDibatalkan.buttonDetail": "Detail",
+  "LaporanPermintaanDibatalkan.titleLaporanPermintaanDibatalkan": "Laporan Permintaan Dibatalkan",
+  "LaporanPermintaanDibatalkan.buttonUnduh": "Unduh",
+  "LaporanPermintaanDibatalkan.labelPermintaanDibatalkanInfo": "Permintaan jasa angkut yang telah dibatalkan oleh shipper akan ditampilkan disini",
+  "LaporanPermintaanDibatalkan.placeholderCariPermintaan": "Cari Permintaan",
+  "LaporanPermintaanDibatalkan.labelTotalPermintaanDibatalkan": "Total : {total} Permintaan Dibatalkan"
 }
