@@ -18,7 +18,7 @@ const apiResultLatestFleetNote = {
       status: "active",
       current: 10,
       total: 11,
-      inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
+      inactivityStatus: "ARMADA_INACTIVE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
 
       history: {
         reportedAt: "2025-01-15T10:00:00Z",

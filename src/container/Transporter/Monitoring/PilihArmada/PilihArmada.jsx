@@ -25,9 +25,16 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
 
-  // Get available fleet data for the selected order (using a mock orderId for now)
+  // Ambil orderId dari URL params
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const orderId = searchParams?.get("id") || "";
+
+  // Get available fleet data for the selected order
   const { data: fleetData, isLoading: fleetLoading } = useGetAvailableFleet(
-    "550e8400-e29b-41d4-a716-446655440001",
+    orderId,
     {
       search: searchValue,
       operationalStatus: selectedFilter ? [selectedFilter] : undefined,
@@ -395,7 +402,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
         <div className="absolute left-1/2 top-4 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
           <IconComponent
             src="/icons/draggable-button.svg"
-            className={cn("h-4 w-14 cursor-pointer")}
+            className={cn("h-4 w-14 cursor-grabbing")}
           />
         </div>
         <div className="flex items-center gap-2">
