@@ -4,11 +4,14 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
+  BottomSheetTitle,
 } from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
-import TextArea from "@/components/TextArea/TextArea";
+import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 
 import { useTranslation } from "@/hooks/use-translation";
 
@@ -84,39 +87,35 @@ const TambahNamaMuatanBottomSheet = ({
 
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
-      <BottomSheetContent className="max-h-[75vh]">
+      {/* 25. 18 - Web - LB - 0032 */}
+      <BottomSheetContent>
         <BottomSheetHeader>
-          {t(
-            "CariNamaMuatanScreen.titleEnterCargoName",
-            {},
-            "Masukkan Nama Muatan"
-          )}
+          <BottomSheetClose />
+          <BottomSheetTitle>
+            {t(
+              "CariNamaMuatanScreen.titleEnterCargoName",
+              {},
+              "Masukkan Nama Muatan"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
 
-        <div className="flex flex-col gap-4 px-4 py-4">
-          <div className="flex flex-col gap-2">
-            <TextArea
-              name="namaMuatan"
-              placeholder={t(
-                "CariNamaMuatanScreen.placeholderCargoNameExample",
-                {},
-                "Contoh : Karet Mentah"
-              )}
-              value={namaMuatan}
-              onChange={handleInputChange}
-              status={errors.namaMuatan ? "error" : null}
-              maxLength={50}
-              hasCharCount={true}
-              height={80}
-              supportiveText={{
-                title: errors.namaMuatan || "",
-                desc: "",
-              }}
-            />
-          </div>
+        <div className="px-4">
+          <ExpandableTextArea
+            value={namaMuatan}
+            onChange={handleInputChange}
+            placeholder={t(
+              "CariNamaMuatanScreen.placeholderCargoNameExample",
+              {},
+              "Contoh : Karet Mentah"
+            )}
+            errorMessage={errors.namaMuatan}
+            appearance={{
+              inputClassName: "max-h-[47px]",
+            }}
+          />
         </div>
-
-        <div className="border-t border-neutral-200 px-4 py-4">
+        <BottomSheetFooter>
           <Button
             variant="muatparts-primary"
             className="w-full"
@@ -125,7 +124,7 @@ const TambahNamaMuatanBottomSheet = ({
           >
             {t("CariNamaMuatanScreen.buttonSave", {}, "Simpan")}
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );
