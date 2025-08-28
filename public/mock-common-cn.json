@@ -1437,8 +1437,10 @@
   "statusDibatalkan": "已取消",
   "statusMenungguKonfirmasi": "等待确认",
   "statusPergantianArmada": "车队变更",
+  "labelBuktiStatus": "凭证 {statusName}",
   "labelLihatBuktiStatus": "查看凭证 {statusName}",
-  "labelLihatBuktiMuatBarangPOD": "卸货凭证及 POD",
+  "labelLihatBuktiMuatBarangPOD": "查看装货凭证 & POD",
+  "labelLihatBuktiBongkarBarangPOD": "查看卸货凭证 & POD",
   "labelBuktiMuatBarangMulti": "第{index}地点装货凭证",
   "labelBuktiMuatBarang": "装货凭证",
   "labelBuktiBongkarBarangMulti": "第{index}地点卸货凭证",
@@ -3449,5 +3451,15 @@
   "TruckItem.estimatedDimensions": "预计尺寸（宽 x 长 x 高）：",
   "TruckItem.truckType": "卡车类型",
   "DaftarPesananWeb.viewOrder": "查看订单",
-  "DaftarPesananWeb.pageTitle": "订单列表"
+  "DaftarPesananWeb.pageTitle": "订单列表",
+  "SewaArmadaWeb.testSubmit": "测试提交",
+  "Filter.dataTidakDitemukan": "未找到数据",
+  "Breadcrumb.monitoring": "监控",
+  "Breadcrumb.daftarPesananAktif": "活跃订单列表",
+  "Breadcrumb.detailPesanan": "订单详情",
+  "Breadcrumb.lihatPosisiArmada": "查看车队位置",
+  "LihatPosisiArmada.placeholderCariArmada": "搜索车牌号 / 司机姓名 / 运输商",
+  "LihatPosisiArmada.keywordTidakDitemukan": "未找到关键词",
+  "LihatPosisiArmada.dataTidakDitemukan": "未找到数据。",
+  "LihatPosisiArmada.mohonCobaHapusFilter": "请尝试删除一些筛选条件"
 }

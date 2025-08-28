@@ -1436,8 +1436,10 @@
   "statusDibatalkan": "Cancelled",
   "statusMenungguKonfirmasi": "Waiting for Confirmation",
   "statusPergantianArmada": "Fleet Change",
+  "labelBuktiStatus": "Proof {statusName}",
   "labelLihatBuktiStatus": "View Proof {statusName}",
-  "labelLihatBuktiMuatBarangPOD": "Delivery Evidence & POD",
+  "labelLihatBuktiMuatBarangPOD": "View Loading Proof & POD",
+  "labelLihatBuktiBongkarBarangPOD": "View Unloading Proof & POD",
   "labelBuktiMuatBarangMulti": "Loading Evidence at Location {index}",
   "labelBuktiMuatBarang": "Loading Evidence",
   "labelBuktiBongkarBarangMulti": "Unloading Evidence at Location {index}",
@@ -3413,5 +3415,15 @@
   "TruckItem.estimatedDimensions": "Estimated Dimensions (w x l x h): ",
   "TruckItem.truckType": "Truck Type",
   "DaftarPesananWeb.viewOrder": "View Order",
-  "DaftarPesananWeb.pageTitle": "Order List"
+  "DaftarPesananWeb.pageTitle": "Order List",
+  "SewaArmadaWeb.testSubmit": "Test Submit",
+  "Filter.dataTidakDitemukan": "Data Not Found",
+  "Breadcrumb.monitoring": "Monitoring",
+  "Breadcrumb.daftarPesananAktif": "Active Orders List",
+  "Breadcrumb.detailPesanan": "Order Details",
+  "Breadcrumb.lihatPosisiArmada": "View Fleet Position",
+  "LihatPosisiArmada.placeholderCariArmada": "Search License Plate / Driver Name / Transporter",
+  "LihatPosisiArmada.keywordTidakDitemukan": "Keyword Not Found",
+  "LihatPosisiArmada.dataTidakDitemukan": "Data not found.",
+  "LihatPosisiArmada.mohonCobaHapusFilter": "Please try removing some filters"
 }

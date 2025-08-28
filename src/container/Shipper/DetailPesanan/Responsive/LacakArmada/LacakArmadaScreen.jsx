@@ -103,16 +103,10 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
 
           {data && (
             <MarkerLegends
-              legends={[
-                {
-                  icon: "/icons/marker-lokasi-muat.svg",
-                  title: "Lokasi Muat",
-                },
-                {
-                  icon: "/icons/marker-lokasi-bongkar.svg",
-                  title: "Lokasi Bongkar",
-                },
-              ]}
+              legends={data.locationMarkers.map((marker) => ({
+                icon: marker.icon,
+                title: marker.title,
+              }))}
             />
           )}
         </BottomSheetContent>

@@ -1373,8 +1373,10 @@
   "statusDibatalkan": "Dibatalkan",
   "statusMenungguKonfirmasi": "Menunggu Konfirmasi",
   "statusPergantianArmada": "Pergantian Armada",
+  "labelBuktiStatus": "Bukti {statusName}",
   "labelLihatBuktiStatus": "Lihat Bukti {statusName}",
-  "labelLihatBuktiMuatBarangPOD": "Bukti Bongkar Barang & POD",
+  "labelLihatBuktiMuatBarangPOD": "Lihat Bukti Muat Barang & POD",
+  "labelLihatBuktiBongkarBarangPOD": "Lihat Bukti Bongkar Barang & POD",
   "labelBuktiMuatBarangMulti": "Bukti Muat Barang di Lokasi {index}",
   "labelBuktiMuatBarang": "Bukti Muat Barang",
   "labelBuktiBongkarBarangMulti": "Bukti Bongkar Barang di Lokasi {index}",
@@ -3410,5 +3412,15 @@
   "TruckItem.estimatedDimensions": "Estimasi Dimensi (p x l x t) : ",
   "TruckItem.truckType": "Jenis Truk",
   "DaftarPesananWeb.viewOrder": "Lihat Pesanan",
-  "DaftarPesananWeb.pageTitle": "Daftar Pesanan"
+  "DaftarPesananWeb.pageTitle": "Daftar Pesanan",
+  "SewaArmadaWeb.testSubmit": "Test Submit",
+  "Filter.dataTidakDitemukan": "Data Tidak Ditemukan",
+  "Breadcrumb.monitoring": "Monitoring",
+  "Breadcrumb.daftarPesananAktif": "Daftar Pesanan Aktif",
+  "Breadcrumb.detailPesanan": "Detail Pesanan",
+  "Breadcrumb.lihatPosisiArmada": "Lihat Posisi Armada",
+  "LihatPosisiArmada.placeholderCariArmada": "Cari No. Polisi / Nama Driver / Transporter",
+  "LihatPosisiArmada.keywordTidakDitemukan": "Keyword Tidak Ditemukan",
+  "LihatPosisiArmada.dataTidakDitemukan": "Data tidak Ditemukan.",
+  "LihatPosisiArmada.mohonCobaHapusFilter": "Mohon coba hapus beberapa filter"
 }
