@@ -98,7 +98,6 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
       setSelectedTransporterId(transporter.id);
       setShowDetailModal(true);
     } else {
-      console.log("Navigating to transporter detail:", transporter);
       router.push(`/monitoring/${transporter.id}/detail-transporter`);
     }
   };
@@ -222,9 +221,9 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
       {showDetailModal && latestFleetNote && (
         <ModalDetailTransporterTidakAktif
           transporter={selectedTransporter}
-          detail={latestFleetNote.Data?.detailInactive}
+          detail={latestFleetNote.details}
           onClose={() => setShowDetailModal(false)}
-          latestNote={latestFleetNote.Data?.latestNote}
+          latestNote={latestFleetNote.latestNote}
           onHubungi={() => {}}
           onSelesaikan={() => setShowDetailModal(false)}
         />

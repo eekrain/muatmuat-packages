@@ -206,6 +206,9 @@ export const fetcherLatestFleetNote = async (id, params = {}) => {
   const queryParams = new URLSearchParams();
   if (params.page) queryParams.append("page", params.page);
   if (params.limit) queryParams.append("limit", params.limit);
+  if (params.search) queryParams.append("search", params.search);
+  if (params.sort) queryParams.append("sort", params.sort);
+  if (params.order) queryParams.append("order", params.order);
 
   const queryString = queryParams.toString();
   const endpoint = queryString
