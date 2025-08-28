@@ -11,7 +11,7 @@ export const mockAPIResult = {
     drivers: [
       {
         id: "driver-uuid",
-        name: "Noel Alexandre",
+        name: "Lembur Terus",
         license_plate: "B 1234 XYZ",
         transporter_name: "PT Transporter ABC",
         waiting_locations: [
@@ -22,11 +22,69 @@ export const mockAPIResult = {
             end_time: "2025-01-15T10:30:00Z",
             cost: 100000,
           },
+          {
+            location_type: "Lokasi Muat 2",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T13:00:00Z",
+            end_time: "2025-01-15T15:30:00Z",
+            cost: 100000,
+          },
+          {
+            location_type: "Lokasi Bongkar 1",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T17:00:00Z",
+            end_time: "2025-01-15T19:30:00Z",
+            cost: 100000,
+          },
+          {
+            location_type: "Lokasi Bongkar 2",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T21:00:00Z",
+            end_time: "2025-01-15T23:30:00Z",
+            cost: 100000,
+          },
         ],
-        total_cost: 100000,
+        total_cost: 400000,
+      },
+      {
+        id: "driver-uuid",
+        name: "Lembur Santoso",
+        license_plate: "B 1234 XYZ",
+        transporter_name: "PT Transporter ABC",
+        waiting_locations: [
+          {
+            location_type: "Lokasi Muat 1",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T08:00:00Z",
+            end_time: "2025-01-15T10:30:00Z",
+            cost: 100000,
+          },
+          {
+            location_type: "Lokasi Muat 2",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T13:00:00Z",
+            end_time: "2025-01-15T15:30:00Z",
+            cost: 100000,
+          },
+          {
+            location_type: "Lokasi Bongkar 1",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T17:00:00Z",
+            end_time: "2025-01-15T19:30:00Z",
+            cost: 100000,
+          },
+          {
+            location_type: "Lokasi Bongkar 2",
+            duration: "2 Jam 30 Menit",
+            start_time: "2025-01-15T21:00:00Z",
+            end_time: "2025-01-15T23:30:00Z",
+            cost: 100000,
+          },
+        ],
+        total_cost: 400000,
       },
     ],
-    grand_total: 100000,
+    grand_total: 800000,
   },
 };
 

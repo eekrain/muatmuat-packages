@@ -110,37 +110,6 @@ const PaymentDetail = ({ costBreakdown, order, paymentDeadline }) => {
               costBreakdown={costBreakdown}
               order={order}
             />
-            {/* <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
-              <CardPayment.Section title={t("titleBiayaPesanJasaAngkut")}>
-                <CardPayment.LineItem
-                  label={`Nominal Pesanan Jasa Angkut (${order?.fleet_count} Unit)`}
-                  labelClassName="max-w-[170px]"
-                  value={idrFormat(dataOrderDetail?.incomeSummary.transportFee)}
-                />
-              </CardPayment.Section>
-              <CardPayment.Section title="Layanan Tambahan">
-                <CardPayment.LineItem
-                  label={t("labelNominalBantuanTambahan")}
-                  value={idrFormat(
-                    dataOrderDetail?.incomeSummary.additionalServiceFee
-                  )}
-                />
-              </CardPayment.Section>
-              <CardPayment.Section title="Potongan PPh">
-                <CardPayment.LineItem
-                  label="Nominal Potongan PPh"
-                  value={`-${idrFormat(dataOrderDetail?.incomeSummary.taxAmount)}`}
-                  valueClassName="text-error-400"
-                />
-              </CardPayment.Section>
-              <CardPayment.LineItem
-                className="mt-3"
-                labelClassName="text-sm font-semibold text-neutral-900"
-                valueClassName="text-sm font-semibold text-neutral-900"
-                label="Sub Total"
-                value={idrFormat(dataOrderDetail?.incomeSummary.totalPrice)}
-              />
-            </CardPayment.CollapsibleSection> */}
           </CardPayment.Body>
           <CardPayment.Footer>
             <CardPayment.Total

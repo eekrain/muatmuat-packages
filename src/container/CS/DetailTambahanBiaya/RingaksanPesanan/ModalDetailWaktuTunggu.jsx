@@ -15,8 +15,6 @@ export const ModalDetailWaktuTunggu = ({
   drivers = [],
   grandTotal = 0,
 }) => {
-  console.log("drivers", drivers);
-
   // Initialize expanded state
   const [expandedDrivers, setExpandedDrivers] = useState([]);
 
@@ -25,13 +23,7 @@ export const ModalDetailWaktuTunggu = ({
     setExpandedDrivers(drivers.map(() => false));
   }, [drivers]);
 
-  console.log("expandedDrivers", expandedDrivers);
-
   const toggleDriver = (idx) => {
-    console.log("Toggling driver at index:", idx);
-    console.log("Current expandedDrivers:", expandedDrivers);
-    console.log("Drivers length:", drivers.length);
-
     setExpandedDrivers((prev) => {
       const newState = prev.map((val, i) => (i === idx ? !val : val));
       console.log("New expandedDrivers state:", newState);
