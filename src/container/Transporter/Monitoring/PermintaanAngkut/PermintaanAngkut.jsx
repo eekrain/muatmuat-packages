@@ -29,6 +29,9 @@ const PermintaanAngkut = ({
   // Get data based on active tab, tambahkan query param 'tab', 'search', 'page', 'limit'
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+
+  // Handler for Enter key in search input
+  // No need for custom keydown/input handler, Search handles Enter
   const params = useMemo(() => {
     const baseParams = {
       tab: activeTab,
@@ -261,10 +264,8 @@ const PermintaanAngkut = ({
                   {},
                   "Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
                 )}
-                onSearch={handleSearch}
-                autoSearch={true}
-                debounceTime={300}
                 defaultValue={searchValue}
+                onSearch={handleSearch}
                 disabled={data?.userStatus?.isSuspended}
                 inputClassName="w-full"
               />
