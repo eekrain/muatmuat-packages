@@ -114,8 +114,16 @@ const PermintaanAngkutCS = () => {
 
   // Memoize API parameters based on the active tab config.
   const params = useMemo(() => {
-    return TABS_CONFIG.find((tab) => tab.id === activeTab)?.params || {};
-  }, [activeTab, TABS_CONFIG]);
+    const baseParams =
+      TABS_CONFIG.find((tab) => tab.id === activeTab)?.params || {};
+
+    if (searchValue && searchValue.trim().length >= 3) {
+      return { ...baseParams, search: searchValue.trim() };
+    }
+
+    return baseParams;
+  }, [activeTab, TABS_CONFIG, searchValue]);
+  // --- End of Corrected Code ---
 
   const { data, isLoading } = useGetTransportRequestList(params);
   const { data: inactiveAlertData } = useGetInactiveTransporter();

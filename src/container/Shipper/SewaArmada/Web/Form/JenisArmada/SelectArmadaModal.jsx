@@ -163,11 +163,7 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
             {/* Search Field */}
             <Input
               disabled={isTruckOptionsEmpty}
-              placeholder={t(
-                "SelectArmadaModal.searchPlaceholder",
-                { type: type === "carrierId" ? "Carrier" : "Truk" },
-                `Cari Jenis ${type === "carrierId" ? "Carrier" : "Truk"}`
-              )}
+              placeholder={`Cari Jenis ${type === "carrierId" ? "Carrier" : "Truk"}`}
               icon={{
                 left: "/icons/search16.svg",
                 right: search ? (
