@@ -41,7 +41,7 @@ const filterRequests = (requests, searchValue, removedItems) => {
     const searchableContent = [
       request.orderCode,
       request.shipperInfo?.name,
-      request.orderType,
+      request.type,
       request.loadTimeStart,
       request.loadTimeEnd,
       request.cargo?.description,
@@ -82,26 +82,26 @@ const PermintaanAngkutCS = () => {
         id: "instan",
         labelKey: "permintaanAngkutCS.tabInstant",
         fallback: "Instan",
-        params: { orderType: "INSTANT" },
+        params: { type: "instant" },
         key: "instant",
       },
       {
         id: "terjadwal",
         labelKey: "permintaanAngkutCS.tabScheduled",
         fallback: "Terjadwal",
-        params: { orderType: "SCHEDULED" },
+        params: { type: "scheduled" },
         key: "scheduled",
       },
       {
         id: "halal_logistik",
         labelKey: "permintaanAngkutCS.tabHalalLogistics",
         fallback: "Halal Logistik",
-        params: { isHalalLogistics: true },
+        params: { type: "halal" },
         icon: "/icons/halal.svg",
         key: "halal",
       },
     ],
-    [] // This is fine as the config is static
+    []
   );
 
   const [showModalTransporterTidakAktif, setShowModalTransporterTidakAktif] =
@@ -119,6 +119,7 @@ const PermintaanAngkutCS = () => {
 
   const { data, isLoading } = useGetTransportRequestList(params);
   const { data: inactiveAlertData } = useGetInactiveTransporter();
+  console.log(data);
 
   const handleSearch = useCallback(
     (value) => {
@@ -245,28 +246,31 @@ const PermintaanAngkutCS = () => {
             (count) => count > 9
           )}
         >
-          {TABS_CONFIG.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
-                activeTab === tab.id
-                  ? "border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                  : "border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-              }`}
-            >
-              {tab.icon && (
-                <IconComponent
-                  src={tab.icon}
-                  className="h-4 w-4 flex-shrink-0"
-                />
-              )}
-              <span className="relative whitespace-nowrap">
-                {t(tab.labelKey, {}, tab.fallback)} (
-                {data?.tabCounters?.[tab.key] ?? 0})
-              </span>
-            </button>
-          ))}
+          {TABS_CONFIG.map((tab) => {
+            const rawCount = data?.tabCounters?.[tab.key] ?? 0;
+            const displayCount = rawCount > 99 ? "99+" : rawCount;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[10px] font-semibold transition-colors ${
+                  activeTab === tab.id
+                    ? "border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                    : "border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+                }`}
+              >
+                {tab.icon && (
+                  <IconComponent
+                    src={tab.icon}
+                    className="h-4 w-4 flex-shrink-0"
+                  />
+                )}
+                <span className="relative whitespace-nowrap">
+                  {t(tab.labelKey, {}, tab.fallback)} ({displayCount})
+                </span>
+              </button>
+            );
+          })}
         </ScrollableTabs>
       </div>
 

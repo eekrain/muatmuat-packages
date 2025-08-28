@@ -27,12 +27,13 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
 
   // Get available fleet data for the selected order (using a mock orderId for now)
   const { data: fleetData, isLoading: fleetLoading } = useGetAvailableFleet(
-    "order-uuid-1",
+    "550e8400-e29b-41d4-a716-446655440001",
     {
       search: searchValue,
       operationalStatus: selectedFilter ? [selectedFilter] : undefined,
     }
   );
+  console.log("fleetData", fleetData);
 
   const columns = [
     {
