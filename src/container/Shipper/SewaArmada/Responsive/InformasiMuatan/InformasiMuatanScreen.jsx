@@ -331,16 +331,9 @@ const InformasiMuatanScreen = ({
                     required
                     tooltip={
                       <InfoBottomsheet
-                        title={t(
-                          "InformasiMuatanScreen.titleCargoTypeToBeShipped",
-                          {},
-                          "Tipe Muatan yang Akan Dikirimkan"
-                        )}
-                        render={t(
-                          "InformasiMuatanScreen.infoBottomsheetHalalLogisticsDescription",
-                          {},
-                          "<p>Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>"
-                        )}
+                        // 25. 18 - Web - LB - 0033
+                        title="Berat Muatan"
+                        render="<p>Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim.</p>"
                       />
                     }
                   >
