@@ -63,7 +63,7 @@ export const OrderStatusTitle = {
   WAITING_CONFIRMATION_CHANGES: "statusMenungguKonfirmasi",
   PREPARE_FLEET_CHANGES: "statusMempersiapkanArmada",
   CONFIRMED_CHANGES: "statusPesananTerkonfirmasi",
-  FLEET_CHANGE: "Proses Pergantian Armada",
+  FLEET_CHANGE: "useOrderListPage.fleetChangeProcess",
 };
 
 export const OrderStatusIcon = {

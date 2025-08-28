@@ -39,6 +39,7 @@ const StatusPesanan = ({
   isShowWaitFleetAlert,
   oldDriverData,
   orderChangeHistory,
+  statusDriver,
 }) => {
   const { t } = useTranslation();
   const [isModalPerubahanDataOpen, setIsModalPerubahanDataOpen] =
@@ -149,6 +150,7 @@ const StatusPesanan = ({
                   orderStatus: statusOrder,
                 }}
                 oldDriverData={oldDriverData}
+                statusDriver={statusDriver}
               />
               {/* Tombol konfirmasi hanya muncul jika status WAITING_CONFIRMATION_CHANGES */}
               {/* {isDev &&

@@ -27,20 +27,22 @@ import {
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 import { DriverStatusCardItem } from "./DriverStatusCard";
 import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
-const dummyPhoto = [
-  "/img/muatan1.png",
-  "/img/muatan2.png",
-  "/img/muatan3.png",
-  "/img/muatan4.png",
-];
-
-export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
+export const StatusPesananHeader = ({
+  dataStatusPesanan,
+  oldDriverData,
+  statusDriver,
+}) => {
   const { t } = useTranslation();
+
+  const shippingEvidence = statusDriver?.statusDefinitions?.find(
+    (def) => def.mappedOrderStatus === OrderStatusEnum.DOCUMENT_DELIVERY
+  )?.shippingEvidence;
 
   const [isModalAllDriverOpen, setIsModalAllDriverOpen] = useState(false);
   const [isModalOldDriverOpen, setIsModalOldDriverOpen] = useState(false);
@@ -107,7 +109,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
             ) : null}
           </div>
           {dataStatusPesanan.orderStatus ===
-          OrderStatusEnum.DOCUMENT_DELIVERY ? (
+            OrderStatusEnum.DOCUMENT_DELIVERY && shippingEvidence ? (
             <Modal closeOnOutsideClick>
               <ModalTrigger>
                 <button className="flex items-center gap-x-1">
@@ -139,7 +141,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
                         {t("StatusPesananHeader.labelTanggal", {}, "Tanggal")}
                       </span>
                       <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                        04 Okt 2024 18:00 WIB
+                        {formatDate(shippingEvidence?.date)}
                       </span>
                     </div>
                     <div className="flex flex-col gap-y-3">
@@ -153,10 +155,14 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
                       <div className="flex items-center gap-x-4">
                         <LightboxProvider
                           image={
-                            dummyPhoto.length === 1 ? dummyPhoto[0] : undefined
+                            (shippingEvidence?.photo || []).length === 1
+                              ? (shippingEvidence?.photo || [])[0]
+                              : undefined
                           }
                           images={
-                            dummyPhoto.length > 1 ? dummyPhoto : undefined
+                            (shippingEvidence?.photo || []).length > 1
+                              ? shippingEvidence?.photo || []
+                              : undefined
                           }
                           title={t(
                             "StatusPesananHeader.labelFotoBuktiPengiriman",
@@ -164,33 +170,30 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
                             "Foto Bukti Pengiriman"
                           )}
                         >
-                          {dummyPhoto.map((image, index) => (
-                            <LightboxPreview
-                              key={image}
-                              image={image}
-                              alt={`${t(
-                                "StatusPesananHeader.altDokumen",
-                                { index: index + 1 },
-                                "Dokumen {index}"
-                              )}`}
-                              className="size-[56px]"
-                            />
-                          ))}
+                          {(shippingEvidence?.photo || []).map(
+                            (image, index) => (
+                              <LightboxPreview
+                                key={image}
+                                image={image}
+                                alt={`${t(
+                                  "StatusPesananHeader.altDokumen",
+                                  { index: index + 1 },
+                                  "Dokumen {index}"
+                                )}`}
+                                className="size-[56px]"
+                              />
+                            )
+                          )}
                         </LightboxProvider>
                       </div>
                     </div>
-                    {/* LOGIC BUAT ADA CATATAN ATAU TIDAK */}
-                    {true ? (
+                    {shippingEvidence?.noted ? (
                       <div className="flex flex-col gap-y-3">
                         <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                           {t("StatusPesananHeader.labelCatatan", {}, "Catatan")}
                         </span>
                         <p className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                          {t(
-                            "StatusPesananHeader.textCatatanContoh",
-                            {},
-                            "Kami informasikan bahwa dokumen telah kami kirim dan saat ini sudah diterima oleh Bapak Ervin Sudjatmiko. Mohon konfirmasi apabila ada hal yang perlu ditindaklanjuti lebih lanjut. Kami siap membantu apabila dibutuhkan klarifikasi atau kelengkapan tambahan. Terima kasih atas perhatian dan kerja samanya."
-                          )}
+                          {shippingEvidence?.noted}
                         </p>
                       </div>
                     ) : null}
@@ -281,61 +284,6 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
         orderStatus={dataStatusPesanan.orderStatus}
       />
     </div>
-  );
-};
-
-const PreviousDriverModal = ({ isOpen, setOpen }) => {
-  const dummyDriver = {
-    driverId: "550e8400-e29b-41d4-a716-446655440022",
-    name: "Noel Gallagher",
-    driverImage: "https://picsum.photos/50",
-    licensePlate: "B 1234 CD",
-    orderStatus: "COMPLETED",
-    orderStatusTitle: "Proses Muat",
-    driverStatus: "COMPLETED",
-    driverStatusTitle: "Menuju ke Lokasi Muat",
-    stepperData: [
-      {
-        label: "statusPesananTerkonfirmasi",
-        status: "CONFIRMED",
-        icon: "/icons/stepper/stepper-scheduled.svg",
-      },
-      {
-        label: "statusProsesMuat",
-        status: "LOADING",
-        icon: "/icons/stepper/stepper-box.svg",
-      },
-      {
-        label: "statusProsesBongkar",
-        status: "UNLOADING",
-        icon: "/icons/stepper/stepper-box-opened.svg",
-      },
-      {
-        label: "statusPergantianArmada",
-        status: "FLEET_CHANGE",
-        icon: "/icons/stepper/stepper-fleet-change.svg",
-      },
-      {
-        label: "statusSelesai",
-        status: "COMPLETED",
-        icon: "/icons/stepper/stepper-completed.svg",
-      },
-    ],
-    activeIndex: 4,
-  };
-  return (
-    <Modal open={isOpen} onOpenChange={setOpen} closeOnOutsideClick>
-      <ModalContent className="flex flex-col gap-y-3 p-6">
-        <h2 className="text-center text-base font-bold">Driver Sebelumnya</h2>
-        <div className="w-[810px] rounded-xl border border-neutral-400 p-3">
-          <DriverStatusCardItem
-            key={dummyDriver.driverId}
-            driver={dummyDriver}
-            orderStatus={dummyDriver.orderStatus}
-          />
-        </div>
-      </ModalContent>
-    </Modal>
   );
 };
 
