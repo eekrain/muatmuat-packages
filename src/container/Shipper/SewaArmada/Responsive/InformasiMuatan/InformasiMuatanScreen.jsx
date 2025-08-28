@@ -10,7 +10,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import { DimensionInput } from "@/components/Form/DimensionInput";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
-import Input from "@/components/Form/Input";
+import { NumberInput } from "@/components/Form/NumberInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 
@@ -84,6 +84,8 @@ const InformasiMuatanScreen = ({
   const truckTypeId = useSewaArmadaStore(
     (state) => state.formValues.truckTypeId
   );
+  const isInformasiMuatanDisabled =
+    !formValues.cargoCategoryId || !formValues.cargoTypeId;
 
   const [openJenisTrukBottomSheet, setOpenJenisTrukBottomSheet] =
     useState(false);
@@ -283,9 +285,12 @@ const InformasiMuatanScreen = ({
                   <div className="flex w-full flex-col">
                     <button
                       className={cn(
-                        "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3",
+                        "flex h-8 items-center justify-between rounded-md border border-neutral-600 px-3",
                         formErrors[`informasiMuatan.${index}.namaMuatan`] &&
-                          "border-error-400"
+                          "border-error-400",
+                        isInformasiMuatanDisabled
+                          ? "cursor-not-allowed bg-neutral-200"
+                          : "cursor-pointer bg-neutral-50"
                       )}
                       onClick={() =>
                         navigation.push("/CariNamaMuatan", {
@@ -331,16 +336,9 @@ const InformasiMuatanScreen = ({
                     required
                     tooltip={
                       <InfoBottomsheet
-                        title={t(
-                          "InformasiMuatanScreen.titleCargoTypeToBeShipped",
-                          {},
-                          "Tipe Muatan yang Akan Dikirimkan"
-                        )}
-                        render={t(
-                          "InformasiMuatanScreen.infoBottomsheetHalalLogisticsDescription",
-                          {},
-                          "<p>Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>"
-                        )}
+                        // 25. 18 - Web - LB - 0033
+                        title="Berat Muatan"
+                        render="<p>Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim.</p>"
                       />
                     }
                   >
@@ -352,26 +350,27 @@ const InformasiMuatanScreen = ({
                   </FormLabel>
 
                   <div className="flex gap-2.5">
-                    <Input
-                      type="text"
-                      placeholder="0"
-                      className="flex-1"
-                      maxLength={6}
+                    {/* 25. 18 - Web - LB - 0034 */}
+                    <NumberInput
+                      disabled={isInformasiMuatanDisabled}
                       value={muatan.beratMuatan.berat}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, "");
-                        // Limit to 6 digits
-                        if (val.length <= 6) {
-                          updateBeratMuatan(
-                            index,
-                            "berat",
-                            val ? Number(val) : ""
-                          );
-                        }
-                      }}
+                      onChange={(e) =>
+                        updateBeratMuatan(
+                          index,
+                          "berat",
+                          Number(e.target.value) > 999999
+                            ? 999999
+                            : e.target.value
+                        )
+                      }
+                      min={0}
+                      max={999999}
+                      stepper={1}
+                      placeholder="0"
                       errorMessage={
                         formErrors[`informasiMuatan.${index}.beratMuatan.berat`]
                       }
+                      className="w-full"
                     />
                     <DropdownRadioBottomsheeet
                       className={cn(

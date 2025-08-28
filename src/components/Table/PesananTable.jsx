@@ -734,6 +734,7 @@ const PesananTable = ({
                       />
                     ) : (
                       <DataNotFound
+                        type="data"
                         className="gap-y-3"
                         textClass="text-[#868686] w-[117px]"
                         title={t("titleTidakAdaData")}
@@ -749,6 +750,7 @@ const PesananTable = ({
             <div className="flex min-h-[358px] w-full justify-center pb-6">
               <div className="flex flex-col items-center justify-center gap-y-3">
                 <DataNotFound
+                  type="data"
                   className="gap-y-3"
                   textClass="text-[#868686] leading-[19.2px] w-[289px]"
                   title={t("titleDaftarPesananKosong")}
