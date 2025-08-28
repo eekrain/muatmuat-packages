@@ -101,7 +101,7 @@ export const Select = forwardRef(
               ref={ref}
               data-slot="select-content"
               className={cn(
-                "z-50 overflow-hidden rounded-md border border-neutral-300 bg-white text-xs font-medium shadow-lg",
+                "z-[52] overflow-hidden rounded-md border border-neutral-300 bg-white text-xs font-medium shadow-lg",
                 "max-h-64",
                 contentClassName
               )}

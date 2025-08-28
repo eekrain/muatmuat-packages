@@ -1,6 +1,8 @@
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 import { thousandSeparator } from "@/lib/utils/formatters";
 
@@ -18,20 +20,27 @@ export const InformasiMuatanTable = ({
   onClickUpdate,
   disableUpdateButton,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-xl border px-4 py-5">
       <div className="h-[36px] border-b border-neutral-400">
         <div className="grid h-[16px] grid-cols-[209px_113px_1fr] gap-x-4">
-          <Label>Nama Muatan</Label>
+          <Label>
+            {t("InformasiMuatanTable.cargoName", {}, "Nama Muatan")}
+          </Label>
           <Label
             tooltip={
               <InfoTooltip>
-                Masukkan berat keseluruhan atau total dari seluruh muatan yang
-                akan dikirim.
+                {t(
+                  "InformasiMuatanTable.weightTooltip",
+                  {},
+                  "Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim."
+                )}
               </InfoTooltip>
             }
           >
-            Berat Muatan
+            {t("InformasiMuatanTable.cargoWeight", {}, "Berat Muatan")}
           </Label>
 
           <div className="flex items-center justify-between">
@@ -40,23 +49,48 @@ export const InformasiMuatanTable = ({
                 <InfoTooltip>
                   <ul>
                     <li>
-                      <b>Panjang</b> : Ukuran terpanjang dari muatan.
+                      <b>
+                        {t("InformasiMuatanTable.lengthLabel", {}, "Panjang")}
+                      </b>{" "}
+                      :{" "}
+                      {t(
+                        "InformasiMuatanTable.lengthDesc",
+                        {},
+                        "Ukuran terpanjang dari muatan."
+                      )}
                     </li>
                     <li>
-                      <b>Lebar</b> : Ukuran terlebar dari muatan.
+                      <b>{t("InformasiMuatanTable.widthLabel", {}, "Lebar")}</b>{" "}
+                      :{" "}
+                      {t(
+                        "InformasiMuatanTable.widthDesc",
+                        {},
+                        "Ukuran terlebar dari muatan."
+                      )}
                     </li>
                     <li>
-                      <b>Tinggi</b> : Ukuran tertinggi dari muatan
+                      <b>
+                        {t("InformasiMuatanTable.heightLabel", {}, "Tinggi")}
+                      </b>{" "}
+                      :{" "}
+                      {t(
+                        "InformasiMuatanTable.heightDesc",
+                        {},
+                        "Ukuran tertinggi dari muatan"
+                      )}
                     </li>
                   </ul>
                   <p>
-                    Pengisian dimensi yang tepat akan membantu dalam pengelolaan
-                    dan pengiriman.
+                    {t(
+                      "InformasiMuatanTable.dimensionHelp",
+                      {},
+                      "Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman."
+                    )}
                   </p>
                 </InfoTooltip>
               }
             >
-              Dimensi Muatan
+              {t("InformasiMuatanTable.cargoDimensions", {}, "Dimensi Muatan")}
             </Label>
 
             <button
@@ -69,7 +103,9 @@ export const InformasiMuatanTable = ({
               )}
               disabled={disableUpdateButton}
             >
-              <span className="text-xs font-medium leading-[14.4px]">Ubah</span>
+              <span className="text-xs font-medium leading-[14.4px]">
+                {t("InformasiMuatanTable.edit", {}, "Ubah")}
+              </span>
               <div className="flex h-4 w-4 items-center justify-center">
                 <IconComponent
                   src="/icons/pencil-outline.svg"
@@ -83,7 +119,7 @@ export const InformasiMuatanTable = ({
       </div>
 
       <div className="mt-5 flex flex-col gap-y-2">
-        {informasiMuatan.map((item, index) => (
+        {informasiMuatan.map((item, _index) => (
           <div
             key={`${item.namaMuatan.label}${item.beratMuatan.berat}${item.dimensiMuatan.panjang}`}
             className="grid grid-cols-[209px_113px_190px] gap-x-4"
