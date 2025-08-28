@@ -24,6 +24,8 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 const DetailRow = ({
@@ -46,6 +48,7 @@ const DetailRow = ({
 );
 
 const Page = () => {
+  const { t } = useTranslation();
   const { uuid } = useParams();
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
@@ -54,38 +57,61 @@ const Page = () => {
 
   // Dynamic breadcrumb based on "from" parameter
   const getBreadcrumbData = () => {
-    const base = [{ name: "Manajemen Driver", href: "/manajemen-driver" }];
+    const base = [
+      {
+        name: t(
+          "DriverDetailPage.breadcrumbManajemenDriver",
+          {},
+          "Manajemen Driver"
+        ),
+        href: "/manajemen-driver",
+      },
+    ];
 
     // Add intermediate breadcrumb based on where user came from
     if (from === "active") {
       base.push({
-        name: "Driver Aktif",
+        name: t("DriverDetailPage.breadcrumbDriverAktif", {}, "Driver Aktif"),
         href: "/manajemen-driver?tab=active",
       });
     } else if (from === "inactive") {
       base.push({
-        name: "Driver Nonaktif",
+        name: t(
+          "DriverDetailPage.breadcrumbDriverNonaktif",
+          {},
+          "Driver Nonaktif"
+        ),
         href: "/manajemen-driver?tab=inactive",
       });
     } else if (from === "process") {
       base.push({
-        name: "Proses Pendaftaran",
+        name: t(
+          "DriverDetailPage.breadcrumbProsesPendaftaran",
+          {},
+          "Proses Pendaftaran"
+        ),
         href: "/manajemen-driver?tab=process",
       });
     } else if (from === "archive") {
       base.push({
-        name: "Arsip",
+        name: t("DriverDetailPage.breadcrumbArsip", {}, "Arsip"),
         href: "/manajemen-driver?tab=archive",
       });
     } else if (from === "expired") {
       base.push({
-        name: "Perlu Pembaruan SIM",
+        name: t(
+          "DriverDetailPage.breadcrumbPerluPembaruanSIM",
+          {},
+          "Perlu Pembaruan SIM"
+        ),
         href: "/manajemen-driver/expired",
       });
     }
 
     // Add current page
-    base.push({ name: "Detail Driver" });
+    base.push({
+      name: t("DriverDetailPage.breadcrumbDetailDriver", {}, "Detail Driver"),
+    });
 
     return base;
   };
@@ -113,10 +139,29 @@ const Page = () => {
     }
   };
 
-  if (isLoading) return <div>Loading driver details...</div>;
-  if (error) return <div>Failed to load data. Please try again.</div>;
+  if (isLoading)
+    return (
+      <div>
+        {t("DriverDetailPage.loading", {}, "Loading driver details...")}
+      </div>
+    );
+  if (error)
+    return (
+      <div>
+        {t(
+          "DriverDetailPage.errorLoadData",
+          {},
+          "Failed to load data. Please try again."
+        )}
+      </div>
+    );
 
-  if (!driverData) return <div>No driver data found.</div>;
+  if (!driverData)
+    return (
+      <div>
+        {t("DriverDetailPage.noDriverData", {}, "No driver data found.")}
+      </div>
+    );
 
   // Build document rows
   const documentRows = [];
@@ -127,7 +172,11 @@ const Page = () => {
   );
   if (ktpDoc) {
     documentRows.push(
-      <DetailRow key="ktp-doc" label="Foto KTP" isLink>
+      <DetailRow
+        key="ktp-doc"
+        label={t("DriverDetailPage.labelFotoKTP", {}, "Foto KTP")}
+        isLink
+      >
         <Link
           href={ktpDoc.documentUrl}
           target="_blank"
@@ -141,7 +190,10 @@ const Page = () => {
 
   // SIM B2 Umum
   documentRows.push(
-    <DetailRow key="sim-expiry" label="Masa SIM B2 Umum">
+    <DetailRow
+      key="sim-expiry"
+      label={t("DriverDetailPage.labelMasaSIMB2", {}, "Masa SIM B2 Umum")}
+    >
       {formatDate(driverData.simExpiryDate)}
     </DetailRow>
   );
@@ -151,7 +203,11 @@ const Page = () => {
   );
   if (simDoc) {
     documentRows.push(
-      <DetailRow key="sim-doc" label="Foto SIM B2 Umum" isLink>
+      <DetailRow
+        key="sim-doc"
+        label={t("DriverDetailPage.labelFotoSIMB2", {}, "Foto SIM B2 Umum")}
+        isLink
+      >
         <Link
           href={simDoc.documentUrl}
           target="_blank"
@@ -166,15 +222,18 @@ const Page = () => {
   // Driver Photo
   if (driverData.profileImage) {
     documentRows.push(
-      <DetailRow key="driver-photo" label="Foto Driver">
+      <DetailRow
+        key="driver-photo"
+        label={t("DriverDetailPage.labelFotoDriver", {}, "Foto Driver")}
+      >
         <LightboxProvider
           images={[driverData.profileImage]}
-          title="Foto Driver"
+          title={t("DriverDetailPage.titleFotoDriver", {}, "Foto Driver")}
           variant="square"
         >
           <LightboxPreview
             image={driverData.profileImage}
-            alt="Foto Driver"
+            alt={t("DriverDetailPage.altFotoDriver", {}, "Foto Driver")}
             index={0}
             className="aspect-square object-cover"
           />
@@ -196,15 +255,20 @@ const Page = () => {
   return (
     <div className="flex flex-col gap-4 pb-11 pt-6">
       <BreadCrumb data={breadCrumbData} />
-      <PageTitle className="mb-0">Detail Driver</PageTitle>
+      <PageTitle className="mb-0">
+        {t("DriverDetailPage.titleDetailDriver", {}, "Detail Driver")}
+      </PageTitle>
 
       {/* Warning Alert for expiring SIM */}
       {isSimExpiringSoon() && (
         <Alert size="big" variant="warning">
           <div className="flex flex-col gap-1">
             <p className="text-xs font-medium">
-              Harap segera lakukan perpanjangan SIM untuk menghindari kendala
-              operasional.
+              {t(
+                "DriverDetailPage.alertSIMExpiringSoon",
+                {},
+                "Harap segera lakukan perpanjangan SIM untuk menghindari kendala operasional."
+              )}
             </p>
           </div>
         </Alert>
@@ -215,10 +279,19 @@ const Page = () => {
         <Alert size="big" variant="error">
           <div className="flex flex-col gap-1">
             <h1 className="text-xs font-bold">
-              Verifikasi Data Driver Anda Ditolak!
+              {t(
+                "DriverDetailPage.alertVerificationRejectedTitle",
+                {},
+                "Verifikasi Data Driver Anda Ditolak!"
+              )}
             </h1>
             <p className="text-xs font-medium">
-              Alasan verifikasi ditolak: {driverData.rejectReason}
+              {t(
+                "DriverDetailPage.alertVerificationRejectedReason",
+                {},
+                "Alasan verifikasi ditolak: {reason}",
+                { reason: driverData.rejectReason }
+              )}
             </p>
           </div>
         </Alert>
@@ -228,10 +301,16 @@ const Page = () => {
         <CardContent className="space-y-5 !p-6">
           {/* Driver Basic Info */}
           <div>
-            <DetailRow hasBorderBottom={false} label="Nama Lengkap">
+            <DetailRow
+              hasBorderBottom={false}
+              label={t("DriverDetailPage.labelNamaLengkap", {}, "Nama Lengkap")}
+            >
               {driverData.name || "-"}
             </DetailRow>
-            <DetailRow hasBorderBottom={false} label="No. Whatsapp">
+            <DetailRow
+              hasBorderBottom={false}
+              label={t("DriverDetailPage.labelNoWhatsapp", {}, "No. Whatsapp")}
+            >
               {formatPhoneNumber(driverData.phoneNumber)}
             </DetailRow>
           </div>
@@ -239,7 +318,13 @@ const Page = () => {
           {/* Documents Section */}
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="rounded-t-md bg-primary-50 px-6 hover:no-underline">
-              <h3 className="font-semibold">File dan Foto Driver</h3>
+              <h3 className="font-semibold">
+                {t(
+                  "DriverDetailPage.sectionFileDanFotoDriver",
+                  {},
+                  "File dan Foto Driver"
+                )}
+              </h3>
               <IconComponent
                 src="/icons/chevron-down.svg"
                 className="h-5 w-5 transition-transform duration-300"
