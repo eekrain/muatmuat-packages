@@ -203,7 +203,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         limit: 10,
         schedule_date_from: dateRange.start.toISOString().split("T")[0],
         schedule_date_to: dateRange.end.toISOString().split("T")[0],
-        viewType: viewType,
+        view_type: viewType,
       };
       if (search) params.search = search;
       if (filterAgendaStatus.length > 0)
@@ -260,7 +260,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         limit: 10,
         schedule_date_from: dateRange.start.toISOString().split("T")[0],
         schedule_date_to: dateRange.end.toISOString().split("T")[0],
-        viewType: viewType,
+        view_type: viewType,
       };
       if (search) params.search = search;
       if (filterAgendaStatus.length > 0)
