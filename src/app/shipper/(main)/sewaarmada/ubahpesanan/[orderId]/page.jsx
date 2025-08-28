@@ -37,13 +37,9 @@ const Page = () => {
     useSewaArmadaActions();
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const {
-    loadTimeStart,
-    loadTimeEnd,
-    showRangeOption,
     lokasiMuat,
     lokasiBongkar,
     cargoCategoryId,
-    informasiMuatan,
     carrierId,
     truckType,
     tempTrucks,
