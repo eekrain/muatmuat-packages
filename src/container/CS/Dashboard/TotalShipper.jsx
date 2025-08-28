@@ -63,7 +63,7 @@ const TotalShipper = () => {
     <Card className="h-[285px] w-[296px] !border-none">
       <CardHeader className="flex items-center justify-between !border-none !px-6 !py-5">
         <p className="text-base font-bold text-neutral-900">Total Shipper</p>
-        <Link href="/dashboard/analytics/laporan">
+        <Link href="/user?tab=shipper">
           <p className="cursor-pointer text-xs font-medium text-primary-700">
             Lihat Detail
           </p>

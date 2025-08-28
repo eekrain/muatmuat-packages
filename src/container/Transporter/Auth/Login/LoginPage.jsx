@@ -9,6 +9,7 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 // Import Controller
 import { Controller, useForm } from "react-hook-form";
 import * as v from "valibot";
+import xior from "xior";
 
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
@@ -18,14 +19,13 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { useTranslation } from "@/hooks/use-translation";
 
-import { fetcherMuatrans } from "@/lib/axios";
+import { useTokenActions } from "@/store/AuthStore/tokenStore";
 
 // Import fetcherMuatrans
-import { useTokenStore } from "@/store/AuthStore/tokenStore";
-import { useUserStore } from "@/store/AuthStore/userStore";
 
 const LoginPage = () => {
   const { t } = useTranslation();
+  const { setToken } = useTokenActions();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state
 
@@ -95,52 +95,37 @@ const LoginPage = () => {
     setIsSubmitting(true); // Start loading
 
     try {
-      const response = await fetcherMuatrans.post("/v1/auth/login", {
-        identifier: data.emailOrPhone,
-        password: data.password,
-        rememberMe: data.keepLoggedIn,
-      });
+      const basicAuth = btoa("az_muattrans:Zci01Y4zh2IHCupULvXbTdDM");
+      const response = await xior.post(
+        "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/login",
+        {
+          loginId: data.emailOrPhone,
+          password: data.password,
+          // rememberMe: data.keepLoggedIn,
+        },
+        {
+          headers: {
+            Authorization: `Basic ${basicAuth}`,
+          },
+        }
+      );
 
-      if (response.data.Message.Code === 200) {
-        // Handle successful login
-        const {
-          token,
-          refreshToken,
-          expiryTime,
-          user,
-          transporter,
-          redirectUrl,
-        } = response.data.Data;
-
-        // Store tokens and user data
-        useTokenStore.getState().actions.setToken({
-          accessToken: token,
-          refreshToken: refreshToken,
-          expiryTime: expiryTime,
+      if (
+        response.data?.Data?.accessToken &&
+        response.data?.Data?.refreshToken
+      ) {
+        setToken({
+          accessToken: response.data.Data.accessToken,
+          refreshToken: response.data.Data.refreshToken,
         });
-        useUserStore.getState().actions.setUser({
-          id: user.id,
-          fullName: user.fullName,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          profileImage: user.profileImage,
-          role: user.role,
-          transporterId: transporter.id,
-          companyName: transporter.companyName,
-          verificationStatus: transporter.verificationStatus,
-          isActive: transporter.isActive,
-        });
-
-        alert(t("LoginPage.alertLoginSuccess", {}, "Login Berhasil!"));
-        router.push(redirectUrl || "/dashboard");
       } else {
-        // This part might not be reached if fetcherMuatrans throws on non-2xx codes
-        setFormErrors((prev) => ({
-          ...prev,
-          emailOrPhone:
-            response.data.Message.Text || "Terjadi kesalahan saat login.",
-        }));
+        throw new Error("Invalid token response from server");
       }
+
+      // Add delay before redirect
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      window.location.replace("/dashboard/analytics");
     } catch (error) {
       console.error("Login error:", error);
       // Handle API errors
