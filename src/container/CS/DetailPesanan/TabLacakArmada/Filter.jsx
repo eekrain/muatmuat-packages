@@ -60,6 +60,7 @@ export const Filter = () => {
                 )}
                 value={transporterSearchQuery}
                 onChange={(e) => setTransporterSearchQuery(e.target.value)}
+                withReset
               />
             </div>
             {filteredTransporters?.length === 0 ? (

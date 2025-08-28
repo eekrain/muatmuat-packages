@@ -26,6 +26,8 @@ import {
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 
 const MAX_FILE_SIZE_MB = 10;
@@ -90,6 +92,7 @@ const exampleImages = [
 ];
 
 export default function TambahDriverPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [formData, setFormData] = useState(null);
@@ -126,7 +129,13 @@ export default function TambahDriverPage() {
   };
 
   const handleInvalidSubmit = () => {
-    toast.error("Terdapat field yang kosong");
+    toast.error(
+      t(
+        "TambahDriverPage.toastErrorFieldKosong",
+        {},
+        "Terdapat field yang kosong"
+      )
+    );
   };
 
   const handleFinalSubmit = async () => {
@@ -166,7 +175,13 @@ export default function TambahDriverPage() {
 
       console.log("Payload:", apiPayload);
       await createDriver(apiPayload);
-      toast.success("Berhasil menambahkan driver");
+      toast.success(
+        t(
+          "TambahDriverPage.toastSuccessTambahDriver",
+          {},
+          "Berhasil menambahkan driver"
+        )
+      );
       router.push("/manajemen-driver");
     } catch (error) {
       const validationErrors = error?.response?.data?.Data?.validationErrors;
@@ -176,13 +191,27 @@ export default function TambahDriverPage() {
       ) {
         setError("noWhatsapp", {
           type: "manual",
-          message: "No. Whatsapp telah terdaftar",
+          message: t(
+            "TambahDriverPage.errorNoWhatsappTerdaftar",
+            {},
+            "No. Whatsapp telah terdaftar"
+          ),
         });
         toast.error(
-          "Gagal menambahkan driver: Nomor Whatsapp telah terdaftar."
+          t(
+            "TambahDriverPage.toastErrorNoWhatsappTerdaftar",
+            {},
+            "Gagal menambahkan driver: Nomor Whatsapp telah terdaftar."
+          )
         );
       } else {
-        toast.error("Gagal menambahkan driver. Silakan coba lagi.");
+        toast.error(
+          t(
+            "TambahDriverPage.toastErrorTambahDriver",
+            {},
+            "Gagal menambahkan driver. Silakan coba lagi."
+          )
+        );
       }
     }
   };
@@ -202,8 +231,15 @@ export default function TambahDriverPage() {
   };
 
   const breadcrumbItems = [
-    { name: "Manajemen Driver", href: "/manajemen-driver" },
-    { name: "Tambah Driver" },
+    {
+      name: t(
+        "TambahDriverPage.breadcrumbManajemenDriver",
+        {},
+        "Manajemen Driver"
+      ),
+      href: "/manajemen-driver",
+    },
+    { name: t("TambahDriverPage.breadcrumbTambahDriver", {}, "Tambah Driver") },
   ];
 
   return (
@@ -211,7 +247,9 @@ export default function TambahDriverPage() {
       <div className="mx-auto w-full max-w-[818px] gap-4 px-4 py-6">
         <div className="mb-4 space-y-4">
           <BreadCrumb data={breadcrumbItems} />
-          <PageTitle>Tambah Driver</PageTitle>
+          <PageTitle>
+            {t("TambahDriverPage.titleTambahDriver", {}, "Tambah Driver")}
+          </PageTitle>
         </div>
 
         <form
@@ -219,12 +257,16 @@ export default function TambahDriverPage() {
         >
           <Card className="mb-6 border-none p-8">
             <h2 className="mb-4 text-lg font-semibold text-neutral-900">
-              Informasi Driver
+              {t(
+                "TambahDriverPage.sectionInformasiDriver",
+                {},
+                "Informasi Driver"
+              )}
             </h2>
             <div className="space-y-6">
               <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                 <FormLabel required className="text-neutral-600">
-                  Nama Lengkap
+                  {t("TambahDriverPage.labelNamaLengkap", {}, "Nama Lengkap")}
                 </FormLabel>
                 <Controller
                   name="namaLengkap"
@@ -232,7 +274,11 @@ export default function TambahDriverPage() {
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder="Masukan Nama Lengkap"
+                      placeholder={t(
+                        "TambahDriverPage.placeholderNamaLengkap",
+                        {},
+                        "Masukan Nama Lengkap"
+                      )}
                       errorMessage={errors.namaLengkap?.message}
                       className="w-full max-w-[328px]"
                     />
@@ -241,7 +287,7 @@ export default function TambahDriverPage() {
               </div>
               <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                 <FormLabel required className="text-neutral-600">
-                  No. Whatsapp
+                  {t("TambahDriverPage.labelNoWhatsapp", {}, "No. Whatsapp")}
                 </FormLabel>
                 <Controller
                   name="noWhatsapp"
@@ -254,7 +300,11 @@ export default function TambahDriverPage() {
                       onChange={(e) =>
                         field.onChange(e.target.value.replace(/[^0-9]/g, ""))
                       }
-                      placeholder="Contoh: 08xxxxxxxxxxx"
+                      placeholder={t(
+                        "TambahDriverPage.placeholderNoWhatsapp",
+                        {},
+                        "Contoh: 08xxxxxxxxxxx"
+                      )}
                       errorMessage={errors.noWhatsapp?.message}
                       className="w-full max-w-[328px]"
                     />
@@ -264,17 +314,32 @@ export default function TambahDriverPage() {
             </div>
           </Card>
 
-          <LightboxProvider images={exampleImages} title="Contoh File dan Foto">
+          <LightboxProvider
+            images={exampleImages}
+            title={t(
+              "TambahDriverPage.titleContohFileDanFoto",
+              {},
+              "Contoh File dan Foto"
+            )}
+          >
             <Card className="mb-6 border-none p-8">
               <div className="mb-4 space-y-4">
                 <h2 className="text-lg font-semibold text-neutral-900">
-                  File dan Foto Driver
+                  {t(
+                    "TambahDriverPage.sectionFileDanFotoDriver",
+                    {},
+                    "File dan Foto Driver"
+                  )}
                 </h2>
                 <div className="flex flex-row items-center gap-1 text-xs text-neutral-700">
-                  Lihat contoh file dan foto{" "}
+                  {t(
+                    "TambahDriverPage.textLihatContohFile",
+                    {},
+                    "Lihat contoh file dan foto"
+                  )}{" "}
                   <LightboxTrigger>
                     <a className="cursor-pointer font-semibold text-primary-700">
-                      di sini
+                      {t("TambahDriverPage.linkDiSini", {}, "di sini")}
                     </a>
                   </LightboxTrigger>
                 </div>
@@ -282,7 +347,7 @@ export default function TambahDriverPage() {
               <div className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                   <FormLabel required className="text-neutral-600">
-                    Foto KTP
+                    {t("TambahDriverPage.labelFotoKTP", {}, "Foto KTP")}
                   </FormLabel>
                   <Controller
                     name="fotoKTP"
@@ -302,7 +367,11 @@ export default function TambahDriverPage() {
                 </div>
                 <div className="grid items-start gap-6 md:grid-cols-[178px_1fr]">
                   <FormLabel required className="pt-1.5 text-neutral-600">
-                    Masa Berlaku SIM B2 Umum
+                    {t(
+                      "TambahDriverPage.labelMasaBerlakuSIMB2",
+                      {},
+                      "Masa Berlaku SIM B2 Umum"
+                    )}
                   </FormLabel>
                   <Controller
                     name="masaBerlakuSIM"
@@ -311,7 +380,11 @@ export default function TambahDriverPage() {
                       <DatePicker
                         value={field.value}
                         onChange={(date) => field.onChange(date)}
-                        placeholder="Pilih Tanggal Masa Berlaku SIM B2 Umum"
+                        placeholder={t(
+                          "TambahDriverPage.placeholderMasaBerlakuSIMB2",
+                          {},
+                          "Pilih Tanggal Masa Berlaku SIM B2 Umum"
+                        )}
                         errorMessage={errors.masaBerlakuSIM?.message}
                         className="w-full max-w-[328px]"
                       />
@@ -320,7 +393,7 @@ export default function TambahDriverPage() {
                 </div>
                 <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                   <FormLabel required className="text-neutral-600">
-                    Foto SIM B2
+                    {t("TambahDriverPage.labelFotoSIMB2", {}, "Foto SIM B2")}
                   </FormLabel>
                   <Controller
                     name="fotoSIM"
@@ -340,7 +413,7 @@ export default function TambahDriverPage() {
                 </div>
                 <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                   <FormLabel required className="text-neutral-600">
-                    Foto Driver
+                    {t("TambahDriverPage.labelFotoDriver", {}, "Foto Driver")}
                   </FormLabel>
                   <Controller
                     name="fotoDriver"
@@ -352,11 +425,23 @@ export default function TambahDriverPage() {
                           onUpload={(image) => field.onChange(image)}
                           isNull={!!errors.fotoDriver}
                           className="h-[124px] w-[124px]"
-                          uploadText="Unggah"
-                          errorText="Unggah Ulang"
+                          uploadText={t(
+                            "TambahDriverPage.buttonUnggah",
+                            {},
+                            "Unggah"
+                          )}
+                          errorText={t(
+                            "TambahDriverPage.buttonUnggahUlang",
+                            {},
+                            "Unggah Ulang"
+                          )}
                           maxSize={MAX_FILE_SIZE_MB}
                           acceptedFormats={[".jpg", ".jpeg", ".png"]}
-                          cropperTitle="Sesuaikan Foto Driver"
+                          cropperTitle={t(
+                            "TambahDriverPage.titleSesuaikanFotoDriver",
+                            {},
+                            "Sesuaikan Foto Driver"
+                          )}
                         />
                         {errors.fotoDriver ? (
                           <span className="mt-2 block text-xs text-error-400">
@@ -364,7 +449,12 @@ export default function TambahDriverPage() {
                           </span>
                         ) : (
                           <p className="mt-2 text-xs text-neutral-600">
-                            Format .jpg/.jpeg/.png, maks. {MAX_FILE_SIZE_MB}MB
+                            {t(
+                              "TambahDriverPage.textFormatFile",
+                              {},
+                              "Format .jpg/.jpeg/.png, maks. {max}MB",
+                              { max: MAX_FILE_SIZE_MB }
+                            )}
                           </p>
                         )}
                       </div>
@@ -383,7 +473,7 @@ export default function TambahDriverPage() {
               disabled={isSubmitting || isSubmittingFinal}
               className="min-w-[112px]"
             >
-              Batal
+              {t("TambahDriverPage.buttonBatal", {}, "Batal")}
             </Button>
             <Button
               type="submit"
@@ -391,7 +481,9 @@ export default function TambahDriverPage() {
               disabled={isSubmitting || isSubmittingFinal}
               className="min-w-[112px]"
             >
-              {isSubmitting || isSubmittingFinal ? "Menyimpan..." : "Simpan"}
+              {isSubmitting || isSubmittingFinal
+                ? t("TambahDriverPage.buttonMenyimpan", {}, "Menyimpan...")
+                : t("TambahDriverPage.buttonSimpan", {}, "Simpan")}
             </Button>
           </div>
         </form>
@@ -401,11 +493,18 @@ export default function TambahDriverPage() {
         isOpen={isSubmitModalOpen}
         setIsOpen={setIsSubmitModalOpen}
         description={{
-          text: "Apakah kamu yakin menyimpan data ini?",
+          text: t(
+            "TambahDriverPage.modalConfirmSimpanData",
+            {},
+            "Apakah kamu yakin menyimpan data ini?"
+          ),
         }}
-        cancel={{ text: "Tidak", classname: "w-[112px]" }}
+        cancel={{
+          text: t("TambahDriverPage.buttonTidak", {}, "Tidak"),
+          classname: "w-[112px]",
+        }}
         confirm={{
-          text: "Ya",
+          text: t("TambahDriverPage.buttonYa", {}, "Ya"),
           onClick: handleFinalSubmit,
           classname: "w-[112px]",
         }}
@@ -415,15 +514,19 @@ export default function TambahDriverPage() {
         isOpen={isNavModalOpen}
         setIsOpen={setIsNavModalOpen}
         description={{
-          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+          text: t(
+            "TambahDriverPage.modalConfirmLeavePage",
+            {},
+            "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan"
+          ),
         }}
         cancel={{
-          text: "Ya",
+          text: t("TambahDriverPage.buttonYa", {}, "Ya"),
           classname: "w-[112px]",
           onClick: handleConfirmNavigation,
         }}
         confirm={{
-          text: "Batal",
+          text: t("TambahDriverPage.buttonBatal", {}, "Batal"),
           classname: "w-[112px]",
         }}
       />

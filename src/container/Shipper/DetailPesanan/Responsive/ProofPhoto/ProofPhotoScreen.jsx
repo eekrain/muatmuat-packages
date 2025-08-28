@@ -45,7 +45,7 @@ const ProofPhotoScreen = () => {
     return t(
       "labelBuktiStatus",
       {
-        statusName: `${DriverStatusLabel[statusCode]}${
+        statusName: `${t(DriverStatusLabel[statusCode])}${
           index > 0 ? ` ${index}` : ""
         }`,
       },
@@ -63,8 +63,9 @@ const ProofPhotoScreen = () => {
       return t(
         "labelBuktiStatus",
         {
-          statusName:
-            DriverStatusLabel[statusCode] + (index > 0 ? ` ${index}` : ""),
+          statusName: `${t(DriverStatusLabel[statusCode])}${
+            index > 0 ? ` ${index}` : ""
+          }`,
         },
         "Bukti Tiba di Lokasi Bongkar 2"
       );

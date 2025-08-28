@@ -5,14 +5,22 @@ import { useEffect, useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
-import BadgeStatus from "@/components/Badge/BadgeStatus";
-import { DataTable } from "@/components/DataTable";
+import { useGetCSShippersWithParams } from "@/services/CS/shippers/getCSShippers";
+
+import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import {
   SimpleDropdown,
   SimpleDropdownContent,
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import Pagination from "@/components/Pagination/Pagination";
+import Table from "@/components/Table/Table";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import ShipperSearchAndFilter from "@/app/cs/(main)/user/components/ShipperSearchAndFilter";
+import TransporterEmptyStates from "@/app/cs/(main)/user/components/TransporterEmptyStates";
+import { useShipperLogic } from "@/app/cs/(main)/user/components/useShipperLogic";
 
 const ShipperContainer = ({
   onPageChange,
@@ -22,99 +30,126 @@ const ShipperContainer = ({
 }) => {
   const router = useRouter();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  // State variables for DataTable component handlers
-  // eslint-disable-next-line no-unused-vars
-  const [_sortConfig, setSortConfig] = useState();
-  // eslint-disable-next-line no-unused-vars
-  const [_searchValue, setSearchValue] = useState("");
-  // eslint-disable-next-line no-unused-vars
-  const [_filters, setFilters] = useState({});
+  const {
+    currentPage,
+    perPage,
+    searchValue,
+    searchQuery,
+    filters,
+    processedFilters,
+    sortConfig,
 
-  // Mock data - replace with actual API call
-  const mockData = [
-    {
-      id: "1",
-      companyName: "PT Maju Jaya",
-      email: "contact@majujaya.com",
-      phone: "+62 812-3456-7890",
-      pic: "John Doe",
-      totalOrders: 45,
-      status: "Active",
-      registeredDate: "2024-01-10",
-    },
-    {
-      id: "2",
-      companyName: "CV Sentosa Abadi",
-      email: "info@sentosaabadi.co.id",
-      phone: "+62 813-2345-6789",
-      pic: "Jane Smith",
-      totalOrders: 23,
-      status: "Active",
-      registeredDate: "2024-01-05",
-    },
-    {
-      id: "3",
-      companyName: "UD Berkah Mandiri",
-      email: "berkah@mandiri.com",
-      phone: "+62 814-3456-7890",
-      pic: "Bob Johnson",
-      totalOrders: 0,
-      status: "Inactive",
-      registeredDate: "2023-12-20",
-    },
-  ];
+    // Handlers
+    handleSearch,
+    handleSearchKeyDown,
+    handleSearchBlur,
+    handleClearSearch,
+    handleFilter,
+    getActiveFilters,
+    handleRemoveFilter,
+    handleClearAllFilters,
+    handlePageChange,
+    handlePerPageChange,
+    handleSort,
+  } = useShipperLogic({ onPageChange, onPerPageChange, onDataStateChange });
 
-  const getStatusBadge = (status) => {
-    const variant = status === "Active" ? "success" : "danger";
-    return <BadgeStatus variant={variant}>{status}</BadgeStatus>;
-  };
+  // Fetch data from mock API using the service
+  const {
+    data,
+    error: fetchError,
+    isLoading: loading,
+  } = useGetCSShippersWithParams({
+    page: currentPage,
+    limit: perPage,
+    // only trigger search when performSearch updated searchQuery in the hook
+    search: (searchQuery || "").trim(),
+    // include processed filters so server-side filtering can work
+    ...(processedFilters && Object.keys(processedFilters).length > 0
+      ? { ...processedFilters }
+      : {}),
+  });
+
+  const apiData = data?.Data || {};
+  const apiShippers = apiData.shippers || [];
+  const pagination = apiData.pagination || {};
+  const totalItemsLocal = pagination.totalItems ?? 0;
+  const totalPagesLocal = pagination.totalPages ?? 1;
+  const isLoading = loading;
+  const error = fetchError;
+  // apply sort from sortConfig if provided (simple client-side sort)
+  const sortedShippers = (() => {
+    if (!sortConfig || !sortConfig.sort) return apiShippers;
+    const { sort, order } = sortConfig;
+    const dir = order === "desc" ? -1 : 1;
+    return [...apiShippers].sort((a, b) => {
+      const av = a[sort];
+      const bv = b[sort];
+      if (av === null || typeof av === "undefined") return 1 * dir;
+      if (bv === null || typeof bv === "undefined") return -1 * dir;
+      if (typeof av === "string") return av.localeCompare(bv) * dir;
+      return (av - bv) * dir;
+    });
+  })();
+  // ... no status badge helper needed for Shipper table
 
   const columns = [
     {
-      key: "companyName",
-      header: "Company Name",
+      key: "name",
+      header: "Nama",
       render: (row) => (
         <div className="space-y-1">
-          <div className="text-xs font-bold">{row.companyName}</div>
+          <div className="text-xxs font-semibold">{row.fullName}</div>
           <div className="text-xxs font-medium text-neutral-600">
-            PIC: {row.pic}
+            Email : {row.email || "-"}
           </div>
         </div>
       ),
+      className: "min-w-64",
     },
     {
       key: "contact",
-      header: "Contact",
+      header: "No. Whatsapp",
       width: "280px",
       render: (row) => (
         <div className="space-y-1">
-          <div className="text-xxs font-semibold">{row.email}</div>
-          <div className="text-xxs font-medium text-neutral-600">
-            {row.phone}
-          </div>
+          <div className="text-xxs font-medium">{row.whatsappNumber}</div>
         </div>
       ),
     },
     {
-      key: "totalOrders",
-      header: "Total Orders",
+      key: "address",
+      header: "Alamat",
+      sortable: false,
       render: (row) => (
-        <div className="text-xs font-medium">{row.totalOrders}</div>
+        <div className="text-xxs font-medium text-neutral-600">
+          {row.companyAddress || "-"}
+        </div>
+      ),
+      className: "w-full max-w-[700px]",
+    },
+    {
+      key: "activeOrders",
+      header: "Pesanan Aktif",
+      render: (row) => (
+        <div className="text-xxs font-medium">
+          {row.activeOrders && Number(row.activeOrders) > 0
+            ? `${row.activeOrders} Pesanan Aktif`
+            : "Belum Ada"}
+        </div>
       ),
     },
     {
-      key: "registeredDate",
-      header: "Registered Date",
-      render: (row) => row.registeredDate,
+      key: "completedOrders",
+      header: "Pesanan Selesai",
+      render: (row) => (
+        <div className="text-xxs font-medium">
+          {row.completedOrders && Number(row.completedOrders) > 0
+            ? `${row.completedOrders} Pesanan Selesai`
+            : "Belum Ada"}
+        </div>
+      ),
     },
-    {
-      key: "status",
-      header: "Status",
-      sortable: false,
-      render: (row) => getStatusBadge(row.status),
-    },
+
     {
       key: "action",
       header: "",
@@ -125,25 +160,24 @@ const ShipperContainer = ({
           <SimpleDropdownTrigger asChild>
             <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
-                Action
+                Aksi
               </span>
               <ChevronDown className="h-4 w-4 text-neutral-700" />
             </button>
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-[133px]" align="end">
-            <SimpleDropdownItem onClick={() => {}}>
-              View Orders
-            </SimpleDropdownItem>
-            {row.status === "Active" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Deactivate
-              </SimpleDropdownItem>
-            )}
             <SimpleDropdownItem
               onClick={() => router.push(`/user/shipper/${row.id}/detail`)}
             >
               Detail
+            </SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() => {
+                handleHubungiModal(row);
+              }}
+            >
+              Hubungi
             </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
@@ -151,56 +185,20 @@ const ShipperContainer = ({
     },
   ];
 
-  const handleSearch = (value) => {
-    setSearchValue(value);
-    setCurrentPage(1);
+  const [selectedData, setSelectedData] = useState();
+  const [isHubungiModalOpen, setIsHubungiModalOpen] = useState(false);
+
+  const handleHubungiModal = (row) => {
+    setSelectedData(row);
+    setIsHubungiModalOpen(true);
   };
 
-  const handleFilter = (newFilters) => {
-    const processedFilters = {};
-
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        processedFilters[key] = value.map((item) =>
-          typeof item === "object" && item.id ? item.id : item
-        );
-      } else if (typeof value === "object" && value?.id) {
-        processedFilters[key] = value.id;
-      } else {
-        processedFilters[key] = value;
-      }
-    });
-
-    setFilters(processedFilters);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    onPageChange?.(page);
-  };
-
-  const handlePerPageChange = (limit) => {
-    setPerPage(limit);
-    setCurrentPage(1);
-    onPerPageChange?.(limit);
-  };
-
-  const handleSort = (sort, order) => {
-    if (sort || order) {
-      setSortConfig({ sort, order });
-    } else {
-      setSortConfig();
-    }
-  };
+  // handlers provided by useShipperLogic are used instead
 
   // Filter config for DataTable
   const getFilterConfig = () => {
     return {
-      categories: [
-        { key: "status", label: "Status" },
-        { key: "totalOrders", label: "Order Range" },
-      ],
+      categories: [{ key: "status", label: "Filter" }],
       data: {
         status: [
           { id: "active", label: "Active" },
@@ -215,42 +213,130 @@ const ShipperContainer = ({
       },
     };
   };
+  // Map API shape to table rows expected by columns
+  const paginated = sortedShippers;
 
-  // For now, provide basic data state management for ShipperContainer
-  // This assumes data is always available since it uses DataTable component
+  // Notify parent about data state
   useEffect(() => {
     if (onDataStateChange) {
+      const hasSearch = !!searchValue;
+      const hasFilters = filters && Object.keys(filters).length > 0;
+      const hasData = totalItemsLocal > 0;
+      const showNoDataState =
+        !isLoading && !hasData && !hasSearch && !hasFilters;
+      const showSearchNotFoundState =
+        !isLoading && hasSearch && !hasData && !error && !hasFilters;
+      const showFilterNotFoundState =
+        !isLoading && hasFilters && !hasData && !error && !hasSearch;
+
       onDataStateChange({
-        hasData: mockData.length > 0,
-        hasSearch: false, // DataTable handles search internally
-        hasFilters: false, // DataTable handles filters internally
-        showSearchNotFoundState: false,
-        showFilterNotFoundState: false,
-        showNoDataState: mockData.length === 0,
-        totalItems: mockData.length,
+        hasData,
+        hasSearch,
+        hasFilters,
+        showSearchNotFoundState,
+        showFilterNotFoundState,
+        showNoDataState,
+        totalItems: totalItemsLocal,
+        isLoading,
+        error,
       });
     }
-  }, [onDataStateChange, mockData.length]);
+  }, [
+    onDataStateChange,
+    totalItemsLocal,
+    searchValue,
+    filters,
+    isLoading,
+    error,
+  ]);
+
+  const emptyComponent = (
+    <TransporterEmptyStates
+      error={error}
+      showNoDataState={
+        !isLoading &&
+        totalItemsLocal === 0 &&
+        !searchValue &&
+        !(filters && Object.keys(filters).length)
+      }
+      showSearchNotFoundState={!!searchValue && totalItemsLocal === 0}
+      showFilterNotFoundState={
+        filters && Object.keys(filters).length > 0 && totalItemsLocal === 0
+      }
+    />
+  );
 
   return (
     <div className="h-[calc(100vh-300px)]">
-      <DataTable
-        data={mockData}
-        columns={columns}
-        searchPlaceholder="Search company name, email, or PIC..."
-        totalCountLabel="Shippers"
-        currentPage={currentPage}
-        totalPages={Math.ceil(mockData.length / perPage)}
-        totalItems={count || mockData.length}
-        perPage={perPage}
-        onPageChange={handlePageChange}
-        onPerPageChange={handlePerPageChange}
-        onSearch={handleSearch}
-        onFilter={handleFilter}
-        onSort={handleSort}
-        loading={false}
-        showPagination
-        filterConfig={getFilterConfig()}
+      <div className="bg-white p-6 pt-5">
+        <ShipperSearchAndFilter
+          searchValue={searchValue}
+          onSearch={handleSearch}
+          onSearchKeyDown={handleSearchKeyDown}
+          onSearchBlur={handleSearchBlur}
+          onClearSearch={handleClearSearch}
+          filters={filters}
+          onFilter={handleFilter}
+          showFilterNotFoundState={false}
+          showSearchNotFoundState={false}
+          isLoading={isLoading}
+          totalItems={totalItemsLocal}
+        />
+
+        {Object.keys(filters || {}).length > 0 && (
+          <div className="mt-4">
+            <ActiveFiltersBar
+              filters={getActiveFilters()}
+              onRemoveFilter={handleRemoveFilter}
+              onClearAll={handleClearAllFilters}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="">
+        <Table
+          data={paginated}
+          columns={columns}
+          searchPlaceholder="Search company name, email, or PIC..."
+          totalCountLabel="Shippers"
+          currentPage={currentPage}
+          totalPages={totalPagesLocal}
+          totalItems={count || totalItemsLocal}
+          perPage={perPage}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onSort={(key) => handleSort(key)}
+          loading={isLoading}
+          showPagination={false}
+          filterConfig={getFilterConfig()}
+          emptyComponent={emptyComponent}
+          rowClassName={(_row, _index) => `border-b border-neutral-400`}
+        />
+      </div>
+
+      {totalItemsLocal > 0 && !isLoading && !error && (
+        <div className="px-6 pb-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPagesLocal}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            onPerPageChange={handlePerPageChange}
+            variants="muatrans"
+          />
+        </div>
+      )}
+      <HubungiModal
+        isOpen={isHubungiModalOpen}
+        onClose={() => setIsHubungiModalOpen(false)}
+        contacts={{
+          pics: selectedData?.contacts,
+          emergencyContact: selectedData?.emergency,
+          companyContact: selectedData?.picPhone,
+        }}
       />
     </div>
   );

@@ -570,10 +570,6 @@ export default function Page() {
   // Filter provinces based on showSelectedOnly
   const filteredProvinces = showSelectedOnly
     ? displayProvinces
-        .filter((province) => {
-          // Only show provinces that have at least one selected city
-          return province.cities.some((city) => city.isSelected);
-        })
         .map((province) => {
           // For provinces with selected cities, only show the selected cities
           const selectedCities = province.cities.filter(
@@ -581,11 +577,16 @@ export default function Page() {
           );
           return {
             ...province,
+            totalCities: province.cities.length, // Store total before filtering
             cities: selectedCities,
             selectedCityCount: selectedCities.length,
           };
         })
-    : displayProvinces;
+        .filter((province) => province.cities.length > 0) // Only provinces with selected cities
+    : displayProvinces.map((province) => ({
+        ...province,
+        totalCities: province.cities.length,
+      }));
 
   return (
     <>
@@ -781,7 +782,11 @@ export default function Page() {
                           <Checkbox
                             checked={
                               province.cities.length > 0 &&
-                              province.cities.every((city) => city.isSelected)
+                              province.cities.every(
+                                (city) => city.isSelected
+                              ) &&
+                              (!showSelectedOnly ||
+                                province.cities.length === province.totalCities)
                             }
                             onChange={(e) =>
                               handleSelectAllProvince(province.id, e.checked)

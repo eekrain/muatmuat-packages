@@ -1,6 +1,7 @@
 import useSWR from "swr";
 
-// Mock API result for development/testing
+import { fetcherMuatrans } from "@/lib/axios";
+
 export const mockAPIResult = {
   data: {
     Message: {
@@ -55,53 +56,48 @@ export const mockAPIResult = {
   },
 };
 
-// Mock API result for empty state
-export const mockAPIResultEmpty = {
-  data: {
-    Message: {
-      Code: 200,
-      Text: "No waiting confirmation orders found",
-    },
-    Data: {
-      orders: [],
-      pagination: {
-        currentPage: 1,
-        totalPages: 0,
-        totalItems: 0,
-        itemsPerPage: 10,
-      },
-      filterActive: "waiting_confirmation",
-      emptyState: {
-        illustration: "magnifying_glass",
-        message: "Data Tidak Ditemukan, Mohon coba hapus beberapa filter.",
-        showIllustration: true,
-      },
-    },
-    Type: "FILTERED_ORDERS_EMPTY",
-  },
-};
-
 // Flag to control mock data usage
-const useMockData = false; // Changed to false for real API
+const useMockData = true; // Set to false for real API calls
 
 // Fetcher function for filtered orders
 export const getFilteredOrders = async (params = {}) => {
   console.log("🚀 Fetching filtered orders...", params);
-  console.log("📋 Using mock data for filtered orders");
 
-  // Return mock data for now
-  return mockAPIResult;
+  if (useMockData) {
+    console.log("📋 Using mock data for filtered orders");
+    return mockAPIResult;
+  }
+
+  const { page = 1, limit = 10, search = "" } = params;
+
+  const queryParams = new URLSearchParams();
+  if (page) queryParams.append("page", page.toString());
+  if (limit) queryParams.append("limit", limit.toString());
+  if (search && search.length >= 3) queryParams.append("search", search);
+
+  // Add status parameter for waiting confirmation orders
+  queryParams.append("status", "waiting_confirmation");
+
+  const url = `/v1/transporter/orders${
+    queryParams.toString() ? `?${queryParams.toString()}` : ""
+  }`;
+
+  console.log("🌐 Making API call to:", url);
+  const response = await fetcherMuatrans.get(url);
+  console.log("✅ API Response:", response);
+  return response;
 };
 
-// SWR hook for filtered orders
 export const useGetFilteredOrders = (params = {}) => {
   const { page = 1, limit = 10, search = "" } = params;
 
+  const swrKey = `filtered-orders?status=waiting_confirmation&page=${page}&limit=${limit}&search=${search}`;
+
   const { data, error, isLoading, mutate } = useSWR(
-    `filtered-orders-waiting-confirmation-${page}-${limit}-${search}`,
+    swrKey,
     () => getFilteredOrders(params),
     {
-      refreshInterval: 300000, // 5 minutes auto-refresh
+      refreshInterval: 300000,
       revalidateOnFocus: true,
       revalidateOnReconnect: true,
     }

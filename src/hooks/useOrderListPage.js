@@ -1,5 +1,5 @@
 // hooks/use-orders-page.js
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useGetCountByStatus } from "@/services/Shipper/daftarpesanan/getCountByStatus";
 import { useGetOrderList } from "@/services/Shipper/daftarpesanan/getOrderList";
@@ -123,23 +123,35 @@ const useOrderListPage = (options = {}) => {
   } = useGetOrderList(queryString);
   const { data: countByStatus = {} } = useGetCountByStatus(defaultPage);
 
-  const statusTabOptions = useShallowMemo(
+  const statusTabOptions = useMemo(
     () => [
-      { value: "", label: "Semua" },
+      { value: "", label: t("useOrderListPage.allStatus", {}, "Semua") },
       {
         value: "WAITING_PAYMENT",
-        label: `Menunggu Pembayaran (${countByStatus?.waitingPayment ?? 0})`,
+        label: t(
+          "useOrderListPage.waitingPayment",
+          { count: countByStatus?.waitingPayment || 0 },
+          `Menunggu Pembayaran (${countByStatus?.waitingPayment || 0})`
+        ),
       },
       {
         value: "WAITING_REPAYMENT",
-        label: `Menunggu Pelunasan (${countByStatus?.awaitingSettlement ?? 0})`,
+        label: t(
+          "useOrderListPage.waitingRepayment",
+          { count: countByStatus?.awaitingSettlement || 0 },
+          `Menunggu Pelunasan (${countByStatus?.awaitingSettlement || 0})`
+        ),
       },
       {
         value: "DOCUMENT_SHIPPING",
-        label: `Proses Pengiriman Dokumen (${countByStatus?.documentProcess ?? 0})`,
+        label: t(
+          "useOrderListPage.documentShipping",
+          { count: countByStatus?.documentProcess || 0 },
+          `Proses Pengiriman Dokumen (${countByStatus?.documentProcess || 0})`
+        ),
       },
     ],
-    [countByStatus]
+    [countByStatus, t]
   );
 
   // Updated options with new structure
@@ -149,11 +161,32 @@ const useOrderListPage = (options = {}) => {
           key: "status",
           label: t("labelStatus"),
           children: [
-            { value: "PREPARE_FLEET", label: "Mempersiapkan Armada" },
+            {
+              value: "PREPARE_FLEET",
+              label: t(
+                "useOrderListPage.preparingFleet",
+                {},
+                "Mempersiapkan Armada"
+              ),
+            },
             { value: "CONFIRMED", label: t("labelPesananTerkonfirmasi") },
             { value: "SCHEDULED_FLEET", label: t("labelArmadaDijadwalkan") },
-            { value: "WAITING_PAYMENT", label: "Menunggu Pembayaran" },
-            { value: "WAITING_REPAYMENT", label: "Menunggu Pelunasan" },
+            {
+              value: "WAITING_PAYMENT",
+              label: t(
+                "useOrderListPage.waitingPaymentSimple",
+                {},
+                "Menunggu Pembayaran"
+              ),
+            },
+            {
+              value: "WAITING_REPAYMENT",
+              label: t(
+                "useOrderListPage.waitingRepaymentSimple",
+                {},
+                "Menunggu Pelunasan"
+              ),
+            },
             { value: "LOADING", label: t("labelProsesMuat") },
             { value: "UNLOADING", label: t("labelProsesBongkar") },
             {
@@ -162,11 +195,19 @@ const useOrderListPage = (options = {}) => {
             },
             {
               value: "PREPARE_FLEET_CHANGES",
-              label: "Proses Pergantian Armada",
+              label: t(
+                "useOrderListPage.fleetChangeProcess",
+                {},
+                "Proses Pergantian Armada"
+              ),
             },
             {
               value: "DOCUMENT_DELIVERY",
-              label: "Proses Pengiriman Dokumen",
+              label: t(
+                "useOrderListPage.documentDeliveryProcess",
+                {},
+                "Proses Pengiriman Dokumen"
+              ),
             },
             { value: "CANCELED", label: t("labelDibatalkan") },
             { value: "COMPLETED", label: t("labelSelesai") },
@@ -216,7 +257,15 @@ const useOrderListPage = (options = {}) => {
     if (defaultPage) {
       setCurrentPeriodValue((prevState) =>
         field === "search"
-          ? { name: "Semua Periode (Default)", value: "", format: "day" }
+          ? {
+              name: t(
+                "useOrderListPage.allPeriodsDefault",
+                {},
+                "Semua Periode (Default)"
+              ),
+              value: "",
+              format: "day",
+            }
           : prevState
       );
       setLastFilterField(field);

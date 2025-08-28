@@ -21,7 +21,7 @@ import { TabStatusDokumen } from "./TabStatusDokumen/TabStatusDokumen";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
-  const [activeTab, setActiveTab] = useState("riwayat-aktivitas");
+  const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
   const { t } = useTranslation();
 
   const { data: dataDetailPesanan } = useGetOrderDetailCS(params.orderId);

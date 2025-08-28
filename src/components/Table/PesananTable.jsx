@@ -460,7 +460,8 @@ const PesananTable = ({
                                       height={14}
                                     />
                                     <span className="text-xxs font-medium text-neutral-900">
-                                      2.500 kg
+                                      {order?.weight || 0}{" "}
+                                      {order?.weightUnit || "kg"}
                                     </span>
                                   </div>
                                 </div>
@@ -477,21 +478,20 @@ const PesananTable = ({
                                   // Create an empty result object
                                   const result = {};
 
-                                  // First pass: group by statusLabel and count
+                                  // First pass: group by statusCode and count
                                   order.statusInfo.forEach((item) => {
-                                    const { statusLabel } = item;
+                                    const { statusCode } = item;
 
-                                    if (!result[statusLabel]) {
-                                      result[statusLabel] = {
-                                        statusLabel,
-                                        statusCode: item.statusCode,
+                                    if (!result[statusCode]) {
+                                      result[statusCode] = {
+                                        statusCode,
                                         count:
                                           order.vehicle?.truckCount > 1
                                             ? order.vehicle?.truckCount
                                             : 1,
                                       };
                                     } else {
-                                      result[statusLabel].count++;
+                                      result[statusCode].count++;
                                     }
                                   });
 
@@ -547,7 +547,7 @@ const PesananTable = ({
                                   }
                                   className="w-fit"
                                 >
-                                  {`${latestStatus?.statusLabel} : ${order.vehicle?.truckCount} ${t("labelUnit")}`}
+                                  {`${t(OrderStatusTitle[latestStatus?.statusCode])} : ${order.vehicle?.truckCount} ${t("labelUnit")}`}
                                 </BadgeStatusPesanan>
                               </button>
                             ) : (
@@ -580,7 +580,7 @@ const PesananTable = ({
                                 }
                                 className="w-fit"
                               >
-                                {latestStatus?.statusLabel}
+                                {t(OrderStatusTitle[latestStatus?.statusCode])}
                               </BadgeStatusPesanan>
                             )}
                           </td>
@@ -734,6 +734,7 @@ const PesananTable = ({
                       />
                     ) : (
                       <DataNotFound
+                        type="data"
                         className="gap-y-3"
                         textClass="text-[#868686] w-[117px]"
                         title={t("titleTidakAdaData")}
@@ -749,6 +750,7 @@ const PesananTable = ({
             <div className="flex min-h-[358px] w-full justify-center pb-6">
               <div className="flex flex-col items-center justify-center gap-y-3">
                 <DataNotFound
+                  type="data"
                   className="gap-y-3"
                   textClass="text-[#868686] leading-[19.2px] w-[289px]"
                   title={t("titleDaftarPesananKosong")}
@@ -861,7 +863,7 @@ const PesananTable = ({
                     }
                     className="w-full"
                   >
-                    {`${status.statusLabel} : ${status.count} ${t("labelUnit")}`}
+                    {`${t(OrderStatusTitle[status.statusCode])} : ${status.count} ${t("labelUnit")}`}
                   </BadgeStatusPesanan>
                 </Fragment>
               ))}

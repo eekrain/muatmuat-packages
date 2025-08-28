@@ -67,6 +67,12 @@ export const NumberInput = forwardRef(
       }
     }, [controlledValue, isControlled]);
 
+    // 25. 18 - Web - LB - 0035
+    const isAllowed = (values) => {
+      const { floatValue } = values;
+      return floatValue === undefined || floatValue <= max;
+    };
+
     const triggerChange = (newValue) => {
       if (!isControlled) {
         setInternalValue(newValue);
@@ -146,6 +152,8 @@ export const NumberInput = forwardRef(
         )}
 
         <NumericFormat
+          // 25. 18 - Web - LB - 0035
+          isAllowed={isAllowed}
           value={value}
           onValueChange={handleChange}
           onFocus={handleFocus}

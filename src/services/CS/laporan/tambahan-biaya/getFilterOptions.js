@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -74,18 +74,7 @@ export const mockAPIResult = {
           type: "user10",
         },
       ],
-      paymentMethods: [
-        {
-          id: generateUUID(),
-          name: "Kartu Kredit",
-          type: "credit-card",
-        },
-        {
-          id: generateUUID(),
-          name: "Transfer Bank",
-          type: "bank-transfer",
-        },
-      ],
+      paymentMethods: [],
     },
   },
 };
@@ -100,8 +89,8 @@ export const getFilterOptions = async (url) => {
     result = await fetcherMuatrans.get(url);
   }
   return {
-    shippers: result?.data?.Data.shippers || [],
-    paymentMethods: result?.data?.Data.paymentMethods || [],
+    shippers: result?.data?.data.shippers || [],
+    paymentMethods: result?.data?.data.paymentMethods || [],
   };
 };
 

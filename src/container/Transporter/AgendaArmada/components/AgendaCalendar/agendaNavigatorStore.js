@@ -33,7 +33,9 @@ const getCenteredStartDate = (date, intervalDays) => {
   const offset = Math.floor(intervalDays / 2);
   return subDays(date, offset);
 };
+
 export const useAgendaNavigatorStore = create((set, get) => ({
+  isEverHaveScheduled: true,
   // --- UI & Filter State ---
   isInitialized: false,
   currentMonth: new Date(),
@@ -199,30 +201,16 @@ export const useAgendaNavigatorStore = create((set, get) => ({
       const params = {
         page: 1,
         limit: 10,
-        search: search || undefined,
-        agendaStatus:
-          filterAgendaStatus.length > 0 ? filterAgendaStatus : undefined,
-        scheduleDateFrom: dateRange.start.toISOString().split("T")[0],
-        scheduleDateTo: dateRange.end.toISOString().split("T")[0],
-        viewType: viewType,
+        schedule_date_from: dateRange.start.toISOString().split("T")[0],
+        schedule_date_to: dateRange.end.toISOString().split("T")[0],
+        view_type: viewType,
       };
-
-      console.log("📡 fetchSchedules API call:", {
-        search,
-        filterAgendaStatus,
-        params,
-        timestamp: new Date().toLocaleTimeString(),
-      });
+      if (search) params.search = search;
+      if (filterAgendaStatus.length > 0)
+        params.agendaStatus = filterAgendaStatus;
 
       const response = await getAgendaSchedules(params);
-      const { schedules, pagination, summary } = response;
-
-      console.log("📊 fetchSchedules success:", {
-        schedulesCount: schedules.length,
-        pagination,
-        hasNextPage: pagination.currentPage < pagination.totalPages,
-        timestamp: new Date().toLocaleTimeString(),
-      });
+      const { schedules, pagination, summary, isEverHaveScheduled } = response;
 
       set({
         schedules,
@@ -233,6 +221,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         hasNextPage: pagination.currentPage < pagination.totalPages,
         status: "success",
         isNavigating: false, // Clear navigation state
+        isEverHaveScheduled: true,
       });
     } catch (error) {
       set({
@@ -246,20 +235,11 @@ export const useAgendaNavigatorStore = create((set, get) => ({
 
   fetchNextPage: async () => {
     const { hasNextPage, status, page, schedules } = get();
-    console.log("📈 fetchNextPage called:", {
-      hasNextPage,
-      status,
-      currentPage: page,
-      currentSchedulesCount: schedules.length,
-      timestamp: new Date().toLocaleTimeString(),
-    });
 
     if (!hasNextPage || status === "loading" || status === "loading-more") {
-      console.log("⏹️ fetchNextPage early return:", { hasNextPage, status });
       return;
     }
 
-    console.log("📡 Setting status to loading-more...");
     set({ status: "loading-more" });
 
     try {
@@ -278,23 +258,16 @@ export const useAgendaNavigatorStore = create((set, get) => ({
       const params = {
         page: nextPage,
         limit: 10,
-        search: search || undefined,
-        agendaStatus:
-          filterAgendaStatus.length > 0 ? filterAgendaStatus : undefined,
-        scheduleDateFrom: dateRange.start.toISOString().split("T")[0],
-        scheduleDateTo: dateRange.end.toISOString().split("T")[0],
-        viewType: viewType,
+        schedule_date_from: dateRange.start.toISOString().split("T")[0],
+        schedule_date_to: dateRange.end.toISOString().split("T")[0],
+        view_type: viewType,
       };
+      if (search) params.search = search;
+      if (filterAgendaStatus.length > 0)
+        params.agendaStatus = filterAgendaStatus;
 
       const response = await getAgendaSchedules(params);
       const { schedules: newSchedules, pagination } = response;
-
-      console.log("📥 fetchNextPage success:", {
-        newSchedulesCount: newSchedules.length,
-        pagination,
-        totalSchedulesAfter: schedules.length + newSchedules.length,
-        timestamp: new Date().toLocaleTimeString(),
-      });
 
       set({
         schedules: [...schedules, ...newSchedules],
@@ -303,7 +276,6 @@ export const useAgendaNavigatorStore = create((set, get) => ({
         status: "success",
       });
     } catch (error) {
-      console.log("❌ fetchNextPage error:", error);
       set({ status: "error", error: error, hasNextPage: false });
     }
   },
@@ -311,15 +283,12 @@ export const useAgendaNavigatorStore = create((set, get) => ({
   fetchAvailablePeriods: async () => {
     const { setAvailablePeriods, setLoadingPeriods } = get();
 
-    console.log("🌐 Fetching available periods...");
     setLoadingPeriods(true);
 
     try {
       const periods = await getAvailablePeriods();
-      console.log("✅ Available periods fetched successfully:", periods);
       setAvailablePeriods(periods);
-    } catch (error) {
-      console.error("❌ Failed to fetch available periods:", error);
+    } catch {
       setAvailablePeriods(null);
     } finally {
       setLoadingPeriods(false);
