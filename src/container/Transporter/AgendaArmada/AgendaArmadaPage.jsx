@@ -41,6 +41,7 @@ const AgendaArmadaDriverPage = () => {
     search,
     filterAgendaStatus,
     availablePeriods,
+    isEverHaveScheduled,
   } = useDateNavigator({
     availablePeriods: periodsData?.Data,
   });
@@ -147,7 +148,7 @@ const AgendaArmadaDriverPage = () => {
               </div>
             </div>
           </div>
-        ) : displaySchedules.length > 0 ? (
+        ) : isEverHaveScheduled ? (
           <AgendaCalendar
             data={displaySchedules}
             onLoadMore={handleLoadMore}
@@ -162,24 +163,6 @@ const AgendaArmadaDriverPage = () => {
             availablePeriods={availablePeriods}
             shouldShowOverlay={shouldShowOverlay}
           />
-        ) : isError ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="rounded-md bg-red-100 p-4 text-center text-red-700">
-              <p>
-                {t(
-                  "AgendaArmadaPage.messageErrorGagalMemuatData",
-                  {},
-                  "Gagal memuat data. Silakan coba lagi nanti."
-                )}
-              </p>
-              <button
-                onClick={handleRefresh}
-                className="mt-2 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-              >
-                {t("AgendaArmadaPage.buttonCobaLagi", {}, "Coba Lagi")}
-              </button>
-            </div>
-          </div>
         ) : (
           <AgendaNotFound />
         )}

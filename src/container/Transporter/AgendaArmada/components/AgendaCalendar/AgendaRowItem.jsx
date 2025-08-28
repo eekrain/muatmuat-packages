@@ -39,7 +39,7 @@ export const AgendaRowItem = ({ data, viewType, cellWidth }) => {
   if (data?.isPlaceholder) {
     return (
       <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
-        <div className="px-3 py-4">{/* Empty placeholder content */}</div>
+        <div className="border-b border-neutral-200 px-3 py-4" />
         <div className="relative grid grid-cols-5 overflow-hidden">
           <div className="border-b border-r border-neutral-200" />
           <div className="border-b border-r border-neutral-200" />
