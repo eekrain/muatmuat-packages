@@ -51,7 +51,7 @@ const TotalAdditionalCost = () => {
           <h1 className="text-lg font-bold text-neutral-900">
             Total Tambahan Biaya
           </h1>
-          <Link href="/dashboard/analytics/laporan">
+          <Link href="/laporan/tambahan-biaya">
             <p className="cursor-pointer text-xs font-medium text-primary-700">
               Lihat Laporan
             </p>
