@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
 import { useGetLatestFleetNote } from "@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote";
+import { useGetTransporterDetails } from "@/services/CS/transporters/getTransporterDetails";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -19,7 +20,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { data, isLoading } = useGetInactiveTransporter();
-  const allTransporters = data?.transporters || [];
+  const allTransporters = useMemo(() => data?.transporters || [], [data]);
   const [searchValue, setSearchValue] = useState("");
   const [showHubungiModal, setShowHubungiModal] = useState(false);
 
@@ -91,6 +92,33 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
   const { data: latestFleetNote } = useGetLatestFleetNote(
     selectedTransporterId
   );
+
+  // Fetch transporter details for contact information
+  const { data: transporterDetailsData } = useGetTransporterDetails(
+    selectedTransporter?.transporterId
+  );
+
+  // Transform contact data for HubungiModal
+  const transformedContacts = useMemo(() => {
+    if (!transporterDetailsData?.Data) return null;
+
+    const details = transporterDetailsData.Data;
+    return {
+      pics:
+        details.contact?.map((contact, index) => ({
+          name: contact.name || "-",
+          position: contact.position || "-",
+          phoneNumber: contact.phoneNumber || "",
+          Level: index + 1,
+        })) || [],
+      emergencyContact: {
+        name: details.emergency?.name || "-",
+        position: details.emergency?.position || "Emergency Contact",
+        phoneNumber: details.emergency?.phoneNumber || "",
+      },
+      companyContact: details.company?.phoneNumber || "",
+    };
+  }, [transporterDetailsData]);
 
   const handleDetailClick = (transporter) => {
     if (transporter.inactivityStatus === "TRANSPORTER_INACTIVE") {
@@ -225,6 +253,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
           onClose={() => setShowDetailModal(false)}
           latestNote={latestFleetNote.latestNote}
           onHubungi={() => {}}
+          contacts={transformedContacts}
           onSelesaikan={() => setShowDetailModal(false)}
         />
       )}
@@ -232,7 +261,7 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
       <HubungiModal
         isOpen={showHubungiModal}
         onClose={() => setShowHubungiModal(false)}
-        transporterData={selectedTransporter || null}
+        contacts={transformedContacts}
       />
     </>
   );

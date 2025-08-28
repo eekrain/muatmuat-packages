@@ -18,6 +18,7 @@ const ModalDetailTransporterTidakAktif = ({
   detail,
   latestNote,
   onClose,
+  contacts,
   _onSelesaikan,
   _onHubungi,
 }) => {
@@ -253,7 +254,7 @@ const ModalDetailTransporterTidakAktif = ({
       <HubungiModal
         isOpen={showHubungiModal}
         onClose={() => setShowHubungiModal(false)}
-        transporterData={transporter}
+        contacts={contacts}
       />
       <ModalCatatanPenyelesaian
         isOpen={showCatatanModal}
