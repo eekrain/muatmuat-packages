@@ -291,7 +291,7 @@ export const InformasiMuatanModal = ({
                                   "Pilih Muatan"
                                 )}
                                 options={[
-                                  ...cargoNames,
+                                  ...(cargoNames ? cargoNames : []),
                                   ...listCustomNamaMuatan,
                                 ]}
                                 value={field.value}

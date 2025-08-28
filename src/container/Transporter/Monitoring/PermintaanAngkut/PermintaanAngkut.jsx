@@ -39,6 +39,7 @@ const PermintaanAngkut = ({
   }, [activeTab]);
 
   const { data, error, isLoading } = useGetTransportRequestList(params);
+  console.log("Transport Request List:", data);
 
   const handleSearch = (value) => setSearchValue(value);
 

@@ -20,7 +20,7 @@ const apiResult = {
       name: "Wawan",
       phoneNumber: "081234567891",
       profileImage: "https://picsum.photos/50",
-      statusDriver: DriverStatusEnum.UNLOADING.BONGKAR.code,
+      statusDriver: DriverStatusEnum.UNLOADING.MENUJU.code,
       statusTitle: "Sedang Muat di Lokasi 2",
       licensePlate: "B 1234 CD",
       statusDefinitions: [
@@ -38,10 +38,10 @@ const apiResult = {
         //     ],
         //   },
         // },
-        {
-          mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
-          date: new Date().toISOString(),
-        },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        //   date: new Date().toISOString(),
+        // },
         // {
         //   mappedOrderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
         //   date: new Date().toISOString(),
@@ -153,41 +153,41 @@ const apiResult = {
             //     pods: [],
             //   },
             // },
-            // {
-            //   statusCode: DriverStatusEnum.UNLOADING.ANTRI.code,
-            //   // statusCode: `${DriverStatusEnum.UNLOADING.ANTRI.code}_1`,
-            //   statusName: "Antri di Lokasi Bongkar 1",
-            //   date: sub(new Date(), { hours: 8 }).toISOString(),
-            //   requiresQRScan: false,
-            //   requiresPhoto: false,
-            //   triggersWaitingFee: false,
-            //   photoEvidences: {
-            //     packages: [],
-            //     pods: [],
-            //   },
-            // },
-            // {
-            //   statusCode: DriverStatusEnum.UNLOADING.TIBA.code,
-            //   // statusCode: `${DriverStatusEnum.UNLOADING.TIBA.code}_1`,
-            //   statusName: "Tiba di Lokasi Bongkar 1",
-            //   date: sub(new Date(), { hours: 9 }).toISOString(),
-            //   requiresQRScan: false,
-            //   requiresPhoto: true,
-            //   triggersWaitingFee: false,
-            //   photoEvidences: {
-            //     packages: [
-            //       "https://picsum.photos/400/300?random=4",
-            //       "https://picsum.photos/400/300?random=5",
-            //     ],
-            //     pods: [
-            //       // "https://picsum.photos/400/300?random=34",
-            //       // "https://picsum.photos/400/300?random=35",
-            //     ],
-            //   },
-            // },
             {
-              // statusCode: DriverStatusEnum.UNLOADING.MENUJU.code,
-              statusCode: `${DriverStatusEnum.UNLOADING.MENUJU.code}_1`,
+              statusCode: DriverStatusEnum.UNLOADING.ANTRI.code,
+              // statusCode: `${DriverStatusEnum.UNLOADING.ANTRI.code}_1`,
+              statusName: "Antri di Lokasi Bongkar 1",
+              date: sub(new Date(), { hours: 8 }).toISOString(),
+              requiresQRScan: false,
+              requiresPhoto: false,
+              triggersWaitingFee: false,
+              photoEvidences: {
+                packages: [],
+                pods: [],
+              },
+            },
+            {
+              statusCode: DriverStatusEnum.UNLOADING.TIBA.code,
+              // statusCode: `${DriverStatusEnum.UNLOADING.TIBA.code}_1`,
+              statusName: "Tiba di Lokasi Bongkar 1",
+              date: sub(new Date(), { hours: 9 }).toISOString(),
+              requiresQRScan: false,
+              requiresPhoto: true,
+              triggersWaitingFee: false,
+              photoEvidences: {
+                packages: [
+                  "https://picsum.photos/400/300?random=4",
+                  "https://picsum.photos/400/300?random=5",
+                ],
+                pods: [
+                  // "https://picsum.photos/400/300?random=34",
+                  // "https://picsum.photos/400/300?random=35",
+                ],
+              },
+            },
+            {
+              statusCode: DriverStatusEnum.UNLOADING.MENUJU.code,
+              // statusCode: `${DriverStatusEnum.UNLOADING.MENUJU.code}_1`,
               statusName: "Menuju ke Lokasi Bongkar", // This statusName will be updated
               date: sub(new Date(), { hours: 10 }).toISOString(),
               requiresQRScan: false,
@@ -209,69 +209,69 @@ const apiResult = {
         {
           mappedOrderStatus: OrderStatusEnum.LOADING,
           children: [
-            {
-              statusCode: `${DriverStatusEnum.LOADING.MUAT.code}_2`,
-              statusName: "Sedang Muat di Lokasi 2",
-              date: sub(new Date(), { hours: 12 }).toISOString(),
-              requiresQRScan: false,
-              requiresPhoto: false,
-              triggersWaitingFee: false,
-              photoEvidences: {
-                packages: [],
-                pods: [],
-              },
-            },
-            {
-              statusCode: `${DriverStatusEnum.LOADING.ANTRI.code}_2`,
-              statusName: "Antri di Lokasi Muat 2",
-              date: sub(new Date(), { hours: 13 }).toISOString(),
-              requiresQRScan: false,
-              requiresPhoto: false,
-              triggersWaitingFee: false,
-              photoEvidences: {
-                packages: [],
-                pods: [],
-              },
-            },
-            {
-              statusCode: `${DriverStatusEnum.LOADING.TIBA.code}_2`,
-              statusName: "Tiba di Lokasi Muat 2",
-              date: sub(new Date(), { hours: 14 }).toISOString(),
-              requiresQRScan: false,
-              requiresPhoto: true,
-              triggersWaitingFee: false,
-              photoEvidences: {
-                packages: [
-                  "https://picsum.photos/400/300?random=1",
-                  "https://picsum.photos/400/300?random=2",
-                  "https://picsum.photos/400/300?random=3",
-                  "https://picsum.photos/400/300?random=934",
-                ],
-                pods: [],
-              },
-            },
-            {
-              statusCode: `${DriverStatusEnum.LOADING.MENUJU.code}_2`,
-              statusName: "Menuju ke Lokasi Muat 2", // This statusName will be updated
-              date: sub(new Date(), { hours: 15 }).toISOString(),
-              requiresQRScan: false,
-              requiresPhoto: true,
-              triggersWaitingFee: false,
-              photoEvidences: {
-                packages: [
-                  "https://picsum.photos/400/300?random=1",
-                  "https://picsum.photos/400/300?random=2",
-                ],
-                pods: [
-                  "https://picsum.photos/400/300?random=934",
-                  "https://picsum.photos/400/300?random=935",
-                ],
-              },
-            },
+            // {
+            //   statusCode: `${DriverStatusEnum.LOADING.MUAT.code}_2`,
+            //   statusName: "Sedang Muat di Lokasi 2",
+            //   date: sub(new Date(), { hours: 12 }).toISOString(),
+            //   requiresQRScan: false,
+            //   requiresPhoto: false,
+            //   triggersWaitingFee: false,
+            //   photoEvidences: {
+            //     packages: [],
+            //     pods: [],
+            //   },
+            // },
+            // {
+            //   statusCode: `${DriverStatusEnum.LOADING.ANTRI.code}_2`,
+            //   statusName: "Antri di Lokasi Muat 2",
+            //   date: sub(new Date(), { hours: 13 }).toISOString(),
+            //   requiresQRScan: false,
+            //   requiresPhoto: false,
+            //   triggersWaitingFee: false,
+            //   photoEvidences: {
+            //     packages: [],
+            //     pods: [],
+            //   },
+            // },
+            // {
+            //   statusCode: `${DriverStatusEnum.LOADING.TIBA.code}_2`,
+            //   statusName: "Tiba di Lokasi Muat 2",
+            //   date: sub(new Date(), { hours: 14 }).toISOString(),
+            //   requiresQRScan: false,
+            //   requiresPhoto: true,
+            //   triggersWaitingFee: false,
+            //   photoEvidences: {
+            //     packages: [
+            //       "https://picsum.photos/400/300?random=1",
+            //       "https://picsum.photos/400/300?random=2",
+            //       "https://picsum.photos/400/300?random=3",
+            //       "https://picsum.photos/400/300?random=934",
+            //     ],
+            //     pods: [],
+            //   },
+            // },
+            // {
+            //   statusCode: `${DriverStatusEnum.LOADING.MENUJU.code}_2`,
+            //   statusName: "Menuju ke Lokasi Muat 2", // This statusName will be updated
+            //   date: sub(new Date(), { hours: 15 }).toISOString(),
+            //   requiresQRScan: false,
+            //   requiresPhoto: true,
+            //   triggersWaitingFee: false,
+            //   photoEvidences: {
+            //     packages: [
+            //       "https://picsum.photos/400/300?random=1",
+            //       "https://picsum.photos/400/300?random=2",
+            //     ],
+            //     pods: [
+            //       "https://picsum.photos/400/300?random=934",
+            //       "https://picsum.photos/400/300?random=935",
+            //     ],
+            //   },
+            // },
 
             {
-              // statusCode: DriverStatusEnum.LOADING.MUAT.code,
-              statusCode: `${DriverStatusEnum.LOADING.MUAT.code}_1`,
+              statusCode: DriverStatusEnum.LOADING.MUAT.code,
+              // statusCode: `${DriverStatusEnum.LOADING.MUAT.code}_1`,
               statusName: "Sedang Muat di Lokasi",
               date: sub(new Date(), { hours: 17 }).toISOString(),
               requiresQRScan: false,
@@ -283,8 +283,8 @@ const apiResult = {
               },
             },
             {
-              // statusCode: DriverStatusEnum.LOADING.ANTRI.code,
-              statusCode: `${DriverStatusEnum.LOADING.ANTRI.code}_1`,
+              statusCode: DriverStatusEnum.LOADING.ANTRI.code,
+              // statusCode: `${DriverStatusEnum.LOADING.ANTRI.code}_1`,
               statusName: "Antri di Lokasi Muat",
               date: sub(new Date(), { hours: 18 }).toISOString(),
               requiresQRScan: false,
@@ -296,8 +296,8 @@ const apiResult = {
               },
             },
             {
-              // statusCode: DriverStatusEnum.LOADING.TIBA.code,
-              statusCode: `${DriverStatusEnum.LOADING.TIBA.code}_1`,
+              statusCode: DriverStatusEnum.LOADING.TIBA.code,
+              // statusCode: `${DriverStatusEnum.LOADING.TIBA.code}_1`,
               statusName: "Tiba di Lokasi Muat 1",
               date: sub(new Date(), { hours: 19 }).toISOString(),
               requiresQRScan: false,
@@ -314,8 +314,8 @@ const apiResult = {
               },
             },
             {
-              // statusCode: DriverStatusEnum.LOADING.MENUJU.code,
-              statusCode: `${DriverStatusEnum.LOADING.MENUJU.code}_1`,
+              statusCode: DriverStatusEnum.LOADING.MENUJU.code,
+              // statusCode: `${DriverStatusEnum.LOADING.MENUJU.code}_1`,
               statusName: "Menuju ke Lokasi Muat 1",
               date: sub(new Date(), { hours: 20 }).toISOString(),
               requiresQRScan: false,

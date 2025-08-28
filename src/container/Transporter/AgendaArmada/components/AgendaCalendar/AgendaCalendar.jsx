@@ -101,22 +101,6 @@ export const AgendaCalendar = ({
       })
       .filter(Boolean); // Remove null items
 
-    console.log("🔍 selectedDateSchedules processed:", {
-      selectedDate,
-      selectedDateType: typeof selectedDate,
-      totalArmadas: displaySchedules.length,
-      matchingArmadas: processedSchedules.length,
-      sampleScheduleDates: displaySchedules.slice(0, 2).map((item) => ({
-        licensePlate: item.licensePlate,
-        scheduleDates: item.schedule?.map((s) => s.scheduleDate) || [],
-      })),
-      schedules: processedSchedules.map((item) => ({
-        licensePlate: item.licensePlate,
-        scheduleCount: item.schedule.length,
-        scheduleDates: item.schedule.map((s) => s.scheduleDate),
-      })),
-    });
-
     return processedSchedules;
   }, [displaySchedules, selectedDate]);
 
@@ -128,25 +112,8 @@ export const AgendaCalendar = ({
         const isIntersecting = entry.isIntersecting;
         const isReachingEnd = !hasNextPage;
 
-        console.log("🔍 Intersection Observer Effect:", {
-          isIntersecting,
-          isLoadingMore,
-          isReachingEnd,
-          hasOnLoadMore: !!onLoadMore,
-          dataLength: displaySchedules?.length || 0,
-          timestamp: new Date().toLocaleTimeString(),
-        });
-
         if (isIntersecting && !isLoadingMore && !isReachingEnd && onLoadMore) {
-          console.log("✅ Triggering onLoadMore...");
           onLoadMore();
-        } else {
-          console.log("❌ Not triggering onLoadMore:", {
-            isIntersecting,
-            isLoadingMore,
-            isReachingEnd,
-            hasOnLoadMore: !!onLoadMore,
-          });
         }
       },
       {
@@ -175,18 +142,7 @@ export const AgendaCalendar = ({
           const rect = loadMoreRef.current.getBoundingClientRect();
           const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
 
-          console.log("🔄 Post-navigation check:", {
-            isVisible,
-            hasNextPage,
-            isLoadingMore,
-            dataLength: displaySchedules?.length,
-            rect: { top: rect.top, bottom: rect.bottom },
-            windowHeight: window.innerHeight,
-            timestamp: new Date().toLocaleTimeString(),
-          });
-
           if (isVisible && hasNextPage && !isLoadingMore && onLoadMore) {
-            console.log("🚀 Force triggering onLoadMore after navigation...");
             onLoadMore();
           }
         }
@@ -299,21 +255,6 @@ export const Content = ({
           : selectedDateSchedules) || [];
   const dataLength = dataToRender.length;
 
-  console.log("🔍 Content dataToRender:", {
-    dataLength,
-    isSearching,
-    isFiltering,
-    displaySchedulesLength: displaySchedules?.length || 0,
-    selectedDateSchedulesLength: selectedDateSchedules?.length || 0,
-    searchValue: search,
-    filterValue: filterAgendaStatus,
-    lastInteraction,
-    dataToRenderSample: dataToRender.slice(0, 2).map((item) => ({
-      licensePlate: item.licensePlate,
-      scheduleCount: item.schedule?.length || 0,
-      scheduleDates: item.schedule?.map((s) => s.scheduleDate) || [],
-    })),
-  });
   const hasOnlyPlaceholders =
     dataToRender.length > 0 && dataToRender.every((item) => item.isPlaceholder);
 
@@ -396,140 +337,136 @@ export const Content = ({
   }
 
   return (
-    <div className="h-[calc(100dvh-295px)] bg-neutral-50 pr-0.5">
-      <div ref={ref} className="relative h-full w-full">
-        <div className="absolute inset-0 overflow-y-auto bg-white">
-          {dataToRender.map((item, index) => (
-            <AgendaRowItem
-              key={`${item.licensePlate || item.id || index}-${item.schedule?.[0]?.scheduleDate || index}-${index}`}
-              data={item}
-              cellWidth={cellWidth}
-              mutate={mutate}
-              viewType={viewType}
-            />
-          ))}
+    <div
+      ref={ref}
+      className="relative max-h-[calc(100dvh-295px)] min-h-[calc(109px*4)] bg-neutral-50 pr-0.5"
+    >
+      <div className="absolute inset-0 overflow-y-auto bg-white">
+        {dataToRender.map((item, index) => (
+          <AgendaRowItem
+            key={`${item.licensePlate || item.id || index}-${item.schedule?.[0]?.scheduleDate || index}-${index}`}
+            data={item}
+            cellWidth={cellWidth}
+            mutate={mutate}
+            viewType={viewType}
+          />
+        ))}
 
-          {hasNextPage && !isReachingEnd && (
-            <div
-              key="load-more-trigger"
-              ref={loadMoreRef}
-              className="h-4 w-full bg-white"
-            >
-              {isLoadingMore && (
-                <div className="flex items-center justify-center py-4">
-                  <div className="text-sm text-gray-500">
-                    {t(
-                      "AgendaCalendar.labelLoadingMore",
-                      {},
-                      "Loading more..."
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {shouldShowNotFound && (
+        {hasNextPage && !isReachingEnd && (
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              left: SIDEBAR_WIDTH + (2 * cellWidth + cellWidth / 2),
-            }}
+            key="load-more-trigger"
+            ref={loadMoreRef}
+            className="h-4 w-full bg-white"
           >
-            <DataNotFound
-              type="search"
-              title={
-                errorMessageType === "search" ? (
-                  <span>
-                    {t(
-                      "AgendaCalendar.titleSearchTidakDitemukan",
-                      {},
-                      "Pencarian Tidak Ditemukan"
-                    )}
-                  </span>
-                ) : errorMessageType === "filter" ? (
-                  <span>
-                    {t(
-                      "AgendaCalendar.titleFilterTidakDitemukan",
-                      {},
-                      "Data tidak Ditemukan."
-                    )}
-                    <br />
-                    {t(
-                      "AgendaCalendar.messageHapusFilter",
-                      {},
-                      "Mohon coba hapus beberapa filter"
-                    )}
-                  </span>
-                ) : errorMessageType === "search_filter" ? (
-                  <span>
-                    {t(
-                      "AgendaCalendar.titleSearchFilterTidakDitemukan",
-                      {},
-                      "Pencarian dalam filter tidak ditemukan"
-                    )}
-                  </span>
-                ) : errorMessageType === "filter_search" ? (
-                  <span>
-                    {t(
-                      "AgendaCalendar.titleFilterSearchTidakDitemukan",
-                      {},
-                      "Filter dalam pencarian tidak ditemukan"
-                    )}
-                  </span>
-                ) : (
-                  <span>
-                    {t(
-                      "AgendaCalendar.titleDataTidakDitemukan",
-                      {},
-                      "Data tidak Ditemukan."
-                    )}
-                  </span>
-                )
-              }
-            />
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-4">
+                <div className="text-sm text-gray-500">
+                  {t("AgendaCalendar.labelLoadingMore", {}, "Loading more...")}
+                </div>
+              </div>
+            )}
           </div>
         )}
-
-        {currentDayIndex >= 0 && (
-          <>
-            <div
-              className="absolute top-0 -translate-x-1/2"
-              style={{
-                left:
-                  SIDEBAR_WIDTH + (currentDayIndex * cellWidth + cellWidth / 2),
-              }}
-            >
-              <svg
-                width="30"
-                height="6"
-                viewBox="0 0 30 6"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M 0 0 L 6 0 L 12 3.75 Q 15 6 18 3.75 L 24 0 L 30 0 Z"
-                  fill="#1E73DC"
-                />
-              </svg>
-            </div>
-            <div
-              className="absolute top-0 h-px bg-primary-700"
-              style={{
-                width: cellWidth,
-                left: SIDEBAR_WIDTH + currentDayIndex * cellWidth,
-              }}
-            />
-            <div
-              className="absolute top-0 h-full w-px -translate-x-1/2 bg-primary-700"
-              style={{
-                left:
-                  SIDEBAR_WIDTH + currentDayIndex * cellWidth + cellWidth / 2,
-              }}
-            />
-          </>
-        )}
       </div>
+
+      {shouldShowNotFound && (
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            left: SIDEBAR_WIDTH + (2 * cellWidth + cellWidth / 2),
+          }}
+        >
+          <DataNotFound
+            type="search"
+            title={
+              errorMessageType === "search" ? (
+                <span>
+                  {t(
+                    "AgendaCalendar.titleSearchTidakDitemukan",
+                    {},
+                    "Pencarian Tidak Ditemukan"
+                  )}
+                </span>
+              ) : errorMessageType === "filter" ? (
+                <span>
+                  {t(
+                    "AgendaCalendar.titleFilterTidakDitemukan",
+                    {},
+                    "Data tidak Ditemukan."
+                  )}
+                  <br />
+                  {t(
+                    "AgendaCalendar.messageHapusFilter",
+                    {},
+                    "Mohon coba hapus beberapa filter"
+                  )}
+                </span>
+              ) : errorMessageType === "search_filter" ? (
+                <span>
+                  {t(
+                    "AgendaCalendar.titleSearchFilterTidakDitemukan",
+                    {},
+                    "Pencarian dalam filter tidak ditemukan"
+                  )}
+                </span>
+              ) : errorMessageType === "filter_search" ? (
+                <span>
+                  {t(
+                    "AgendaCalendar.titleFilterSearchTidakDitemukan",
+                    {},
+                    "Filter dalam pencarian tidak ditemukan"
+                  )}
+                </span>
+              ) : (
+                <span>
+                  {t(
+                    "AgendaCalendar.titleDataTidakDitemukan",
+                    {},
+                    "Data tidak Ditemukan."
+                  )}
+                </span>
+              )
+            }
+          />
+        </div>
+      )}
+
+      {currentDayIndex >= 0 && (
+        <>
+          <div
+            className="absolute top-0 -translate-x-1/2"
+            style={{
+              left:
+                SIDEBAR_WIDTH + (currentDayIndex * cellWidth + cellWidth / 2),
+            }}
+          >
+            <svg
+              width="30"
+              height="6"
+              viewBox="0 0 30 6"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 0 0 L 6 0 L 12 3.75 Q 15 6 18 3.75 L 24 0 L 30 0 Z"
+                fill="#1E73DC"
+              />
+            </svg>
+          </div>
+          <div
+            className="absolute top-0 h-px bg-primary-700"
+            style={{
+              width: cellWidth,
+              left: SIDEBAR_WIDTH + currentDayIndex * cellWidth,
+            }}
+          />
+          <div
+            className="absolute top-0 h-full w-px -translate-x-1/2 bg-primary-700"
+            style={{
+              left: SIDEBAR_WIDTH + currentDayIndex * cellWidth + cellWidth / 2,
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };

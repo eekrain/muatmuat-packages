@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
-
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -36,7 +34,6 @@ export const MapInterfaceOverlay = ({
   showPilihArmada = false,
   fleetLocationsData,
 }) => {
-  const { data: sosStatusSummary } = useGetSosStatusSummary();
   const { t } = useTranslation();
   const [centerButtonClicked, setCenterButtonClicked] =
     useState(!hasMapInteraction);
@@ -136,29 +133,8 @@ export const MapInterfaceOverlay = ({
           />
 
           {/* SOS Button */}
-          <Button
-            variant={
-              sosStatusSummary?.Data?.active > 0
-                ? "muattrans-error-secondary"
-                : "muattrans-primary-secondary"
-            }
-            iconLeft={
-              sosStatusSummary?.Data?.active !== 0 && (
-                <IconComponent
-                  src="/icons/monitoring/sos.svg"
-                  className="size-4"
-                />
-              )
-            }
-            onClick={onClickSOS}
-          >
-            {sosStatusSummary?.Data?.active === 0
-              ? t("MapInterfaceOverlay.button.sos.history", {}, "Riwayat SOS")
-              : t(
-                  "MapInterfaceOverlay.button.sos.count",
-                  { count: sosStatusSummary?.Data?.active },
-                  "SOS ({count})"
-                )}
+          <Button variant={"muattrans-primary-secondary"} onClick={onClickSOS}>
+            Riwayat SOS
           </Button>
         </div>
       )}

@@ -5,6 +5,8 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { OrderTypeEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -30,17 +32,33 @@ export const WarningBadge = ({ className, message }) => {
 
 // Section Header Component
 export const SectionHeader = ({ recommended, type }) => {
+  const { t } = useTranslation();
+
   const recommendedTitles = {
-    carrierId: "Rekomendasi Carrier Sesuai Muatan",
-    truckTypeId: "Rekomendasi Truk Sesuai Muatan",
+    carrierId: t(
+      "SectionHeader.recommendedCarrier",
+      {},
+      "Rekomendasi Carrier Sesuai Muatan"
+    ),
+    truckTypeId: t(
+      "SectionHeader.recommendedTruck",
+      {},
+      "Rekomendasi Truk Sesuai Muatan"
+    ),
   };
   const recommendedTitle = recommendedTitles[type] || recommendedTitles.carrier;
 
   const tooltipContents = {
-    carrierId:
-      "Berikut adalah rekomendasi carrier berdasarkan informasi muatan yang kamu isi",
-    truckTypeId:
-      "Berikut adalah rekomendasi truk berdasarkan berat dan dimensi muatan yang kamu isikan dan diurutkan dari yang termurah.",
+    carrierId: t(
+      "SectionHeader.carrierTooltip",
+      {},
+      "Berikut adalah rekomendasi carrier berdasarkan informasi muatan yang kamu isi"
+    ),
+    truckTypeId: t(
+      "SectionHeader.truckTooltip",
+      {},
+      "Berikut adalah rekomendasi truk berdasarkan berat dan dimensi muatan yang kamu isikan dan diurutkan dari yang termurah."
+    ),
   };
   const tooltipContent = tooltipContents[type] || tooltipContents.carrierId;
 
@@ -48,7 +66,9 @@ export const SectionHeader = ({ recommended, type }) => {
     return (
       <div className="flex h-6 w-[424px] items-center gap-x-1">
         <span className="text-base font-bold leading-[19.2px] text-neutral-900">
-          {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
+          {recommended
+            ? recommendedTitle
+            : t("SectionHeader.notRecommended", {}, "Tidak Direkomendasikan")}
         </span>
         {recommended && (
           <InfoTooltip
@@ -65,13 +85,17 @@ export const SectionHeader = ({ recommended, type }) => {
 
   return (
     <span className="text-base font-bold leading-[19.2px] text-neutral-900">
-      {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
+      {recommended
+        ? recommendedTitle
+        : t("SectionHeader.notRecommended", {}, "Tidak Direkomendasikan")}
     </span>
   );
 };
 
 // Carrier Item Component
 export const CarrierItem = ({ image, name, onClick }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       className={
@@ -81,10 +105,13 @@ export const CarrierItem = ({ image, name, onClick }) => {
     >
       {/* Nanti dihapus aja button nya */}
       <button onClick={(e) => e.stopPropagation()}>
-        <LightboxProvider image={image} title="Jenis Carrier">
+        <LightboxProvider
+          image={image}
+          title={t("CarrierItem.carrierType", {}, "Jenis Carrier")}
+        >
           <LightboxPreview
             image={image}
-            alt="Jenis Carrier"
+            alt={t("CarrierItem.carrierType", {}, "Jenis Carrier")}
             className="size-[68px] overflow-hidden rounded-md object-cover"
           />
         </LightboxProvider>
@@ -110,6 +137,7 @@ export const TruckItem = ({
   showBottomBorder = true,
   isSelected = false,
 }) => {
+  const { t } = useTranslation();
   const orderType = useSewaArmadaStore((state) => state.orderType);
   // Format capacity and dimensions from API data
   const capacity =
@@ -123,19 +151,23 @@ export const TruckItem = ({
       ? [
           {
             iconSrc: "/icons/transporter16.svg",
-            title: "Harga per Unit :  ",
+            title: t("TruckItem.pricePerUnit", {}, "Harga per Unit :  "),
             value: idrFormat(basePrice),
           },
         ]
       : []),
     {
       iconSrc: "/icons/estimasi-kapasitas16.svg",
-      title: "Estimasi Kapasitas : ",
+      title: t("TruckItem.estimatedCapacity", {}, "Estimasi Kapasitas : "),
       value: capacity,
     },
     {
       iconSrc: "/icons/kapasitas16.svg",
-      title: "Estimasi Dimensi (p x l x t) : ",
+      title: t(
+        "TruckItem.estimatedDimensions",
+        {},
+        "Estimasi Dimensi (p x l x t) : "
+      ),
       value: dimension,
     },
   ];
@@ -154,10 +186,13 @@ export const TruckItem = ({
         {/* Nanti dihapus aja button nya */}
         <button onClick={(e) => e.stopPropagation()}>
           {/* 25. 18 - Web - LB - 0273 */}
-          <LightboxProvider image={image} title="Jenis Truk">
+          <LightboxProvider
+            image={image}
+            title={t("TruckItem.truckType", {}, "Jenis Truk")}
+          >
             <LightboxPreview
               image={image}
-              alt="Jenis Truk"
+              alt={t("TruckItem.truckType", {}, "Jenis Truk")}
               className="size-[68px] overflow-hidden rounded-md"
             />
           </LightboxProvider>

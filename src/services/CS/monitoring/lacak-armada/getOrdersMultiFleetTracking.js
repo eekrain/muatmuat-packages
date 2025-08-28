@@ -34,7 +34,7 @@ const apiResultOrdersMultiFleetTracking = {
           },
           trackingStatus: "MENUJU_KE_LOKASI_MUAT",
           sosStatus: {
-            hasSos: false,
+            hasSos: true,
             sosId: "sos-uuid-1",
           },
           estimatedArrival: null,

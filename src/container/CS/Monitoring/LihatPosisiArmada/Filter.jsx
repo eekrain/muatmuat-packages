@@ -5,12 +5,15 @@ import MyDropdown from "@/components/Dropdown/MyDropdown";
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 export const Filter = ({
   onFilterChange,
   transporters = [],
   statuses = [],
   activeFilters = { transporters: [], statuses: [] }, // Add activeFilters prop
 }) => {
+  const { t } = useTranslation();
   const [transporterSearchQuery, setTransporterSearchQuery] = useState("");
   const [selectedTransporters, setSelectedTransporters] = useState(new Set());
   const [selectedStatuses, setSelectedStatuses] = useState(new Set());
@@ -103,7 +106,7 @@ export const Filter = ({
       <MyDropdown.Content align="start" className="w-[194px]">
         {/* --- Transporter Filter --- */}
         <MyDropdown.HoverRoot
-          title="Transporter"
+          title={t("Filter.titleTransporter", {}, "Transporter")}
           className={selectedTransporters.size > 0 ? "font-semibold" : ""}
         >
           <MyDropdown.HoverContent
@@ -119,7 +122,11 @@ export const Filter = ({
                   wrapperClassName: "h-8",
                   iconClassName: "text-neutral-700",
                 }}
-                placeholder="Cari Transporter"
+                placeholder={t(
+                  "Filter.placeholderCariTransporter",
+                  {},
+                  "Cari Transporter"
+                )}
                 value={transporterSearchQuery}
                 onChange={(e) => setTransporterSearchQuery(e.target.value)}
                 withReset
@@ -138,7 +145,7 @@ export const Filter = ({
               ))
             ) : (
               <div className="px-2.5 pb-5 pt-2 text-center text-xs font-medium text-neutral-600">
-                Data Tidak Ditemukan
+                {t("Filter.dataTidakDitemukan", {}, "Data Tidak Ditemukan")}
               </div>
             )}
           </MyDropdown.HoverContent>
@@ -146,7 +153,7 @@ export const Filter = ({
 
         {/* --- Status Armada Filter --- */}
         <MyDropdown.HoverRoot
-          title="Status Armada"
+          title={t("Filter.titleStatusArmada", {}, "Status Armada")}
           className={selectedStatuses.size > 0 ? "font-semibold" : ""}
         >
           <MyDropdown.HoverContent className="w-[194px]">
