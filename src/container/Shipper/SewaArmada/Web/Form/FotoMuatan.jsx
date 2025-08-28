@@ -64,7 +64,7 @@ export const FotoMuatan = () => {
                     height={124}
                     alt={t(
                       "FotoMuatan.photoAlt",
-                      { number: key + 1 },
+                      { key: key + 1 },
                       `Foto Muatan ${key + 1}`
                     )}
                   />
@@ -81,7 +81,7 @@ export const FotoMuatan = () => {
                         ? t("FotoMuatan.primaryPhoto", {}, "Foto Utama")
                         : t(
                             "FotoMuatan.photoNumber",
-                            { number: key },
+                            { key: key + 1 },
                             `Foto ${key}`
                           )
                     }
