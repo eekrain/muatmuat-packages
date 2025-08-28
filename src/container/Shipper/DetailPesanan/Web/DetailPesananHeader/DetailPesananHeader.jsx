@@ -245,7 +245,7 @@ const DetailPesananHeader = ({
                 variant="muatparts-primary"
                 onClick={() =>
                   router.push(
-                    `/shipper/detail-pesanan/${dataStatusPesanan?.orderId}/refund`
+                    `/daftarpesanan/detailpesanan/${dataStatusPesanan?.orderId}/detail-refund`
                   )
                 }
               >
