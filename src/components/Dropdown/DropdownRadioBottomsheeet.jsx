@@ -48,7 +48,7 @@ const DropdownRadioBottomsheeet = ({
     <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
       <button
         className={cn(
-          "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-2",
+          "flex h-8 min-w-[65px] items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-2",
           disabled
             ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
             : "cursor-pointer",
