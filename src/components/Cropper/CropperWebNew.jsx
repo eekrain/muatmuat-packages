@@ -7,7 +7,10 @@ import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
+import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
 import styles from "./CropperWeb.module.scss";
@@ -22,10 +25,20 @@ export default function CropperWebNew({
   onClose,
   isCircle = false,
   title,
+  variant = "muatrans",
 }) {
   const { t } = useTranslation();
   const cropperRef = useRef(null);
   const defaultRatioRef = useRef(null);
+
+  const buttonSecondaryVariants = {
+    muatparts: "border-primary-700 text-primary-700",
+    muatrans: "border-muat-trans-secondary-900 text-muat-trans-secondary-900",
+  };
+  const buttonPrimaryVariants = {
+    muatparts: "bg-primary-700 text-neutral-50",
+    muatrans: "bg-muat-trans-primary-400 text-neutral-900",
+  };
 
   const cancelCrop = useCallback(() => {
     const cropper = cropperRef.current?.cropper;
@@ -157,9 +170,13 @@ export default function CropperWebNew({
                 e.stopPropagation();
                 cancelCrop();
               }}
-              className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-muat-trans-secondary-900 bg-white px-3 outline-none"
+              className={cn(
+                "flex h-8 min-w-[112px] items-center justify-center rounded-full border bg-white px-3 outline-none",
+                buttonSecondaryVariants[variant] ||
+                  buttonSecondaryVariants.muatrans
+              )}
             >
-              <span className="text-sm font-semibold leading-[16.8px] text-muat-trans-secondary-900">
+              <span className="text-sm font-semibold leading-[16.8px]">
                 {t("CropperWebNew.cancel", {}, "Batal")}
               </span>
             </button>
@@ -169,10 +186,13 @@ export default function CropperWebNew({
                 e.stopPropagation();
                 getCropData();
               }}
-              className="flex h-8 min-w-[112px] items-center justify-center rounded-full bg-muat-trans-primary-400 px-3 outline-none"
+              className={cn(
+                "flex h-8 min-w-[112px] items-center justify-center rounded-full px-3 outline-none",
+                buttonPrimaryVariants[variant] || buttonPrimaryVariants.muatrans
+              )}
               autoFocus
             >
-              <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
+              <span className="text-sm font-semibold leading-[16.8px]">
                 {t("CropperWebNew.save", {}, "Simpan")}
               </span>
             </button>

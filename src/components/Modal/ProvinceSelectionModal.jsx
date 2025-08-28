@@ -2,13 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { useSearchAreaBongkar } from "@/services/Transporter/pengaturan/searchAreaBongkar";
+
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
+
 import { toast } from "@/lib/toast";
-import { useSearchAreaBongkar } from "@/services/Transporter/pengaturan/searchAreaBongkar";
 
 const ProvinceSelectionModal = ({
   isOpen,
@@ -52,6 +54,8 @@ const ProvinceSelectionModal = ({
         provinceId: result.provinceId,
         provinceName: result.provinceName,
         sortOrder: result.provinceName.charAt(0).toUpperCase(),
+        alphabetGroup:
+          result.alphabetGroup || result.provinceName.charAt(0).toUpperCase(),
         displayText: result.displayText,
         highlightedName: result.highlightedName,
       }));
@@ -83,9 +87,12 @@ const ProvinceSelectionModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchProvince]);
 
-  // Group provinces by sortOrder (alphabetical grouping)
+  // Group provinces by sortOrder or alphabetGroup (alphabetical grouping)
   const groupedProvinces = filteredProvinces.reduce((acc, province) => {
-    const group = province.sortOrder;
+    const group =
+      province.alphabetGroup ||
+      province.sortOrder ||
+      province.provinceName.charAt(0).toUpperCase();
     if (!acc[group]) {
       acc[group] = [];
     }

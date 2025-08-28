@@ -10,9 +10,9 @@ const useMuatransFetcher = true; // true: use fetcherMuatrans, false: use fetche
 export const mockUrgentIssueCount = {
   data: {
     Data: {
-      new_count: 15,
+      new_count: 150,
       process_count: 8,
-      completed_count: 25,
+      completed_count: 20,
       total_active: 23,
       has_new: true,
       blinking_required: true,

@@ -3,6 +3,10 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useReducer, useState } from "react";
 
+import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
+import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
+import { useGetUrgentIssueCount } from "@/services/Transporter/monitoring/getUrgentIssues";
+
 import {
   MonitoringTabTrigger,
   MonitoringTabs,
@@ -10,6 +14,7 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
+
 import { MapInterfaceOverlay } from "@/container/Shared/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Shared/Map/NoFleetOverlay";
@@ -22,11 +27,11 @@ import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArm
 import RiwayatLaporanSOS from "@/container/Transporter/Monitoring/RiwayatLaporanSOS/RiwayatLaporanSOS";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
-import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
-import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
-import { useGetUrgentIssueCount } from "@/services/Transporter/monitoring/getUrgentIssues";
+
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { useMonitoringHandlers } from "./hooks/useMonitoringHandlers";

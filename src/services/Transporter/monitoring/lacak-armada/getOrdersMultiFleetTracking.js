@@ -41,15 +41,21 @@ const apiResultOrdersMultiFleetTracking = {
           timeline: {
             statusDefinitions: [
               {
-                mappedOrderStatus: "LOADING",
+                mappedOrderStatus: "FLEET_CHANGE",
                 date: "2024-01-15T10:30:00.000Z",
                 children: [
-                  {
-                    statusCode: "MENUJU_KE_LOKASI_MUAT",
-                    statusName: "Menuju ke Lokasi Muat",
-                    date: "2024-01-15T10:30:00.000Z",
-                    requiresPhoto: false,
-                  },
+                  //   {
+                  //     statusCode: "MENUJU_KE_LOKASI_MUAT",
+                  //     statusName: "Menuju ke Lokasi Muat",
+                  //     date: "2024-01-15T10:30:00.000Z",
+                  //     requiresPhoto: false,
+                  //   },
+                  //   {
+                  //     statusCode: "MENUJU_KE_LOKASI_MUAT",
+                  //     statusName: "Menuju ke Lokasi Muat",
+                  //     date: "2024-01-15T10:30:00.000Z",
+                  //     requiresPhoto: false,
+                  //   },
                 ],
               },
             ],
@@ -67,12 +73,18 @@ const apiResultOrdersMultiFleetTracking = {
                   mappedOrderStatus: "LOADING",
                   date: "2024-01-15T10:30:00.000Z",
                   children: [
-                    {
-                      statusCode: "ARMADA_PENGGANTI_BERJALAN",
-                      statusName: "Menuju ke Lokasi Muat",
-                      date: "2024-01-15T10:30:00.000Z",
-                      requiresPhoto: false,
-                    },
+                    // {
+                    //   statusCode: "SEDANG_MUAT",
+                    //   statusName: "Proses Muat",
+                    //   date: "2024-01-15T10:30:00.000Z",
+                    //   requiresPhoto: false,
+                    // },
+                    // {
+                    //   statusCode: "MENUJU_KE_LOKASI_MUAT",
+                    //   statusName: "Menuju ke Lokasi Muat",
+                    //   date: "2024-01-15T10:30:00.000Z",
+                    //   requiresPhoto: false,
+                    // },
                   ],
                 },
               ],

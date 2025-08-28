@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const CargoInfo = ({ cargoItems = [], totalWeight, weightUnit }) => {

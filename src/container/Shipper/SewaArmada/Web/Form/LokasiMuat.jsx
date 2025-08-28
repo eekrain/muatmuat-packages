@@ -3,8 +3,12 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
+
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -13,6 +17,7 @@ import {
 import { useModalLocation } from "./use-modal-location";
 
 export const LokasiMuat = ({ orderStatus, maxLocation }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -39,7 +44,9 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
   return (
     <>
       <FormContainer>
-        <FormLabel required>Lokasi Muat</FormLabel>
+        <FormLabel required>
+          {t("LokasiMuat.title", {}, "Lokasi Muat")}
+        </FormLabel>
 
         <TimelineField.Root
           maxLocation={maxLocation}
@@ -51,7 +58,11 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
           values={
             lokasiMuat?.map((item) => item?.dataLokasi?.location || null) || []
           }
-          labelAddLocation="Tambah Lokasi Muat"
+          labelAddLocation={t(
+            "LokasiMuat.addLocation",
+            {},
+            "Tambah Lokasi Muat"
+          )}
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiMuat", null))
           }

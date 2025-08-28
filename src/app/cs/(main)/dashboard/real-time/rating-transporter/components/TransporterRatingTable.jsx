@@ -4,13 +4,16 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
-import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
+import { useGetTransporterRatings } from "@/services/CS/dashboard/realtime/getTransporterRatings";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetTransporterRatings } from "@/services/CS/dashboard/realtime/getTransporterRatings";
+
+import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
+import TruncatedTooltip from "@/app/transporter/(main)/dashboard/real-time/components/TruncatedTooltip";
 
 const TransporterRatingTable = () => {
   const { t } = useTranslation(); // <-- INSTANTIATE HOOK

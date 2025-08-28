@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import {
   useWaitingSettlementModalAction,
   useWaitingSettlementModalStore,

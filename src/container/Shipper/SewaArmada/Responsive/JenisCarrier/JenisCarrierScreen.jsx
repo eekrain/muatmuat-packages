@@ -7,9 +7,11 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
-import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
+
+import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 

@@ -5,8 +5,12 @@ import { ChevronRight } from "lucide-react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import { compareArraysByNameOnly } from "@/lib/utils/array";
 import { handleFirstTime } from "@/lib/utils/form";
+
 import { useSelectArmadaModalAction } from "@/store/Shipper/forms/selectArmadaModalStore";
 import {
   useSewaArmadaActions,
@@ -30,11 +34,14 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
   const { setField } = useSewaArmadaActions();
   const { setIsOpen, setIsDimensionOrWeightChanged, setType } =
     useSelectArmadaModalAction();
+  const { t } = useTranslation();
 
   return (
     <>
       <FormContainer>
-        <FormLabel required>Informasi Muatan</FormLabel>
+        <FormLabel required>
+          {t("InformasiMuatan.title", {}, "Informasi Muatan")}
+        </FormLabel>
         {informasiMuatan.length > 0 ? (
           <InformasiMuatanTable
             informasiMuatan={informasiMuatan}
@@ -54,7 +61,11 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
                 className="text-neutral-700"
               />
               <span className="ml-2 text-xs font-medium text-neutral-600">
-                Masukkan Informasi Muatan
+                {t(
+                  "InformasiMuatan.placeholder",
+                  {},
+                  "Masukkan Informasi Muatan"
+                )}
               </span>
             </div>
             <ChevronRight className="h-4 w-4 text-neutral-700" />

@@ -1,16 +1,19 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
+import { usePostAcceptScheduledTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postAcceptScheduledTransport";
+
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
-import { usePostAcceptScheduledTransportRequest } from "@/services/Transporter/monitoring/postAcceptScheduledTransportRequest";
 
 // Utility function for currency formatting
 const formatCurrency = (amount) => {
@@ -43,8 +46,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const id = searchParams.get("id");
 
   // API hooks
-  const { trigger: acceptScheduledRequest, isMutating } =
-    usePostAcceptScheduledTransportRequest();
+  const { acceptRequest, isAccepting } = usePostAcceptScheduledTransport();
 
   // Ambil detail data berdasarkan request.id
   const {
@@ -151,28 +153,22 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
       return;
     }
 
-    // Show modal sequence for demo
-    showModalSequence();
-  };
-
-  const handleConfirmAccept = () => {
-    const requestData = {
-      id: detail.id || request?.id,
-      data: {
-        type: selectedOption,
-        truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
-      },
+    // Prepare payload according to API specification
+    const payload = {
+      acceptType: selectedOption === "all" ? "ALL" : "PARTIAL",
+      vehicleCount:
+        selectedOption === "all"
+          ? detail.truckCount || request?.truckCount || 1
+          : partialCount,
+      acceptTerms: true,
     };
 
-    console.log("Sending request data:", requestData); // Debug log
+    // Get request ID
+    const requestId = detail.id || request?.id;
 
-    if (request.isTaken) {
-      setShowConfirmModal(true);
-    }
-    acceptScheduledRequest(requestData)
+    // Call the API service
+    acceptRequest({ id: requestId, payload })
       .then((response) => {
-        console.log("Success response:", response); // Debug log
-
         // Show success toast
         const message =
           response.Data?.toast?.message ||
@@ -188,21 +184,29 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
 
         // Call parent callback if needed
         if (onAccept) {
-          onAccept(requestData);
+          onAccept({ id: requestId, payload });
         }
       })
       .catch((error) => {
-        console.log("Error occurred:", error); // Debug log
-
         // Handle different error scenarios
         if (error.response?.status === 422) {
           const errors = error.response?.data?.Data?.errors || [];
 
-          // Case 1: Pesanan sudah diambil
+          // Check for specific validation errors
+          const termsError = errors.find((err) => err.field === "acceptTerms");
+          const vehicleCountError = errors.find(
+            (err) => err.field === "vehicleCount"
+          );
           const orderStatusError = errors.find(
             (err) => err.field === "orderStatus"
           );
-          if (orderStatusError) {
+
+          if (termsError) {
+            setShowTermsAlert(true);
+          } else if (vehicleCountError) {
+            setShowAlertExceedFleetUnit(true);
+          } else if (orderStatusError) {
+            // Show order taken modal
             setModalType("taken");
             setModalData({
               title: t(
@@ -217,69 +221,29 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               ),
             });
             setShowConfirmModal(true);
-            return;
+          } else {
+            // Generic validation error
+            toast.error(
+              t(
+                "ModalTerimaPermintaan.toastErrorValidationFailed",
+                {},
+                "Validasi gagal. Periksa kembali data yang dimasukkan."
+              )
+            );
           }
-
-          // Case 2: Perubahan kebutuhan unit
-          const vehicleCountError = errors.find(
-            (err) => err.field === "vehicleCount"
+        } else {
+          // Generic error
+          toast.error(
+            t(
+              "ModalTerimaPermintaan.toastErrorRequestFailed",
+              {},
+              "Gagal menerima permintaan. Silakan coba lagi."
+            )
           );
-          if (vehicleCountError) {
-            setModalType("unit-change");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaan.titleUnitRequirementChanged",
-                {},
-                "Perubahan Kebutuhan Unit"
-              ),
-              message: t(
-                "ModalTerimaPermintaan.messageErrorUnitCountChangedRefresh",
-                {},
-                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 3: Akun ditangguhkan
-          const accountError = errors.find(
-            (err) => err.field === "account" || err.field === "userStatus"
-          );
-          if (
-            accountError ||
-            error.response?.data?.Message?.Text?.includes("ditangguhkan") ||
-            error.response?.data?.Message?.Text?.includes("suspended")
-          ) {
-            setModalType("suspended");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaan.titleAccountSuspended",
-                {},
-                "Akun Ditangguhkan"
-              ),
-              message: t(
-                "ModalTerimaPermintaan.messageErrorAccountSuspended",
-                {},
-                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
         }
-
-        // Case untuk error lainnya - show generic error toast
-        const errorMessage =
-          error.response?.data?.Message?.Text ||
-          t(
-            "ModalTerimaPermintaan.toastErrorFailedToAccept",
-            {},
-            "Gagal menerima permintaan. Silakan coba lagi."
-          );
-        toast.error(errorMessage);
       });
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
       <div className="flex h-[460px] w-[600px] flex-col rounded-xl bg-white p-6">
@@ -894,9 +858,15 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 variant="muattrans-primary"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
                 onClick={handleAccept}
-                disabled={isMutating}
+                disabled={isAccepting}
               >
-                {t("ModalTerimaPermintaan.buttonAccept", {}, "Terima")}
+                {isAccepting
+                  ? t(
+                      "ModalTerimaPermintaan.buttonAccepting",
+                      {},
+                      "Menerima..."
+                    )
+                  : t("ModalTerimaPermintaan.buttonAccept", {}, "Terima")}
               </Button>
             </div>
           </>

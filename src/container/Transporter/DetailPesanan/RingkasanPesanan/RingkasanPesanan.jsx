@@ -3,12 +3,20 @@ import { useEffect } from "react";
 import RingkasanPendapatan from "@/container/Transporter/DetailPesanan/RingkasanPesanan/RingkasanPendapatan";
 import RingkasanPesananBody from "@/container/Transporter/DetailPesanan/RingkasanPesanan/RingkasanPesananBody";
 import RingkasanPesananHeader from "@/container/Transporter/DetailPesanan/RingkasanPesanan/RingkasanPesananHeader";
+
 import { toast } from "@/lib/toast";
+
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 import RingkasanPendapatanAktif from "./RingkasanPendapatanAktif";
 
 const RingkasanPesanan = ({ dataOrderDetail }) => {
-  const ringkasanPendapatanAktif = true;
+  const ringkasanPendapatanAktif = [
+    ORDER_STATUS.CONFIRMED,
+    ORDER_STATUS.CANCELLED_BY_SHIPPER,
+    ORDER_STATUS.CANCELLED_BY_TRANSPORTER,
+    ORDER_STATUS.CANCELLED_BY_SYSTEM,
+  ].includes(dataOrderDetail?.orderStatus);
 
   useEffect(() => {
     if (dataOrderDetail?.orderStatus === "LOADING") {

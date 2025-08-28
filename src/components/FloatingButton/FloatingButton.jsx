@@ -8,7 +8,9 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+
 import { useAuth } from "@/hooks/use-auth";
+
 import { cn } from "@/lib/utils";
 
 const FloatingButton = () => {

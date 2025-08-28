@@ -1,9 +1,15 @@
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { ArmadaOption } from "@/container/Shipper/SewaArmada/Web/FirstTimer/ArmadaOption";
 import { useSaveUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
+
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
+import { ArmadaOption } from "@/container/Shipper/SewaArmada/Web/FirstTimer/ArmadaOption";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const FirstTimer = () => {
+  const { t } = useTranslation();
   const { setOrderType } = useSewaArmadaActions();
   const { trigger: savePreferences } = useSaveUserPreferences();
 
@@ -32,27 +38,37 @@ export const FirstTimer = () => {
           height={76}
         />
         <h1 className="text-center text-base font-semibold leading-[1] text-neutral-900">
-          Ayo kirim muatan Anda dengan muatrans!
+          {t("FirstTimer.title", {}, "Ayo kirim muatan Anda dengan muatrans!")}
         </h1>
 
         <p className="w-[313px] text-center text-xs font-medium leading-[14.4px] text-neutral-600">
-          Pesan truk kapan saja dan di mana saja dengan mudah. Serta lacak
-          kiriman secara real-time untuk memastikan keamanan pengiriman dan
-          dapatkan rekomendasi truk sesuai muatan agar lebih efisien!
+          {t(
+            "FirstTimer.subtitle",
+            {},
+            "Pesan truk kapan saja dan di mana saja dengan mudah. Serta lacak kiriman secara real-time untuk memastikan keamanan pengiriman dan dapatkan rekomendasi truk sesuai muatan agar lebih efisien!"
+          )}
         </p>
       </div>
 
       <div className="flex w-full justify-center gap-3">
         <ArmadaOption
-          title="Instan"
-          description="Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di Hari+1."
+          title={t("FirstTimer.instantTitle", {}, "Instan")}
+          description={t(
+            "FirstTimer.instantDescription",
+            {},
+            "Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di Hari+1."
+          )}
           iconType="instant"
           onClick={() => handleClickArmadaOption("INSTANT")}
         />
 
         <ArmadaOption
-          title="Terjadwal"
-          description="Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai dengan Hari+30."
+          title={t("FirstTimer.scheduledTitle", {}, "Terjadwal")}
+          description={t(
+            "FirstTimer.scheduledDescription",
+            {},
+            "Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai dengan Hari+30."
+          )}
           iconType="scheduled"
           onClick={() => handleClickArmadaOption("SCHEDULED")}
         />

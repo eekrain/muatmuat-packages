@@ -1,5 +1,8 @@
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
+import { useAcceptInstantTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postAcceptInstantTransport";
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
@@ -7,11 +10,11 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
-import { usePostAcceptScheduledTransportRequest } from "@/services/Transporter/monitoring/postAcceptScheduledTransportRequest";
 
 // Utility function for currency formatting
 const formatCurrency = (amount) => {
@@ -32,12 +35,8 @@ const ModalTerimaPermintaanInstant = ({
   onAccept,
 }) => {
   const { t } = useTranslation();
-  const [selectedOption, setSelectedOption] = useState("");
-  const [partialCount, setPartialCount] = useState(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [showTermsAlert, setShowTermsAlert] = useState(false);
-  const [showPartialAlert, setShowPartialAlert] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalType, setModalType] = useState(""); // "taken", "unit-change", "suspended"
   const [modalData, setModalData] = useState({});
@@ -47,8 +46,8 @@ const ModalTerimaPermintaanInstant = ({
   const id = searchParams.get("id");
 
   // API hooks
-  const { trigger: acceptScheduledRequest, isMutating } =
-    usePostAcceptScheduledTransportRequest();
+  const { acceptTransport, isAccepting: isMutating } =
+    useAcceptInstantTransport();
 
   // Ambil detail data berdasarkan request.id
   const {
@@ -56,7 +55,10 @@ const ModalTerimaPermintaanInstant = ({
     isLoading,
     error,
   } = useGetTransportRequestList({ id });
-  const detail = listData?.requests?.find((r) => r.id === id) || {};
+  const detail = useMemo(
+    () => listData?.requests?.find((r) => r.id === id) || {},
+    [listData, id]
+  );
   // Check if order is already taken and show modal
   useEffect(() => {
     if (detail && detail.isTaken && isOpen) {
@@ -79,36 +81,6 @@ const ModalTerimaPermintaanInstant = ({
 
   if (!isOpen) return null;
 
-  // Function to show modals in sequence
-  const showModalSequence = () => {
-    const modals = [
-      {
-        type: "taken",
-        title: t(
-          "ModalTerimaPermintaanInstant.titleOrderTaken",
-          {},
-          "Pesanan Sudah Diambil"
-        ),
-        message: t(
-          "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
-          {},
-          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
-        ),
-      },
-    ];
-
-    setModalQueue(modals);
-    setCurrentModalIndex(0);
-
-    // Show first modal
-    setModalType(modals[0].type);
-    setModalData({
-      title: modals[0].title,
-      message: modals[0].message,
-    });
-    setShowConfirmModal(true);
-  };
-
   const handleAccept = () => {
     // Validasi syarat dan ketentuan
     if (!acceptTerms) {
@@ -116,28 +88,38 @@ const ModalTerimaPermintaanInstant = ({
       return;
     }
 
-    // // Show modal sequence for demo
-    // showModalSequence();
-  };
+    // Get the transport request ID
+    const requestId = detail.id || request?.id;
 
-  const handleConfirmAccept = () => {
-    const requestData = {
-      id: detail.id || request?.id,
-      data: {
-        type: selectedOption,
-        truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
-      },
+    // Validate required data
+    if (!requestId) {
+      toast.error(
+        t(
+          "ModalTerimaPermintaanInstant.toastErrorMissingRequest",
+          {},
+          "Data permintaan tidak ditemukan"
+        )
+      );
+      return;
+    }
+
+    // For instant transport, we need to use the request/transport ID as the vehicleId
+    // This is based on the UI which shows information about a specific vehicle
+    const vehicleId = requestId;
+
+    const payload = {
+      vehicleId: vehicleId,
+      acceptTerms: acceptTerms,
     };
 
-    console.log("Sending request data:", requestData); // Debug log
+    const requestData = {
+      id: requestId,
+      payload: payload,
+    };
 
-    if (request.isTaken) {
-      setShowConfirmModal(true);
-    }
-    acceptScheduledRequest(requestData)
+    // Call the API directly
+    acceptTransport(requestData)
       .then((response) => {
-        console.log("Success response:", response); // Debug log
-
         // Show success toast
         const message =
           response.Data?.toast?.message ||
@@ -157,81 +139,36 @@ const ModalTerimaPermintaanInstant = ({
         }
       })
       .catch((error) => {
-        console.log("Error occurred:", error); // Debug log
-
         // Handle different error scenarios
-        if (error.response?.status === 422) {
-          const errors = error.response?.data?.Data?.errors || [];
+        if (error.response?.status === 409) {
+          // Conflict - request or vehicle no longer available
+          setModalType("taken");
+          setModalData({
+            title: t(
+              "ModalTerimaPermintaanInstant.titleOrderTaken",
+              {},
+              "Pesanan Sudah Diambil"
+            ),
+            message: t(
+              "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
+              {},
+              "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
+            ),
+          });
+          setShowConfirmModal(true);
+          return;
+        }
 
-          // Case 1: Pesanan sudah diambil
-          const orderStatusError = errors.find(
-            (err) => err.field === "orderStatus"
+        // Handle validation errors
+        if (error.response?.status === 400) {
+          toast.error(
+            t(
+              "ModalTerimaPermintaanInstant.toastErrorValidation",
+              {},
+              "Data yang dimasukkan tidak valid"
+            )
           );
-          if (orderStatusError) {
-            setModalType("taken");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaanInstant.titleOrderTaken",
-                {},
-                "Pesanan Sudah Diambil"
-              ),
-              message: t(
-                "ModalTerimaPermintaanInstant.messageErrorOrderTaken",
-                {},
-                "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 2: Perubahan kebutuhan unit
-          const vehicleCountError = errors.find(
-            (err) => err.field === "vehicleCount"
-          );
-          if (vehicleCountError) {
-            setModalType("unit-change");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaanInstant.titleUnitRequirementChanged",
-                {},
-                "Perubahan Kebutuhan Unit"
-              ),
-              message: t(
-                "ModalTerimaPermintaanInstant.messageErrorUnitRequirementChanged",
-                {},
-                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 3: Akun ditangguhkan
-          const accountError = errors.find(
-            (err) => err.field === "account" || err.field === "userStatus"
-          );
-          if (
-            accountError ||
-            error.response?.data?.Message?.Text?.includes("ditangguhkan") ||
-            error.response?.data?.Message?.Text?.includes("suspended")
-          ) {
-            setModalType("suspended");
-            setModalData({
-              title: t(
-                "ModalTerimaPermintaanInstant.titleAccountSuspended",
-                {},
-                "Akun Ditangguhkan"
-              ),
-              message: t(
-                "ModalTerimaPermintaanInstant.messageErrorAccountSuspended",
-                {},
-                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
+          return;
         }
 
         // Case untuk error lainnya - show generic error toast
@@ -245,6 +182,7 @@ const ModalTerimaPermintaanInstant = ({
         toast.error(errorMessage);
       });
   };
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 ${
@@ -421,12 +359,6 @@ const ModalTerimaPermintaanInstant = ({
                     const loadTimeStart =
                       detail.loadTimeStart || request.loadTimeStart;
                     if (!createdAt || !loadTimeStart) {
-                      console.warn("Tanggal tidak ditemukan:", {
-                        createdAt,
-                        loadTimeStart,
-                        detail,
-                        request,
-                      });
                       return (
                         <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
                           -
@@ -439,10 +371,6 @@ const ModalTerimaPermintaanInstant = ({
                       isNaN(createdDate.getTime()) ||
                       isNaN(loadDate.getTime())
                     ) {
-                      console.warn("Tanggal invalid:", {
-                        createdAt,
-                        loadTimeStart,
-                      });
                       return (
                         <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
                           -

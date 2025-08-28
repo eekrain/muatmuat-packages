@@ -1,5 +1,7 @@
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 const SearchNotFound = ({ label, className }) => {

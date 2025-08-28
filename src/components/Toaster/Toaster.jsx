@@ -6,8 +6,11 @@ import { Portal } from "@radix-ui/react-portal";
 import PropTypes from "prop-types";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import useDevice from "@/hooks/use-device";
+
 import { cn } from "@/lib/utils";
+
 import { useToastStore } from "@/store/Shipper/toastStore";
 
 const Toaster = ({ className }) => {

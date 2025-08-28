@@ -4,9 +4,12 @@ import { useState } from "react";
 // Import separate components
 import { Alert } from "@/components/Alert/Alert";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+
 import { useTranslation } from "@/hooks/use-translation";
-import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import {
   useRequestOtpActions,
   useRequestOtpStore,

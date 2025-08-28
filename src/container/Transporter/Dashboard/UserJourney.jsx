@@ -3,14 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useUpdateUserJourneyStep } from "@/services/Transporter/dashboard/updateUserJourneyStep";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardMenu from "@/components/Card/CardMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 
+// Updated menuItems to match the keys in the new API response (`journeyStatus.steps`)
 const menuItems = [
   {
     id: 1,
-    statusKey: "addFleetCompleted",
+    statusKey: "addFleet",
     icon: "/icons/dashboard/truck.svg",
     title: "Tambahkan Armada",
     description:
@@ -20,7 +23,7 @@ const menuItems = [
   },
   {
     id: 2,
-    statusKey: "addDriverCompleted",
+    statusKey: "addDriver",
     icon: "/icons/dashboard/driver.svg",
     title: "Tambahkan Driver",
     description:
@@ -30,7 +33,7 @@ const menuItems = [
   },
   {
     id: 3,
-    statusKey: "fleetDriverAssignmentCompleted",
+    statusKey: "pairFleetDriver",
     icon: "/icons/dashboard/pair-driver-fleet.svg",
     title: "Pasangkan Armada dan Driver",
     description:
@@ -40,7 +43,7 @@ const menuItems = [
   },
   {
     id: 4,
-    statusKey: "areaSettingCompleted",
+    statusKey: "configureServiceArea",
     icon: "/icons/dashboard/maps-box.svg",
     title: "Atur Area Muat & Bongkar dan Muatan yang Dilayani",
     description:
@@ -52,13 +55,14 @@ const menuItems = [
 
 const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
   const router = useRouter();
+  const { trigger: updateJourneyStep, isMutating } = useUpdateUserJourneyStep();
   const [modal, setModal] = useState({
     isOpen: false,
     message: "",
     confirmText: "Mengerti",
     confirmClassname: "",
     modalContentClassname: "",
-    onConfirm: () => {}, // Default to an empty function
+    onConfirm: () => {},
   });
 
   const closeModal = () =>
@@ -68,14 +72,71 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
       confirmText: "Mengerti",
       confirmClassname: "",
       modalContentClassname: "",
-      onConfirm: () => {}, // Reset to default
+      onConfirm: () => {},
     });
 
-  const handleMenuClick = (item) => {
-    if (item.statusKey === "fleetDriverAssignmentCompleted") {
-      const { addFleetCompleted, addDriverCompleted } = journeyStatus;
+  /**
+   * Update user journey step status via API
+   * @param {string} stepName - The name of the step to update
+   * @param {boolean} isCompleted - Whether the step is completed
+   */
+  const handleUpdateJourneyStep = async (stepName, isCompleted) => {
+    try {
+      const requestBody = {
+        stepName,
+        isCompleted,
+        completedAt: isCompleted ? new Date().toISOString() : null,
+      };
 
-      if (!addFleetCompleted && !addDriverCompleted) {
+      const response = await updateJourneyStep(
+        "v1/transporter/user/journey-step",
+        { arg: requestBody }
+      );
+
+      if (response?.data?.Message?.Code === 200) {
+        console.log(`✅ Journey step ${stepName} updated successfully`);
+        // Optionally refresh the journey status or update local state
+      } else {
+        console.error(`❌ Failed to update journey step ${stepName}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error updating journey step ${stepName}:`, error);
+    }
+  };
+
+  /**
+   * Mark a specific journey step as completed
+   * This function can be called from external components or pages
+   * @param {string} stepName - The name of the step to mark as completed
+   */
+  const markStepAsCompleted = async (stepName) => {
+    await handleUpdateJourneyStep(stepName, true);
+  };
+
+  /**
+   * Mark a specific journey step as in progress
+   * This function can be called from external components or pages
+   * @param {string} stepName - The name of the step to mark as in progress
+   */
+  const markStepAsInProgress = async (stepName) => {
+    await handleUpdateJourneyStep(stepName, false);
+  };
+
+  // Expose functions for external use
+  if (typeof window !== "undefined") {
+    window.updateUserJourneyStep = {
+      markStepAsCompleted,
+      markStepAsInProgress,
+    };
+  }
+
+  const handleMenuClick = (item) => {
+    // Logic updated to use the new statusKey and data structure
+    if (item.statusKey === "pairFleetDriver") {
+      const isFleetAdded = journeyStatus?.steps?.addFleet?.isCompleted;
+      const isDriverAdded = journeyStatus?.steps?.addDriver?.isCompleted;
+
+      if (!isFleetAdded && !isDriverAdded) {
         setModal({
           isOpen: true,
           message:
@@ -83,12 +144,12 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
           confirmText: "Mengerti",
           confirmClassname: "hidden",
           modalContentClassname: "h-[169px]",
-          onConfirm: () => {}, // No action needed since button is hidden
+          onConfirm: () => {},
         });
         return;
       }
 
-      if (!addDriverCompleted) {
+      if (!isDriverAdded) {
         setModal({
           isOpen: true,
           message:
@@ -101,8 +162,7 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
         return;
       }
 
-      // 4. Set 'onConfirm' to route to the fleet management page
-      if (!addFleetCompleted) {
+      if (!isFleetAdded) {
         setModal({
           isOpen: true,
           message:
@@ -158,8 +218,9 @@ const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
                   description={item.description}
                   buttonText={item.buttonText}
                   onClick={() => handleMenuClick(item)}
+                  // Status logic updated to check the nested `isCompleted` property
                   status={
-                    journeyStatus && journeyStatus[item.statusKey]
+                    journeyStatus?.steps?.[item.statusKey]?.isCompleted
                       ? "completed"
                       : "incompleted"
                   }

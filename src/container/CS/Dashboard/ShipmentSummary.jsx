@@ -7,11 +7,13 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 
+import { useGetDashboardAnalyticsDeliverySummary } from "@/services/CS/dashboard/analytics/getDeliverySummaryDashboard";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardMenu from "@/components/Card/CardMenu";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
+
 import { formatNumberShorthand } from "@/lib/utils/formatNumberShorthand";
-import { useGetDashboardAnalyticsDeliverySummary } from "@/services/CS/dashboard/analytics/getDeliverySummaryDashboard";
 
 const summaryItems = [
   {

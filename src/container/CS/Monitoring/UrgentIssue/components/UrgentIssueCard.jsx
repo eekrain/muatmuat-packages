@@ -1,17 +1,22 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import { getShipperContact } from "@/services/CS/monitoring/urgent-issue/getShipperContact";
+import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useUpdateUrgentIssueStatus } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 import CheckBoxGroup from "./CheckboxGroup";
 import ModalTransporterMenolakPerubahan from "./ModalTransporterMenolakPerubahan";
@@ -32,6 +37,7 @@ export const UrgentIssueCard = ({
     orderCode,
     status,
     completedAt,
+    processedAt,
     orderId,
     issue_type,
     countdown,
@@ -43,6 +49,7 @@ export const UrgentIssueCard = ({
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [showHubungiModal, setShowHubungiModal] = useState(false);
+  const [hubungiContacts, setHubungiContacts] = useState(null);
   const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
   const [selectedIssueData, setSelectedIssueData] = useState(null);
   const [showGroupSection, setShowGroupSection] = useState(false);
@@ -120,7 +127,7 @@ export const UrgentIssueCard = ({
   }
 
   const handleClickOrder = (orderId) => {
-    router.push(`/daftarpesanan/detailpesanan/${orderId}`);
+    router.push(`/monitoring/urgent-issue/${orderCode}/detail-pesanan`);
   };
 
   const handleConfirmStatus = (status) => {
@@ -241,13 +248,34 @@ export const UrgentIssueCard = ({
           </div>
           <Button
             type="button"
-            onClick={() => setShowHubungiModal(true)}
+            onClick={async () => {
+              const shipperId = data?.transporter?.id || "uuid";
+              const contactRes = await getShipperContact(shipperId);
+              const contacts = {
+                pics: (contactRes.data.picContacts || []).map((pic, idx) => ({
+                  name: pic.name,
+                  position: pic.position,
+                  phoneNumber: pic.phone,
+                  Level: idx + 1,
+                })),
+                emergencyContact: {
+                  name: contactRes.data.emergencyContact?.name,
+                  position:
+                    contactRes.data.emergencyContact?.relationship ||
+                    "Emergency Contact",
+                  phoneNumber: contactRes.data.emergencyContact?.phone,
+                },
+                companyContact: contactRes.data.primaryContact?.phone,
+              };
+              setHubungiContacts(contacts);
+              setShowHubungiModal(true);
+            }}
             variant="muattrans-primary"
           >
             {t("UrgentIssueCard.buttonContact", {}, "Hubungi")}
           </Button>
         </div>
-        <div className="border-b border-neutral-400 p-4 md:p-5">
+        <div className="border-b border-neutral-400 p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {statusDisplay !== "selesai" && (
@@ -262,7 +290,7 @@ export const UrgentIssueCard = ({
                   }
                 />
               )}
-              <span className="text-xs font-bold text-neutral-900">
+              <span className="text-xs font-semibold text-neutral-900">
                 {issue_type === "FLEET_NOT_READY"
                   ? "Armada Tidak Siap Untuk Muat"
                   : issue_type === "FLEET_NOT_MOVING"
@@ -285,7 +313,7 @@ export const UrgentIssueCard = ({
             {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
             {statusDisplay === "selesai" && (
               <div className="text-xs font-medium text-neutral-600">
-                {detectedAt ? formatDate(detectedAt) : "-"}
+                {completedAt ? formatDate(completedAt) : "-"}
               </div>
             )}
           </div>
@@ -299,7 +327,7 @@ export const UrgentIssueCard = ({
             </span>{" "}
             {description}
           </div>
-          {isNegative && (
+          {data?.rejection_count > 0 && (
             <div
               className="mt-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
               onClick={openTransporterMenolakModal}
@@ -317,10 +345,12 @@ export const UrgentIssueCard = ({
             />
           )}
 
-          <div className="my-3 h-px w-full bg-neutral-400" />
+          {statusDisplay !== "selesai" && (
+            <div className="my-3 h-px w-full bg-neutral-400" />
+          )}
           {/* Selesai - Lihat Detail */}
           {statusDisplay === "selesai" && !isDetailOpen && (
-            <div className="flex items-center justify-between">
+            <div className="mt-2 flex items-center justify-between">
               <button
                 type="button"
                 className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
@@ -343,7 +373,7 @@ export const UrgentIssueCard = ({
           {/* Selesai - Detail */}
           {statusDisplay === "selesai" && isDetailOpen && (
             <div>
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="flex min-w-[140px] items-center gap-2">
                   <IconComponent
                     src="/icons/document.svg"
@@ -402,7 +432,7 @@ export const UrgentIssueCard = ({
                     )}
                   </span>
                   <span className="text-xs font-semibold text-neutral-900">
-                    {formatDate(completedAt)}
+                    {formatDate(processedAt)}
                   </span>
                 </div>
               </div>
@@ -453,7 +483,10 @@ export const UrgentIssueCard = ({
                 type="button"
                 onClick={() => {
                   setModalUbahTransporter(true);
-                  setSelectedIssueData(data);
+                  setSelectedIssueData({
+                    ...data,
+                    selectedVehicleId: data?.vehicle?.id,
+                  });
                 }}
                 variant="muattrans-primary-secondary"
               >
@@ -465,34 +498,48 @@ export const UrgentIssueCard = ({
         {showGroupSection && groupIssues.length > 0 && (
           <>
             {groupIssues.map((issue, idx) => (
-              <div key={idx} className="border-b border-neutral-400 p-4 md:p-5">
+              <div key={idx} className="border-b border-neutral-400 p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {statusDisplay !== "selesai" && (
                       <NotificationDot
                         size="md"
-                        color={status === "PROCESSING" ? "orange" : "red"}
+                        color={
+                          statusDisplay === "baru"
+                            ? "red"
+                            : statusDisplay === "diproses"
+                              ? "orange"
+                              : "red"
+                        }
                       />
                     )}
-                    <span className="text-xs font-bold text-neutral-900">
-                      {issue_type === "FLEET_NOT_READY"
+                    <span className="text-xs font-semibold text-neutral-900">
+                      {issue.issue_type === "FLEET_NOT_READY"
                         ? "Armada Tidak Siap Untuk Muat"
-                        : issue_type === "FLEET_NOT_MOVING"
+                        : issue.issue_type === "FLEET_NOT_MOVING"
                           ? "Armada Tidak Bergerak Menuju Lokasi"
-                          : issue_type === "POTENTIAL_DRIVER_LATE"
+                          : issue.issue_type === "POTENTIAL_DRIVER_LATE"
                             ? "Potensi Driver Terlambat Muat"
-                            : issue_type}
+                            : issue.issue_type}
                     </span>
                   </div>
-                  {isCountDown && (
-                    <BadgeStatus
-                      variant={
-                        isNegative ? "outlineWarning" : "outlineSecondary"
-                      }
-                      className="w-max text-sm font-semibold"
-                    >
-                      {isNegative ? `-${formatted}` : formatted}
-                    </BadgeStatus>
+                  {(statusDisplay === "baru" || statusDisplay === "diproses") &&
+                    isCountDown && (
+                      <BadgeStatus
+                        variant={
+                          isNegative ? "outlineWarning" : "outlineSecondary"
+                        }
+                        className="w-max text-sm font-semibold"
+                      >
+                        {isNegative ? `-${formatted}` : formatted}
+                      </BadgeStatus>
+                    )}
+
+                  {/* Tampilkan tanggal laporan masuk hanya di bubble selesai */}
+                  {statusDisplay === "selesai" && (
+                    <div className="text-xs font-medium text-neutral-600">
+                      {detectedAt ? formatDate(detectedAt) : "-"}
+                    </div>
                   )}
                 </div>
                 <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
@@ -501,14 +548,16 @@ export const UrgentIssueCard = ({
                     onClick={() => handleClickVehiclePlateNumber()}
                     className="font-medium text-primary-700 hover:cursor-pointer"
                   >
-                    {data?.vehicle?.plate_number || vehiclePlateNumber || "-"}
+                    {issue?.vehicle?.plate_number || "-"}
                   </span>{" "}
-                  {description}
+                  {issue?.description}
                 </div>
-                <div className="my-3 h-px w-full bg-neutral-400" />
+                {statusDisplay !== "selesai" && (
+                  <div className="my-3 h-px w-full bg-neutral-400" />
+                )}
                 {/* Selesai - Lihat Detail */}
                 {statusDisplay === "selesai" && !isDetailOpen && (
-                  <div className="flex items-center justify-between">
+                  <div className="mt-2 flex items-center justify-between">
                     <button
                       type="button"
                       className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
@@ -568,7 +617,7 @@ export const UrgentIssueCard = ({
                           </span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-semibold text-neutral-900">
-                              {formatDate(detectedAt)}
+                              {formatDate(processedAt)}
                             </span>
                           </div>
                         </div>
@@ -636,19 +685,16 @@ export const UrgentIssueCard = ({
                     <Button
                       type="button"
                       onClick={() => {
-                        if (statusDisplay === "baru") {
-                          setIsConfirmProccess(true);
-                        } else if (statusDisplay === "diproses") {
-                          setIsConfirmCompleted(true);
-                        }
+                        console.log("Vehicle ID clicked:", issue?.vehicle?.id);
+                        setModalUbahTransporter(true);
+                        setSelectedIssueData({
+                          ...data,
+                          selectedVehicleId: issue?.vehicle?.id, // Ganti dari data?.vehicle?.id ke issue?.vehicle?.id
+                        });
                       }}
                       variant="muattrans-primary-secondary"
                     >
-                      {t(
-                        "UrgentIssueCard.buttonChangeTransporter",
-                        {},
-                        "Ubah Transporter"
-                      )}
+                      Ubah Transporter
                     </Button>
                   </div>
                 )}
@@ -715,13 +761,14 @@ export const UrgentIssueCard = ({
         <HubungiModal
           isOpen={showHubungiModal}
           onClose={() => setShowHubungiModal(false)}
-          transporterData={null} // TODO: pass actual transporter data if available
+          contacts={hubungiContacts}
         />
 
         <ModalUbahTransporter
           open={modalUbahTransporter}
           onClose={() => setModalUbahTransporter(false)}
           issueData={selectedIssueData}
+          selectedVehicleId={selectedIssueData?.selectedVehicleId}
         />
       </div>
     </>

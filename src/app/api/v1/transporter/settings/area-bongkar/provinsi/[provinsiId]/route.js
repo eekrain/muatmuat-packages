@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { provinceNameMapping } from "../../../master/provinsi/mockData";
 import {
   authErrorResponse,
+  mockDeleteProvinsiError,
+  mockDeleteProvinsiSuccess,
   mockUpdateAreaBongkarError,
   mockUpdateAreaBongkarSuccess,
   serverErrorResponse,
@@ -95,6 +97,77 @@ export async function PUT(req, { params }) {
     };
 
     // Area bongkar selection updated successfully
+
+    return NextResponse.json(response, {
+      status: response.Message.Code,
+    });
+  } catch {
+    // Error logged for debugging
+    return NextResponse.json(serverErrorResponse, {
+      status: 500,
+    });
+  }
+}
+
+export async function DELETE(req, { params }) {
+  try {
+    await delay(800);
+
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return NextResponse.json(authErrorResponse, {
+        status: authErrorResponse.Message.Code,
+      });
+    }
+
+    const { provinsiId } = params;
+    if (!provinsiId) {
+      return NextResponse.json(
+        {
+          Message: {
+            Code: 400,
+            Text: "Parameter provinsiId tidak valid",
+          },
+          Data: {
+            errors: [
+              {
+                field: "provinsiId",
+                message: "provinsiId is required",
+              },
+            ],
+          },
+          Type: "DELETE_PROVINSI_AREA_BONGKAR_ERROR",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Mock logic: Simulate last province scenario (30% chance)
+    const isLastProvince = Math.random() < 0.3;
+
+    if (isLastProvince) {
+      return NextResponse.json(mockDeleteProvinsiError, {
+        status: mockDeleteProvinsiError.Message.Code,
+      });
+    }
+
+    // Mock successful delete response
+    const provinceName =
+      provinceNameMapping[parseInt(provinsiId)] || "Provinsi";
+    const remainingCount = Math.floor(Math.random() * 5) + 2; // 2-6 remaining provinces
+
+    const response = {
+      ...mockDeleteProvinsiSuccess,
+      Message: {
+        ...mockDeleteProvinsiSuccess.Message,
+        Text: `Berhasil menghapus Provinsi ${provinceName}`,
+      },
+      Data: {
+        ...mockDeleteProvinsiSuccess.Data,
+        deletedProvinsiName: provinceName,
+        remainingProvinsi: remainingCount,
+      },
+    };
 
     return NextResponse.json(response, {
       status: response.Message.Code,

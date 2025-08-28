@@ -6,11 +6,16 @@ import minBy from "lodash/minBy";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { NumberInput } from "@/components/Form/NumberInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import RecommendedTruckModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
 import { SelectedTruck } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
+
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
+
 import { useSelectArmadaModalAction } from "@/store/Shipper/forms/selectArmadaModalStore";
 import {
   useSewaArmadaActions,
@@ -18,6 +23,7 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
+  const { t } = useTranslation();
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
@@ -151,7 +157,9 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   return (
     <>
       <FormContainer>
-        <FormLabel required>Jenis Armada</FormLabel>
+        <FormLabel required>
+          {t("JenisArmada.title", {}, "Jenis Armada")}
+        </FormLabel>
 
         <div className="flex flex-1 flex-col gap-y-3.5">
           <div className="flex items-center gap-x-3.5">
@@ -180,7 +188,8 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                     : "text-neutral-900"
                 )}
               >
-                {selectedCarrier?.name || "Pilih Jenis Carrier"}
+                {selectedCarrier?.name ||
+                  t("JenisArmada.selectCarrier", {}, "Pilih Jenis Carrier")}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -216,7 +225,8 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
               >
                 {isEditPage
                   ? truckType?.name
-                  : selectedTruck?.name || "Pilih Jenis Truk"}
+                  : selectedTruck?.name ||
+                    t("JenisArmada.selectTruck", {}, "Pilih Jenis Truk")}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -243,7 +253,11 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                   size="medium"
                 />
                 <span className="text-sm leading-[16.8px]">
-                  {"Pakai rekomendasi bisa hemat "}
+                  {t(
+                    "JenisArmada.recommendationText",
+                    {},
+                    "Pakai rekomendasi bisa hemat "
+                  )}
                   <span className="text-xs leading-[14.4px]">{`Rp${recommendedTruckPriceDiff.toLocaleString("id-ID")}`}</span>
                 </span>
               </div>
@@ -254,7 +268,9 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       </FormContainer>
       {orderType === "SCHEDULED" ? (
         <FormContainer>
-          <FormLabel required>Jumlah Armada</FormLabel>
+          <FormLabel required>
+            {t("JenisArmada.fleetCount", {}, "Jumlah Armada")}
+          </FormLabel>
           <div className="">
             <NumberInput
               id="jumlah-armada"

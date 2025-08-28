@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 
+import { useGetOrderList } from "@/services/Transporter/daftar-pesanan/getOrderList";
+import { useGetOrdersCountByStatus } from "@/services/Transporter/daftar-pesanan/getOrdersCountByStatus";
+
 import DaftarPesanan from "@/container/Transporter/DaftarPesanan/DaftarPesanan";
+
 import useDevice from "@/hooks/use-device";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetOrderList } from "@/services/Transporter/daftar-pesanan/getOrderList";
-import { useGetOrdersCountByStatus } from "@/services/Transporter/daftar-pesanan/getOrdersCountByStatus";
+
 import {
   ORDER_STATUS,
   getOrderStatusConfig,
@@ -72,6 +75,7 @@ const DaftarPesananPage = () => {
   const {
     data: { isFirstTimer = true, orders = [], pagination = {} } = {},
     isLoading,
+    mutate,
   } = useGetOrderList(queryString);
   // TODO: Replace with actual userId from auth context/store
   const userId = "user-id-placeholder"; // This should come from authentication context
@@ -182,6 +186,7 @@ const DaftarPesananPage = () => {
       filterType={filterType}
       setFilterType={setFilterType}
       onChangeQueryParams={handleChangeQueryParams}
+      mutate={mutate}
     />
   );
 };

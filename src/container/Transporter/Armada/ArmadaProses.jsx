@@ -5,6 +5,9 @@ import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { deleteVehicle } from "@/services/Transporter/manajemen-armada/deleteVehicle";
+import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -14,11 +17,11 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
-import { deleteVehicle } from "@/services/Transporter/manajemen-armada/deleteVehicle";
-import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
 const ArmadaProses = ({
   onPageChange,

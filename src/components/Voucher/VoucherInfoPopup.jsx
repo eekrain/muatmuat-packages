@@ -2,6 +2,9 @@
 import Image from "next/image";
 
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import { idrFormat } from "@/lib/utils/formatters";
 
 export default function VoucherInfoPopup({
@@ -28,6 +31,7 @@ export default function VoucherInfoPopup({
     ],
   },
 }) {
+  const { t } = useTranslation();
   return (
     <Modal open={open} onOpenChange={onOpenChange} withCloseButton={false}>
       <ModalContent className="max-w-md overflow-hidden rounded-xl bg-white p-0 shadow-xl">
@@ -45,7 +49,9 @@ export default function VoucherInfoPopup({
             {/* Left side */}
             <div className="flex-1 pr-4">
               <h2 className="text-xl font-bold">{voucher.code}</h2>
-              <div className="mt-1 text-sm">hingga</div>
+              <div className="mt-1 text-sm">
+                {t("VoucherInfoPopup.until", {}, "hingga")}
+              </div>
               <div className="mt-1 flex items-center">
                 <span className="text-lg font-medium">Rp</span>
                 <span className="mx-1 text-5xl font-bold">
@@ -106,12 +112,16 @@ export default function VoucherInfoPopup({
           {[
             {
               icon: "/icons/clock-voucher.png",
-              label: "Berlaku hingga",
+              label: t("VoucherInfoPopup.validUntil", {}, "Berlaku hingga"),
               value: voucher.validTo,
             },
             {
               icon: "/icons/transaction-voucher.png",
-              label: "Minimum transaksi",
+              label: t(
+                "VoucherInfoPopup.minTransaction",
+                {},
+                "Minimum transaksi"
+              ),
               value: idrFormat(voucher.minOrderAmount),
             },
           ].map(({ icon, label, value }, i) => (
@@ -141,7 +151,9 @@ export default function VoucherInfoPopup({
 
           {/* Terms & Conditions */}
           <div className="px-4 py-3">
-            <h3 className="mb-2 text-sm font-semibold">Syarat Dan Ketentuan</h3>
+            <h3 className="mb-2 text-sm font-semibold">
+              {t("VoucherInfoPopup.termsTitle", {}, "Syarat Dan Ketentuan")}
+            </h3>
             <ol className="ml-4 list-decimal text-sm text-gray-700">
               {voucher.termsAndConditions.map((t, idx) => (
                 <li key={idx} className="mb-1">
@@ -153,7 +165,9 @@ export default function VoucherInfoPopup({
 
           {/* Usage Instructions */}
           <div className="px-4 py-3">
-            <h3 className="mb-2 text-sm font-semibold">Cara Pemakaian</h3>
+            <h3 className="mb-2 text-sm font-semibold">
+              {t("VoucherInfoPopup.usageTitle", {}, "Cara Pemakaian")}
+            </h3>
             <ol className="ml-4 list-decimal text-sm text-gray-700">
               {voucher.usageInstructions.map((u, idx) => (
                 <li key={idx} className="mb-1">
@@ -169,7 +183,7 @@ export default function VoucherInfoPopup({
             onClick={() => onOpenChange(false)}
             className="w-full rounded-full bg-blue-500 py-2 text-sm font-medium text-white"
           >
-            Kembali
+            {t("VoucherInfoPopup.buttonBack", {}, "Kembali")}
           </button>
         </div>
       </ModalContent>

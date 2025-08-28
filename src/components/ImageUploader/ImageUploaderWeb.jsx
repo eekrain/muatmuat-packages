@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 
 import CropperWebNew from "../Cropper/CropperWebNew";
@@ -27,6 +29,7 @@ export default function ImageUploaderWeb({
   acceptedFormats = [".jpg", ".jpeg", ".png"],
   isLoading,
   isError,
+  variant = "muatrans",
 }) {
   const { t } = useTranslation();
   const imageRef = useRef(null);
@@ -244,6 +247,7 @@ export default function ImageUploaderWeb({
           result={handleFinishCrop}
           isCircle={isCircle}
           title={cropperTitle}
+          variant={variant}
         />
       )}
     </>

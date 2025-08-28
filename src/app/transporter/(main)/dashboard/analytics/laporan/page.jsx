@@ -1,23 +1,30 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+// Import the router
+
 import { Download } from "lucide-react";
+
+import { useGetCarrierTypes } from "@/services/Transporter/dashboard/laporan/getCarrierTypes";
+import { useGetDeliverySummary } from "@/services/Transporter/dashboard/laporan/getDeliverySummary";
+import { useGetFleetTypes } from "@/services/Transporter/dashboard/laporan/getFleetTypes";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import { DataTable } from "@/components/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { generateDynamicPeriodOptions } from "@/lib/utils/generateDynamicPeriodOptions";
-import { useGetCarrierTypes } from "@/services/Transporter/dashboard/laporan/getCarrierTypes";
-import { useGetDeliverySummary } from "@/services/Transporter/dashboard/laporan/getDeliverySummary";
-import { useGetFleetTypes } from "@/services/Transporter/dashboard/laporan/getFleetTypes";
+
 import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 const periodOptions = generateDynamicPeriodOptions();
 
 function Page() {
+  const router = useRouter(); // Initialize the router
   const { period, label, startDate, endDate, setPeriodOption } =
     useAnalyticsStore();
   const [currentPage, setCurrentPage] = useState(1);
@@ -178,14 +185,23 @@ function Page() {
         ),
       },
       {
-        render: () => (
+        render: (row) => (
           <div className="flex w-full justify-end">
-            <Button className="w-[122px]">Detail</Button>
+            <Button
+              className="w-[122px]"
+              onClick={() =>
+                router.push(
+                  `/laporan/aktivitas-armada-driver/armada/${row.fleet.fleetId}?from=dashboard`
+                )
+              }
+            >
+              Detail
+            </Button>
           </div>
         ),
       },
     ],
-    []
+    [router]
   );
 
   const handleSearch = (value) => {

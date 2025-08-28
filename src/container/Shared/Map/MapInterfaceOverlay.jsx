@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
+
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
-import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
 import { FilterPopover } from "./components/FilterPopover";
 import { LegendButton } from "./components/LegendButton";

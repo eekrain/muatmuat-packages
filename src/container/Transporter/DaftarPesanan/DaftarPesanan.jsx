@@ -8,6 +8,7 @@ import Card from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Filter from "@/components/Filter/Filter";
+// Assuming path, adjust if necessary
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -15,14 +16,17 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import Pagination from "@/components/Pagination/Pagination";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
+
 import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
-// Assuming path, adjust if necessary
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { translatedPeriodOptions } from "@/lib/constants/Shared/periodOptions";
 import { cn } from "@/lib/utils";
 import { formatLoadTime } from "@/lib/utils/dateFormat";
+
 import {
   ORDER_STATUS,
   getOrderStatusBadgeWithTranslation,
@@ -44,6 +48,7 @@ const DaftarPesanan = ({
   filterType,
   setFilterType,
   onChangeQueryParams,
+  mutate,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -263,12 +268,14 @@ const DaftarPesanan = ({
           },
           {
             icons: "/icons/estimasi-kapasitas14.svg",
-            value: "1.000 kg",
+            value: `${row.cargoInfo.summary.totalWeight} ${row.cargoInfo.summary.weightUnit}`,
           },
         ];
         return (
           <div className="mt-0.5 flex flex-col gap-y-2">
-            <span className="text-xs font-bold">{row.truckTypeName}</span>
+            <span className="line-clamp-1 text-xs font-bold">
+              {row.truckTypeName}
+            </span>
             <div className="flex items-center gap-x-1 text-xxs font-medium leading-[1.3]">
               <span className="text-neutral-600">{`Carrier :`}</span>
               <span className="">{row.carrierName}</span>
@@ -340,7 +347,7 @@ const DaftarPesanan = ({
             }}
           >
             <div className="flex items-center gap-x-1">
-              {row.orderStatus === "NEED_CONFIRMATION_READY" ? (
+              {row.orderStatus === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER ? (
                 <InfoTooltip
                   appearance={{
                     iconClassName: "text-primary-700 w-3.5 h-3.5",
@@ -353,7 +360,8 @@ const DaftarPesanan = ({
                 </InfoTooltip>
               ) : null}
               {row.orderStatus === "NEED_RESPONSE_CHANGE"
-                ? getOrderStatusConfig(ORDER_STATUS.NEED_CHANGE_RESPONSE).label
+                ? getOrderStatusConfig(t)[ORDER_STATUS.NEED_CHANGE_RESPONSE]
+                    .label
                 : statusConfig.label}
             </div>
           </BadgeStatusPesanan>
@@ -369,7 +377,7 @@ const DaftarPesanan = ({
       sortable: false,
       render: (row, rowIndex) => (
         <div className="flex flex-col gap-y-3">
-          {row.orderStatus === "NEED_ASSIGN_FLEET" ? (
+          {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -379,7 +387,7 @@ const DaftarPesanan = ({
             </Button>
           ) : null}
           {/* MODIFIED SECTION (Confirm Ready Modal) --- START */}
-          {row.orderStatus === "NEED_CONFIRMATION_READY" ? (
+          {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY ? (
             <Button
               className="min-w-[174px]"
               variant="muattrans-primary"
@@ -732,6 +740,7 @@ const DaftarPesanan = ({
         isOpen={isAssignArmadaModalOpen}
         onClose={() => {
           setIsAssignArmadaModalOpen(false);
+          mutate();
         }}
         orderData={selectedOrderForAssign}
       />

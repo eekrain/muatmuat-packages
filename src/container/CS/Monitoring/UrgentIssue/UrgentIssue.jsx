@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import IconComponent from "@/components/IconComponent/IconComponent";
-import { useTranslation } from "@/hooks/use-translation";
-import { cn } from "@/lib/utils";
 import { useGetCompletedIssueList } from "@/services/CS/monitoring/urgent-issue/getCompletedIssue";
 import { useGetProcessingIssueList } from "@/services/CS/monitoring/urgent-issue/getProccessingIssue";
 import { useGetUrgentIssueCount } from "@/services/CS/monitoring/urgent-issue/getUrgentIssueCount";
 import { useGetUrgentIssueList } from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
+
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import IconComponent from "@/components/IconComponent/IconComponent";
+
+import { useTranslation } from "@/hooks/use-translation";
+
+import { cn } from "@/lib/utils";
 
 import FilterPopoverUrgentIssue from "./components/FilterPopoverUrgentIssue";
 import { UrgentIssueCard } from "./components/UrgentIssueCard";
@@ -88,6 +91,10 @@ const RequestList = ({
               item.issues && item.issues[0]
                 ? item.issues[0].detected_at
                 : item.detected_at,
+            processedAt:
+              item.issues && item.issues[0]
+                ? item.issues[0].processed_at
+                : item.processed_at,
             completedAt:
               item.issues && item.issues[0]
                 ? item.issues[0].completed_at
@@ -363,7 +370,7 @@ const UrgentIssue = () => {
           />
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
+      <div className="mx-2 flex-1 overflow-y-auto bg-white pl-2 pr-1">
         <RequestList
           requests={data}
           isLoading={currentLoading}

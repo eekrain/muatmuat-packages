@@ -1,12 +1,13 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
 import { kotaKabupatenSuccessResponse } from "@/app/api/v1/transporter/settings/master/kota-kabupaten/mockData";
 import {
   createMasterProvinsiSuccessResponse,
   masterProvinsiData,
   provinceNameMapping,
 } from "@/app/api/v1/transporter/settings/master/provinsi/mockData";
-import { fetcherMuatrans } from "@/lib/axios";
 
 const useMockData = false; // toggle mock data
 

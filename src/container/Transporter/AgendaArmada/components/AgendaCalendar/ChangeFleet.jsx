@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { useGetAlternativeFleetOptions } from "@/services/Transporter/agenda-armada-driver/getAlternativeFleetOptions";
+
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 // import { formatDate } from "@/lib/utils/dateFormat";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Select } from "@/components/Select";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { ChangeFleetTypeEnum } from "@/lib/constants/Transporter/agendaArmada/agenda.enum";
-import { useGetAlternativeFleetOptions } from "@/services/Transporter/agenda-armada-driver/getAlternativeFleetOptions";
 
 import CardDetail from "./CardDetail";
 import { getDynamicDates } from "./getDynamicDates";

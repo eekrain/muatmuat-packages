@@ -8,16 +8,20 @@ import { id } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import * as v from "valibot";
 
+import { useAssignFleetToOrder } from "@/services/Transporter/daftar-pesanan/detail-pesanan/assignFleetToOrder";
+import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getAvailableVehiclesList";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadgeWithTranslation } from "@/lib/utils/armadaStatus";
-import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
 
 import ImageArmada from "./components/ImageArmada";
 
@@ -28,6 +32,9 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
 
   // Fetch available vehicles
   const { data, isLoading } = useGetAvailableVehiclesList(orderData?.id);
+
+  // Fleet assignment mutation
+  const { trigger: assignFleet } = useAssignFleetToOrder();
 
   const totalUnitsNeeded =
     data?.orderInfo?.requiredTruckCount || orderData?.truckCount || 3;
@@ -108,8 +115,25 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      console.log("Selected armada:", data.selectedArmada);
-      const orderCode = orderData?.orderCode || "MT25A002A";
+      // Map selected armada IDs to the required format with fleetId and driverId
+      const assignedFleets = data.selectedArmada.map((armadaId) => {
+        const vehicle = availableVehicles.find((v) => v.id === armadaId);
+        return {
+          fleetId: vehicle.id,
+          driverId: vehicle.driver?.id,
+        };
+      });
+
+      const payload = {
+        assignedFleets,
+      };
+      console.log("payload", payload, orderData);
+      const result = await assignFleet({
+        orderId: orderData?.id,
+        data: payload,
+      });
+
+      const orderCode = result?.orderInfo?.orderCode || "MT25A002A";
       toast.success(
         t(
           "AssignArmadaModal.assignSuccess",

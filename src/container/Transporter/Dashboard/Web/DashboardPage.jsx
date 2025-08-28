@@ -2,6 +2,7 @@
 
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardMenu from "@/components/Card/CardMenu";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 const DashboardPage = ({ title = "Dashboard Analytics" }) => {

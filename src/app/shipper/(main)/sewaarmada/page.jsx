@@ -2,18 +2,22 @@
 
 import { useSearchParams } from "next/navigation";
 
-import SewaArmadaResponsive from "@/container/Shipper/SewaArmada/Responsive/SewaArmadaResponsive";
-import SewaArmadaWeb from "@/container/Shipper/SewaArmada/Web/SewaArmadaWeb";
-import useDevice from "@/hooks/use-device";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRMutateHook } from "@/hooks/use-swr";
-import { normalizeFetchTruck } from "@/lib/normalizers/sewaarmada/normalizeFetchTruck";
 import { useGetSettlementInfo } from "@/services/Shipper/daftarpesanan/getSettementInfo";
 import { useGetRecommendedCarriers } from "@/services/Shipper/sewaarmada/getRecommendedCarriers";
 import { useGetRecommendedTrucks } from "@/services/Shipper/sewaarmada/getRecommendedTrucks";
 import { useGetReorderFleetData } from "@/services/Shipper/sewaarmada/getReorderFleetData";
 import useGetSewaArmadaFormOptionData from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
+
+import SewaArmadaResponsive from "@/container/Shipper/SewaArmada/Responsive/SewaArmadaResponsive";
+import SewaArmadaWeb from "@/container/Shipper/SewaArmada/Web/SewaArmadaWeb";
+
+import useDevice from "@/hooks/use-device";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
+
+import { normalizeFetchTruck } from "@/lib/normalizers/sewaarmada/normalizeFetchTruck";
+
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,

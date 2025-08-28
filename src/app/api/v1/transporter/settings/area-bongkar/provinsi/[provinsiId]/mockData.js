@@ -61,3 +61,34 @@ export const mockUpdateAreaBongkarError = {
   },
   Type: "UPDATE_AREA_BONGKAR_SELECTION_ERROR",
 };
+
+export const mockDeleteProvinsiSuccess = {
+  Message: {
+    Code: 200,
+    Text: "Berhasil menghapus Provinsi DKI Jakarta",
+  },
+  Data: {
+    deleted: true,
+    deletedProvinsiName: "DKI Jakarta",
+    remainingProvinsi: 3,
+  },
+  Type: "DELETE_PROVINSI_AREA_BONGKAR",
+};
+
+export const mockDeleteProvinsiError = {
+  Message: {
+    Code: 400,
+    Text: "Kamu tidak bisa menghapus provinsi terakhir. Minimal harus ada satu provinsi terpilih",
+  },
+  Data: {
+    errors: [
+      {
+        field: "provinsiId",
+        message:
+          "Minimal 1 provinsi harus tersisa dalam konfigurasi area bongkar",
+      },
+    ],
+    remainingProvinsi: 1,
+  },
+  Type: "DELETE_PROVINSI_AREA_BONGKAR_ERROR",
+};

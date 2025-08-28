@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { useGetActiveOrdersInfinite } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrders";
+import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-aktif/getActiveOrdersCount";
+
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -20,6 +23,7 @@ import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
+
 import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
 import BatalkanArmadaModal from "@/container/Shared/OrderModal/BatalkanArmadaModal";
@@ -29,11 +33,12 @@ import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
 import PilihArmadaBatalkanModal from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
-import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
+
 import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 import {
   ORDER_STATUS,
@@ -44,6 +49,30 @@ import {
 
 import Onboarding from "../Onboarding/Onboarding";
 import AlertPerubahanLokasi from "./components/AlertPerubahanLokasi";
+
+// Component to handle truck name with conditional tooltip using character length
+const TruckNameWithTooltip = ({ name }) => {
+  const isLongName = name && name.length > 20;
+
+  if (isLongName) {
+    return (
+      <InfoTooltip
+        trigger={
+          <span className="line-clamp-1 cursor-pointer break-all text-xs font-bold">
+            {name}
+          </span>
+        }
+        side="top"
+      >
+        <p className="text-sm">{name}</p>
+      </InfoTooltip>
+    );
+  }
+
+  return (
+    <span className="line-clamp-1 break-all text-xs font-bold">{name}</span>
+  );
+};
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -172,13 +201,21 @@ const DaftarPesananAktif = ({
     ...sortConfig,
   };
 
-  const { data, isLoading } = useGetActiveOrders(requestParams);
+  // Use infinite scroll with 10 items per page
+  const ITEMS_PER_PAGE = 10;
+  const { data, isLoading, isLoadingMore, hasNextPage, loadMore } =
+    useGetActiveOrdersInfinite(requestParams, ITEMS_PER_PAGE);
+  // Debug: uncomment for development
+  // console.log("Order Aktif:", data);
+  // console.log("hasNextPage:", hasNextPage, "isLoadingMore:", isLoadingMore, "orders count:", data?.orders?.length);
 
   // Calculate orders with location/time changes
   const orders = data?.orders || [];
   const ordersWithLocationChanges = orders.filter(
     (order) => order.hasChangeRequest
   );
+
+  // Note: Infinite scroll logic is now handled by the Table component
 
   // Reset alert visibility if no orders with changes exist
   React.useEffect(() => {
@@ -553,7 +590,7 @@ const DaftarPesananAktif = ({
           pickupLocations={row.pickupLocations}
           dropoffLocations={row.dropoffLocations}
           appearance={{
-            titleClassName: "text-xxs font-semibold",
+            titleClassName: "line-clamp-2 break-all",
           }}
         />
       ),
@@ -566,14 +603,12 @@ const DaftarPesananAktif = ({
       className: "p-4 align-top",
       render: (row) => (
         <div className="flex w-[140px] flex-col gap-1">
-          <span className="line-clamp-1 break-all text-xs font-bold">
-            {row.truckType.name}
-          </span>
+          <TruckNameWithTooltip name={row.truckType.name} />
           <span className="line-clamp-1 break-all text-xs font-medium">
             <span className="text-neutral-600">
               {t("DaftarPesananAktif.carrierLabel", {}, "Carrier")} :
             </span>{" "}
-            {row.carrierTruck.name}
+            {row.carrierTruck.description}
           </span>
           <div className="mt-1 flex items-center gap-4">
             <div className="flex items-center gap-1">
@@ -949,63 +984,68 @@ const DaftarPesananAktif = ({
         </div>
         <div className="flex w-full items-center gap-3">
           {/* Status Filter Pills */}
-          <div className="flex flex-1 items-center gap-2">
-            {filterConfig.map(
-              (filter) =>
-                filter.hasFilter && (
-                  <div key={filter.key} className="relative">
-                    <button
-                      onClick={() =>
-                        setSelectedFilter(
-                          selectedFilter === filter.key ? null : filter.key
-                        )
-                      }
-                      className={cn(
-                        "flex items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 text-[10px] font-semibold leading-[130%] text-primary-700 transition-colors",
-                        selectedFilter === filter.key && "bg-primary-50"
-                      )}
-                    >
-                      <span>{filter.label}</span>
-                      {filter.count > 0 && (
-                        <span>
-                          ({filter.count > 99 ? "99+" : filter.count})
-                        </span>
-                      )}
-                    </button>
-                    {filter.count > 0 && (
-                      <NotificationDot
-                        position="absolute"
-                        positionClasses="right-[1px] top-[-1px]"
-                        size="md"
-                        color="red"
-                        animated={true}
-                      />
-                    )}
-                  </div>
-                )
-            )}
-          </div>
-          <Search
-            placeholder={t(
-              "DaftarPesananAktif.searchPlaceholder",
-              {},
-              "Cari Pesanan"
-            )}
-            onSearch={handleSearch}
-            onFocus={() => {
-              if (!isExpanded) {
-                onToggleExpand();
-              }
-            }}
-            containerClassName="h-8 w-[180px]"
-            inputClassName="text-xs"
-            disabled={totalActiveOrders === 0}
-            autoSearch={false}
-            debounceTime={0}
-          />
+          {totalActiveOrders !== 0 && (
+            <>
+              <div className="flex flex-1 items-center gap-2">
+                {filterConfig.map(
+                  (filter) =>
+                    filter.hasFilter && (
+                      <div key={filter.key} className="relative">
+                        <button
+                          onClick={() =>
+                            setSelectedFilter(
+                              selectedFilter === filter.key ? null : filter.key
+                            )
+                          }
+                          className={cn(
+                            "flex items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 text-[10px] font-semibold leading-[130%] text-primary-700 transition-colors",
+                            selectedFilter === filter.key && "bg-primary-50"
+                          )}
+                        >
+                          <span>{filter.label}</span>
+                          {filter.count > 0 && (
+                            <span>
+                              ({filter.count > 99 ? "99+" : filter.count})
+                            </span>
+                          )}
+                        </button>
+                        {filter.count > 0 && (
+                          <NotificationDot
+                            position="absolute"
+                            positionClasses="right-[1px] top-[-1px]"
+                            size="md"
+                            color="red"
+                            animated={true}
+                          />
+                        )}
+                      </div>
+                    )
+                )}
+              </div>
+              <Search
+                placeholder={t(
+                  "DaftarPesananAktif.searchPlaceholder",
+                  {},
+                  "Cari Pesanan"
+                )}
+                onSearch={handleSearch}
+                onFocus={() => {
+                  if (!isExpanded) {
+                    onToggleExpand();
+                  }
+                }}
+                containerClassName="h-8 w-[180px]"
+                inputClassName="text-xs"
+                disabled={totalActiveOrders === 0}
+                autoSearch={false}
+                debounceTime={0}
+              />
+            </>
+          )}
+
           <button
             onClick={onToggleExpand}
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
           >
             <IconComponent
               src="/icons/monitoring/collapse.svg"
@@ -1033,7 +1073,11 @@ const DaftarPesananAktif = ({
             {/* Check if there are no active orders */}
             {!isLoading && totalActiveOrders === 0 ? (
               <div className="flex h-full items-center justify-center p-4">
-                <DataNotFound className="h-full gap-y-5 pb-10" type="data">
+                <DataNotFound
+                  className="h-full gap-y-5 pb-10"
+                  type="data"
+                  width={95.5}
+                >
                   <div className="flex flex-col items-center gap-2">
                     <p className="text-center text-base font-semibold leading-tight text-neutral-600">
                       {t(
@@ -1070,6 +1114,33 @@ const DaftarPesananAktif = ({
                       renderEmptyState()
                     )
                   }
+                  // Infinite scroll props
+                  enableInfiniteScroll={true}
+                  isLoadingMore={isLoadingMore}
+                  hasNextPage={hasNextPage}
+                  loadMore={loadMore}
+                  loadingMoreComponent={
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-700"></div>
+                      <span className="text-sm text-gray-600">
+                        {t(
+                          "DaftarPesananAktif.loadingMore",
+                          {},
+                          "Memuat lebih banyak..."
+                        )}
+                      </span>
+                    </div>
+                  }
+                  endOfResultsComponent={
+                    <span className="text-sm text-gray-400">
+                      {t(
+                        "DaftarPesananAktif.endOfResults",
+                        {},
+                        "Semua data telah ditampilkan"
+                      )}
+                    </span>
+                  }
+                  scrollThreshold={0.8}
                 />
               </div>
             )}

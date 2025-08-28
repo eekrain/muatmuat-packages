@@ -1,6 +1,9 @@
 import Image from "next/image";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 export const NoFleetOverlay = () => {
+  const { t } = useTranslation();
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50">
       <div className="flex w-[456px] flex-col items-center gap-4 rounded-xl bg-white p-6 shadow-[0px_4px_24px_rgba(0,0,0,0.1)]">
@@ -18,11 +21,15 @@ export const NoFleetOverlay = () => {
 
         <div className="flex flex-col items-center gap-4">
           <h2 className="text-center text-base font-semibold leading-[120%] text-neutral-600">
-            Daftar Armada Masih Kosong
+            {t("NoFleetOverlay.title", {}, "Daftar Armada Masih Kosong")}
           </h2>
 
           <p className="text-center text-xs font-medium leading-[120%] text-neutral-600">
-            Belum ada Transporter yang menambahkan armada
+            {t(
+              "NoFleetOverlay.subtitle",
+              {},
+              "Belum ada Transporter yang menambahkan armada"
+            )}
           </p>
         </div>
       </div>

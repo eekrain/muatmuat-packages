@@ -1,5 +1,7 @@
 import CardPayment from "@/components/Card/CardPayment";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { idrFormat } from "@/lib/utils/formatters";
 
 const RingkasanPendapatan = ({ dataOrderDetail }) => {
@@ -41,7 +43,6 @@ const RingkasanPendapatan = ({ dataOrderDetail }) => {
             )}
           </CardPayment.CollapsibleSection>
           <CardPayment.LineItem
-            className="mt-3"
             labelClassName="text-sm font-semibold text-neutral-900"
             valueClassName="text-sm font-semibold text-neutral-900"
             label="Sub Total"

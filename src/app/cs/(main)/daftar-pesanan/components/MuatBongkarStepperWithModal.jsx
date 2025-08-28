@@ -9,7 +9,9 @@ import {
   ModalTitle,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 const LocationItem = ({ location, isLast, appearance }) => (

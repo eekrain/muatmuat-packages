@@ -6,7 +6,9 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 export const DownloadPopover = () => {
@@ -42,7 +44,7 @@ export const DownloadPopover = () => {
 
       <HoverCard.Portal>
         <HoverCard.Content
-          className="z-20 flex w-[392px] items-center gap-6 rounded-xl bg-white p-8 shadow-muat"
+          className="z-50 flex w-[392px] items-center gap-6 rounded-xl bg-white p-8 shadow-muat"
           sideOffset={5}
           side="bottom"
           align="start"

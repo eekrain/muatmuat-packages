@@ -1,5 +1,8 @@
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import {
   useFirstTimerModalAction,
   useFirstTimerModalStore,
@@ -8,6 +11,7 @@ import {
 const LoginModal = () => {
   const isOpen = useFirstTimerModalStore((state) => state.isOpen);
   const { setIsOpen } = useFirstTimerModalAction();
+  const { t } = useTranslation();
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalContent className="w-modal-small" type="muattrans">
@@ -16,18 +20,23 @@ const LoginModal = () => {
           <div className="flex flex-col items-center justify-center gap-y-6">
             {/* Judul Modal */}
             <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-neutral-900">
-              Informasi
+              {t("LoginModal.title", {}, "Informasi")}
             </h2>
 
             <p className="w-full text-center text-sm font-medium leading-[16.8px] text-neutral-900">
-              Untuk melanjutkan pemesanan jasa angkut, kamu perlu login terlebih
-              dahulu. Silakan login untuk melanjutkan.
+              {t(
+                "LoginModal.loginMessage",
+                {},
+                "Untuk melanjutkan pemesanan jasa angkut, kamu perlu login terlebih dahulu. Silakan login untuk melanjutkan."
+              )}
             </p>
 
             <a
               href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}
             >
-              <Button variant="muatparts-primary">Login Sekarang</Button>
+              <Button variant="muatparts-primary">
+                {t("LoginModal.loginButton", {}, "Login Sekarang")}
+              </Button>
             </a>
           </div>
         </div>

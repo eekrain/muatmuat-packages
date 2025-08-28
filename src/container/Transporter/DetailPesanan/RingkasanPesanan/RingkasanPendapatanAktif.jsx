@@ -5,8 +5,11 @@ import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal";
 import { ModalTitle, ModalTrigger } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { idrFormat } from "@/lib/utils/formatters";
+
 import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 const RingkasanPendapatanAktif = ({ dataOrderDetail }) => {

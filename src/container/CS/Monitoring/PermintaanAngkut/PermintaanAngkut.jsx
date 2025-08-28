@@ -2,17 +2,20 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+// Service (Hook) Imports
+import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
+import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
+
 // Component Imports
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
 import { ScrollableTabs } from "@/components/ScrollableTabs/ScrollableTabs";
 import Search from "@/components/Search/Search";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
-// Service (Hook) Imports
-import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
-import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
 // View & Child Component Imports
 import PermintaanAngkutDetailCS from "./PermintaanAngkutDetailCS.jsx";
@@ -66,37 +69,40 @@ const PermintaanAngkutCS = () => {
 
   // --- Constants ---
   // Using a config object makes it easier to manage tabs and avoids repetition.
-  const TABS_CONFIG = [
-    {
-      id: "semua",
-      labelKey: "permintaanAngkutCS.tabAll",
-      fallback: "Semua",
-      params: {},
-      key: "all",
-    },
-    {
-      id: "instan",
-      labelKey: "permintaanAngkutCS.tabInstant",
-      fallback: "Instan",
-      params: { orderType: "INSTANT" },
-      key: "instant",
-    },
-    {
-      id: "terjadwal",
-      labelKey: "permintaanAngkutCS.tabScheduled",
-      fallback: "Terjadwal",
-      params: { orderType: "SCHEDULED" },
-      key: "scheduled",
-    },
-    {
-      id: "halal_logistik",
-      labelKey: "permintaanAngkutCS.tabHalalLogistics",
-      fallback: "Halal Logistik",
-      params: { isHalalLogistics: true },
-      icon: "/icons/halal.svg",
-      key: "halal",
-    },
-  ];
+  const TABS_CONFIG = useMemo(
+    () => [
+      {
+        id: "semua",
+        labelKey: "permintaanAngkutCS.tabAll",
+        fallback: "Semua",
+        params: {},
+        key: "all",
+      },
+      {
+        id: "instan",
+        labelKey: "permintaanAngkutCS.tabInstant",
+        fallback: "Instan",
+        params: { orderType: "INSTANT" },
+        key: "instant",
+      },
+      {
+        id: "terjadwal",
+        labelKey: "permintaanAngkutCS.tabScheduled",
+        fallback: "Terjadwal",
+        params: { orderType: "SCHEDULED" },
+        key: "scheduled",
+      },
+      {
+        id: "halal_logistik",
+        labelKey: "permintaanAngkutCS.tabHalalLogistics",
+        fallback: "Halal Logistik",
+        params: { isHalalLogistics: true },
+        icon: "/icons/halal.svg",
+        key: "halal",
+      },
+    ],
+    [] // This is fine as the config is static
+  );
 
   const [showModalTransporterTidakAktif, setShowModalTransporterTidakAktif] =
     useState(false);

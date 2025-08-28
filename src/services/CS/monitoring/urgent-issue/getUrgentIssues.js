@@ -27,7 +27,7 @@ export const mockUrgentIssueList = {
     {
       id: "123e4567-e89b-12d3-a456-426614174000",
       order_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      orderCode: "MT32343",
+      orderCode: "MT25A002A",
       countdown: 2000, // in seconds
       transporter: {
         id: "tr001",
@@ -61,8 +61,8 @@ export const mockUrgentIssueList = {
         {
           vehicle: {
             id: "vh001",
-            plate_number: "B 1234 XYZ",
-            driver_name: "Ahmad Supardi",
+            plate_number: "B 4567 XYZ",
+            driver_name: "Ahmad Ari",
             location: {
               latitude: -6.2088,
               longitude: 106.8456,
@@ -72,9 +72,10 @@ export const mockUrgentIssueList = {
           },
           issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
-          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
-          detected_at: "2025-08-26T16:30:00Z",
-          processed_at: null,
+          description: "deskripsi1",
+          detected_at: "2025-08-26T13:00:00Z",
+          processed_at: "2025-08-27T13:02:00Z",
+          completed_at: "2025-08-28T13:15:00Z",
           rejection_count: 5,
           contact_attempts: 3,
           last_contact_at: "2025-01-15T10:00:00Z",
@@ -84,7 +85,7 @@ export const mockUrgentIssueList = {
           vehicle: {
             id: "vh002",
             plate_number: "B 1234 ABC",
-            driver_name: "Ahmad Supardi",
+            driver_name: "Indra",
             location: {
               latitude: -6.2088,
               longitude: 106.8456,
@@ -92,12 +93,12 @@ export const mockUrgentIssueList = {
             },
             polylineEncode: "encoded_polyline_string_here",
           },
-          issue_type: "FLEET_NOT_MOVING", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
-          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          description: "deskripsi2",
           detected_at: "2025-01-15T09:15:00Z",
           processed_at: null,
-          rejection_count: 2,
+          rejection_count: 0,
           contact_attempts: 3,
           last_contact_at: "2025-01-15T10:00:00Z",
           has_rejection_history: true,
@@ -106,7 +107,7 @@ export const mockUrgentIssueList = {
           vehicle: {
             id: "vh003",
             plate_number: "B 1234 IND",
-            driver_name: "Ahmad Supardi",
+            driver_name: "Malik",
             location: {
               latitude: -6.2088,
               longitude: 106.8456,
@@ -114,9 +115,9 @@ export const mockUrgentIssueList = {
             },
             polylineEncode: "encoded_polyline_string_here",
           },
-          issue_type: "FLEET_NOT_READY", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
+          issue_type: "POTENTIAL_DRIVER_LATE", // POTENTIAL_DRIVER_LATE, FLEET_NOT_MOVING, FLEET_NOT_READY
           status: "NEW",
-          description: "sudah harus sampai di lokasi muat dalam waktu 15 menit",
+          description: "deskripsi3",
           detected_at: "2025-01-15T09:15:00Z",
           processed_at: null,
           rejection_count: 2,
@@ -129,7 +130,7 @@ export const mockUrgentIssueList = {
     {
       id: "123e4567-e89b-12d3-a456-426614174002",
       order_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      orderCode: "MT32343",
+      orderCode: "MTmalikaas",
       countdown: 2000, // in seconds
       transporter: {
         id: "tr001",
@@ -163,8 +164,8 @@ export const mockUrgentIssueList = {
         {
           vehicle: {
             id: "vh001",
-            plate_number: "B 1234 XYZ",
-            driver_name: "Ahmad Supardi",
+            plate_number: "B 1234 malik",
+            driver_name: "Malik",
             location: {
               latitude: -6.2088,
               longitude: 106.8456,
@@ -186,7 +187,7 @@ export const mockUrgentIssueList = {
         {
           vehicle: {
             id: "vh002",
-            plate_number: "B 1234 ABC",
+            plate_number: "B 1234 miji",
             driver_name: "Ahmad Supardi",
             location: {
               latitude: -6.2088,
@@ -269,7 +270,7 @@ export const mockUrgentIssueList = {
           vehicle: {
             id: "vh001",
             plate_number: "B 1234 XYZ",
-            driver_name: "Ahmad Supardi",
+            driver_name: "Ari",
             location: {
               latitude: -6.2088,
               longitude: 106.8456,
@@ -597,7 +598,7 @@ export const serverErrorResponse = {
 };
 
 export const updateUrgentIssueStatus = async (cacheKey) => {
-  const [_, urgentIssueId, params] = cacheKey?.split("/") || [];
+  const [, urgentIssueId, params] = cacheKey?.split("/") || []; // Removed unused variable _
   const bodyParams = params ? JSON.parse(decodeURIComponent(params)) : {};
 
   let result;

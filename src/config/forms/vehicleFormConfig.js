@@ -1,8 +1,9 @@
 import * as v from "valibot";
 
-import { validateAllLicensePlates } from "@/app/transporter/(main)/manajemen-armada/tambah-massal/components/ArmadaTable/ArmadaTable";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { toast } from "@/lib/toast";
+
+import { validateAllLicensePlates } from "@/app/transporter/(main)/manajemen-armada/tambah-massal/components/ArmadaTable/ArmadaTable";
 
 // Default values for vehicle form
 export const defaultInformasiArmada = {

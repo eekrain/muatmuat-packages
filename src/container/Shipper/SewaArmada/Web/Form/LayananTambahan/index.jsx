@@ -5,13 +5,18 @@ import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import DeliveryEvidenceModal from "@/container/Shipper/SewaArmada/Web/Form/LayananTambahan/DeliveryEvidenceModal";
+
 import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
+
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import {
   useSewaArmadaActions,
@@ -27,6 +32,7 @@ const LayananTambahan = ({
   const isEditPage = pathname.includes("/ubahpesanan");
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("");
+  const { t } = useTranslation();
 
   const additionalServices = useSewaArmadaStore(
     (s) => s.formValues.additionalServices
@@ -44,7 +50,7 @@ const LayananTambahan = ({
       <FormContainer>
         {/* Label Bagian */}
         <FormLabel optional variant="small">
-          Layanan Tambahan
+          {t("LayananTambahan.title", {}, "Layanan Tambahan")}
         </FormLabel>
 
         {/* Container Opsi Layanan */}
@@ -149,17 +155,29 @@ const LayananTambahan = ({
                         {[
                           {
                             iconSrc: "/icons/profile16.svg",
-                            label: "Nama Penerima :",
+                            label: t(
+                              "LayananTambahan.recipientName",
+                              {},
+                              "Nama Penerima :"
+                            ),
                             value: shippingDetails.recipientName,
                           },
                           {
                             iconSrc: "/icons/call16.svg",
-                            label: "Nomor Handphone Penerima : ",
+                            label: t(
+                              "LayananTambahan.recipientPhone",
+                              {},
+                              "Nomor Handphone Penerima : "
+                            ),
                             value: shippingDetails.recipientPhone,
                           },
                           {
                             iconSrc: "/icons/transporter16.svg",
-                            label: "Ekspedisi Pengiriman : ",
+                            label: t(
+                              "LayananTambahan.courierName",
+                              {},
+                              "Ekspedisi Pengiriman : "
+                            ),
                             value: shippingOption?.courierName,
                           },
                         ].map((item, key) => (
@@ -193,7 +211,7 @@ const LayananTambahan = ({
                           }}
                         >
                           <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-                            Ubah
+                            {t("LayananTambahan.editButton", {}, "Ubah")}
                           </span>
                           <IconComponent
                             className="icon-fill-primary-700"

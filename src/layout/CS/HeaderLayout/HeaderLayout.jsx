@@ -8,19 +8,22 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 import { ChevronDown } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
 import { DownloadPopover } from "@/components/Header/Web/DownloadPopover";
 import LanguageDropdown from "@/components/Header/Web/LanguageDropdown";
-import {
-  SimpleHover,
-  SimpleHoverContent,
-  SimpleHoverItem,
-  SimpleHoverTrigger,
-} from "@/components/HoverMenu/SimpleHoverMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import { useAuth } from "@/hooks/CS/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
+
 import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 const MenuItem = ({ imgUrl, title, variant, onClick }) => {
@@ -127,18 +130,33 @@ const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
 
 const NavigationMenuItem = ({ item, pathname }) => {
   const { t } = useTranslation();
+
+  const { setIsOverlayActive } = useOverlayAction();
+
+  const [isOpenMenuDropdown, setOpenMenuDropdown] = useState(false);
+
+  useEffect(() => {
+    setIsOverlayActive(isOpenMenuDropdown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpenMenuDropdown]);
+
   if (item.isDropdown) {
     const isActive =
       (item.activePattern && pathname.startsWith(item.activePattern)) ||
       (item.href && pathname.startsWith(item.href));
     return (
-      <SimpleHover>
-        <SimpleHoverTrigger asChild>
+      <SimpleDropdown
+        onOpenChange={(val) => {
+          setOpenMenuDropdown(val);
+        }}
+      >
+        <SimpleDropdownTrigger asChild>
           <button
             className={cn(
               "flex h-8 items-center gap-1 border-b-2 outline-none",
               isActive ? "border-muat-trans-primary-400" : "border-transparent"
             )}
+            // onClick={()}
           >
             <IconComponent src={item.icon} />
             <span>
@@ -146,13 +164,13 @@ const NavigationMenuItem = ({ item, pathname }) => {
             </span>
             <ChevronDown className="h-4 w-4" />
           </button>
-        </SimpleHoverTrigger>
-        <SimpleHoverContent className="w-full max-w-full">
+        </SimpleDropdownTrigger>
+        <SimpleDropdownContent className="w-full max-w-full">
           {item.dropdownItems.map((dropdownItem) => {
             const isSelected =
               dropdownItem.href && pathname.startsWith(dropdownItem.href);
             return (
-              <SimpleHoverItem
+              <SimpleDropdownItem
                 key={dropdownItem.id}
                 onClick={dropdownItem.onClick}
               >
@@ -163,7 +181,7 @@ const NavigationMenuItem = ({ item, pathname }) => {
                       "flex items-center justify-between gap-x-2.5",
                       pathname.includes(dropdownItem.href)
                         ? "font-semibold"
-                        : ""
+                        : "font-medium"
                     )}
                   >
                     <span className={`${isSelected ? "font-semibold" : ""}`}>
@@ -191,11 +209,11 @@ const NavigationMenuItem = ({ item, pathname }) => {
                     )}
                   </span>
                 )}
-              </SimpleHoverItem>
+              </SimpleDropdownItem>
             );
           })}
-        </SimpleHoverContent>
-      </SimpleHover>
+        </SimpleDropdownContent>
+      </SimpleDropdown>
     );
   }
 
@@ -224,7 +242,6 @@ const HeaderLayout = ({
   const pathname = usePathname();
   const { dataUser, logout } = useAuth();
   const isLoggedIn = Boolean(dataUser?.fullName);
-  const { setIsOverlayActive } = useOverlayAction();
   const { t } = useTranslation();
 
   const menuNotifications = [

@@ -1,16 +1,19 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
+import { usePostRejectTransport } from "@/services/Transporter/monitoring/permintaan-angkut/postRejectTransport";
+
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
-import { usePostAcceptScheduledTransportRequest } from "@/services/Transporter/monitoring/postAcceptScheduledTransportRequest";
 
 // Utility function for currency formatting
 const formatCurrency = (amount) => {
@@ -43,8 +46,7 @@ const ModalTolakPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const id = searchParams.get("id");
 
   // API hooks
-  const { trigger: acceptScheduledRequest, isMutating } =
-    usePostAcceptScheduledTransportRequest();
+  const { rejectRequest, isRejecting } = usePostRejectTransport();
 
   // Ambil detail data berdasarkan request.id
   const {
@@ -133,55 +135,32 @@ const ModalTolakPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   };
 
   const handleAccept = () => {
-    // Validasi kebutuhan armada
-    if (!selectedOption) {
-      setShowAlert(true);
-      return;
-    }
-
-    // Validasi jumlah armada jika memilih "partial"
-    if (selectedOption === "partial" && (!partialCount || partialCount < 1)) {
-      setShowPartialAlert(true);
-      return;
-    }
-
     // Validasi syarat dan ketentuan
     if (!acceptTerms) {
       setShowTermsAlert(true);
       return;
     }
 
-    // Show modal sequence for demo
-    showModalSequence();
-  };
-
-  const handleConfirmAccept = () => {
-    const requestData = {
-      id: detail.id || request?.id,
-      data: {
-        type: selectedOption,
-        truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
-      },
+    // Prepare payload according to API specification
+    // Since there are no UI fields for reason and notes, we'll use default values
+    const payload = {
+      reason: "OTHER", // Default reason
+      notes: "Ditolak oleh transporter", // Default notes
     };
 
-    console.log("Sending request data:", requestData); // Debug log
+    // Get request ID
+    const requestId = detail.id || request?.id;
 
-    if (request.isTaken) {
-      setShowConfirmModal(true);
-    }
-    acceptScheduledRequest(requestData)
+    // Call the rejection API service
+    rejectRequest({ id: requestId, payload })
       .then((response) => {
-        console.log("Success response:", response); // Debug log
-
         // Show success toast
         const message =
           response.Data?.toast?.message ||
           t(
-            "ModalTolakPermintaan.toastSuccessRequestAccepted",
-            {
-              orderCode: response.Data?.orderCode || "berhasil",
-            },
-            `Permintaan ${response.Data?.orderCode || "berhasil"} diterima`
+            "ModalTolakPermintaan.toastSuccessRequestRejected",
+            { orderCode: response.Data?.orderCode || "berhasil" },
+            `Permintaan ${response.Data?.orderCode || "berhasil"} berhasil ditolak`
           );
         toast.success(message);
 
@@ -190,98 +169,33 @@ const ModalTolakPermintaan = ({ isOpen, onClose, request, onAccept }) => {
 
         // Call parent callback if needed
         if (onAccept) {
-          onAccept(requestData);
+          onAccept({ id: requestId, payload });
         }
       })
       .catch((error) => {
-        console.log("Error occurred:", error); // Debug log
-
         // Handle different error scenarios
-        if (error.response?.status === 422) {
-          const errors = error.response?.data?.Data?.errors || [];
-
-          // Case 1: Pesanan sudah diambil
-          const orderStatusError = errors.find(
-            (err) => err.field === "orderStatus"
+        if (error.response?.status === 404) {
+          // Request not found
+          toast.error(
+            t(
+              "ModalTolakPermintaan.toastErrorRequestNotFound",
+              {},
+              "Permintaan tidak ditemukan atau akses ditolak"
+            )
           );
-          if (orderStatusError) {
-            setModalType("taken");
-            setModalData({
-              title: t(
-                "ModalTolakPermintaan.titleOrderTaken",
-                {},
-                "Pesanan Sudah Diambil"
-              ),
-              message: t(
-                "ModalTolakPermintaan.messageErrorOrderTaken",
-                {},
-                "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 2: Perubahan kebutuhan unit
-          const vehicleCountError = errors.find(
-            (err) => err.field === "vehicleCount"
+        } else {
+          // Generic error
+          toast.error(
+            t(
+              "ModalTolakPermintaan.toastErrorRequestFailed",
+              {},
+              "Gagal menolak permintaan. Silakan coba lagi."
+            )
           );
-          if (vehicleCountError) {
-            setModalType("unit-change");
-            setModalData({
-              title: t(
-                "ModalTolakPermintaan.titleUnitRequirementChanged",
-                {},
-                "Perubahan Kebutuhan Unit"
-              ),
-              message: t(
-                "ModalTolakPermintaan.messageErrorUnitCountChanged",
-                {},
-                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
-
-          // Case 3: Akun ditangguhkan
-          const accountError = errors.find(
-            (err) => err.field === "account" || err.field === "userStatus"
-          );
-          if (
-            accountError ||
-            error.response?.data?.Message?.Text?.includes("ditangguhkan") ||
-            error.response?.data?.Message?.Text?.includes("suspended")
-          ) {
-            setModalType("suspended");
-            setModalData({
-              title: t(
-                "ModalTolakPermintaan.titleAccountSuspended",
-                {},
-                "Akun Ditangguhkan"
-              ),
-              message: t(
-                "ModalTolakPermintaan.messageErrorAccountSuspended",
-                {},
-                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali."
-              ),
-            });
-            setShowConfirmModal(true);
-            return;
-          }
         }
-
-        // Case untuk error lainnya - show generic error toast
-        const errorMessage =
-          error.response?.data?.Message?.Text ||
-          t(
-            "ModalTolakPermintaan.toastErrorFailedToAccept",
-            {},
-            "Gagal menerima permintaan. Silakan coba lagi."
-          );
-        toast.error(errorMessage);
       });
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
       <div className="flex h-[460px] w-[600px] flex-col rounded-xl bg-white p-6">
@@ -776,9 +690,11 @@ const ModalTolakPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 variant="muatparts-error"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
                 onClick={handleAccept}
-                disabled={isMutating}
+                disabled={isRejecting}
               >
-                {t("ModalTolakPermintaan.buttonReject", {}, "Tolak")}
+                {isRejecting
+                  ? t("ModalTolakPermintaan.buttonRejecting", {}, "Menolak...")
+                  : t("ModalTolakPermintaan.buttonReject", {}, "Tolak")}
               </Button>
             </div>
           </>

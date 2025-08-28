@@ -5,11 +5,15 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ChevronLeft } from "lucide-react";
 
-import { calculateMapBounds } from "@/app/transporter/(main)/monitoring/utils/mapUtils";
 import Button from "@/components/Button/Button";
+
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
+
+import { calculateMapBounds } from "@/app/transporter/(main)/monitoring/utils/mapUtils";
 
 import { MapInterfaceOverlay } from "../../../monitoring/components/Map/MapInterfaceOverlay";
 import LacakArmadaSidebar from "./components/LacakArmadaSidebar";

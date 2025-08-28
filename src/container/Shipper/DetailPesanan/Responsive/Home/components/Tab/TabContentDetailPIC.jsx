@@ -2,6 +2,7 @@ import { Fragment } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TabsContent } from "@/components/Tabs/Tabs";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 // Reusable component for displaying location information

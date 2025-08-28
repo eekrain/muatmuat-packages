@@ -5,9 +5,12 @@ import { Suspense, useEffect, useRef } from "react";
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
+
 import { AuthenticationProvider } from "@/hooks/Transporter/use-auth";
 import { TranslationProvider } from "@/hooks/use-translation";
+
 import { StackManagerInitializer } from "@/lib/stack-manager";
+
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 const MainLayout = ({ children }) => {

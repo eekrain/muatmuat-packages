@@ -10,8 +10,11 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { Modal, ModalContent } from "@/components/Modal";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 // --- Lihat Lokasi Modal Component ---
 const LihatLokasiModal = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   // Data dummy untuk koordinat lokasi di Surabaya dan alamat
   const locationData = {
     coordinates: {
@@ -33,7 +36,11 @@ const LihatLokasiModal = ({ isOpen, onClose }) => {
             <div className="h-[480px] w-full overflow-hidden rounded-lg">
               <MapContainer
                 coordinates={locationData.coordinates}
-                textLabel="Lokasi Terpilih"
+                textLabel={t(
+                  "LihatLokasiModal.selectedLocation",
+                  {},
+                  "Lokasi Terpilih"
+                )}
                 className="h-full w-full"
               />
             </div>
@@ -42,7 +49,7 @@ const LihatLokasiModal = ({ isOpen, onClose }) => {
           {/* Kolom Kanan: Detail Alamat */}
           <div className="col-span-1">
             <h2 className="mb-6 text-lg font-bold leading-6 text-neutral-900">
-              Lihat Lokasi
+              {t("LihatLokasiModal.viewLocation", {}, "Lihat Lokasi")}
             </h2>
             <div className="flex items-start gap-3">
               <IconComponent
@@ -92,6 +99,7 @@ const DetailRow = ({
 
 // --- Main Page Component ---
 const CompanyProfileInfo = ({ userProfile }) => {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCloseModal = () => {
@@ -143,7 +151,11 @@ const CompanyProfileInfo = ({ userProfile }) => {
               }}
               className="h-full w-full rounded-lg"
               viewOnly={true}
-              textLabel="Lokasi Perusahaan"
+              textLabel={t(
+                "CompanyProfileInfo.companyLocation",
+                {},
+                "Lokasi Perusahaan"
+              )}
               draggableMarker={false}
             />
           </div>
@@ -151,7 +163,7 @@ const CompanyProfileInfo = ({ userProfile }) => {
             onClick={handleOpenModal}
             className="w-full rounded-none bg-muat-trans-primary-400 py-4 text-center font-sans text-muat-trans-secondary-900 transition-colors hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           >
-            Lihat Lokasi
+            {t("CompanyProfileInfo.viewLocation", {}, "Lihat Lokasi")}
           </Button>
         </div>
       ),
@@ -167,33 +179,51 @@ const CompanyProfileInfo = ({ userProfile }) => {
   // Create a single array of all rows for continuous striping
   const allRows = [
     // Header and Informasi Pendaftar
-    { type: "header", label: "Informasi Pendaftar" },
+    {
+      type: "header",
+      label: t("CompanyProfileInfo.registrantInfo", {}, "Informasi Pendaftar"),
+    },
     {
       type: "data",
-      label: "Nama Lengkap Pendaftar",
+      label: t(
+        "CompanyProfileInfo.registrantFullName",
+        {},
+        "Nama Lengkap Pendaftar"
+      ),
       value: companyData.registrant.name,
     },
     {
       type: "data",
-      label: "Jabatan Pendaftar",
+      label: t(
+        "CompanyProfileInfo.registrantPosition",
+        {},
+        "Jabatan Pendaftar"
+      ),
       value: companyData.registrant.title,
     },
     {
       type: "data",
-      label: "No. Whatsapp Pendaftar",
+      label: t(
+        "CompanyProfileInfo.registrantWhatsapp",
+        {},
+        "No. Whatsapp Pendaftar"
+      ),
       value: companyData.registrant.whatsapp,
     },
     {
       type: "data",
-      label: "Email Pendaftar",
+      label: t("CompanyProfileInfo.registrantEmail", {}, "Email Pendaftar"),
       value: companyData.registrant.email,
     },
 
     // Header and Informasi Perusahaan
-    { type: "header", label: "Informasi Perusahaan" },
+    {
+      type: "header",
+      label: t("CompanyProfileInfo.companyInfo", {}, "Informasi Perusahaan"),
+    },
     {
       type: "data",
-      label: "Logo Perusahaan",
+      label: t("CompanyProfileInfo.companyLogo", {}, "Logo Perusahaan"),
       value: (
         <ImageComponent
           src={companyData.company.logoUrl}
@@ -204,39 +234,89 @@ const CompanyProfileInfo = ({ userProfile }) => {
         />
       ),
     },
-    { type: "data", label: "Nama Perusahaan", value: companyData.company.name },
-    { type: "data", label: "Badan Usaha", value: companyData.company.entity },
     {
       type: "data",
-      label: "No. Telepon Perusahaan",
+      label: t("CompanyProfileInfo.companyName", {}, "Nama Perusahaan"),
+      value: companyData.company.name,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.businessEntity", {}, "Badan Usaha"),
+      value: companyData.company.entity,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.companyPhone", {}, "No. Telepon Perusahaan"),
       value: companyData.company.phone,
     },
 
     // Header and Lokasi Perusahaan
-    { type: "header", label: "Lokasi Perusahaan" },
-    { type: "data", label: "Alamat", value: companyData.location.fullAddress },
-    { type: "data", label: "Lokasi", value: companyData.location.shortAddress },
-    { type: "data", label: "Kecamatan", value: companyData.location.district },
-    { type: "data", label: "Kota", value: companyData.location.city },
-    { type: "data", label: "Provinsi", value: companyData.location.province },
-    { type: "data", label: "Kode Pos", value: companyData.location.postalCode },
+    {
+      type: "header",
+      label: t(
+        "CompanyProfileInfo.companyLocationHeader",
+        {},
+        "Lokasi Perusahaan"
+      ),
+    },
     {
       type: "data",
-      label: "Titik Lokasi",
+      label: t("CompanyProfileInfo.address", {}, "Alamat"),
+      value: companyData.location.fullAddress,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.location", {}, "Lokasi"),
+      value: companyData.location.shortAddress,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.district", {}, "Kecamatan"),
+      value: companyData.location.district,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.city", {}, "Kota"),
+      value: companyData.location.city,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.province", {}, "Provinsi"),
+      value: companyData.location.province,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.postalCode", {}, "Kode Pos"),
+      value: companyData.location.postalCode,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.locationPin", {}, "Titik Lokasi"),
       value: companyData.location.pinLocation,
     },
 
     // Header and Informasi Rekening
-    { type: "header", label: "Informasi Rekening Perusahaan" },
-    { type: "data", label: "Nama Bank", value: companyData.bank.name },
+    {
+      type: "header",
+      label: t(
+        "CompanyProfileInfo.accountInfo",
+        {},
+        "Informasi Rekening Perusahaan"
+      ),
+    },
     {
       type: "data",
-      label: "No. Rekening",
+      label: t("CompanyProfileInfo.bankName", {}, "Nama Bank"),
+      value: companyData.bank.name,
+    },
+    {
+      type: "data",
+      label: t("CompanyProfileInfo.accountNumber", {}, "No. Rekening"),
       value: companyData.bank.accountNumber,
     },
     {
       type: "data",
-      label: "Nama Pemilik Rekening",
+      label: t("CompanyProfileInfo.accountHolder", {}, "Nama Pemilik Rekening"),
       value: companyData.bank.accountHolder,
     },
   ];
@@ -247,7 +327,7 @@ const CompanyProfileInfo = ({ userProfile }) => {
       <Card className="max-h-fit border-neutral-300 bg-white p-0">
         <div className="px-6 py-4">
           <h2 className="mb-1 text-xl font-bold text-neutral-900">
-            Data Perusahaan
+            {t("CompanyProfileInfo.companyData", {}, "Data Perusahaan")}
           </h2>
 
           <Alert
@@ -255,8 +335,11 @@ const CompanyProfileInfo = ({ userProfile }) => {
             className="-ms-4 mt-4 flex items-center bg-white"
           >
             <span className="text-sm font-medium text-neutral-800">
-              Data Perusahaan akan ditampilkan pada profilmu untuk pengguna
-              lainnya.
+              {t(
+                "CompanyProfileInfo.companyDataWarning",
+                {},
+                "Data Perusahaan akan ditampilkan pada profilmu untuk pengguna lainnya."
+              )}
             </span>
           </Alert>
         </div>

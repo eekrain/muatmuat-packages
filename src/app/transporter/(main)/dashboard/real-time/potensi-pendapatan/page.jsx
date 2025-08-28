@@ -2,6 +2,7 @@
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import PotentialEarningsTable from "./components/PotentialEarningsTable";

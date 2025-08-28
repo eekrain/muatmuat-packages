@@ -1,15 +1,18 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
 
 export const UrgentIssueCardTransporter = ({
   data,

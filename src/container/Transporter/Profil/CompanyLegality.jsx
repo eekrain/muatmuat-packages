@@ -2,35 +2,75 @@ import PropTypes from "prop-types";
 
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
+
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 // --- Function to get legality items from transporter data ---
-const getLegalityItems = (transporter) => {
+const getLegalityItems = (transporter, t) => {
   // Use data from transporter prop with fallback to hardcoded data
   return [
-    { type: "status", label: "NIB" },
+    { type: "status", label: t("CompanyLegality.nib", {}, "NIB") },
     {
       type: "number",
-      label: "No. NIB",
+      label: t("CompanyLegality.nibNumber", {}, "No. NIB"),
       value: transporter?.businessLicenseNumber || "9120000792674",
     },
-    { type: "status", label: "NPWP Perusahaan" },
+    {
+      type: "status",
+      label: t("CompanyLegality.companyTaxId", {}, "NPWP Perusahaan"),
+    },
     {
       type: "number",
-      label: "No. NPWP Perusahaan",
+      label: t("CompanyLegality.companyTaxIdNumber", {}, "No. NPWP Perusahaan"),
       value: transporter?.taxId || "0925429434070004",
     },
-    { type: "status", label: "KTP Pendaftar/Pemegang Akun" },
+    {
+      type: "status",
+      label: t(
+        "CompanyLegality.registrantId",
+        {},
+        "KTP Pendaftar/Pemegang Akun"
+      ),
+    },
     {
       type: "number",
-      label: "No. KTP Pendaftar/Pemegang Akun",
+      label: t(
+        "CompanyLegality.registrantIdNumber",
+        {},
+        "No. KTP Pendaftar/Pemegang Akun"
+      ),
       value: transporter?.ktpNumber || "01679765443368363",
     },
-    { type: "status", label: "Cover Akta Pendirian" },
-    { type: "status", label: "SK Kemenkumham dari Akta Pendirian" },
-    { type: "status", label: "Cover Akta Perubahan" },
-    { type: "status", label: "SK Kemenkumham dari Akta Perubahan" },
-    { type: "status", label: "Sertifikat Standar" },
+    {
+      type: "status",
+      label: t("CompanyLegality.foundingDeed", {}, "Cover Akta Pendirian"),
+    },
+    {
+      type: "status",
+      label: t(
+        "CompanyLegality.foundingDecree",
+        {},
+        "SK Kemenkumham dari Akta Pendirian"
+      ),
+    },
+    {
+      type: "status",
+      label: t("CompanyLegality.amendmentDeed", {}, "Cover Akta Perubahan"),
+    },
+    {
+      type: "status",
+      label: t(
+        "CompanyLegality.amendmentDecree",
+        {},
+        "SK Kemenkumham dari Akta Perubahan"
+      ),
+    },
+    {
+      type: "status",
+      label: t("CompanyLegality.standardCertificate", {}, "Sertifikat Standar"),
+    },
   ];
 };
 
@@ -38,6 +78,7 @@ const getLegalityItems = (transporter) => {
  * A reusable row component for displaying a single legality item.
  */
 const LegalityRow = ({ label, value, type, isStriped }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={cn(
@@ -62,7 +103,7 @@ const LegalityRow = ({ label, value, type, isStriped }) => {
               height={16}
             />
             <span className="text-sm font-semibold text-green-600">
-              Terverifikasi
+              {t("CompanyLegality.verified", {}, "Terverifikasi")}
             </span>
           </div>
         ) : (
@@ -79,13 +120,14 @@ const LegalityRow = ({ label, value, type, isStriped }) => {
  * The main component that displays the company's legality information.
  */
 const CompanyLegality = ({ transporter }) => {
-  const legalityItems = getLegalityItems(transporter);
+  const { t } = useTranslation();
+  const legalityItems = getLegalityItems(transporter, t);
 
   return (
     <Card className="max-h-fit border-neutral-400 bg-white p-0">
       <div className="border-b border-neutral-200 px-6 py-4">
         <h2 className="text-xl font-bold text-neutral-900">
-          Legalitas Perusahaan
+          {t("CompanyLegality.title", {}, "Legalitas Perusahaan")}
         </h2>
       </div>
       <div className="divide-y divide-neutral-200">

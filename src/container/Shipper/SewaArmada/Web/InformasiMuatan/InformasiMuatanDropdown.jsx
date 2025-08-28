@@ -4,7 +4,9 @@ import * as Popover from "@radix-ui/react-popover";
 import { ChevronDown, Plus, Search } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+
 import { useClientHeight } from "@/hooks/use-client-height";
+
 import { cn } from "@/lib/utils";
 
 export const DropdownSearch = ({
@@ -29,7 +31,7 @@ export const DropdownSearch = ({
 
   // Filter options based on search term
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+    option?.label?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Focus search input when dropdown opens

@@ -59,7 +59,7 @@ export const mockAPIResult = {
         const unit = Math.floor(Math.random() * 20) + 1; // 1 to 20
         const cargo = `${Math.floor(Math.random() * 5000) + 100} kg`; // 100 to 5100 kg
         const requestCount = Math.floor(Math.random() * 5) + 1; // 1 to 5
-        console.log("cancelledAt", cancelledAt);
+
         return {
           id: `uuid-${i + 1}`,
           orderCode,

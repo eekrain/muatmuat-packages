@@ -5,6 +5,8 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import * as v from "valibot";
 
+import { useGetCargoNames } from "@/services/Shipper/sewaarmada/getCargoNames";
+
 import Button from "@/components/Button/Button";
 import { DimensionInput } from "@/components/Form/DimensionInput";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
@@ -12,29 +14,11 @@ import { NumberInput } from "@/components/Form/NumberInput";
 import { Select } from "@/components/Form/Select";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetCargoNames } from "@/services/Shipper/sewaarmada/getCargoNames";
 
 import { DropdownSearch } from "./InformasiMuatanDropdown";
 import { ModalNamaMuatan } from "./ModalNamaMuatan";
-
-// Define units
-const weightUnits = [
-  { value: "kg", label: "kg" },
-  {
-    value: "liter",
-    label: "Liter",
-  },
-  {
-    value: "ton",
-    label: "Ton",
-  },
-];
-
-const dimensionUnits = [
-  { value: "m", label: "m" },
-  { value: "cm", label: "cm" },
-];
 
 const defaultInformasiMuatan = {
   namaMuatan: {
@@ -89,6 +73,24 @@ export const InformasiMuatanModal = ({
   const { t } = useTranslation();
   const hasInitForm = useRef(false);
 
+  // Move units inside component to access t() function
+  const weightUnits = [
+    { value: "kg", label: t("InformasiMuatanModal.kg", {}, "kg") },
+    {
+      value: "liter",
+      label: t("InformasiMuatanModal.liter", {}, "Liter"),
+    },
+    {
+      value: "ton",
+      label: t("InformasiMuatanModal.ton", {}, "Ton"),
+    },
+  ];
+
+  const dimensionUnits = [
+    { value: "m", label: t("InformasiMuatanModal.meter", {}, "m") },
+    { value: "cm", label: t("InformasiMuatanModal.centimeter", {}, "cm") },
+  ];
+
   const formMethods = useForm({
     defaultValues: {
       informasiMuatan: [defaultInformasiMuatan],
@@ -110,45 +112,15 @@ export const InformasiMuatanModal = ({
     control,
     name: "informasiMuatan",
   });
-  const [listNamaMuatan, setListNamaMuatan] = useState([]);
-  // const [listNamaMuatan, setListNamaMuatan] = useState([
-  //   { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
-  //   {
-  //     value: "0c57b52d-7e63-46c8-b779-c5697242b471",
-  //     label: "Elektronik Rumah Tangga",
-  //   },
-  //   {
-  //     value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
-  //     label: "Peralatan dan Kebutuhan Kantor",
-  //   },
-  //   {
-  //     value: "38015672-0dab-4523-bda8-867893c95cfb",
-  //     label: "Produk Makanan Kemasan",
-  //     selected: true,
-  //   },
-  //   {
-  //     value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
-  //     label: "Produk Minuman Kemasan",
-  //   },
-  // ]);
-  // const { cargoTypeId, cargoCategoryId } = useSewaArmadaStore((state) => ({
-  //   cargoTypeId: state.formValues.cargoTypeId,
-  //   cargoCategoryId: state.formValues.cargoCategoryId,
-  // }));
+  const [listCustomNamaMuatan, setCustomListNamaMuatan] = useState([]);
   const rawData = localStorage.getItem("t-sewa-armada");
   const parsedData = rawData ? JSON.parse(rawData) : null;
   const cargoTypeId = parsedData.state.formValues.cargoTypeId || "";
   const cargoCategoryId = parsedData.state.formValues.cargoCategoryId || "";
-  const {
-    data: cargoNames,
-    isLoading,
-    error,
-  } = useGetCargoNames({
+  const { data: cargoNames, isLoading } = useGetCargoNames({
     cargoTypeId,
     cargoCategoryId,
   });
-  // const cargoNames =""
-  // const isLoading = false
   const [openModalNamaMuatan, setOpenModalNamaMuatan] = useState(false);
 
   // Handler for form submit (optional, for demo)
@@ -160,8 +132,8 @@ export const InformasiMuatanModal = ({
   };
 
   const handleAddNew = (newNamaMuatan) => {
-    setListNamaMuatan([
-      ...listNamaMuatan,
+    setCustomListNamaMuatan([
+      ...listCustomNamaMuatan,
       { value: null, label: newNamaMuatan },
     ]);
     setOpenModalNamaMuatan(false);
@@ -173,7 +145,6 @@ export const InformasiMuatanModal = ({
         defaultValues.length > 0
           ? { informasiMuatan: defaultValues }
           : { informasiMuatan: [defaultInformasiMuatan] };
-      console.log("🚀 ~ useEffect ~ newForm:", newForm);
       reset(newForm);
       hasInitForm.current = true;
     } else if (!open && hasInitForm.current) {
@@ -182,6 +153,21 @@ export const InformasiMuatanModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, defaultValues, defaultInformasiMuatan]);
 
+  const Label = ({ required, optional, children, tooltip }) => (
+    <div className="flex h-[16px] items-center gap-1">
+      <div className="h-4 text-xs font-bold leading-[1.2] text-neutral-600">
+        {children}
+        {required && <span>*</span>}
+        {optional && (
+          <i className="font-medium text-gray-500">
+            &nbsp;{t("InformasiMuatanModal.optional", {}, "(Opsional)")}
+          </i>
+        )}
+      </div>
+      <div className="flex-shrink-0">{tooltip}</div>
+    </div>
+  );
+
   return (
     <>
       <Modal open={open} onOpenChange={onOpenChange}>
@@ -189,23 +175,32 @@ export const InformasiMuatanModal = ({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="relative grid w-[830px] gap-4 px-8 py-6">
               <div className="text-center text-base font-bold">
-                Informasi Muatan
+                {t("InformasiMuatanModal.title", {}, "Informasi Muatan")}
               </div>
 
               <div className="rounded-xl border border-neutral-400 pl-4 pt-5">
                 <div className="pr-4">
                   <div className="grid h-[36px] grid-cols-[209px_168px_341px] gap-4 border-b border-neutral-400">
-                    <Label required>Nama Muatan</Label>
+                    <Label required>
+                      {t("InformasiMuatanModal.cargoName", {}, "Nama Muatan")}
+                    </Label>
                     <Label
                       required
                       tooltip={
                         <InfoTooltip className="w-[336px]">
-                          Masukkan berat keseluruhan atau total dari seluruh
-                          muatan yang akan dikirim.
+                          {t(
+                            "InformasiMuatanModal.weightTooltip",
+                            {},
+                            "Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim."
+                          )}
                         </InfoTooltip>
                       }
                     >
-                      Berat Muatan
+                      {t(
+                        "InformasiMuatanModal.cargoWeight",
+                        {},
+                        "Berat Muatan"
+                      )}
                     </Label>
                     <Label
                       optional
@@ -213,23 +208,66 @@ export const InformasiMuatanModal = ({
                         <InfoTooltip className="w-[336px]">
                           <ul>
                             <li>
-                              <b>Panjang :</b> Ukuran terpanjang dari muatan.
+                              <b>
+                                {t(
+                                  "InformasiMuatanModal.lengthLabel",
+                                  {},
+                                  "Panjang"
+                                )}{" "}
+                                :
+                              </b>{" "}
+                              {t(
+                                "InformasiMuatanModal.lengthDesc",
+                                {},
+                                "Ukuran terpanjang dari muatan."
+                              )}
                             </li>
                             <li>
-                              <b>Lebar :</b> Ukuran terlebar dari muatan.
+                              <b>
+                                {t(
+                                  "InformasiMuatanModal.widthLabel",
+                                  {},
+                                  "Lebar"
+                                )}{" "}
+                                :
+                              </b>{" "}
+                              {t(
+                                "InformasiMuatanModal.widthDesc",
+                                {},
+                                "Ukuran terlebar dari muatan."
+                              )}
                             </li>
                             <li>
-                              <b>Tinggi :</b> Ukuran tertinggi dari muatan
+                              <b>
+                                {t(
+                                  "InformasiMuatanModal.heightLabel",
+                                  {},
+                                  "Tinggi"
+                                )}{" "}
+                                :
+                              </b>{" "}
+                              {t(
+                                "InformasiMuatanModal.heightDesc",
+                                {},
+                                "Ukuran tertinggi dari muatan"
+                              )}
                             </li>
                           </ul>
                           <p>
-                            Pengisian dimensi yang tepat akan membantu dalam
-                            pengelolaan dan pengiriman.
+                            {t(
+                              "InformasiMuatanModal.dimensionNote",
+                              {},
+                              "Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman."
+                            )}
                           </p>
                         </InfoTooltip>
                       }
                     >
-                      Dimensi Muatan
+                      {t(
+                        "InformasiMuatanModal.cargoDimension",
+                        {},
+                        "Dimensi Muatan"
+                      )}
                     </Label>
                   </div>
                 </div>
@@ -247,12 +285,23 @@ export const InformasiMuatanModal = ({
                           render={({ field }) => (
                             <div>
                               <DropdownSearch
-                                placeholder={"Pilih Muatan"}
-                                options={cargoNames || []}
+                                placeholder={t(
+                                  "InformasiMuatanModal.selectCargo",
+                                  {},
+                                  "Pilih Muatan"
+                                )}
+                                options={[
+                                  ...cargoNames,
+                                  ...listCustomNamaMuatan,
+                                ]}
                                 value={field.value}
                                 onChange={field.onChange}
                                 onAddNew={() => setOpenModalNamaMuatan(true)}
-                                addNewText="Tambah Nama Muatan"
+                                addNewText={t(
+                                  "InformasiMuatanModal.addCargoName",
+                                  {},
+                                  "Tambah Nama Muatan"
+                                )}
                                 className="w-52"
                                 disabled={
                                   isLoading || !cargoTypeId || !cargoCategoryId
@@ -298,7 +347,11 @@ export const InformasiMuatanModal = ({
                                 value={field.value}
                                 onChange={field.onChange}
                                 options={weightUnits}
-                                placeholder="Pilih Unit"
+                                placeholder={t(
+                                  "InformasiMuatanModal.selectUnit",
+                                  {},
+                                  "Pilih Unit"
+                                )}
                                 className="w-[80px]"
                               />
                             )}
@@ -353,12 +406,16 @@ export const InformasiMuatanModal = ({
                             <Controller
                               control={control}
                               name={`informasiMuatan.${index}.dimensiMuatan.unit`}
-                              render={({ field, fieldState }) => (
+                              render={({ field, fieldState: _fieldState }) => (
                                 <Select
                                   value={field.value}
                                   onChange={field.onChange}
                                   options={dimensionUnits}
-                                  placeholder="Pilih Unit"
+                                  placeholder={t(
+                                    "InformasiMuatanModal.selectUnit",
+                                    {},
+                                    "Pilih Unit"
+                                  )}
                                   className="w-[80px]"
                                 />
                               )}
@@ -398,10 +455,9 @@ export const InformasiMuatanModal = ({
                   </div>
                 </div>
               </div>
-              {/* Submit button for demo */}
               <div className="mt-4 flex justify-center">
                 <Button variant="muatparts-primary" className="w-[112px]">
-                  Simpan
+                  {t("InformasiMuatanModal.save", {}, "Simpan")}
                 </Button>
               </div>
             </div>
@@ -417,16 +473,3 @@ export const InformasiMuatanModal = ({
     </>
   );
 };
-
-const Label = ({ required, optional, children, tooltip }) => (
-  <div className="flex h-[16px] items-center gap-1">
-    <div className="h-4 text-xs font-bold leading-[1.2] text-neutral-600">
-      {children}
-      {required && <span>*</span>}
-      {optional && (
-        <i className="font-medium text-gray-500">&nbsp;(Opsional)</i>
-      )}
-    </div>
-    <div className="flex-shrink-0">{tooltip}</div>
-  </div>
-);

@@ -4,15 +4,19 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import { useGetOrdersMultiFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getOrdersMultiFleetTracking";
+
 import { BadgeSOSPopover } from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+
 import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
-import { useGetOrdersMultiFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getOrdersMultiFleetTracking";
+
 import { getTrackingStatusBadgeWithTranslation } from "@/utils/Transporter/trackingStatus";
 
 // import FleetChange from "./FleetChange";
@@ -256,7 +260,11 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     <div className="flex items-center justify-between gap-4 text-nowrap py-4">
                       <div className="w-full border-t border-neutral-400"></div>
                       <div className="text-xs text-neutral-600">
-                        Menggantikan Armada
+                        {t(
+                          "LihatPosisiArmada.replacingFleet",
+                          {},
+                          "Menggantikan Armada"
+                        )}
                       </div>
                       <div className="w-full border-t border-neutral-400"></div>
                     </div>
@@ -354,7 +362,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           </h3>
                           <DriverTimeline
                             dataTimeline={
-                              vehicle.timeline || {
+                              vehicle.replacementFleet.timeline || {
                                 statusDefinitions: [
                                   {
                                     mappedOrderStatus:

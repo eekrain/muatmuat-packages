@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 
 import Button from "../Button/Button";
@@ -16,6 +18,7 @@ export const ModalOpsiPembayaran = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
+  const { t } = useTranslation();
   const toggleSection = (categoryKey) => {
     setExpandedCategories((prev) => {
       const newSet = new Set(prev);
@@ -69,7 +72,11 @@ export const ModalOpsiPembayaran = ({
                 <IconComponent src="/icons/chevron-right.svg" />
               </button>
               <Button variant="muatparts-primary" onClick={onProceedPayment}>
-                Lanjut Pembayaran
+                {t(
+                  "ModalOpsiPembayaran.continuePayment",
+                  {},
+                  "Lanjut Pembayaran"
+                )}
               </Button>
             </div>
           ) : (
@@ -78,7 +85,11 @@ export const ModalOpsiPembayaran = ({
               className="w-full"
               onClick={() => setIsOpen(true)}
             >
-              Pilih Opsi Pembayaran
+              {t(
+                "ModalOpsiPembayaran.selectPaymentOption",
+                {},
+                "Pilih Opsi Pembayaran"
+              )}
             </Button>
           )}
         </div>
@@ -86,14 +97,14 @@ export const ModalOpsiPembayaran = ({
           <div className="flex flex-col gap-y-4 px-6 py-8">
             <div className="flex w-[424px] justify-center">
               <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
-                Opsi Pembayaran
+                {t("ModalOpsiPembayaran.paymentOptions", {}, "Opsi Pembayaran")}
               </h1>
             </div>
             {/* Content Container */}
             <div className="mr-[-16px] flex max-h-[321px] flex-col overflow-y-auto pr-[11px]">
               {/* Section Title */}
               <h2 className="text-base font-bold leading-[19.2px] text-neutral-900">
-                Semua Metode
+                {t("ModalOpsiPembayaran.allMethods", {}, "Semua Metode")}
               </h2>
 
               {/* Payment Options List */}

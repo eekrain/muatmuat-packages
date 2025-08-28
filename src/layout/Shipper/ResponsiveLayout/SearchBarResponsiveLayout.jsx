@@ -2,6 +2,7 @@ import {
   HeaderResponsiveContainer,
   HeaderResponsiveSearchBar,
 } from "@/components/Header/Responsive";
+
 import { cn } from "@/lib/utils";
 
 /**

@@ -9,7 +9,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+
 // 1. Import Radix-based Popover
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
@@ -27,6 +30,23 @@ export const DropdownJasaPengiriman = ({
   insuranceText = "Pakai Asuransi Pengiriman",
   errorMessage = null,
 }) => {
+  const { t } = useTranslation();
+
+  // Move default props inside component to access t() function
+  const defaultPlaceholder =
+    placeholder === "Pilih Ekspedisi"
+      ? t("DropdownJasaPengiriman.placeholder", {}, "Pilih Ekspedisi")
+      : placeholder;
+
+  const defaultInsuranceText =
+    insuranceText === "Pakai Asuransi Pengiriman"
+      ? t(
+          "DropdownJasaPengiriman.insuranceText",
+          {},
+          "Pakai Asuransi Pengiriman"
+        )
+      : insuranceText;
+
   // 2. State is simplified. We only need to manage the open state and the selected data.
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(value?.expedition);
@@ -101,7 +121,7 @@ export const DropdownJasaPengiriman = ({
             htmlFor={`insurance-${selectedOption.id}`}
             className="cursor-pointer text-xs font-medium leading-[14px] text-neutral-900"
           >
-            {insuranceText}{" "}
+            {defaultInsuranceText}{" "}
             <span className="text-primary-700">
               ({idrFormat(selectedOption.originalInsurance)})
             </span>
@@ -131,7 +151,7 @@ export const DropdownJasaPengiriman = ({
         )}
       >
         <span className="flex-1 truncate text-xs leading-[14px]">
-          {selectedOption?.courierName || placeholder}
+          {selectedOption?.courierName || defaultPlaceholder}
         </span>
         <ChevronDown className="h-4 w-4 flex-shrink-0 text-neutral-700" />
       </button>
@@ -189,7 +209,11 @@ export const DropdownJasaPengiriman = ({
         ) : (
           <div className="flex h-[66px] items-center justify-center px-2.5">
             <p className="text-center text-xs font-medium leading-[14.4px] text-neutral-900">
-              Saat ini, kami belum bisa mengirim ke alamat tersebut.
+              {t(
+                "DropdownJasaPengiriman.noShippingMessage",
+                {},
+                "Saat ini, kami belum bisa mengirim ke alamat tersebut."
+              )}
             </p>
           </div>
         )}

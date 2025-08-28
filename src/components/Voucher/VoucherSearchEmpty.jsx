@@ -3,8 +3,10 @@
 // If you have a single SVG file for this specific "search not found" graphic,
 // you would use IconComponent or an <img> tag pointing to it.
 // For now, I'll provide the SVG code directly as it's a specific, complex illustration.
+import { useTranslation } from "@/hooks/use-translation";
 
 const VoucherSearchEmpty = () => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-10 text-center">
       {/* SVG illustration for "Keyword Not Found" */}
@@ -15,7 +17,7 @@ const VoucherSearchEmpty = () => {
       />
 
       <p className="mt-[12px] text-base font-medium text-gray-600">
-        Keyword Tidak Ditemukan
+        {t("VoucherSearchEmpty.keywordNotFound", {}, "Keyword Tidak Ditemukan")}
       </p>
     </div>
   );
