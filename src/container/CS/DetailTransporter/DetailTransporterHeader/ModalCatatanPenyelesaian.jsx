@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import { useCompleteTransportRequest } from "@/services/CS/monitoring/permintaan-angkut/completeTransportRequest";
+import { useUploadResolutionPhotos } from "@/services/CS/monitoring/permintaan-angkut/uploadResolutionPhotos";
+
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
@@ -20,7 +23,6 @@ import { cn } from "@/lib/utils";
 const ModalCatatanPenyelesaian = ({
   isOpen,
   onClose,
-  onConfirm,
   isLoading = false,
   fleetNoteData,
 }) => {
@@ -30,6 +32,18 @@ const ModalCatatanPenyelesaian = ({
   const [tidakMenanggapi, setTidakMenanggapi] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([null, null, null, null]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Extract data from fleetNoteData
+  const requestId = fleetNoteData?.latestNote?.relatedEntities?.reportId;
+  const csUserId = fleetNoteData?.latestNote?.relatedEntities?.reportedBy;
+  const assignedTransporterId =
+    fleetNoteData?.latestNote?.relatedEntities?.transporterId;
+  const finalPrice = 0;
+  const completionDuration = 0;
+
+  // SWR mutation hooks
+  const { trigger: uploadPhotos } = useUploadResolutionPhotos(requestId);
+  const { trigger: completeRequest } = useCompleteTransportRequest(requestId);
 
   const handleFileUpload = (file, index) => {
     const newFiles = [...uploadedFiles];
@@ -68,6 +82,18 @@ const ModalCatatanPenyelesaian = ({
   };
 
   const handleConfirm = async () => {
+    // Validate requestId
+    if (!requestId) {
+      toast.error(
+        t(
+          "ModalCatatanPenyelesaian.errorMissingRequestId",
+          {},
+          "Request ID tidak ditemukan"
+        )
+      );
+      return;
+    }
+
     // Validate catatan if not disabled
     if (!tidakMenanggapi && !catatan.trim()) {
       setCatatanError(
@@ -81,30 +107,84 @@ const ModalCatatanPenyelesaian = ({
     }
     setCatatanError("");
     setIsSubmitting(true);
+
     try {
-      await onConfirm?.({
-        catatan,
-        supportingFiles: uploadedFiles.filter((f) => f !== null),
-      });
-      // Get transporterName from mock getLatestFleetNote
-      let transporterName = "";
-      if (fleetNoteData?.Data?.latestNote?.relatedEntities?.transporterName) {
-        transporterName =
-          fleetNoteData.Data.latestNote.relatedEntities.transporterName;
-      } else {
-        const mockFleetNote = require("@/services/CS/monitoring/permintaan-angkut/getLatestFleetNote");
-        const mockData =
-          mockFleetNote?.apiResultLatestFleetNote?.Data?.latestNote;
-        transporterName = mockData?.relatedEntities?.transporterName || "";
+      // 1. Upload files if any
+      let attachmentIds = [];
+      const filesToUpload = uploadedFiles.filter((f) => f !== null);
+
+      if (filesToUpload.length > 0) {
+        const formData = new FormData();
+
+        // Add all photos first
+        filesToUpload.forEach((file) => {
+          formData.append("photos", file);
+        });
+
+        // Add photoDescriptions as JSON array
+        const photoDescriptions = filesToUpload.map(
+          (file, idx) => file.name || `Lampiran ${idx + 1}`
+        );
+        formData.append("photoDescriptions", JSON.stringify(photoDescriptions));
+
+        formData.append("resolutionContext", "completion_documentation");
+        formData.append("timestamp", new Date().toISOString());
+
+        try {
+          const uploadResult = await uploadPhotos(formData);
+          attachmentIds = uploadResult?.data?.Data?.attachmentIds || [];
+        } catch {
+          toast.error(
+            t(
+              "ModalCatatanPenyelesaian.errorUploadPhotos",
+              {},
+              "Gagal upload foto pendukung"
+            )
+          );
+          setIsSubmitting(false);
+          return;
+        }
       }
-      toast.success(
-        t(
-          "ModalCatatanPenyelesaian.toastSuccessResolveIssue",
-          { transporterName },
-          `Berhasil menyelesaikan masalah transporter tidak aktif ${transporterName}`
-        )
-      );
-      handleClose();
+
+      // 2. Submit completion
+      const completionPayload = {
+        resolutionType: tidakMenanggapi ? "no_response" : "manual_completion",
+        resolutionNote: !tidakMenanggapi ? catatan : undefined,
+        noResponse: !!tidakMenanggapi,
+        completionMetadata: {
+          completedBy: csUserId,
+          completionReason: tidakMenanggapi
+            ? "no_response_from_transporter"
+            : "successful_assignment",
+          assignedTransporter: assignedTransporterId,
+          finalPrice: finalPrice || 0,
+          completionDuration: completionDuration || 0,
+        },
+        attachmentIds,
+        followUpRequired: false,
+        followUpDate: null,
+        qualityScore: 5,
+      };
+
+      try {
+        await completeRequest(completionPayload);
+        toast.success(
+          t(
+            "ModalCatatanPenyelesaian.successComplete",
+            {},
+            "Berhasil menyelesaikan permintaan"
+          )
+        );
+        handleClose();
+      } catch {
+        toast.error(
+          t(
+            "ModalCatatanPenyelesaian.errorComplete",
+            {},
+            "Gagal menyelesaikan permintaan"
+          )
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }

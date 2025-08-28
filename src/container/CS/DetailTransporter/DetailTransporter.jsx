@@ -207,6 +207,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const total = fleetNoteData?.total ?? 0;
   const current = fleetNoteData?.current ?? 0;
 
+  console.log("TESSS", fleetNoteData);
+
   // Map data for DataTable - remove client-side sorting since it's handled by API
   const tableData = (fleetNoteData?.details || []).map((item) => {
     if (

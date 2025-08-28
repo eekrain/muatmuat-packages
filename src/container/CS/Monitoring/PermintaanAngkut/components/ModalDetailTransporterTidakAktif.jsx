@@ -259,7 +259,6 @@ const ModalDetailTransporterTidakAktif = ({
       <ModalCatatanPenyelesaian
         isOpen={showCatatanModal}
         onClose={() => setShowCatatanModal(false)}
-        onConfirm={() => setShowCatatanModal(false)}
         fleetNoteData={{ latestNote: latestNote }}
       />
     </>
