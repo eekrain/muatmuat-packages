@@ -167,11 +167,6 @@ const DetailTransporter = ({ breadcrumbData }) => {
   const [showHubungiModal, setShowHubungiModal] = useState(false);
   const [showCatatanModal, setShowCatatanModal] = useState(false);
 
-  // Fetch alert summary for total
-  const { data: alertData } = useGetInactiveTransporter();
-  const total = alertData?.alertSummary?.total ?? 0;
-  const current = alertData?.alertSummary?.current ?? 0;
-
   const [sortConfig, setSortConfig] = useState({
     sort: "licensePlate",
     order: "asc",
@@ -200,6 +195,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
     name: transporterName,
     logoUrl: "/icons/company-placeholder.svg",
   };
+  const total = fleetNoteData?.total ?? 0;
+  const current = fleetNoteData?.current ?? 0;
 
   // Map data for DataTable - remove client-side sorting since it's handled by API
   let armadaNonaktifData = (fleetNoteData?.details || []).map((item) => ({
