@@ -111,6 +111,7 @@ const UrgentIssue = () => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const requestContainer = useRef(null);
+  const prevItemsRef = useRef([]);
 
   const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
 
@@ -161,9 +162,20 @@ const UrgentIssue = () => {
     );
   }, [activeTab]);
 
-  // Update data ketika items berubah dengan memoized dependency
+  // Update data ketika items berubah dengan proper comparison
   useEffect(() => {
-    if (items.length === 0) {
+    // Check if items have actually changed by comparing IDs
+    const itemIds = items.map((item) => item.id).join(",");
+    const prevItemIds = prevItemsRef.current.map((item) => item.id).join(",");
+
+    if (itemIds === prevItemIds && page !== 1) {
+      // Items haven't actually changed, skip update
+      return;
+    }
+
+    prevItemsRef.current = items;
+
+    if (!items || items.length === 0) {
       // Only reset data if page is 1
       if (page === 1) {
         setData([]);
