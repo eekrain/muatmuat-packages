@@ -15,8 +15,6 @@ export const ModalDetailWaktuTunggu = ({
   drivers = [],
   grandTotal = 0,
 }) => {
-  console.log("drivers", drivers);
-
   // Initialize expanded state
   const [expandedDrivers, setExpandedDrivers] = useState([]);
 
@@ -25,16 +23,9 @@ export const ModalDetailWaktuTunggu = ({
     setExpandedDrivers(drivers.map(() => false));
   }, [drivers]);
 
-  console.log("expandedDrivers", expandedDrivers);
-
   const toggleDriver = (idx) => {
-    console.log("Toggling driver at index:", idx);
-    console.log("Current expandedDrivers:", expandedDrivers);
-    console.log("Drivers length:", drivers.length);
-
     setExpandedDrivers((prev) => {
       const newState = prev.map((val, i) => (i === idx ? !val : val));
-      console.log("New expandedDrivers state:", newState);
       return newState;
     });
   };
@@ -67,66 +58,75 @@ export const ModalDetailWaktuTunggu = ({
         <div className="flex max-h-[291px] flex-col gap-y-6">
           {/* Driver Section */}
           <div className="mr-[-16px] flex flex-col overflow-y-auto pr-[8px]">
-            {drivers.map((driver, idx) => (
-              <div
-                className={cn(
-                  "w-full border-b border-neutral-400 pb-6",
-                  idx !== drivers.length - 1 && "mb-6"
-                )}
-                key={idx}
-              >
-                {/* Driver Header */}
-                <button
-                  type="button"
-                  className={
-                    "flex w-full cursor-pointer items-center justify-between"
-                  }
-                  onClick={() => toggleDriver(idx)}
-                >
-                  <div className="flex flex-col items-start gap-2">
-                    <h3 className="text-sm font-semibold text-neutral-900">
-                      {`Driver : ${driver.name} (${driver.license_plate}, ${driver.transporter_name})`}
-                    </h3>
-                  </div>
-                  <IconComponent
-                    className={cn(
-                      "text-neutral-700 transition-transform duration-200",
-                      expandedDrivers[idx] && "rotate-180"
-                    )}
-                    src="/icons/chevron-down.svg"
-                  />
-                </button>
-
-                {/* Expandable Content */}
+            {drivers && drivers.length > 0 ? (
+              drivers.map((driver, idx) => (
                 <div
                   className={cn(
-                    "flex flex-col gap-y-3 overflow-hidden transition-all duration-300 ease-in-out",
-                    expandedDrivers[idx]
-                      ? "mt-3 max-h-96 opacity-100"
-                      : "mt-0 max-h-0 opacity-0",
-                    "text-xs font-medium leading-[1.2]"
+                    "w-full border-b border-neutral-400 pb-6",
+                    idx !== drivers.length - 1 && "mb-6"
                   )}
+                  key={idx}
                 >
-                  {/* Loading Location Details */}
-                  {driver.waiting_locations?.map((item, dataIdx) => (
-                    <div
-                      key={dataIdx}
-                      className="flex flex-col gap-y-2 text-xs font-medium"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-neutral-900">{`${item.location_type} : ${item.duration}`}</span>
-                        <span className="text-neutral-900">
-                          {idrFormat(item.cost)}
-                        </span>
-                      </div>
-                      <div className="text-neutral-600">
-                        {`${formatDate(item.start_time)} s/d ${formatDate(item.end_time)}`}
+                  {/* Driver Header */}
+                  <button
+                    type="button"
+                    className={
+                      "flex w-full cursor-pointer items-center justify-between"
+                    }
+                    onClick={() => toggleDriver(idx)}
+                  >
+                    <div className="flex flex-col items-start gap-2">
+                      <h3 className="text-sm font-semibold text-neutral-900">
+                        {`Driver : ${driver.name} (${driver.license_plate}), (${driver.transporter_name})`}
+                      </h3>
+                      <div className="text-xs text-neutral-600">
+                        Durasi Total: {driver.total_duration || "0 jam"}
                       </div>
                     </div>
-                  ))}
+                    <IconComponent
+                      className={cn(
+                        "text-neutral-700 transition-transform duration-200",
+                        expandedDrivers[idx] && "rotate-180"
+                      )}
+                      src="/icons/chevron-down.svg"
+                    />
+                  </button>
+
+                  {/* Expandable Content */}
+                  <div
+                    className={cn(
+                      "flex flex-col gap-y-3 overflow-hidden transition-all duration-300 ease-in-out",
+                      expandedDrivers[idx]
+                        ? "mt-3 max-h-96 opacity-100"
+                        : "mt-0 max-h-0 opacity-0",
+                      "text-xs font-medium leading-[1.2]"
+                    )}
+                  >
+                    {/* Loading Location Details */}
+                    {driver.waiting_locations?.map((item, dataIdx) => (
+                      <div
+                        key={dataIdx}
+                        className="flex flex-col gap-y-2 text-xs font-medium"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-900">{`${item.location_type} : ${item.duration}`}</span>
+                          <span className="text-neutral-900">
+                            {idrFormat(item.cost)}
+                          </span>
+                        </div>
+                        <div className="text-neutral-600">
+                          {`${formatDate(item.start_time)} s/d ${formatDate(item.end_time)}`}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center text-sm text-gray-500">
+                Tidak ada data driver yang tersedia
               </div>
-            ))}
+            )}
           </div>
           <div className="flex items-center justify-between text-base font-bold text-neutral-900">
             <span className="">Total</span>

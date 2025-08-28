@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 
 import { Download, Plus } from "lucide-react";
 
+import { useGetCSTransportersCount } from "@/services/CS/transporters/getTransportersCount";
+
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
@@ -79,8 +81,11 @@ const Page = () => {
   };
 
   // Mock counts - replace with actual API calls
-  const shipperCount = 150;
-  const transporterCount = 75;
+
+  const { data } = useGetCSTransportersCount(`/v1/cs/transporters/count`);
+  const shipperCount = data?.Data.shipperCount || 0;
+  const transporterCount = data?.Data.transporterCount || 0;
+  console.log("transporterCount", data);
 
   // Determine if download button should be disabled
   const currentDataState =
@@ -122,19 +127,25 @@ const Page = () => {
           </TabsList>
           <div className="flex gap-3">
             <Button
-              variant="muattrans-primary-secondary"
+              variant={
+                selectedTab === "transporter"
+                  ? "muattrans-primary-secondary"
+                  : ""
+              }
               iconLeft={<Download size={16} />}
               onClick={() => {}}
               disabled={shouldDisableDownload}
             >
               <span className="pt-0.5">Unduh</span>
             </Button>
-            <Button
-              iconLeft={<Plus size={16} />}
-              onClick={() => router.push("/user/add")}
-            >
-              <span className="pt-0.5">Tambah Transporter</span>
-            </Button>
+            {selectedTab === "transporter" && (
+              <Button
+                iconLeft={<Plus size={16} />}
+                onClick={() => router.push("/user/add")}
+              >
+                <span className="pt-0.5">Tambah Transporter</span>
+              </Button>
+            )}
           </div>
         </div>
 

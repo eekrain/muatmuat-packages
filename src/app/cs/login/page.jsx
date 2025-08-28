@@ -1,6 +1,7 @@
-import LoginContainer from "@/container/CS/Login/LoginContainer";
+import { redirect } from "next/navigation";
 
 const Page = () => {
-  return <LoginContainer />;
+  // return <LoginContainer />;
+  redirect(`/dev-login`);
 };
 export default Page;

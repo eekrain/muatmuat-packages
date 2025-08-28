@@ -646,24 +646,27 @@ export const fetcherTransportRequestList = async (params = {}) => {
   }
 
   // API real
+  const apiParams = { ...params }; // Create a mutable copy of the params
+
+  // TRANSLATION LOGIC:
+  // This part translates parameters from the existing hooks/UI
+  // into the correct format required by the API contract.
+  if (apiParams.orderType) {
+    // Convert orderType: "INSTANT" into type: "instant"
+    apiParams.type = apiParams.orderType.toLowerCase();
+    delete apiParams.orderType; // Clean up the original key
+  } else if (apiParams.isHalalLogistics === true) {
+    // Convert isHalalLogistics: true into type: "halal"
+    apiParams.type = "halal";
+    delete apiParams.isHalalLogistics;
+  }
+
+  // Build the query string using only the valid API parameters.
   const queryParams = new URLSearchParams();
-  if (params.page) queryParams.append("page", params.page);
-  if (params.limit) queryParams.append("limit", params.limit);
-  if (params.orderStatus) queryParams.append("orderStatus", params.orderStatus);
-  if (params.orderType) queryParams.append("orderType", params.orderType);
-  if (params.isHalalLogistics !== undefined)
-    queryParams.append("isHalalLogistics", params.isHalalLogistics);
-  if (params.isSaved !== undefined)
-    queryParams.append("isSaved", params.isSaved);
-  if (params.isNew !== undefined) queryParams.append("isNew", params.isNew);
-  if (params.truckTypeName)
-    queryParams.append("truckTypeName", params.truckTypeName);
-  if (params.carrierName) queryParams.append("carrierName", params.carrierName);
-  if (params.search) queryParams.append("search", params.search);
-  if (params.sortBy) queryParams.append("sortBy", params.sortBy);
-  if (params.sortOrder) queryParams.append("sortOrder", params.sortOrder);
-  if (params.dateFrom) queryParams.append("dateFrom", params.dateFrom);
-  if (params.dateTo) queryParams.append("dateTo", params.dateTo);
+  if (apiParams.page) queryParams.append("page", apiParams.page);
+  if (apiParams.limit) queryParams.append("limit", apiParams.limit);
+  if (apiParams.search) queryParams.append("search", apiParams.search);
+  if (apiParams.type) queryParams.append("type", apiParams.type);
 
   const queryString = queryParams.toString();
   const endpoint = queryString
@@ -672,6 +675,7 @@ export const fetcherTransportRequestList = async (params = {}) => {
 
   const result = await fetcherMuatrans.get(endpoint);
   return result?.data?.Data || {};
+  // --- End of Corrected Code ---
 };
 
 export const useGetTransportRequestList = (params = {}) => {

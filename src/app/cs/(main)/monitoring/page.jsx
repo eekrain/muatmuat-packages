@@ -356,19 +356,22 @@ const Page = () => {
     }
   }, [fleetData]);
 
+  const lihatPosisiByOrderId = searchParams.get("lihat-posisi-armada");
   useEffect(() => {
-    console.log("fleetLocationsData", fleetLocationsData);
-  }, [fleetLocationsData]);
-
-  // useEffect(() => {
-  //   panelsDispatch({
-  //     type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
-  //   });
-  //   selectionsDispatch({
-  //     type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
-  //     payload: { id: "kocak" },
-  //   });
-  // }, []);
+    if (lihatPosisiByOrderId) {
+      const newparams = new URLSearchParams(searchParams.toString());
+      newparams.delete("lihat-posisi-armada");
+      router.replace(`/monitoring?${newparams.toString()}`);
+      panelsDispatch({
+        type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
+      });
+      selectionsDispatch({
+        type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+        payload: { id: lihatPosisiByOrderId },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lihatPosisiByOrderId, searchParams]);
 
   return (
     <>
@@ -384,9 +387,7 @@ const Page = () => {
         <div
           className={cn(
             "flex h-full flex-col gap-4 pt-4 transition-all duration-300 ease-in-out",
-            {
-              "pb-4": panels.leftPanelMode === "posisi",
-            }
+            panels.leftPanelMode === "posisi" && "pb-4"
           )}
         >
           {/* Map Container */}
@@ -408,13 +409,13 @@ const Page = () => {
                       : `calc(100vh - 92px - 16px - 16px - 64px)`,
                 width:
                   panels.leftPanelMode === "posisi"
-                    ? "calc(100% - 468px)"
+                    ? "calc(100% - 438px)"
                     : panels.showLeftPanel
                       ? "calc(100% - 332px)"
                       : "100%",
                 marginLeft:
                   panels.leftPanelMode === "posisi"
-                    ? "468px"
+                    ? "438px"
                     : panels.showLeftPanel
                       ? "332px"
                       : "0",

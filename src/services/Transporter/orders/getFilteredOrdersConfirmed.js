@@ -54,7 +54,10 @@ export const getFilteredOrdersConfirmed = async (params = {}) => {
   if (limit) queryParams.append("limit", limit.toString());
   if (search && search.length >= 3) queryParams.append("search", search);
 
-  const url = `/v1/transporter/orders/confirmed${
+  // Add status parameter for confirmed orders
+  queryParams.append("status", "confirmed");
+
+  const url = `/v1/transporter/orders${
     queryParams.toString() ? `?${queryParams.toString()}` : ""
   }`;
 
@@ -69,7 +72,7 @@ export const useGetFilteredOrdersConfirmed = (params = {}) => {
   const { page = 1, limit = 10, search = "" } = params;
 
   const { data, error, isLoading, mutate } = useSWR(
-    `filtered-orders-confirmed-${page}-${limit}-${search}`,
+    `filtered-orders?status=confirmed&page=${page}&limit=${limit}&search=${search}`,
     () => getFilteredOrdersConfirmed(params),
     {
       refreshInterval: 300000, // 5 minutes auto-refresh

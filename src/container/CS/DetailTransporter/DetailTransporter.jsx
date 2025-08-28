@@ -1,3 +1,6 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
@@ -174,34 +177,48 @@ const DetailTransporter = ({ breadcrumbData }) => {
     order: "asc",
   });
 
-  // Fetch latest fleet note data
-  const transporterId = "transporter-uuid-2"; // Example, should be dynamic
+  const params = useParams();
+  const transporterId =
+    params?.transporterId ??
+    params?.id ??
+    Object.values(params || {})[0] ??
+    "transporter-uuid-2";
+
   const { data: fleetNoteData, isLoading: isFleetNoteLoading } =
     useGetLatestFleetNote(transporterId, {
       page: currentPage,
       limit: perPage,
+      search: searchValue,
+      sort: sortConfig.sort,
+      order: sortConfig.order,
     });
 
-  // Ambil nama transporter dari data
+  // Ambil nama transporter dari data - updated path for new API structure
   const transporterName =
-    fleetNoteData?.Data?.latestNote?.relatedEntities?.transporterName || "-";
+    fleetNoteData?.latestNote?.relatedEntities?.transporterName || "-";
   const transporter = {
     name: transporterName,
     logoUrl: "/icons/company-placeholder.svg",
   };
 
-  // Map and sort data for DataTable
-  let armadaNonaktifData = (fleetNoteData?.Data?.details || []).map((item) => ({
+  // Map data for DataTable - remove client-side sorting since it's handled by API
+  let armadaNonaktifData = (fleetNoteData?.details || []).map((item) => ({
     licensePlate: item.licensePlate,
     driverName: item.driverName,
     tanggalNonaktif: formatDate(item.inactiveDate),
-    lamaNonaktif: formatDuration(item.inactiveDuration),
+    // Handle both duration formats: number (minutes) or string (e.g. "3 hari")
+    lamaNonaktif:
+      typeof item.inactiveDuration === "number"
+        ? formatDuration(item.inactiveDuration)
+        : item.inactiveDuration || "-",
     _rawTanggalNonaktif: item.inactiveDate,
-    _rawLamaNonaktif: item.inactiveDuration,
+    _rawLamaNonaktif:
+      typeof item.inactiveDuration === "number" ? item.inactiveDuration : 0,
   }));
 
-  let idleOrderData = (fleetNoteData?.Data?.detailsIdle || []).map((item) => ({
-    ...item,
+  let idleOrderData = (fleetNoteData?.details || []).map((item) => ({
+    orderCode: item.orderCode,
+    transporterReceive: item.transporterReceive ? "Ya" : "Tidak",
     orderBlastAt: item.orderBlastAt ? formatDate(item.orderBlastAt) : "-",
     orderTakenAt: item.orderTakenAt ? formatDate(item.orderTakenAt) : "-",
     _rawOrderBlastAt: item.orderBlastAt || null,
@@ -211,7 +228,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
   // Sorting
   if (sortConfig?.sort) {
     if (
-      fleetNoteData?.Data?.latestNote?.inactivityStatus === "ARMADA_INACTIVE"
+      fleetNoteData?.latestNote?.relatedEntities?.inactivityStatus ===
+      "ARMADA_INACTIVE"
     ) {
       armadaNonaktifData = [...armadaNonaktifData].sort((a, b) => {
         let aValue = a[sortConfig.sort];
@@ -244,7 +262,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
         return 0;
       });
     } else if (
-      fleetNoteData?.Data?.latestNote?.inactivityStatus === "TRANSPORTER_IDLE"
+      fleetNoteData?.latestNote?.relatedEntities?.inactivityStatus ===
+      "TRANSPORTER_IDLE"
     ) {
       idleOrderData = [...idleOrderData].sort((a, b) => {
         let aValue = a[sortConfig.sort];
@@ -293,8 +312,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
       )
     : idleOrderData;
 
-  // Use pagination from API response
-  const pagination = fleetNoteData?.Data?.pagination || {};
+  // Use pagination from API response - updated for new structure
+  const pagination = fleetNoteData?.pagination || {};
   const totalPages = pagination.totalPages || 1;
   const totalItems = pagination.totalItems || armadaNonaktifData.length;
 
@@ -331,29 +350,35 @@ const DetailTransporter = ({ breadcrumbData }) => {
                   <p className="text-xs font-bold text-neutral-900">
                     {transporter.name}
                   </p>
-                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                    "ARMADA_INACTIVE" && (
+                  {fleetNoteData?.latestNote?.relatedEntities
+                    ?.inactivityStatus === "ARMADA_INACTIVE" && (
                     <p className="text-xs font-medium text-error-400">
                       {t(
                         "DetailTransporter.messageErrorTooManyInactiveFleets",
                         {
                           current:
-                            fleetNoteData?.Data?.latestNote?.current ?? "-",
-                          total: fleetNoteData?.Data?.latestNote?.total ?? "-",
+                            fleetNoteData?.latestNote?.relatedEntities
+                              ?.current ?? "-",
+                          total:
+                            fleetNoteData?.latestNote?.relatedEntities?.total ??
+                            "-",
                         },
                         "Armada Nonaktif Terlalu Banyak ({current}/{total})"
                       )}
                     </p>
                   )}
-                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                    "TRANSPORTER_IDLE" && (
+                  {fleetNoteData?.latestNote?.relatedEntities
+                    ?.inactivityStatus === "TRANSPORTER_IDLE" && (
                     <p className="text-xs font-medium text-error-400">
                       {t(
                         "DetailTransporter.messageErrorAdminFrequentlyIdle",
                         {
                           current:
-                            fleetNoteData?.Data?.latestNote?.current ?? "-",
-                          total: fleetNoteData?.Data?.latestNote?.total ?? "-",
+                            fleetNoteData?.latestNote?.relatedEntities
+                              ?.current ?? "-",
+                          total:
+                            fleetNoteData?.latestNote?.relatedEntities?.total ??
+                            "-",
                         },
                         "Admin Terdeteksi Sering Idle ({current}/{total} Order)"
                       )}
@@ -361,9 +386,9 @@ const DetailTransporter = ({ breadcrumbData }) => {
                   )}
                 </div>
               </div>
-              {fleetNoteData?.Data?.latestNote?.status === "active" && (
+              {fleetNoteData?.latestNote?.status === "active" && (
                 <p className="text-xs font-medium text-neutral-600">
-                  {fleetNoteData?.Data?.latestNote?.content || "-"}
+                  {fleetNoteData?.latestNote?.content || "-"}
                 </p>
               )}
 
@@ -375,7 +400,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 >
                   {t("DetailTransporter.buttonContact", {}, "Hubungi")}
                 </Button>
-                {fleetNoteData?.Data?.latestNote?.status === "active" && (
+                {fleetNoteData?.latestNote?.status === "active" && (
                   <Button
                     variant="muattrans-warning"
                     className="h-8 w-full rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
@@ -386,7 +411,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 )}
               </div>
             </div>
-            {fleetNoteData?.Data?.latestNote?.status === "completed" && (
+            {fleetNoteData?.latestNote?.status === "completed" && (
               <div className="flex w-[340px] flex-col rounded-xl bg-neutral-50 p-6 shadow-lg">
                 <div className="mb-6 flex items-center">
                   <p className="text-xs font-semibold text-neutral-900">
@@ -406,9 +431,9 @@ const DetailTransporter = ({ breadcrumbData }) => {
                     )}
                   </p>
                   <p className="text-xs font-medium text-neutral-900">
-                    {fleetNoteData?.Data?.latestNote?.history?.reportedAt
+                    {fleetNoteData?.latestNote?.relatedEntities?.reportedAt
                       ? new Date(
-                          fleetNoteData.Data.latestNote.history.reportedAt
+                          fleetNoteData.latestNote.relatedEntities.reportedAt
                         ).toLocaleDateString("id-ID", {
                           day: "2-digit",
                           month: "long",
@@ -422,7 +447,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
                     {t("DetailTransporter.labelNotes", {}, "Catatan")}
                   </p>
                   <p className="text-xs font-medium text-neutral-900">
-                    {fleetNoteData?.Data?.latestNote?.history?.notes || "-"}
+                    {fleetNoteData?.latestNote?.relatedEntities?.noteResolve ||
+                      "-"}
                   </p>
                 </div>
                 <div className="mb-3 flex flex-col gap-2">
@@ -434,11 +460,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                     )}
                   </p>
                   <LightboxProvider
-                    images={
-                      fleetNoteData?.Data?.latestNote?.history?.photos?.map(
-                        (photo) => photo.url
-                      ) || []
-                    }
+                    images={fleetNoteData?.latestNote?.attachments || []}
                     title={t(
                       "DetailTransporter.lightboxTitleSupportingPhotos",
                       {},
@@ -446,13 +468,12 @@ const DetailTransporter = ({ breadcrumbData }) => {
                     )}
                   >
                     <div className="flex flex-row gap-2">
-                      {fleetNoteData?.Data?.latestNote?.history?.photos
-                        ?.length > 0 ? (
-                        fleetNoteData.Data.latestNote.history.photos.map(
-                          (photo, idx) => (
+                      {fleetNoteData?.latestNote?.attachments?.length > 0 ? (
+                        fleetNoteData.latestNote.attachments.map(
+                          (photoUrl, idx) => (
                             <LightboxPreview
                               key={idx}
-                              image={photo.url}
+                              image={photoUrl}
                               index={idx}
                               className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
                               alt={t(
@@ -494,11 +515,11 @@ const DetailTransporter = ({ breadcrumbData }) => {
 
           {/* Right Column: DataTable */}
           <div className="w-full flex-grow">
-            {fleetNoteData?.Data?.latestNote?.status === "active" && (
+            {fleetNoteData?.latestNote?.status === "active" && (
               <div className="relative top-2 flex w-full rounded-t-xl bg-neutral-50 px-6 pb-3 pt-5">
                 <div className="flex w-full justify-center rounded-md bg-error-50 py-2">
-                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                    "ARMADA_INACTIVE" && (
+                  {fleetNoteData?.latestNote?.relatedEntities
+                    ?.inactivityStatus === "ARMADA_INACTIVE" && (
                     <p className="text-xs font-semibold text-error-400">
                       {t(
                         "DetailTransporter.alertInactiveFleetIncreased",
@@ -514,8 +535,8 @@ const DetailTransporter = ({ breadcrumbData }) => {
                       </span>
                     </p>
                   )}
-                  {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
-                    "TRANSPORTER_IDLE" && (
+                  {fleetNoteData?.latestNote?.relatedEntities
+                    ?.inactivityStatus === "TRANSPORTER_IDLE" && (
                     <p className="text-xs font-semibold text-error-400">
                       {t(
                         "DetailTransporter.alertStillMissingOrders",
@@ -535,7 +556,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
               </div>
             )}
 
-            {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+            {fleetNoteData?.latestNote?.relatedEntities?.inactivityStatus ===
               "ARMADA_INACTIVE" && (
               <DataTable
                 data={filteredArmadaNonaktifData}
@@ -565,7 +586,7 @@ const DetailTransporter = ({ breadcrumbData }) => {
                 className="w-full flex-grow rounded-xl border-0 bg-neutral-50 text-xs font-semibold text-neutral-900 shadow-lg"
               />
             )}
-            {fleetNoteData?.Data?.latestNote?.inactivityStatus ===
+            {fleetNoteData?.latestNote?.relatedEntities?.inactivityStatus ===
               "TRANSPORTER_IDLE" && (
               <DataTable
                 data={filteredIdleOrderData}

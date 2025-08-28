@@ -23,7 +23,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === params?.driverId
   );
-  console.log(dataStatusPesanan?.driverStatus, "tes1234");
+
   return (
     <FormResponsiveLayout
       title={{
@@ -38,8 +38,10 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
             orderId={params?.orderId}
             defaultIndex={defaultIndex}
             withActions={false}
+            withMenu={false}
           />
         )}
+
         <div className="bg-white px-4 py-5">
           <DriverTimeline
             dataTimeline={dataTimeline}

@@ -60,19 +60,22 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
                   orderStatus={driver.orderStatus}
                   driverStatus={driver.driverStatus}
                   withMenu={false}
+                  withHideStatusDriver={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
-                <DriverInfo.Actions
-                  driver={driver}
-                  orderId={params.orderId}
-                  onLacakArmadaClicked={() => {
-                    // implementasi navigasi ke LacakArmada
-                    navigation.push("/LacakArmada", {
-                      orderId: params.orderId,
-                      driverId: driver.driverId,
-                    });
-                  }}
-                />
+                {["LOADING", "UNLOADING"].includes(driver.orderStatus) && (
+                  <DriverInfo.Actions
+                    driver={driver}
+                    orderId={params.orderId}
+                    onLacakArmadaClicked={() => {
+                      // implementasi navigasi ke LacakArmada
+                      navigation.push("/LacakArmada", {
+                        orderId: params.orderId,
+                        driverId: driver.driverId,
+                      });
+                    }}
+                  />
+                )}
               </div>
             </div>
           ))
