@@ -6,6 +6,9 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import * as v from "valibot";
 
+import { useGetAvailableFleetVehicles } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getFleetsList";
+import { useRespondChange } from "@/services/Transporter/daftar-pesanan/respondChange";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -30,6 +33,9 @@ const RespondChangeFormModal = ({
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+
+  const { trigger: respondChangeTrigger, isMutating: isResponding } =
+    useRespondChange(orderData?.id);
 
   // Create validation schema with translated messages
   const FormSchema = v.pipe(
@@ -80,57 +86,98 @@ const RespondChangeFormModal = ({
   const selectedResponse = watch("selectedResponse");
   const selectedFleet = watch("selectedFleet");
 
+  const { data, isLoading: loading } = useGetAvailableFleetVehicles(
+    orderData?.id
+  );
+
   // Check if form has been modified
   const isFormModified = selectedResponse !== "" || selectedFleet !== "";
+  const fleetOptions =
+    data?.vehicles?.map((vehicle) => ({
+      id: vehicle.id,
+      licensePlate: vehicle?.licensePlate,
+      driverId: vehicle?.driver?.id,
+      driverName: vehicle?.driver?.name,
+      vehicleType: vehicle.truckTypeName,
+      isRecommended: vehicle.isRecommended,
+      recommendationText: vehicle.isRecommended
+        ? t(
+            "RespondChangeFormModal.fleetRecommendationText",
+            {},
+            "jenis armada sesuai, jarak terdekat"
+          )
+        : undefined,
+      hasOverload: vehicle.hasOverload,
+    })) || [];
 
   // Mock fleet options based on the image
-  const fleetOptions = [
-    {
-      id: "fleet1",
-      licensePlate: "L 2222 LBA",
-      driverName: "Muklason",
-      vehicleType: "Colt Diesel Engkel - Box",
-      isRecommended: true,
-      recommendationText: t(
-        "RespondChangeFormModal.fleetRecommendationText",
-        {},
-        "jenis armada sesuai, jarak terdekat"
-      ),
-    },
-    {
-      id: "fleet2",
-      licensePlate: "L 3333 LBA",
-      driverName:
-        "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wiayanto",
-      vehicleType: "Colt Diesel Engkel - Box",
-      hasOverload: true,
-    },
-    {
-      id: "fleet3",
-      licensePlate: "L 4444 LBA",
-      driverName: "Putra Perdana Kusuma Wiayanto",
-      vehicleType: "Colt Diesel Engkel - Box",
-    },
-    {
-      id: "fleet4",
-      licensePlate: "L 5555 LBA",
-      driverName: "Nugroho Putra Perdana Kusuma Wiayanto",
-      vehicleType: "Colt Diesel Engkel - Box",
-    },
-    {
-      id: "fleet5",
-      licensePlate: "L 6666 LBA",
-      driverName: "Putra Perdana Kusuma Wiayanto",
-      vehicleType:
-        "Tractor head 6 x 4 dan Semi Trailer - Skeletal Container Jumbo 45 ft (3 As)",
-    },
-  ];
+  // const fleetOptions = [
+  //   {
+  //     id: "fleet1",
+  //     licensePlate: "L 2222 LBA",
+  //     driverName: "Muklason",
+  //     vehicleType: "Colt Diesel Engkel - Box",
+  //     isRecommended: true,
+  //     recommendationText: t(
+  //       "RespondChangeFormModal.fleetRecommendationText",
+  //       {},
+  //       "jenis armada sesuai, jarak terdekat"
+  //     ),
+  //   },
+  //   {
+  //     id: "fleet2",
+  //     licensePlate: "L 3333 LBA",
+  //     driverName:
+  //       "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wiayanto",
+  //     vehicleType: "Colt Diesel Engkel - Box",
+  //     hasOverload: true,
+  //   },
+  //   {
+  //     id: "fleet3",
+  //     licensePlate: "L 4444 LBA",
+  //     driverName: "Putra Perdana Kusuma Wiayanto",
+  //     vehicleType: "Colt Diesel Engkel - Box",
+  //   },
+  //   {
+  //     id: "fleet4",
+  //     licensePlate: "L 5555 LBA",
+  //     driverName: "Nugroho Putra Perdana Kusuma Wiayanto",
+  //     vehicleType: "Colt Diesel Engkel - Box",
+  //   },
+  //   {
+  //     id: "fleet5",
+  //     licensePlate: "L 6666 LBA",
+  //     driverName: "Putra Perdana Kusuma Wiayanto",
+  //     vehicleType:
+  //       "Tractor head 6 x 4 dan Semi Trailer - Skeletal Container Jumbo 45 ft (3 As)",
+  //   },
+  // ];
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Transform form data to API contract
+      const selectedFleetObj = fleetOptions.find(
+        (fleet) => fleet.id === data.selectedFleet
+      );
+      const requestBody = {
+        response:
+          data.selectedResponse === "accept"
+            ? "ACCEPT"
+            : data.selectedResponse === "accept_change_fleet"
+              ? "ACCEPT_WITH_FLEET_CHANGE"
+              : "REJECT",
+        ...(data.selectedResponse === "accept_change_fleet" &&
+          data.selectedFleet && {
+            vehicleResponses: [
+              {
+                orderDriverId: selectedFleetObj.driverId,
+                replacementFleetId: selectedFleetObj.id,
+              },
+            ],
+          }),
+      };
+      await respondChangeTrigger(requestBody);
 
       toast.success(
         t(
@@ -165,7 +212,7 @@ const RespondChangeFormModal = ({
   };
 
   const handleCloseAttempt = () => {
-    if (isFormModified && !isLoading) {
+    if (isFormModified && !(isLoading || isResponding)) {
       setShowExitConfirmation(true);
     } else {
       handleClose();
@@ -316,7 +363,7 @@ const RespondChangeFormModal = ({
                       }}
                       label={option.label}
                       classNameLabel="text-sm font-medium leading-[120%] text-black"
-                      disabled={isLoading}
+                      disabled={isLoading || isResponding}
                     />
                     {option.id === "accept" &&
                       selectedResponse === "accept" && (
@@ -347,7 +394,7 @@ const RespondChangeFormModal = ({
                               setValue("selectedFleet", value);
                               trigger("selectedFleet");
                             }}
-                            disabled={isLoading}
+                            disabled={isLoading || isResponding}
                             isError={
                               !!errors.selectedFleet &&
                               selectedResponse === "accept_change_fleet"
@@ -405,14 +452,14 @@ const RespondChangeFormModal = ({
             <Button
               variant="muattrans-primary-secondary"
               onClick={() => {
-                if (isFormModified && !isLoading) {
+                if (isFormModified && !(isLoading || isResponding)) {
                   setShowExitConfirmation(true);
                 } else {
                   handleClose();
                   onBackClick();
                 }
               }}
-              disabled={isLoading}
+              disabled={isLoading || isResponding}
               className="w-[112px]"
             >
               {t("RespondChangeFormModal.back", {}, "Kembali")}
@@ -420,10 +467,10 @@ const RespondChangeFormModal = ({
             <Button
               variant="muattrans-primary"
               onClick={handleFormSubmit}
-              disabled={isLoading}
+              disabled={isLoading || isResponding}
               className="w-[112px]"
             >
-              {isLoading
+              {isLoading || isResponding
                 ? t("RespondChangeFormModal.processing", {}, "Memproses...")
                 : t("RespondChangeFormModal.save", {}, "Simpan")}
             </Button>

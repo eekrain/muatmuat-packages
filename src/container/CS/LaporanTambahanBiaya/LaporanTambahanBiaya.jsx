@@ -42,6 +42,8 @@ const LaporanTambahanBiaya = ({
   setCurrentPeriodValue,
   onChangeQueryParams,
   onSavePeriodHistory,
+  statusCount,
+  paymentOptions,
 }) => {
   const { t } = useTranslation();
   const isFirstTimer = false;
@@ -50,21 +52,33 @@ const LaporanTambahanBiaya = ({
   const [selectedFilters, setSelectedFilters] = useState({});
 
   const periodOptions = translatedPeriodOptions(t);
-
+  console.log(pagination, "datates");
   const tabItems = useShallowMemo(() => {
     return [
       {
         value: "active",
-        label: <>Aktif{true ? <span className="ml-1">{`(1)`}</span> : null}</>,
+        label: (
+          <>
+            Aktif
+            {statusCount?.active ? (
+              <span className="ml-1">{`(${statusCount.active})`}</span>
+            ) : null}
+          </>
+        ),
       },
       {
         value: "completed",
         label: (
-          <>Selesai{true ? <span className="ml-1">{`(20)`}</span> : null}</>
+          <>
+            Selesai
+            {statusCount?.completed ? (
+              <span className="ml-1">{`(${statusCount.completed})`}</span>
+            ) : null}
+          </>
         ),
       },
     ];
-  }, []);
+  }, [statusCount]);
 
   const recentSelections = useShallowMemo(() => {
     return periodHistory.map((item) => ({
@@ -97,10 +111,10 @@ const LaporanTambahanBiaya = ({
               label: shipper.name,
             }))
           : [],
-        paymentMethodId: filterOptions
-          ? filterOptions.paymentMethods.map((paymentMethod) => ({
-              id: paymentMethod.id,
-              label: paymentMethod.name,
+        paymentMethodId: paymentOptions
+          ? paymentOptions.payment_options.map((option) => ({
+              id: option,
+              label: option,
             }))
           : [],
       },
@@ -272,6 +286,13 @@ const LaporanTambahanBiaya = ({
                         ...prevState,
                         ...filters,
                       }));
+                      if (filters.shipperId) {
+                        onChangeQueryParams("shipperId", filters.shipperId.id);
+                      }
+                      // Jika filter shipper dihapus, hapus dari query params
+                      if (!filters.shipperId) {
+                        onChangeQueryParams("shipperId", null);
+                      }
                     }}
                     searchPlaceholder="Cari {category}"
                     multiSelect={false}
@@ -283,7 +304,7 @@ const LaporanTambahanBiaya = ({
                   />
                 </div>
                 <span className="text-base font-semibold">
-                  {`Total : ${reports?.length} Laporan`}
+                  {`Total : ${pagination?.total_items || reports?.length || 0} Laporan`}
                 </span>
               </div>
               {JSON.stringify(selectedFilters) !== "{}" ? (
@@ -292,6 +313,9 @@ const LaporanTambahanBiaya = ({
                     className="font-bold"
                     onClick={() => {
                       setSelectedFilters({});
+                      // Clear query params when clearing all filters
+                      onChangeQueryParams("shipperId", null);
+                      onChangeQueryParams("paymentMethodId", "");
                     }}
                     variant="link"
                   >
@@ -309,6 +333,8 @@ const LaporanTambahanBiaya = ({
                                 delete newFilters[filterKey];
                                 return newFilters;
                               });
+                              // Clear query param when removing individual filter
+                              onChangeQueryParams(filterKey, null);
                             },
                           }}
                         >
@@ -377,9 +403,9 @@ const LaporanTambahanBiaya = ({
       </Card>
       {reports.length > 0 ? (
         <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          perPage={pagination.itemsPerPage}
+          currentPage={pagination.current_page}
+          totalPages={pagination.total_pages}
+          perPage={pagination.items_per_page}
           onPageChange={(value) => onChangeQueryParams("page", value)}
           onPerPageChange={(value) => onChangeQueryParams("limit", value)}
           className="py-0"

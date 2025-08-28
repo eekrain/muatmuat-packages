@@ -5,6 +5,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+import { useConfirmReady } from "@/services/Transporter/daftar-pesanan/confirmReady";
 import { useGetFleetReadinessChecklist } from "@/services/Transporter/daftar-pesanan/getFleetReadinessChecklist";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -31,7 +32,6 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
     error: readinessError,
     isLoading: readinessLoading,
   } = useGetFleetReadinessChecklist(isOpen && orderId ? orderId : null);
-  console.log(readinessData, "readinessData");
 
   // Use data from API response when available, fallback to orderData
   const apiOrder = readinessData?.order || {};
@@ -48,7 +48,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
     })) ||
     orderData?.assignedVehicles ||
     [];
-
+  console.log(orderInfo.loadTimeStart, "assignedVehicles");
   const estimatedDistance = orderInfo?.estimatedDistance || 121;
 
   // Calculate potential earnings from API data
@@ -122,11 +122,15 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
     orderData?.additionalServices ||
     [];
 
+  // Initialize confirm ready mutation
+  const { trigger: confirmReadyTrigger, isMutating: isConfirming } =
+    useConfirmReady(orderId);
+
   const handleConfirm = async () => {
     setConfirmLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call the confirm ready API
+      await confirmReadyTrigger({});
 
       const orderCode = orderInfo?.orderCode || "MT25A001A";
       toast.success(
@@ -138,6 +142,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
       );
       onClose();
     } catch (error) {
+      console.error("Error confirming ready:", error);
       toast.error(
         t(
           "ConfirmReadyModal.confirmError",
@@ -151,14 +156,21 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
   };
 
   const formatLoadTime = (startTime, endTime) => {
-    if (!startTime || !endTime) return "-";
-    const start = new Date(startTime);
-    const end = new Date(endTime);
+    if (!startTime) return "-";
+    // if (!startTime || !endTime) return "-";
+    if (!endTime) {
+      const start = new Date(startTime);
+      const startDate = format(start, "dd MMM yyyy HH:mm", { locale: id });
+      return `${startDate} WIB`;
+    } else {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
 
-    const startDate = format(start, "dd MMM yyyy HH:mm", { locale: id });
-    const endDate = format(end, "dd MMM yyyy HH:mm", { locale: id });
+      const startDate = format(start, "dd MMM yyyy HH:mm", { locale: id });
+      const endDate = format(end, "dd MMM yyyy HH:mm", { locale: id });
 
-    return `${startDate} WIB s/d ${endDate} WIB`;
+      return `${startDate} WIB s/d ${endDate} WIB`;
+    }
   };
 
   return (
@@ -560,7 +572,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
               variant="muattrans-primary-secondary"
               onClick={onClose}
               className="w-[112px] text-sm md:h-[34px]"
-              disabled={confirmLoading}
+              disabled={confirmLoading || isConfirming}
             >
               {t("ConfirmReadyModal.cancel", {}, "Batal")}
             </Button>
@@ -568,9 +580,9 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
               variant="muattrans-primary"
               onClick={handleConfirm}
               className="w-[150px] text-sm md:h-[34px]"
-              disabled={confirmLoading}
+              disabled={confirmLoading || isConfirming}
             >
-              {confirmLoading
+              {confirmLoading || isConfirming
                 ? t("ConfirmReadyModal.processing", {}, "Memproses...")
                 : t("ConfirmReadyModal.confirmReady", {}, "Konfirmasi Siap")}
             </Button>
