@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { mutate } from "swr";
 
@@ -126,8 +126,8 @@ const UrgentIssue = () => {
     sortDirection: "desc",
   });
 
-  // Memoize items to prevent unnecessary re-renders
-  const items = useMemo(() => rawItems || [], [rawItems]);
+  // Use rawItems directly, no need for memoization that causes issues
+  const items = rawItems || [];
 
   const toggleDetail = (id) => {
     setOpenDetails((prev) => {
@@ -161,9 +161,12 @@ const UrgentIssue = () => {
     );
   }, [activeTab]);
 
-  // Update data ketika items berubah dengan memoized dependency
+  // Update data ketika items berubah - only when loading completes
   useEffect(() => {
-    if (items.length === 0) {
+    // Skip if still loading
+    if (isLoading) return;
+
+    if (!items || items.length === 0) {
       // Only reset data if page is 1
       if (page === 1) {
         setData([]);
@@ -171,23 +174,22 @@ const UrgentIssue = () => {
       return;
     }
 
-    setData((prev) => {
-      // Hanya update jika page 1 atau data baru belum ada di prev
-      if (page === 1) {
-        return items;
-      }
+    if (page === 1) {
+      // For first page, just set the items
+      setData(items);
+    } else {
+      // For subsequent pages, append only new items
+      setData((prev) => {
+        const existingIds = new Set(prev.map((item) => item.id));
+        const newItems = items.filter((item) => !existingIds.has(item.id));
 
-      // Check if items are already in prev to avoid duplicates
-      const existingIds = new Set(prev.map((item) => item.id));
-      const newItems = items.filter((item) => !existingIds.has(item.id));
-
-      if (newItems.length > 0) {
-        return [...prev, ...newItems];
-      }
-
-      return prev;
-    });
-  }, [items, page]);
+        if (newItems.length > 0) {
+          return [...prev, ...newItems];
+        }
+        return prev;
+      });
+    }
+  }, [isLoading, page, activeTab]); // Only depend on isLoading state change, page, and activeTab
 
   // Setup scroll handler untuk infinite scroll
   useEffect(() => {

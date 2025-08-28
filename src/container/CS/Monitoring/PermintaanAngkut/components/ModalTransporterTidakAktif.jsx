@@ -95,12 +95,11 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
   const handleDetailClick = (transporter) => {
     if (transporter.inactivityStatus === "TRANSPORTER_INACTIVE") {
       setSelectedTransporter(transporter);
-      setSelectedTransporterId(transporter.transporterId);
+      setSelectedTransporterId(transporter.id);
       setShowDetailModal(true);
     } else {
-      router.push(
-        `/monitoring/${transporter.transporterId}/detail-transporter`
-      );
+      console.log("Navigating to transporter detail:", transporter);
+      router.push(`/monitoring/${transporter.id}/detail-transporter`);
     }
   };
 

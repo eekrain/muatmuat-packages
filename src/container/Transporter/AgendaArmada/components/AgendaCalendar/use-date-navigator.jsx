@@ -1,27 +1,20 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { addDays, eachDayOfInterval, format, startOfDay } from "date-fns";
 import { id } from "date-fns/locale";
 
 import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 
-export const useDateNavigator = (options = {}) => {
-  const {
-    initialDate = new Date(),
-    todayDate = new Date(),
-    intervalDays: initialIntervalDays = 5,
-    availablePeriods = null,
-  } = options;
-
+// Custom hook to handle available periods
+const useAvailablePeriods = (fallbackPeriods) => {
   const store = useAgendaNavigatorStore();
 
-  // Use store data if available, otherwise fallback to props
   const actualAvailablePeriods = useMemo(() => {
     if (store.availablePeriods) {
       return store.availablePeriods;
     }
-    return availablePeriods;
-  }, [store.availablePeriods, availablePeriods]);
+    return fallbackPeriods;
+  }, [store.availablePeriods, fallbackPeriods]);
 
   // Fetch available periods on mount
   useEffect(() => {
@@ -33,6 +26,88 @@ export const useDateNavigator = (options = {}) => {
     store.isLoadingPeriods,
     store.fetchAvailablePeriods,
   ]);
+
+  return actualAvailablePeriods;
+};
+
+// Custom hook to handle initialization
+const useInitialization = (
+  isInitialized,
+  initialize,
+  initialDate,
+  initialIntervalDays
+) => {
+  const hasInitialized = useRef(false);
+  const initializeRef = useRef(initialize);
+
+  // Keep initialize function reference updated
+  initializeRef.current = initialize;
+
+  useEffect(() => {
+    if (!isInitialized && !hasInitialized.current && initializeRef.current) {
+      hasInitialized.current = true;
+      try {
+        initializeRef.current({
+          initialDate,
+          intervalDays: initialIntervalDays,
+        });
+      } catch (error) {
+        console.error("Initialization failed:", error);
+        hasInitialized.current = false; // Reset on error
+      }
+    }
+  }, [isInitialized, initialDate, initialIntervalDays]); // Removed initialize from deps
+};
+
+// Custom hook to handle data fetching with better dependency tracking
+const useDataFetching = (
+  isInitialized,
+  status,
+  currentStartDate,
+  search,
+  filterAgendaStatus,
+  fetchSchedules
+) => {
+  const previousDeps = useRef("");
+
+  useEffect(() => {
+    if (!isInitialized || status !== "idle") {
+      return;
+    }
+
+    // Create a stable dependency string
+    const depsString = JSON.stringify({
+      date: currentStartDate?.toISOString?.() || currentStartDate,
+      search,
+      filter: filterAgendaStatus,
+    });
+
+    // Only fetch if dependencies have actually changed
+    if (depsString !== previousDeps.current) {
+      previousDeps.current = depsString;
+      fetchSchedules();
+    }
+  }, [
+    isInitialized,
+    status,
+    currentStartDate,
+    search,
+    filterAgendaStatus,
+    fetchSchedules,
+  ]);
+};
+
+export const useDateNavigator = (options = {}) => {
+  const {
+    initialDate = new Date(),
+    todayDate = new Date(),
+    intervalDays: initialIntervalDays = 5,
+    availablePeriods = null,
+  } = options;
+
+  const store = useAgendaNavigatorStore();
+  const actualAvailablePeriods = useAvailablePeriods(availablePeriods);
+
   const {
     isInitialized,
     initialize,
@@ -46,42 +121,26 @@ export const useDateNavigator = (options = {}) => {
     isNavigating,
     previousSchedules,
     lastInteraction,
+    isEverHaveScheduled,
   } = store;
 
-  useEffect(() => {
-    if (!isInitialized) {
-      initialize({ initialDate, intervalDays: initialIntervalDays });
-    }
-  }, [isInitialized, initialize, initialDate, initialIntervalDays]);
+  // Handle initialization
+  useInitialization(
+    isInitialized,
+    initialize,
+    initialDate,
+    initialIntervalDays
+  );
 
-  // This effect is the reactive "glue" that triggers a refetch whenever
-  // the date range, search, or filters change.
-  useEffect(() => {
-    console.log("🔄 useDateNavigator effect triggered:", {
-      isInitialized,
-      status,
-      search,
-      filterAgendaStatus,
-      timestamp: new Date().toLocaleTimeString(),
-    });
-
-    if (isInitialized && status === "idle") {
-      console.log("✅ Calling fetchSchedules from useDateNavigator");
-      fetchSchedules();
-    } else {
-      console.log("❌ Not calling fetchSchedules:", {
-        isInitialized,
-        status,
-      });
-    }
-  }, [
+  // Handle data fetching with improved dependency tracking
+  useDataFetching(
     isInitialized,
     status,
     currentStartDate,
     search,
     filterAgendaStatus,
-    fetchSchedules,
-  ]);
+    fetchSchedules
+  );
 
   const dateRange = useMemo(() => {
     const start = currentStartDate;
@@ -135,6 +194,7 @@ export const useDateNavigator = (options = {}) => {
     };
   }, [isInitialized, dateRange, todayDate, currentMonth]);
 
+  // Keep the exact same return structure as the original
   const finalResult = {
     ...store,
     ...derivedDateState,
@@ -160,6 +220,7 @@ export const useDateNavigator = (options = {}) => {
     displayedDates: derivedDateState.dates, // For backward compatibility
     availablePeriods: actualAvailablePeriods, // Pass through the availablePeriods from API
     todayDate, // Add todayDate for use in components
+    isEverHaveScheduled,
   };
 
   return finalResult;

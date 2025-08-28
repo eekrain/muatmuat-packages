@@ -49,7 +49,7 @@ export function InfoTooltip({
             side={side}
             align={align}
             className={cn(
-              "relative z-50 max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm leading-[1.2] shadow-xl",
+              "relative z-[52] max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm leading-[1.2] shadow-xl",
               className
             )}
             sideOffset={sideOffset}

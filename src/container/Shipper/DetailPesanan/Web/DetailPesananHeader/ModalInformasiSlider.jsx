@@ -41,6 +41,71 @@ export const ModalInformasiSlider = () => {
     },
   ];
 
+  // Translated onboarding slides
+  const onboardingSlides = [
+    {
+      imgSrc: "https://picsum.photos/120/120?random=1",
+      title: t(
+        "ModalInformasiSlider.onboardingTitleOrderStatus",
+        {},
+        "Status Pesanan"
+      ),
+      description: t(
+        "ModalInformasiSlider.onboardingDescOrderStatus",
+        {},
+        "Label informasi mengenai status terkini dari pesanan yang anda lakukan."
+      ),
+    },
+    {
+      imgSrc: "https://picsum.photos/120/120?random=2",
+      title: t(
+        "ModalInformasiSlider.onboardingTitleTrackDelivery",
+        {},
+        "Lacak Pengiriman"
+      ),
+      description: t(
+        "ModalInformasiSlider.onboardingDescTrackDelivery",
+        {},
+        "Monitor posisi driver dan estimasi waktu tiba secara real-time."
+      ),
+    },
+    {
+      imgSrc: "https://picsum.photos/120/120?random=3",
+      title: t(
+        "ModalInformasiSlider.onboardingTitleEasyPayment",
+        {},
+        "Pembayaran Mudah"
+      ),
+      description: t(
+        "ModalInformasiSlider.onboardingDescEasyPayment",
+        {},
+        "Berbagai metode pembayaran yang aman dan praktis untuk Anda."
+      ),
+    },
+    {
+      imgSrc: "https://picsum.photos/120/120?random=4",
+      title: t(
+        "ModalInformasiSlider.onboardingTitleCustomerSupport",
+        {},
+        "Dukungan Pelanggan"
+      ),
+      description: t(
+        "ModalInformasiSlider.onboardingDescCustomerSupport",
+        {},
+        "Tim kami siap membantu Anda 24/7 untuk setiap kendala."
+      ),
+    },
+    {
+      imgSrc: "https://picsum.photos/120/120?random=5",
+      title: t("ModalInformasiSlider.onboardingTitleComplete", {}, "Selesai!"),
+      description: t(
+        "ModalInformasiSlider.onboardingDescComplete",
+        {},
+        "Nikmati layanan pengiriman terbaik dari kami."
+      ),
+    },
+  ];
+
   return (
     <Modal closeOnOutsideClick={false}>
       <ModalTrigger>
@@ -82,33 +147,3 @@ export const ModalInformasiSlider = () => {
     </Modal>
   );
 };
-// Sample data for the slider slides
-const onboardingSlides = [
-  {
-    imgSrc: "https://picsum.photos/120/120?random=1",
-    title: "Status Pesanan",
-    description:
-      "Label informasi mengenai status terkini dari pesanan yang anda lakukan.",
-  },
-  {
-    imgSrc: "https://picsum.photos/120/120?random=2",
-    title: "Lacak Pengiriman",
-    description:
-      "Monitor posisi driver dan estimasi waktu tiba secara real-time.",
-  },
-  {
-    imgSrc: "https://picsum.photos/120/120?random=3",
-    title: "Pembayaran Mudah",
-    description: "Berbagai metode pembayaran yang aman dan praktis untuk Anda.",
-  },
-  {
-    imgSrc: "https://picsum.photos/120/120?random=4",
-    title: "Dukungan Pelanggan",
-    description: "Tim kami siap membantu Anda 24/7 untuk setiap kendala.",
-  },
-  {
-    imgSrc: "https://picsum.photos/120/120?random=5",
-    title: "Selesai!",
-    description: "Nikmati layanan pengiriman terbaik dari kami.",
-  },
-];

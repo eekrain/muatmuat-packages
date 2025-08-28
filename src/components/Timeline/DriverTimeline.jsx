@@ -179,6 +179,20 @@ const ItemWithLightbox = ({
     t,
   });
 
+  const labelDetail = () => {
+    if (
+      item.statusCode.startsWith("MENUJU_") ||
+      item.statusCode.startsWith("PENGIRIMAN_")
+    ) {
+      if (item.beforeStatusCode.includes("MUAT"))
+        return t("labelLihatBuktiMuatBarangPOD");
+      else return t("labelLihatBuktiBongkarBarangPOD");
+    }
+    return t("labelLihatBuktiStatus", {
+      statusName: statusMeta.label,
+    });
+  };
+
   return (
     <NewTimelineItem
       variant="bullet-driver-status"
@@ -197,12 +211,7 @@ const ItemWithLightbox = ({
       buttonDetail={
         item.requiresPhoto && (
           <ButtonMini className="mt-1" onClick={handleProofClick}>
-            {item.statusCode.startsWith("MENUJU_") ||
-            item.statusCode.startsWith("PENGIRIMAN_")
-              ? t("labelLihatBuktiMuatBarangPOD")
-              : t("labelLihatBuktiStatus", {
-                  statusName: statusMeta.label,
-                })}
+            {labelDetail()}
           </ButtonMini>
         )
       }

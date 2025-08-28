@@ -100,7 +100,7 @@ export const useTransporterLogic = ({
 
   const performSearch = () => {
     // Only perform search if length > 3 or if clearing search
-    if (searchValue.trim().length > 3 || searchValue.trim().length === 0) {
+    if (searchValue.trim().length >= 3 || searchValue.trim().length === 0) {
       setSearchQuery(searchValue.trim());
       setLastAction("search");
       setCurrentPage(1);

@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 
 // Mock config for UI state testing
-const IS_MOCK = true;
+const IS_MOCK = false;
 const MOCK_CONFIG = {
   showEmptyState: false,
   isSuspended: false,
