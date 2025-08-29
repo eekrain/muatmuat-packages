@@ -1,7 +1,6 @@
 import useSWR from "swr";
 
-// 1. Impor fetcher yang sudah dikonfigurasi dari file terpusat
-import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
+import { fetcherMuatrans } from "@/lib/axios";
 
 /**
  * Fetcher function for getting the list of master banks using the pre-configured fetcher.
@@ -13,7 +12,7 @@ export const getMasterBanks = ([url, params]) => {
   // 3. Gunakan fetcherMuatransCS. Interceptor-nya akan menangani header Authorization secara otomatis.
   //    Kita tambahkan .then() untuk memastikan SWR menerima langsung `data`-nya,
   //    sesuai perilaku kode asli.
-  return fetcherMuatransCS.get(url, { params }).then((res) => res.data);
+  return fetcherMuatrans.get(url, { params }).then((res) => res.data);
 };
 
 /**

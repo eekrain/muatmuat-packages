@@ -1,6 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { ChevronDown } from "lucide-react";
+
+import { useGetFleetTimelineMutation } from "@/services/CS/monitoring/lacak-armada/getFleetTimeline";
 
 import { BadgeSOSPopover } from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
@@ -16,32 +20,15 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import { getStatusDriverMetadata } from "@/lib/normalizers/detailpesanan/getStatusDriverMetadata";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 import { AppliedFilterBubbles } from "./AppliedFilterBubbles";
 import { Filter } from "./Filter";
+import { ModalPilihHubungi } from "./ModalPilihHubungi";
 import {
   PosisiArmadaProvider,
   usePosisiArmada,
 } from "./use-posisi-armada-store";
-
-const MOCK_SOS_POPOVER = {
-  licensePlate: "AB 1234 CD",
-  truckIcon: null,
-  reportTime: "10 Jan 2025 12:00 WIB",
-  images: [
-    "https://picsum.photos/200?random=1",
-    "https://picsum.photos/200?random=2",
-    "https://picsum.photos/200?random=3",
-    "https://picsum.photos/200?random=4",
-  ],
-  vehicleType: "Colt Diesel Double - Bak Terbuka",
-  driverName: "Ardian Eka Candra",
-  driverPhone: "0823-3123-1290",
-  lastLocation: "Kab. Batu",
-  orderNumber: "MT25A002A",
-  pickupLocation: "Kota Surabaya, Kec. Tegalsari",
-  dropoffLocation: "Kab. Pasuruan, Kec. Klojen",
-};
 
 const InfoItem = ({ icon, value }) => (
   <div className="flex items-center gap-1.5">
@@ -62,12 +49,48 @@ const VehicleTrackingCard = ({
   onToggle,
   onViewSos,
   t,
+  orderId,
 }) => {
   const statusDriver = getStatusDriverMetadata({
-    orderStatus: vehicle.driverStatus.mainStatus,
-    driverStatus: vehicle.driverStatus.subStatus,
+    orderStatus: vehicle.driver.status.mainStatus,
+    driverStatus: vehicle.driver.status.subStatus,
     t,
   });
+
+  const { data: timelineData, trigger: refetchTimeline } =
+    useGetFleetTimelineMutation();
+
+  const estimationLabel = () => {
+    const statusCode =
+      timelineData?.statusDefinitions?.[0]?.children?.[0].statusCode;
+    if (!statusCode) return null;
+
+    let index = statusCode.split("_")?.slice(-1)[0];
+    if (isNaN(Number(index))) {
+      index = "";
+    }
+
+    if (statusCode.includes("MUAT")) {
+      return t(
+        "LihatPosisiArmada.estimatedArrivalMuat",
+        { index },
+        "Estimasi Tiba di Lokasi Muat"
+      ).trim();
+    }
+
+    return t(
+      "LihatPosisiArmada.estimatedArrivalBongkar",
+      { index },
+      "Estimasi Tiba di Lokasi Bongkar"
+    ).trim();
+  };
+
+  useEffect(() => {
+    if (isExpanded) {
+      refetchTimeline(orderId, vehicle.vehicleId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpanded, orderId, vehicle.vehicleId]);
 
   return (
     <div className="flex flex-col rounded-lg border border-neutral-300 p-4">
@@ -112,10 +135,10 @@ const VehicleTrackingCard = ({
             <div className="mt-1 flex items-center gap-2">
               <InfoItem
                 icon="/icons/transporter16.svg"
-                value={vehicle.transporterName}
+                value={vehicle.transporter.name}
               />
               <div className="size-0.5 rounded-full bg-neutral-600"></div>
-              <InfoItem icon="/icons/user16.svg" value={vehicle.driverName} />
+              <InfoItem icon="/icons/user16.svg" value={vehicle.driver.name} />
             </div>
           </div>
         </div>
@@ -148,47 +171,43 @@ const VehicleTrackingCard = ({
           isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="mt-4 border-t border-neutral-300">
-          {vehicle?.estimatedArrival && (
-            <div className="mt-4 bg-neutral-100 p-3">
-              <div className="flex items-center justify-between gap-2">
-                <span className="w-[120px] text-xs font-medium text-neutral-600">
-                  {t(
-                    "LihatPosisiArmada.estimatedArrival",
-                    {},
-                    "Estimasi Tiba di Lokasi Bongkar"
-                  )}
-                </span>
-                <span className="text-xs font-semibold">
-                  {vehicle.estimatedArrival
-                    ? `${new Date(vehicle.estimatedArrival).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" })} WIB`
-                    : "-"}
-                </span>
+        {timelineData && (
+          <div className="mt-4 border-t border-neutral-300">
+            {timelineData?.estimatedArrival && (
+              <div className="mt-4 bg-neutral-100 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="w-[120px] text-xs font-medium text-neutral-600">
+                    {estimationLabel()}
+                  </span>
+                  <span className="text-xs font-semibold">
+                    {formatDate(timelineData?.estimatedArrival)}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-          <div className="pt-4">
-            <h3 className="mb-4 text-xs font-semibold text-neutral-900">
-              {t(
-                "LihatPosisiArmada.driverStatusDetail",
-                {},
-                "Detail Status Driver"
-              )}
-            </h3>
-            <DriverTimeline
-              dataTimeline={vehicle.timeline}
-              onClickProof={(photos) =>
-                alert(
-                  t(
-                    "LihatPosisiArmada.viewingProof",
-                    { photos: photos.join(", ") },
-                    "Melihat bukti: {photos}"
+            )}
+            <div className="pt-4">
+              <h3 className="mb-4 text-xs font-semibold text-neutral-900">
+                {t(
+                  "LihatPosisiArmada.driverStatusDetail",
+                  {},
+                  "Detail Status Driver"
+                )}
+              </h3>
+              <DriverTimeline
+                dataTimeline={timelineData}
+                onClickProof={(photos) =>
+                  alert(
+                    t(
+                      "LihatPosisiArmada.viewingProof",
+                      { photos: photos.join(", ") },
+                      "Melihat bukti: {photos}"
+                    )
                   )
-                )
-              }
-            />
+                }
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -299,7 +318,11 @@ const LihatPosisiArmadaContent = ({ onClose: _onClose, orderId }) => {
                   index={index}
                   isExpanded={!!expandedVehicles[vehicle.vehicleId]}
                   onToggle={() => handleToggleVehicle(vehicle.vehicleId)}
-                  onViewSos={() => handleViewSos(MOCK_SOS_POPOVER)}
+                  onViewSos={() =>
+                    vehicle.sosStatus?.sosId
+                      ? handleViewSos(vehicle.sosStatus.sosId)
+                      : null
+                  }
                   t={t}
                 />
               ))
@@ -346,7 +369,13 @@ const LihatPosisiArmadaContent = ({ onClose: _onClose, orderId }) => {
 
       {/* SOS Popover */}
       <div className="absolute bottom-0 right-[-72px]">
-        <BadgeSOSPopover data={sosPopoverData} onClose={handleCloseSos} />
+        <BadgeSOSPopover
+          data={sosPopoverData}
+          onClose={handleCloseSos}
+          footer={
+            <ModalPilihHubungi sosData={sosPopoverData} orderId={orderId} />
+          }
+        />
       </div>
     </div>
   );

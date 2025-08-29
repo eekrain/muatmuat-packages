@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useCompleteTransportRequest } from "@/services/CS/monitoring/permintaan-angkut/completeTransportRequest";
-import { useUploadResolutionPhotos } from "@/services/CS/monitoring/permintaan-angkut/uploadResolutionPhotos";
+import { useUploadVehiclePhoto } from "@/services/CS/monitoring/permintaan-angkut/uploadVehiclePhoto";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
@@ -31,6 +31,12 @@ const ModalCatatanPenyelesaian = ({
   const [catatanError, setCatatanError] = useState("");
   const [tidakMenanggapi, setTidakMenanggapi] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([null, null, null, null]);
+  const [uploadedPhotoUrls, setUploadedPhotoUrls] = useState([
+    null,
+    null,
+    null,
+    null,
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Extract data from fleetNoteData
@@ -42,21 +48,29 @@ const ModalCatatanPenyelesaian = ({
   const completionDuration = 0;
 
   // SWR mutation hooks
-  const { trigger: uploadPhotos } = useUploadResolutionPhotos(requestId);
+  const { trigger: uploadVehiclePhoto } = useUploadVehiclePhoto();
   const { trigger: completeRequest } = useCompleteTransportRequest(requestId);
 
-  const handleFileUpload = (file, index) => {
+  const handleFileUpload = async (file, index) => {
     const newFiles = [...uploadedFiles];
+    const newPhotoUrls = [...uploadedPhotoUrls];
+
     if (file === null) {
+      // Remove file and photo URL
       newFiles[index] = null;
+      newPhotoUrls[index] = null;
+
+      // Shift remaining items left
       for (let i = index; i < newFiles.length - 1; i++) {
         newFiles[i] = newFiles[i + 1];
+        newPhotoUrls[i] = newPhotoUrls[i + 1];
       }
       newFiles[newFiles.length - 1] = null;
+      newPhotoUrls[newPhotoUrls.length - 1] = null;
     } else {
+      // Validate file size
       if (file.size > 10 * 1024 * 1024) {
-        // 10MB
-        alert(
+        toast.error(
           t(
             "ModalCatatanPenyelesaian.alertFileSizeExceeds10MB",
             {},
@@ -65,18 +79,65 @@ const ModalCatatanPenyelesaian = ({
         );
         return;
       }
+
+      // Find first empty slot
       const firstEmptyIndex = newFiles.findIndex((f) => f === null);
       if (firstEmptyIndex !== -1) {
         newFiles[firstEmptyIndex] = file;
+
+        // Upload immediately
+        try {
+          const formData = new FormData();
+          formData.append("photo", file);
+
+          const uploadResult = await uploadVehiclePhoto(formData);
+          const photoUrl = uploadResult?.data?.Data?.photoUrl;
+
+          if (photoUrl) {
+            newPhotoUrls[firstEmptyIndex] = photoUrl;
+            toast.success(
+              t(
+                "ModalCatatanPenyelesaian.successUploadPhoto",
+                {},
+                "Foto berhasil diupload"
+              )
+            );
+          } else {
+            // Upload failed, remove file
+            newFiles[firstEmptyIndex] = null;
+            toast.error(
+              t(
+                "ModalCatatanPenyelesaian.errorUploadPhoto",
+                {},
+                "Gagal upload foto"
+              )
+            );
+            return;
+          }
+        } catch {
+          // Upload failed, remove file
+          newFiles[firstEmptyIndex] = null;
+          toast.error(
+            t(
+              "ModalCatatanPenyelesaian.errorUploadPhoto",
+              {},
+              "Gagal upload foto"
+            )
+          );
+          return;
+        }
       }
     }
+
     setUploadedFiles(newFiles);
+    setUploadedPhotoUrls(newPhotoUrls);
   };
 
   const handleClose = () => {
     setCatatan("");
     setTidakMenanggapi(false);
     setUploadedFiles([null, null, null, null]);
+    setUploadedPhotoUrls([null, null, null, null]);
     setIsSubmitting(false);
     onClose?.();
   };
@@ -109,44 +170,10 @@ const ModalCatatanPenyelesaian = ({
     setIsSubmitting(true);
 
     try {
-      // 1. Upload files if any
-      let attachmentIds = [];
-      const filesToUpload = uploadedFiles.filter((f) => f !== null);
+      // Get uploaded photo URLs (skip file upload since photos are already uploaded)
+      const attachmentIds = uploadedPhotoUrls.filter((url) => url !== null);
 
-      if (filesToUpload.length > 0) {
-        const formData = new FormData();
-
-        // Add all photos first
-        filesToUpload.forEach((file) => {
-          formData.append("photos", file);
-        });
-
-        // Add photoDescriptions as JSON array
-        const photoDescriptions = filesToUpload.map(
-          (file, idx) => file.name || `Lampiran ${idx + 1}`
-        );
-        formData.append("photoDescriptions", JSON.stringify(photoDescriptions));
-
-        formData.append("resolutionContext", "completion_documentation");
-        formData.append("timestamp", new Date().toISOString());
-
-        try {
-          const uploadResult = await uploadPhotos(formData);
-          attachmentIds = uploadResult?.data?.Data?.attachmentIds || [];
-        } catch {
-          toast.error(
-            t(
-              "ModalCatatanPenyelesaian.errorUploadPhotos",
-              {},
-              "Gagal upload foto pendukung"
-            )
-          );
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // 2. Submit completion
+      // Submit completion with photo URLs
       const completionPayload = {
         resolutionType: tidakMenanggapi ? "no_response" : "manual_completion",
         resolutionNote: !tidakMenanggapi ? catatan : undefined,
@@ -160,11 +187,13 @@ const ModalCatatanPenyelesaian = ({
           finalPrice: finalPrice || 0,
           completionDuration: completionDuration || 0,
         },
-        attachmentIds,
+        attachmentIds, // Now contains photo URLs instead of attachment IDs
         followUpRequired: false,
         followUpDate: null,
         qualityScore: 5,
       };
+
+      console.log(completionPayload);
 
       try {
         await completeRequest(completionPayload);
