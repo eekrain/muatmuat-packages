@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
-import { useGetOrdersMultiFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getOrdersMultiFleetTracking";
+import { useGetFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getFleetTracking";
 
 import { BadgeSOSPopover } from "@/components/Badge/BadgeSOSPopover";
 import { BadgeStatusPesanan as BadgeStatus } from "@/components/Badge/BadgeStatusPesanan";
@@ -27,8 +27,8 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
   const [expandedVehiclesChange, setExpandedVehiclesChange] = useState({});
   const [openSosPopover, setOpenSosPopover] = useState(null); // vehicleId or null
 
-  // Fetch multi-fleet tracking data
-  const { data, isLoading } = useGetOrdersMultiFleetTracking(orderId);
+  // Fetch fleet tracking data
+  const { data, isLoading } = useGetFleetTracking(orderId);
 
   const toggleVehicle = (id) => {
     setExpandedVehicles((prev) => ({
@@ -92,9 +92,9 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            {(data?.vehicles || []).map((vehicle, index) => (
+            {(data?.fleetDetails || []).map((fleet, index) => (
               <div
-                key={vehicle.vehicleId}
+                key={fleet.id}
                 className="flex flex-col rounded-lg border border-neutral-300 p-4"
               >
                 <div className="relative">
@@ -102,7 +102,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     <BadgeStatus
                       variant={
                         getTrackingStatusBadgeWithTranslation(
-                          vehicle.trackingStatus,
+                          data?.orderInfo?.orderStatus || fleet.fleetStatus,
                           t
                         ).variant
                       }
@@ -110,19 +110,19 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                     >
                       {
                         getTrackingStatusBadgeWithTranslation(
-                          vehicle.trackingStatus,
+                          data?.orderInfo?.orderStatus || fleet.fleetStatus,
                           t
                         ).label
                       }
                     </BadgeStatus>
-                    {vehicle.sosStatus?.hasSos && (
+                    {fleet.sosStatus?.hasSos && (
                       <>
                         <div className="flex h-[24px] w-10 items-center justify-center rounded-md bg-error-400 text-xs font-semibold text-error-50">
                           {t("CardLacakArmada.sosLabel", {}, "SOS")}
                         </div>
                         <Button
                           className="text-xs"
-                          onClick={() => setOpenSosPopover(vehicle.vehicleId)}
+                          onClick={() => setOpenSosPopover(fleet.id)}
                           variant="link"
                         >
                           {t("CardLacakArmada.viewSOS", {}, "Lihat SOS")}
@@ -142,7 +142,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
 
                     <div className="max-w-[376px] flex-1">
                       <h3 className="text-sm font-bold text-neutral-900">
-                        {vehicle.licensePlate}
+                        {fleet.licensePlate}
                       </h3>
                       <div className="mt-1 flex items-center gap-1.5">
                         <IconComponent
@@ -150,7 +150,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           className="h-4 w-4 flex-shrink-0 text-neutral-600"
                         />
                         <span className="truncate text-xs font-medium text-neutral-800">
-                          {vehicle.driverName}
+                          {fleet.driverInfo?.name || fleet.driverName}
                         </span>
                       </div>
                     </div>
@@ -158,10 +158,10 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
 
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
                     <button
-                      onClick={() => toggleVehicle(vehicle.vehicleId)}
+                      onClick={() => toggleVehicle(fleet.id)}
                       className="rounded-full p-1 transition-colors hover:bg-neutral-100"
                       aria-label={
-                        expandedVehicles[vehicle.vehicleId]
+                        expandedVehicles[fleet.id]
                           ? t(
                               "LihatPosisiArmada.hideDetail",
                               {},
@@ -177,14 +177,14 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                       <ChevronDown
                         className={cn(
                           "h-5 w-5 text-neutral-600 transition-transform",
-                          expandedVehicles[vehicle.vehicleId] && "rotate-180"
+                          expandedVehicles[fleet.id] && "rotate-180"
                         )}
                       />
                     </button>
                   </div>
                 </div>
 
-                {expandedVehicles[vehicle.vehicleId] && (
+                {expandedVehicles[fleet.id] && (
                   <div className="mt-4 border-t border-neutral-300 pt-4">
                     <div className="bg-neutral-100 p-3">
                       <div className="flex items-center justify-between gap-2">
@@ -196,10 +196,10 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           )}
                         </span>
                         <span className="text-xs font-semibold">
-                          {vehicle.estimatedArrival &&
-                          !vehicle?.replacementFleet?.id
+                          {fleet.estimatedArrival &&
+                          !fleet?.replacementFleet?.id
                             ? `${new Date(
-                                vehicle.estimatedArrival
+                                fleet.estimatedArrival
                               ).toLocaleString("id-ID", {
                                 day: "numeric",
                                 month: "short",
@@ -223,39 +223,56 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                       </h3>
                       <DriverTimeline
                         dataTimeline={
-                          vehicle.timeline || {
-                            statusDefinitions: [
-                              {
-                                mappedOrderStatus:
-                                  vehicle.driverStatus?.mainStatus ||
-                                  "CONFIRMED",
-                                date:
-                                  vehicle.currentLocation?.lastUpdate ||
-                                  new Date().toISOString(),
-                                children: [
+                          fleet.milestones && fleet.milestones.length > 0
+                            ? {
+                                statusDefinitions: [
                                   {
-                                    statusCode:
-                                      vehicle.driverStatus?.subStatus ||
-                                      "IN_TRANSIT",
+                                    mappedOrderStatus:
+                                      data?.orderInfo?.orderStatus ||
+                                      "IN_PROGRESS",
                                     date:
-                                      vehicle.currentLocation?.lastUpdate ||
+                                      fleet.milestones[
+                                        fleet.milestones.length - 1
+                                      ]?.completedAt ||
                                       new Date().toISOString(),
-                                    requiresPhoto: false,
+                                    children: fleet.milestones.map(
+                                      (milestone) => ({
+                                        statusCode: milestone.statusName
+                                          .toUpperCase()
+                                          .replace(/ /g, "_"),
+                                        statusName: milestone.statusName,
+                                        date: milestone.completedAt,
+                                        requiresPhoto: false,
+                                        isCompleted: milestone.isCompleted,
+                                        icon: milestone.icon,
+                                        colorCode: milestone.colorCode,
+                                        photos: [],
+                                      })
+                                    ),
                                   },
                                 ],
-                              },
-                            ],
-                          }
+                              }
+                            : {
+                                statusDefinitions: [
+                                  {
+                                    mappedOrderStatus:
+                                      data?.orderInfo?.orderStatus ||
+                                      "IN_PROGRESS",
+                                    date: new Date().toISOString(),
+                                    children: [],
+                                  },
+                                ],
+                              }
                         }
-                        onClickProof={(photos) =>
-                          alert(`Viewing proof: ${photos}`)
-                        }
+                        onClickProof={() => {
+                          // Handle proof viewing
+                        }}
                       />
                     </div>
                   </div>
                 )}
 
-                {vehicle?.replacementFleet?.id && (
+                {fleet?.replacementFleet?.id && (
                   <>
                     <div className="flex items-center justify-between gap-4 text-nowrap py-4">
                       <div className="w-full border-t border-neutral-400"></div>
@@ -284,7 +301,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
 
                       <div className="max-w-[376px] flex-1">
                         <h3 className="text-sm font-bold text-neutral-900">
-                          {vehicle.replacementFleet.licensePlate}
+                          {fleet.replacementFleet.licensePlate}
                         </h3>
                         <div className="mt-1 flex items-center gap-1.5">
                           <IconComponent
@@ -292,16 +309,16 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                             className="h-4 w-4 flex-shrink-0 text-neutral-600"
                           />
                           <span className="truncate text-xs font-medium text-neutral-800">
-                            {vehicle.replacementFleet.driverName}
+                            {fleet.replacementFleet.driverName}
                           </span>
                         </div>
                       </div>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2">
                         <button
-                          onClick={() => toggleVehicleChange(vehicle.id)}
+                          onClick={() => toggleVehicleChange(fleet.id)}
                           className="rounded-full p-1 transition-colors hover:bg-neutral-100"
                           aria-label={
-                            expandedVehiclesChange[vehicle.id]
+                            expandedVehiclesChange[fleet.id]
                               ? t(
                                   "LihatPosisiArmada.hideDetail",
                                   {},
@@ -317,13 +334,13 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           <ChevronDown
                             className={cn(
                               "h-5 w-5 text-neutral-600 transition-transform",
-                              expandedVehiclesChange[vehicle.id] && "rotate-180"
+                              expandedVehiclesChange[fleet.id] && "rotate-180"
                             )}
                           />
                         </button>
                       </div>
                     </div>
-                    {expandedVehiclesChange[vehicle.id] && (
+                    {expandedVehiclesChange[fleet.id] && (
                       <div className="mt-4 border-t border-neutral-300 pt-4">
                         <div className="bg-neutral-100 p-3">
                           <div className="flex items-center justify-between gap-2">
@@ -335,10 +352,10 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                               )}
                             </span>
                             <span className="text-xs font-semibold">
-                              {vehicle.estimatedArrival &&
-                              !vehicle?.replacementFleet?.id
+                              {fleet.estimatedArrival &&
+                              !fleet?.replacementFleet?.id
                                 ? `${new Date(
-                                    vehicle.estimatedArrival
+                                    fleet.estimatedArrival
                                   ).toLocaleString("id-ID", {
                                     day: "numeric",
                                     month: "short",
@@ -362,14 +379,14 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           </h3>
                           <DriverTimeline
                             dataTimeline={
-                              vehicle.replacementFleet.timeline || {
+                              fleet.replacementFleet.timeline || {
                                 statusDefinitions: [
                                   {
                                     mappedOrderStatus:
-                                      vehicle.driverStatus?.mainStatus ||
+                                      fleet.driverStatus?.mainStatus ||
                                       "CONFIRMED",
                                     date:
-                                      vehicle.currentLocation?.lastUpdate ||
+                                      fleet.lastLocationUpdate ||
                                       new Date().toISOString(),
                                   },
                                 ],
@@ -394,26 +411,28 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
       {/* Show BadgeSOSPopover only when openSosPopover is set */}
       {openSosPopover &&
         (() => {
-          const vehicle = (data?.vehicles || []).find(
-            (v) => v.vehicleId === openSosPopover
+          const fleet = (data?.fleetDetails || []).find(
+            (f) => f.id === openSosPopover
           );
-          if (!vehicle) return null;
-          const index = (data?.vehicles || []).findIndex(
-            (v) => v.vehicleId === openSosPopover
+          if (!fleet) return null;
+          const index = (data?.fleetDetails || []).findIndex(
+            (f) => f.id === openSosPopover
           );
           return (
             <div className="absolute bottom-0 right-[-72px] z-50">
               <BadgeSOSPopover
                 data={{
-                  licensePlate: vehicle.licensePlate,
+                  licensePlate: fleet.licensePlate,
                   truckIcon: `/img/mock-armada/${["one", "two", "three"][index % 3]}.png`,
                   reportTime: "10 Jan 2025 12:00 WIB",
                   images: [],
-                  vehicleType: "Colt Diesel Double - Bak Terbuka",
-                  driverName: vehicle.driverName,
-                  driverPhone: "0823-3123-1290",
+                  vehicleType:
+                    fleet.truckType || "Colt Diesel Double - Bak Terbuka",
+                  driverName: fleet.driverInfo?.name || fleet.driverName,
+                  driverPhone:
+                    fleet.driverInfo?.phoneNumber || "0823-3123-1290",
                   lastLocation: "Kab. Batu",
-                  orderNumber: data?.orderCode || "N/A",
+                  orderNumber: data?.orderInfo?.orderCode || "N/A",
                   pickupLocation:
                     data?.pickupLocations?.[0]?.fullAddress || "N/A",
                   dropoffLocation:

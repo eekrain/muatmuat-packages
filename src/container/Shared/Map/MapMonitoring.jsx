@@ -1,6 +1,13 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   GoogleMap,
@@ -172,6 +179,7 @@ export const MapMonitoring = ({
   locationMarkers = [],
   locationPolyline = [],
   encodedTruckPolyline = "",
+  fleetPolylines = [], // Array of fleet polylines with encodedPolyline
   mapOptions = {},
   showLicensePlate = true,
   showTruck = true,
@@ -179,7 +187,6 @@ export const MapMonitoring = ({
   onMapDrag,
   onMapZoom,
   onMapCenterChange,
-  Marker = TruckMarker,
 }) => {
   // All hooks must be called in the same order every render
   const { isLoaded, loadError } = useLoadScript({
@@ -206,6 +213,19 @@ export const MapMonitoring = ({
     );
   }, [encodedTruckPolyline, isLoaded]);
 
+  // Decode fleet polylines
+  const decodedFleetPolylines = useMemo(() => {
+    if (!fleetPolylines || !isLoaded || !window.google) {
+      return [];
+    }
+    return fleetPolylines.map((fleet) => ({
+      ...fleet,
+      decodedPath: fleet.encodedPolyline
+        ? window.google.maps.geometry.encoding.decodePath(fleet.encodedPolyline)
+        : [],
+    }));
+  }, [fleetPolylines, isLoaded]);
+
   // Polyline options - same as MapWithPath
   const pathOptions = {
     strokeColor: "#DD7B02",
@@ -218,6 +238,13 @@ export const MapMonitoring = ({
     strokeOpacity: 1,
     strokeWeight: 6,
   };
+
+  // Fleet polyline options - always #FFC217
+  const getFleetPathOptions = () => ({
+    strokeColor: "#FFC217", // Yellow color for fleet routes
+    strokeOpacity: 1,
+    strokeWeight: 6,
+  });
 
   const combinedMapOptions = useMemo(
     () => ({
@@ -341,6 +368,37 @@ export const MapMonitoring = ({
           <Polyline path={truckPolyline} options={truckPathOptions} />
         )}
 
+        {/* Render fleet polylines */}
+        {decodedFleetPolylines.map((fleet, index) =>
+          fleet.decodedPath && fleet.decodedPath.length >= 2 ? (
+            <React.Fragment key={`fleet-${index}-${fleet.plateNumber}`}>
+              <Polyline
+                path={fleet.decodedPath}
+                options={getFleetPathOptions()}
+              />
+              {/* Start marker for fleet route */}
+              <OverlayViewF
+                position={fleet.decodedPath[0]}
+                mapPaneName="floatPane"
+                getPixelPositionOffset={getPixelPositionOffset}
+              >
+                <div className="pointer-events-auto flex flex-col items-center">
+                  <img
+                    src="/icons/marker-lokasi-start.svg"
+                    alt="Start Location"
+                    width={23}
+                    height={28}
+                    style={{
+                      display: "block",
+                      position: "relative",
+                    }}
+                  />
+                </div>
+              </OverlayViewF>
+            </React.Fragment>
+          ) : null
+        )}
+
         {/* Render location markers (non-truck markers) */}
         {processedMarkers
           .filter((marker) => !marker.fleet)
@@ -351,11 +409,23 @@ export const MapMonitoring = ({
               mapPaneName="floatPane"
               getPixelPositionOffset={getPixelPositionOffset}
             >
-              <Marker
-                marker={marker}
-                showLicensePlate={showLicensePlate}
-                truckSize={truckSize}
-              />
+              <div className="pointer-events-auto flex flex-col items-center">
+                {marker.label && (
+                  <div className="mb-1 h-4 whitespace-nowrap rounded bg-neutral-900 px-1 text-center text-xs font-bold tracking-tighter text-white">
+                    {marker.label}
+                  </div>
+                )}
+                <img
+                  src={marker.icon}
+                  alt={marker.title}
+                  width={marker.size?.width || 45}
+                  height={marker.size?.height || 45}
+                  style={{
+                    display: "block",
+                    position: "relative",
+                  }}
+                />
+              </div>
             </OverlayViewF>
           ))}
 
@@ -370,7 +440,7 @@ export const MapMonitoring = ({
                 mapPaneName="floatPane"
                 getPixelPositionOffset={getPixelPositionOffset}
               >
-                <Marker
+                <TruckMarker
                   marker={marker}
                   showLicensePlate={showLicensePlate}
                   truckSize={truckSize}

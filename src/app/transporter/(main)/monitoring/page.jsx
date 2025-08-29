@@ -6,6 +6,8 @@ import { useEffect, useReducer, useState } from "react";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 import { useGetUrgentIssueCount } from "@/services/Transporter/monitoring/getUrgentIssues";
+import { useGetFleetTracking } from "@/services/Transporter/monitoring/lacak-armada/getFleetTracking";
+import { useGetLocationDetails } from "@/services/Transporter/monitoring/lacak-armada/getLocationDetails";
 
 import {
   MonitoringTabTrigger,
@@ -81,6 +83,16 @@ const Page = () => {
 
   const { count: urgentCount, isLoading: isCountLoading } =
     useGetUrgentIssueCount();
+
+  // Fetch location details when an order is selected for tracking
+  const { data: locationDetails } = useGetLocationDetails(
+    selections.selectedOrderForTracking?.id
+  );
+
+  // Fetch fleet tracking data when an order is selected for tracking
+  const { data: fleetTrackingData } = useGetFleetTracking(
+    selections.selectedOrderForTracking?.id
+  );
 
   // Create combined state object for easier access
   const state = { panels, map, filters, selections };
@@ -279,6 +291,118 @@ const Page = () => {
       };
     }) || [];
 
+  // Create location markers from fetched location details (for Lokasi Muat and Lokasi Bongkar)
+  // and fleet markers from tracked order
+  const locationMarkers = [];
+  const locationPolyline = []; // For connecting pickup and dropoff points
+  const fleetPolylines = []; // For fleet routes
+
+  if (panels.leftPanelMode === "posisi") {
+    // Add fleet polylines from locationDetails
+    if (locationDetails?.fleets) {
+      locationDetails.fleets.forEach((fleet) => {
+        if (fleet.encodedPolyline) {
+          fleetPolylines.push({
+            encodedPolyline: fleet.encodedPolyline,
+            plateNumber: fleet.plateNumber,
+            hasSos: fleet.hasSos,
+          });
+        }
+      });
+    }
+
+    // Add fleet markers from the tracked order
+    if (fleetTrackingData?.fleetDetails) {
+      fleetTrackingData.fleetDetails.forEach((fleet) => {
+        // Only add fleet marker if it has location data
+        if (fleet.lastLocationUpdate || fleet.currentLocation) {
+          const location = fleet.currentLocation || fleet.lastLocation;
+          if (location?.latitude && location?.longitude) {
+            locationMarkers.push({
+              position: {
+                lat: location.latitude,
+                lng: location.longitude,
+              },
+              title: fleet.licensePlate,
+              icon: "/icons/truck-icon.svg", // Use appropriate truck icon
+              rotation: fleet.rotation || 0,
+              fleet: {
+                id: fleet.id,
+                licensePlate: fleet.licensePlate,
+                driverName: fleet.driverInfo?.name,
+                status: fleet.fleetStatus,
+                hasSOSAlert: fleet.sosStatus?.hasSos,
+              },
+              onClick: handleTruckClick,
+            });
+          }
+        }
+      });
+    }
+
+    if (locationDetails) {
+      // Add pickup location markers
+      if (locationDetails.pickupLocation) {
+        locationDetails.pickupLocation.forEach((location, index) => {
+          const position = {
+            lat: location.latitude,
+            lng: location.longitude,
+          };
+
+          locationMarkers.push({
+            position,
+            title: `Lokasi Muat ${location.sequence}`,
+            label: `Lokasi Muat ${location.sequence}`,
+            icon: "/icons/marker-lokasi-muat.svg",
+            type: "pickup",
+            size: { width: 56, height: 56 },
+            info: {
+              address: location.fullAddress,
+              district: location.district,
+              city: location.city,
+              picName: location.picName,
+              picPhoneNumber: location.picPhoneNumber,
+              sequence: location.sequence,
+            },
+          });
+
+          // Add to polyline path
+          locationPolyline.push(position);
+        });
+      }
+
+      // Add dropoff location markers
+      if (locationDetails.dropoffLocations) {
+        locationDetails.dropoffLocations.forEach((location, index) => {
+          const position = {
+            lat: location.latitude,
+            lng: location.longitude,
+          };
+
+          locationMarkers.push({
+            position,
+            title: `Lokasi Bongkar ${location.sequence}`,
+            label: `Lokasi Bongkar ${location.sequence}`,
+            icon: "/icons/marker-lokasi-bongkar.svg",
+            type: "dropoff",
+            size: { width: 58, height: 58 },
+            info: {
+              address: location.fullAddress,
+              district: location.district,
+              city: location.city,
+              picName: location.picName,
+              picPhoneNumber: location.picPhoneNumber,
+              sequence: location.sequence,
+            },
+          });
+
+          // Add to polyline path
+          locationPolyline.push(position);
+        });
+      }
+    }
+  }
+
   // Apply filters to fleet markers
   const fleetMarkers = allFleetMarkers.filter((marker) => {
     // If no filters selected, show all
@@ -319,7 +443,10 @@ const Page = () => {
   }, {});
 
   // Always calculate the bounds to get the proper center
-  const calculatedBounds = calculateMapBounds(fleetMarkers);
+  // Use only location markers when in tracking mode
+  const markersForBounds =
+    panels.leftPanelMode === "posisi" ? locationMarkers : fleetMarkers;
+  const calculatedBounds = calculateMapBounds(markersForBounds);
 
   // Zoom handlers are now imported from useMonitoringHandlers hook
   // Need to create handleZoomIn and handleZoomOut that use calculatedBounds
@@ -378,7 +505,17 @@ const Page = () => {
           {/* Map Container */}
           <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out">
             <MapMonitoring
-              locationMarkers={fleetMarkers}
+              locationMarkers={
+                panels.leftPanelMode === "posisi"
+                  ? locationMarkers // Only show location markers when tracking (no existing fleet)
+                  : fleetMarkers
+              }
+              locationPolyline={
+                panels.leftPanelMode === "posisi" ? locationPolyline : []
+              }
+              fleetPolylines={
+                panels.leftPanelMode === "posisi" ? fleetPolylines : []
+              }
               center={mapConfig.center}
               zoom={map.autoFitBounds ? mapConfig.zoom : map.zoom}
               showLicensePlate={map.showLicensePlate}
@@ -464,6 +601,11 @@ const Page = () => {
                       type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
                       payload: null,
                     });
+                    // Reset auto-fit bounds to recalculate zoom for fleet markers
+                    mapDispatch({
+                      type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
+                      payload: true,
+                    });
                   }}
                   orderId={selections.selectedOrderForTracking?.id}
                 />
@@ -521,6 +663,11 @@ const Page = () => {
                     selectionsDispatch({
                       type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
                       payload: order,
+                    });
+                    // Reset auto-fit bounds to recalculate zoom for location markers
+                    mapDispatch({
+                      type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
+                      payload: true,
                     });
                   }}
                   onViewFleetStatus={(order) => {
