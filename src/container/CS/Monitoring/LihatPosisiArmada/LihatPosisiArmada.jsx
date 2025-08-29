@@ -258,7 +258,10 @@ const LihatPosisiArmadaContent = ({ onClose: _onClose, orderId }) => {
       <div className="px-4">
         <BreadCrumb data={breadcrumbData} className="pt-6" />
       </div>
-      <PageTitle className="mb-0 mt-4 px-4 text-base">
+      <PageTitle
+        className="mb-0 mt-4 px-4 text-base"
+        appearance={{ iconClassName: "w-4 h-4" }}
+      >
         {t("LihatPosisiArmada.title", {}, "Lihat Posisi Armada")}
       </PageTitle>
 

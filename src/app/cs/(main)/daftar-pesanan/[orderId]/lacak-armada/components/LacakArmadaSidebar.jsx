@@ -77,7 +77,7 @@ const LacakArmadaSidebar = ({ onClose, vehicles = [], isLoading }) => {
                             className="h-4 w-4 text-[#461B02]"
                           />
                           <p className="truncate text-xs font-medium leading-[120%]">
-                            {vehicle.transporterName}
+                            {vehicle.transporter?.name}
                           </p>
                         </div>
                         <div className="aspect-square h-0.5 rounded-full bg-neutral-600"></div>
@@ -87,7 +87,7 @@ const LacakArmadaSidebar = ({ onClose, vehicles = [], isLoading }) => {
                             className="h-4 w-4 text-[#461B02]"
                           />
                           <span className="truncate text-xs font-medium leading-[120%] text-black">
-                            {vehicle.driverName}
+                            {vehicle.driver?.name}
                           </span>
                         </div>
                       </div>

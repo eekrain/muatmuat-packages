@@ -12,6 +12,9 @@ const PageTitle = ({
   children,
   withBack = true,
   onClick = null,
+  appearance = {
+    iconClassName: "",
+  },
 }) => {
   const router = useRouter();
 
@@ -33,12 +36,13 @@ const PageTitle = ({
       )}
     >
       {withBack && (
-        <IconComponent
-          onClick={handleBackClick}
-          src="/icons/arrow-left24.svg"
-          size="medium"
-          className="text-primary-700"
-        />
+        <button className={appearance.iconClassName} onClick={handleBackClick}>
+          <IconComponent
+            src="/icons/arrow-left24.svg"
+            size="medium"
+            className={cn("text-primary-700", appearance.iconClassName)}
+          />
+        </button>
       )}
       <h1>{children}</h1>
     </div>

@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ChevronLeft } from "lucide-react";
 
+import { getFleetTrackingCS } from "@/services/CS/monitoring/detail-pesanan-cs/getFleetTrackingCS";
+
 import Button from "@/components/Button/Button";
 
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
@@ -41,19 +43,64 @@ const LacakArmadaPage = () => {
       const fetchTrackingData = async () => {
         setIsLoading(true);
         try {
-          const res = await fetch(
-            `/api/v1/cs/orders/${orderId}/fleet/tracking`
-          );
-          const result = await res.json();
+          const fleetData = await getFleetTrackingCS(orderId);
 
-          if (result.Message?.Code === 200) {
-            const adaptedData = adaptFleetTrackingData(result.Data);
-            setTrackingData(adaptedData);
-          } else {
-            console.error("Fleet tracking error:", result.Message?.Text);
-          }
-        } catch (error) {
-          console.error("Failed to fetch tracking data:", error);
+          // Adapt data inline to avoid dependency issues
+          const adaptedData = (() => {
+            if (!fleetData?.length) return null;
+
+            const vehicles = [];
+            const pickupLocations = [
+              { lat: -7.287, lng: 112.739, label: "Lokasi Muat" },
+            ];
+            const dropoffLocations = [
+              { lat: -7.275, lng: 112.631, label: "Lokasi Bongkar" },
+            ];
+
+            fleetData.forEach((transporter) => {
+              transporter.fleets?.forEach((fleet) => {
+                vehicles.push({
+                  id: fleet.fleetId,
+                  licensePlate: fleet.licensePlate,
+                  driverName: fleet.driverInfo?.driverName || "Unknown Driver",
+                  status: getStatusDisplayName(fleet.orderStatus),
+                  statusVariant: "primary",
+                  icon: "/img/monitoring/truck/blue.png",
+                  position: getVehiclePosition(fleet.fleetId),
+                  heading: 45,
+                  transporterName: transporter.companyName,
+                  timeline: {
+                    statusDefinitions:
+                      fleet.stepStatus?.stepperData?.map((step) => ({
+                        mappedOrderStatus: step.status,
+                        date: new Date().toISOString(),
+                        children: [
+                          {
+                            statusCode: step.status,
+                            statusName: step.label,
+                            date: new Date().toISOString(),
+                            requiresPhoto: false,
+                          },
+                        ],
+                      })) || [],
+                  },
+                });
+              });
+            });
+
+            return {
+              orderCode: orderId,
+              vehicles,
+              pickupLocations,
+              dropoffLocations,
+              routePolyline: "encoded_polyline_string_here",
+            };
+          })();
+
+          setTrackingData(adaptedData);
+        } catch {
+          // Handle error silently
+          setTrackingData(null);
         } finally {
           setIsLoading(false);
         }
@@ -61,57 +108,6 @@ const LacakArmadaPage = () => {
       fetchTrackingData();
     }
   }, [orderId]);
-
-  const adaptFleetTrackingData = (fleetData) => {
-    if (!fleetData?.fleetTracking?.length) return null;
-
-    const vehicles = [];
-    const pickupLocations = [
-      { lat: -7.287, lng: 112.739, label: "Lokasi Muat" },
-    ];
-    const dropoffLocations = [
-      { lat: -7.275, lng: 112.631, label: "Lokasi Bongkar" },
-    ];
-
-    fleetData.fleetTracking.forEach((transporter) => {
-      transporter.fleets?.forEach((fleet) => {
-        vehicles.push({
-          id: fleet.fleetId,
-          licensePlate: fleet.licensePlate,
-          driverName: fleet.driverInfo?.driverName || "Unknown Driver",
-          status: getStatusDisplayName(fleet.orderStatus),
-          statusVariant: "primary",
-          icon: "/img/monitoring/truck/blue.png",
-          position: getVehiclePosition(fleet.fleetId),
-          heading: 45,
-          transporterName: transporter.companyName,
-          timeline: {
-            statusDefinitions:
-              fleet.stepStatus?.map((step) => ({
-                mappedOrderStatus: step.orderStatus,
-                date: new Date().toISOString(),
-                children: [
-                  {
-                    statusCode: step.orderStatus,
-                    statusName: step.statusName,
-                    date: new Date().toISOString(),
-                    requiresPhoto: false,
-                  },
-                ],
-              })) || [],
-          },
-        });
-      });
-    });
-
-    return {
-      orderCode: orderId,
-      vehicles,
-      pickupLocations,
-      dropoffLocations,
-      routePolyline: "encoded_polyline_string_here",
-    };
-  };
 
   const getStatusDisplayName = (status) => {
     const statusMap = {
@@ -123,7 +119,7 @@ const LacakArmadaPage = () => {
     return statusMap[status] || status;
   };
 
-  const getVehiclePosition = (fleetId) => {
+  const getVehiclePosition = (_fleetId) => {
     const positions = [
       { lat: -7.2891, lng: 112.7351 },
       { lat: -7.2952, lng: 112.7588 },

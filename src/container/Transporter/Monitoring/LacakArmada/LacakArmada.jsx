@@ -175,7 +175,7 @@ const LacakArmada = ({ onClose, orderId }) => {
                         className="h-4 w-4 text-[#461B02]"
                       />
                       <span className="text-xs font-medium leading-[120%] text-black">
-                        {vehicle.driverName}
+                        {vehicle.driver?.name}
                       </span>
                     </div>
                   </div>

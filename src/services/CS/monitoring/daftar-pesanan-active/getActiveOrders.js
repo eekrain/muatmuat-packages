@@ -1104,7 +1104,7 @@ export const fetcherActiveOrders = async (cacheKey) => {
         // Search in driver names
         if (
           order.assignedVehicles?.some((vehicle) =>
-            vehicle.driverName?.toLowerCase().includes(searchTerm)
+            vehicle.driver?.name?.toLowerCase().includes(searchTerm)
           )
         )
           return true;

@@ -167,10 +167,10 @@ const createPosisiArmadaStore = (props = {}) =>
               const matchesLicensePlate = vehicle.licensePlate
                 ?.toLowerCase()
                 .includes(searchLower);
-              const matchesDriverName = vehicle.driverName
+              const matchesDriverName = vehicle.driver?.name
                 ?.toLowerCase()
                 .includes(searchLower);
-              const matchesTransporterName = vehicle.transporterName
+              const matchesTransporterName = vehicle.transporter?.name
                 ?.toLowerCase()
                 .includes(searchLower);
 
@@ -185,14 +185,16 @@ const createPosisiArmadaStore = (props = {}) =>
           // Apply transporter filter
           if (activeFilters.transporters.length > 0) {
             filtered = filtered.filter((vehicle) =>
-              activeFilters.transporters.includes(vehicle.transporterName)
+              activeFilters.transporters.includes(vehicle.transporter?.name)
             );
           }
 
           // Apply status filter
           if (activeFilters.statuses.length > 0) {
             filtered = filtered.filter((vehicle) =>
-              activeFilters.statuses.includes(vehicle.driverStatus?.mainStatus)
+              activeFilters.statuses.includes(
+                vehicle.driver?.status?.mainStatus
+              )
             );
           }
 
@@ -255,12 +257,14 @@ function usePosisiArmadaContext(selector) {
 const generateFilterOptions = (data, t) => {
   if (!data?.vehicles) return { transporters: [], statuses: [] };
 
-  const transporters = [...new Set(data.vehicles.map((v) => v.transporterName))]
+  const transporters = [
+    ...new Set(data.vehicles.map((v) => v.transporter?.name)),
+  ]
     .filter(Boolean)
     .map((name) => ({ label: name, value: name }));
 
   const statuses = [
-    ...new Set(data.vehicles.map((v) => v.driverStatus?.mainStatus)),
+    ...new Set(data.vehicles.map((v) => v.driver?.status?.mainStatus)),
   ]
     .filter(Boolean)
     .map((status) => ({

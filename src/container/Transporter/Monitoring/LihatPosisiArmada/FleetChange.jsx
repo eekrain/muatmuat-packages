@@ -69,7 +69,7 @@ const FleetChange = () => {
                     reportTime: "10 Jan 2025 12:00 WIB",
                     images: [],
                     vehicleType: "Colt Diesel Double - Bak Terbuka",
-                    driverName: vehicle.driverName,
+                    driverName: vehicle.driver?.name,
                     driverPhone: "0823-3123-1290",
                     lastLocation: "Kab. Batu",
                     orderNumber: fleetPositons?.orderCode || "N/A",
@@ -102,7 +102,7 @@ const FleetChange = () => {
                     className="h-4 w-4 flex-shrink-0 text-neutral-600"
                   />
                   <span className="truncate text-xs font-medium text-neutral-800">
-                    {vehicle.driverName}
+                    {vehicle.driver?.name}
                   </span>
                 </div>
               </div>

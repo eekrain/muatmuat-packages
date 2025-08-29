@@ -32,7 +32,7 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
     const searchLower = searchValue.toLowerCase();
     return (
       vehicle.licensePlate?.toLowerCase().includes(searchLower) ||
-      vehicle.driverName?.toLowerCase().includes(searchLower)
+      vehicle.driver?.name?.toLowerCase().includes(searchLower)
     );
   });
 
@@ -147,7 +147,7 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
                         {/* Noel Galagher */}
                         <div className="h-2 w-full">
                           <p className="text-xs font-medium leading-[120%] text-black">
-                            {vehicle.driverName ||
+                            {vehicle.driver?.name ||
                               t("LihatArmadaModal.noDriver", {}, "No Driver")}
                           </p>
                         </div>

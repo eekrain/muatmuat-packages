@@ -240,7 +240,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                             </span>
                             <span className="flex-1 text-xs font-semibold leading-[120%] text-[#434343]">
                               -{" "}
-                              {vehicle.driverName ||
+                              {vehicle.driver?.name ||
                                 t(
                                   "ConfirmReadyModal.noDriver",
                                   {},
@@ -277,7 +277,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                         <BadgeStatus
                           variant={
                             getArmadaStatusBadgeWithTranslation(
-                              vehicle.driverStatus,
+                              vehicle.driver?.status?.mainStatus,
                               t
                             ).variant
                           }
@@ -285,7 +285,7 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                         >
                           {
                             getArmadaStatusBadgeWithTranslation(
-                              vehicle.driverStatus,
+                              vehicle.driver?.status?.mainStatus,
                               t
                             ).label
                           }

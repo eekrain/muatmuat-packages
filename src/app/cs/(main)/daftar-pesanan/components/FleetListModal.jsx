@@ -24,7 +24,7 @@ const FleetItem = ({ vehicle }) => (
         <div className="flex items-center gap-1">
           <IconComponent src={"/icons/user16.svg"} width={16} height={16} />
           <p className="text-xs font-medium text-neutral-900">
-            {vehicle.driverName}
+            {vehicle.driver?.name}
           </p>
         </div>
       </div>
@@ -39,7 +39,7 @@ const FleetListModal = ({ isOpen, onClose, vehicles, isLoading }) => {
   const filteredVehicles = vehicles.filter(
     (v) =>
       v.licensePlate.toLowerCase().includes(search.toLowerCase()) ||
-      v.driverName.toLowerCase().includes(search.toLowerCase())
+      v.driver?.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
