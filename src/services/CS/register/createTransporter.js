@@ -1,6 +1,6 @@
 import useSWRMutation from "swr/mutation";
 
-import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
+import { fetcherMuatrans } from "@/lib/axios";
 
 /**
  * Mock API result for development/testing.
@@ -27,9 +27,9 @@ export const mockAPIResult = {
  * @param {object} arg.arg - The request body payload.
  * @returns {Promise<any>} A promise that resolves to the API response data.
  */
-const createTransporterFetcher = (url, { arg }) => {
+const createTransporterFetcher = async (url, { arg }) => {
   // fetcherMuatransCS already has Basic Auth configured
-  return fetcherMuatransCS.post(url, arg).then((res) => res.data);
+  return fetcherMuatrans.post(url, arg).then((res) => res.data);
 };
 
 /**

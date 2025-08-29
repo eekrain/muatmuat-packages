@@ -1,6 +1,6 @@
 import useSWRMutation from "swr/mutation";
 
-import { fetcherMuatransCS } from "@/lib/fetcherBasicAuth";
+import { fetcherMuatrans } from "@/lib/axios";
 
 /**
  * Mock API result for development/testing.
@@ -30,8 +30,8 @@ export const mockAPIResult = {
  * @param {object} arg.arg - The parameters for the GET request (e.g., { type, value }).
  * @returns {Promise<any>} A promise that resolves to the API response data.
  */
-const checkTransporterField = (url, { arg }) => {
-  return fetcherMuatransCS.get(url, { params: arg }).then((res) => res.data);
+const checkTransporterField = async (url, { arg }) => {
+  return fetcherMuatrans.get(url, { params: arg }).then((res) => res.data);
 };
 
 /**
