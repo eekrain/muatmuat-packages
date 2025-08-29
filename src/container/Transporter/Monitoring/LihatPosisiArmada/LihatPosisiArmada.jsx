@@ -190,7 +190,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                       <div className="flex items-center justify-between gap-2">
                         <span className="w-[120px] text-xs font-medium text-neutral-600">
                           {t(
-                            "LihatPosisiArmada.estimatedArrival",
+                            "LihatPosisiArmada.estimatedArrivalBongkar",
                             {},
                             "Estimasi Tiba di Lokasi Bongkar"
                           )}
@@ -329,7 +329,7 @@ const LihatPosisiArmada = ({ onClose, orderId }) => {
                           <div className="flex items-center justify-between gap-2">
                             <span className="w-[120px] text-xs font-medium text-neutral-600">
                               {t(
-                                "LihatPosisiArmada.estimatedArrival",
+                                "LihatPosisiArmada.estimatedArrivalBongkar",
                                 {},
                                 "Estimasi Tiba di Lokasi Bongkar"
                               )}

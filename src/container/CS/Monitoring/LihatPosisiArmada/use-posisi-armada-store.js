@@ -9,9 +9,11 @@ import {
 import { create, useStore } from "zustand";
 import { devtools } from "zustand/middleware";
 
-import { fetcherOrdersMultiFleetTracking } from "@/services/CS/monitoring/lacak-armada/getOrdersMultiFleetTracking";
+import { getOrderFleetVehicles } from "@/services/CS/monitoring/lacak-armada/getOrderFleetVehicles";
+import { getSosReportDetail } from "@/services/CS/monitoring/lacak-armada/getSosReportDetail";
 
 import { OrderStatusTitle } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
+import { toast } from "@/lib/toast";
 
 // Create context
 const PosisiArmadaContext = createContext(null);
@@ -109,7 +111,7 @@ const createPosisiArmadaStore = (props = {}) =>
           set({ isLoading: true, error: null });
 
           try {
-            const data = await fetcherOrdersMultiFleetTracking(orderId);
+            const data = await getOrderFleetVehicles(orderId);
 
             // Generate filter options from data
             const filterOptions = generateFilterOptions(data, t);
@@ -135,7 +137,7 @@ const createPosisiArmadaStore = (props = {}) =>
           if (!orderId || isLoading) return;
 
           try {
-            const data = await fetcherOrdersMultiFleetTracking(orderId);
+            const data = await getOrderFleetVehicles(orderId);
             const filterOptions = generateFilterOptions(data, t);
 
             set({
@@ -372,8 +374,15 @@ export const usePosisiArmada = (orderId, t) => {
   );
 
   const handleViewSos = useCallback(
-    (sosData) => {
-      setSosPopoverData(sosData);
+    (sosId) => {
+      getSosReportDetail(sosId)
+        .then((sosData) => {
+          setSosPopoverData(sosData);
+        })
+        .catch((error) => {
+          toast.error("Error saat mengambil detail laporan SOS");
+          console.log("Error fetching SOS report details:", error);
+        });
     },
     [setSosPopoverData]
   );

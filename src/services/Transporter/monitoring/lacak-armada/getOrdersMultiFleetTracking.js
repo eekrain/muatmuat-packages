@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR from "swr/mutation";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
