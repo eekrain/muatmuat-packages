@@ -11,14 +11,14 @@ node_modules/
 .pnpm-debug.log*
 
 # Build outputs
-/dist
-/build
-/.next
-/out
+dist/
+build/
+.next/
+out/
 *.tsbuildinfo
 
 # Testing
-/coverage
+coverage
 .nyc_output
 
 # Debug logs
@@ -36,8 +36,6 @@ yarn-error.log*
 # Editor directories and files
 .DS_Store
 .idea
-.vscode/*
-!.vscode/extensions.json
 .vercel
 
 # Package manager specific
@@ -79,3 +77,5 @@ notes-fix-bug.md
 
 *.csv
 .translation
+*storybook.log
+storybook-static

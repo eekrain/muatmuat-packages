@@ -66,7 +66,7 @@ const ActiveFiltersBar = ({
       {showClearAll && (
         <button
           onClick={onClearAll}
-          className="shrink-0 text-xs font-bold text-primary-700 hover:text-primary-800"
+          className="text-primary-700 hover:text-primary-800 shrink-0 text-xs font-bold"
         >
           {clearAllText}
         </button>
@@ -100,19 +100,19 @@ const ActiveFiltersBar = ({
             <div
               key={filter.id || index}
               className={cn(
-                "flex h-7 shrink-0 items-center gap-2 rounded-full border border-primary-700 bg-neutral-50 px-3",
+                "border-primary-700 flex h-7 shrink-0 items-center gap-2 rounded-full border bg-neutral-50 px-3",
                 tagClassName
               )}
             >
               {filter.item?.icon && (
                 <IconComponent src={filter.item.icon} width={14} height={14} />
               )}
-              <span className="text-xs font-medium text-primary-700">
+              <span className="text-primary-700 text-xs font-medium">
                 {filter.label}
               </span>
               <button
                 onClick={() => onRemoveFilter(filter)}
-                className="rounded-full p-0.5 text-primary-700 transition-colors hover:bg-primary-100"
+                className="text-primary-700 hover:bg-primary-100 rounded-full p-0.5 transition-colors"
                 aria-label={`Remove ${filter.label} filter`}
               >
                 <X size={14} />
