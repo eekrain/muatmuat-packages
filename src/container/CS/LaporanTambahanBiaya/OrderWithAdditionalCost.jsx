@@ -16,21 +16,49 @@ const OrderInfo = ({ className, title, value }) => {
   );
 };
 
-const OrderWithAdditionalCost = ({ activeTab }) => {
+const OrderWithAdditionalCost = ({
+  activeTab,
+  id,
+  order_code,
+  order_status,
+  orderType,
+  shipper,
+  additional_cost_amount,
+  bill_date,
+  days_unpaid,
+  pickup_locations,
+  delivery_locations,
+  last_contacted_by,
+  last_contacted_at,
+  total_contacts,
+}) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return `${date.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jakarta",
+    })} WIB`;
+  };
+
   const info = [
     {
       title: "Telah Dihubungi Oleh :",
-      value: "CS Daffa Toldo",
+      value: last_contacted_by || "-",
       className: "min-w-[250px] max-w-[250px]",
     },
     {
       title: "Jumlah Dihubungi :",
-      value: 2,
+      value: total_contacts || 0,
       className: "min-w-[157px] max-w-[157px]",
     },
     {
       title: "Terakhir Dihubungi :",
-      value: "02 Jan 2025 18:00 WIB",
+      value: formatDate(last_contacted_at),
       className: "min-w-[253px] max-w-[253px]",
     },
   ];
@@ -44,29 +72,31 @@ const OrderWithAdditionalCost = ({ activeTab }) => {
       <div className="flex gap-x-6 p-4 pb-5">
         <div className="mt-1 flex gap-x-6">
           <div className="flex min-w-[92px] max-w-[92px] flex-col gap-y-3">
-            <Button variant="link">MT25A002A</Button>
+            <Button variant="link">{order_code}</Button>
             <BadgeStatusPesanan className="w-fit" variant="success">
-              Instan
+              {orderType === "INSTANT" ? "Instan" : orderType}
             </BadgeStatusPesanan>
           </div>
           <div className="flex min-w-[280px] max-w-[280px] flex-col gap-y-2">
-            <span className="text-xs font-bold">Prima Arifandi</span>
+            <span className="text-xs font-bold">{shipper?.name}</span>
             <span className="text-xxs font-medium leading-[1.3]">
-              0812-3456-7890
+              {shipper?.phone}
             </span>
           </div>
           <div className="flex min-w-[230px] max-w-[230px] flex-col gap-y-3">
-            <span className="text-xs font-bold">{idrFormat(900000)}</span>
+            <span className="text-xs font-bold">
+              {idrFormat(additional_cost_amount)}
+            </span>
             {activeTab === "active" ? (
               <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
-                <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
-                <span>Lama Belum Dibayarkan : 2 Hari</span>
+                <span>Tanggal Tagihan : {formatDate(bill_date)}</span>
+                <span>Lama Belum Dibayarkan : {days_unpaid} Hari</span>
               </div>
             ) : null}
             {activeTab === "completed" ? (
               <div className="flex flex-col gap-y-2 text-xxs font-medium leading-[1.3]">
-                <span>Tanggal Tagihan : 02 Jan 2025 18:00 WIB</span>
-                <span>Tanggal Pembayaran : 04 Jan 2025 18:00 WIB</span>
+                <span>Tanggal Tagihan : {formatDate(bill_date)}</span>
+                <span>Tanggal Pembayaran : {formatDate(bill_date)}</span>
                 <span>Opsi Pembayaran : Kartu Kredit</span>
               </div>
             ) : null}
@@ -76,32 +106,20 @@ const OrderWithAdditionalCost = ({ activeTab }) => {
               appearance={{
                 titleClassName: "line-clamp-1",
               }}
-              pickupLocations={[
-                {
-                  fullAddress:
-                    // "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
-                    "Kota Surabaya, Kec. Tegalsari Tegalsari Tegalsari",
-                },
-              ]}
-              dropoffLocations={[
-                {
-                  fullAddress:
-                    // "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
-                    "Kota Pasuruan, Kec. Klojen",
-                },
-                {
-                  fullAddress:
-                    // "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang",
-                    "Kota Pasuruan, Kec. Klojen",
-                },
-              ]}
+              pickupLocations={
+                pickup_locations?.map((location) => ({
+                  fullAddress: location,
+                })) || []
+              }
+              dropoffLocations={
+                delivery_locations?.map((location) => ({
+                  fullAddress: location,
+                })) || []
+              }
             />
           </div>
         </div>
-        {/* ID masih dummy */}
-        <Link
-          href={`/laporan/tambahan-biaya/2f8d1b39-ae1c-45c0-a1be-326431d64255/detail-tambahan-biaya`}
-        >
+        <Link href={`/laporan/tambahan-biaya/${id}/detail-tambahan-biaya`}>
           <Button className="px-6" variant="muattrans-primary">
             Detail
           </Button>

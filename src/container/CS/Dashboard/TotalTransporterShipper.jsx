@@ -96,7 +96,7 @@ const TotalTransporterShipper = () => {
         <p className="text-base font-bold text-neutral-900">
           Total Transporter & Armada Terdaftar
         </p>
-        <Link href="/dashboard/analytics/laporan">
+        <Link href="/user?tab=transporter">
           <p className="cursor-pointer text-xs font-medium text-primary-700">
             Lihat Detail
           </p>

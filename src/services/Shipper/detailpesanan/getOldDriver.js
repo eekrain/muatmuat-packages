@@ -2,8 +2,9 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
+import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 
-const useMockData = false;
+const useMockData = true;
 
 const apiResult = {
   data: {
@@ -18,26 +19,50 @@ const apiResult = {
         licensePlate: "abc",
         profileImage: "http",
         phoneNumber: "08123738437",
-        orderStatus: "LOADING",
+        orderStatus: OrderStatusEnum.COMPLETED,
         orderStatusTitle: "Proses Muat",
       },
       stepStatus: [
         {
-          statusCode: "CONFIRMED",
+          statusCode: OrderStatusEnum.CONFIRMED,
           statusName: "Pesanan Terkonfirmasi",
         },
+        //   {
+        //     statusCode: OrderStatusEnum.SCHEDULED_FLEET,
+        //     statusName: "Pesanan Terkonfirmasi",
+        //   },
         {
-          statusCode: "LOADING",
+          statusCode: OrderStatusEnum.LOADING,
           statusName: "Proses Muat",
         },
         {
-          statusCode: "UNLOADING",
+          statusCode: OrderStatusEnum.UNLOADING,
           statusName: "Proses Bongkar",
         },
         {
-          statusCode: "COMPLETED",
+          statusCode: OrderStatusEnum.FLEET_CHANGE,
+          statusName: "Proses Pergantian Armada",
+        },
+        // {
+        //   statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
+        //   statusName: "Proses Pergantian Armada",
+        // },
+        // {
+        //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
+        //   statusName: "Dokumen Sedang Disiapkan",
+        // },
+        // {
+        //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
+        //   statusName: "Proses Pengiriman Dokumen",
+        // },
+        {
+          statusCode: OrderStatusEnum.COMPLETED,
           statusName: "Selesai",
         },
+        //   {
+        //     statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        //     statusName: "Dibatalkan",
+        //   },
       ],
     },
     Type: "OLD_DRIVER",

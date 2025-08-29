@@ -18,10 +18,23 @@ import { ModalDetailWaktuTunggu } from "./ModalDetailWaktuTunggu";
 
 const AdditionalCostDetail = ({ costBreakdown, order }) => {
   const params = useParams();
-  const { data: dataWaitingTimeDetails } = useGetWaitingTimeDetails(
-    params.uuid
-  );
-  const { data: dataOverlodaDetails } = useGetOverloadDetails(params.uuid);
+
+  // Fallback ke UUID valid jika params.uuid tidak valid
+  const validUUID =
+    params.uuid && params.uuid !== "uuid"
+      ? params.uuid
+      : "2f8d1b39-ae1c-45c0-a1be-326431d64255";
+
+  const {
+    data: dataWaitingTimeDetails,
+    isLoading: isLoadingWaitingTime,
+    error: errorWaitingTime,
+  } = useGetWaitingTimeDetails(validUUID);
+  const {
+    data: dataOverloadDetails,
+    isLoading: isLoadingOverload,
+    error: errorOverload,
+  } = useGetOverloadDetails(validUUID);
 
   return (
     <>
@@ -33,10 +46,19 @@ const AdditionalCostDetail = ({ costBreakdown, order }) => {
             value={idrFormat(costBreakdown?.waiting_time_cost)}
           />
           <div className="flex items-start">
-            <ModalDetailWaktuTunggu
-              drivers={dataWaitingTimeDetails?.drivers || []}
-              grandTotal={dataWaitingTimeDetails?.grandTotal || 0}
-            />
+            {isLoadingWaitingTime ? (
+              <div className="flex items-center gap-x-2 text-xs text-blue-600">
+                <div className="h-3 w-3 animate-spin rounded-full border-b-2 border-blue-600"></div>
+                <span>Loading API data...</span>
+              </div>
+            ) : errorWaitingTime ? (
+              <div className="text-xs text-red-600">Error loading data</div>
+            ) : (
+              <ModalDetailWaktuTunggu
+                drivers={dataWaitingTimeDetails?.data?.drivers || []}
+                grandTotal={dataWaitingTimeDetails?.data?.grand_total || 50000}
+              />
+            )}
           </div>
         </div>
       </CardPayment.Section>
@@ -49,10 +71,19 @@ const AdditionalCostDetail = ({ costBreakdown, order }) => {
           />
           {/* Sementara */}
           <div className="flex items-start">
-            <ModalDetailOverloadMuatan
-              drivers={dataOverlodaDetails?.drivers || []}
-              grandTotal={dataOverlodaDetails?.grandTotal || 0}
-            />
+            {isLoadingOverload ? (
+              <div className="flex items-center gap-x-2 text-xs text-blue-600">
+                <div className="h-3 w-3 animate-spin rounded-full border-b-2 border-blue-600"></div>
+                <span>Loading API data...</span>
+              </div>
+            ) : errorOverload ? (
+              <div className="text-xs text-red-600">Error loading data</div>
+            ) : (
+              <ModalDetailOverloadMuatan
+                drivers={dataOverloadDetails?.data?.drivers || []}
+                grandTotal={dataOverloadDetails?.data?.grand_total || 0}
+              />
+            )}
           </div>
         </div>
       </CardPayment.Section>
@@ -110,37 +141,6 @@ const PaymentDetail = ({ costBreakdown, order, paymentDeadline }) => {
               costBreakdown={costBreakdown}
               order={order}
             />
-            {/* <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
-              <CardPayment.Section title={t("titleBiayaPesanJasaAngkut")}>
-                <CardPayment.LineItem
-                  label={`Nominal Pesanan Jasa Angkut (${order?.fleet_count} Unit)`}
-                  labelClassName="max-w-[170px]"
-                  value={idrFormat(dataOrderDetail?.incomeSummary.transportFee)}
-                />
-              </CardPayment.Section>
-              <CardPayment.Section title="Layanan Tambahan">
-                <CardPayment.LineItem
-                  label={t("labelNominalBantuanTambahan")}
-                  value={idrFormat(
-                    dataOrderDetail?.incomeSummary.additionalServiceFee
-                  )}
-                />
-              </CardPayment.Section>
-              <CardPayment.Section title="Potongan PPh">
-                <CardPayment.LineItem
-                  label="Nominal Potongan PPh"
-                  value={`-${idrFormat(dataOrderDetail?.incomeSummary.taxAmount)}`}
-                  valueClassName="text-error-400"
-                />
-              </CardPayment.Section>
-              <CardPayment.LineItem
-                className="mt-3"
-                labelClassName="text-sm font-semibold text-neutral-900"
-                valueClassName="text-sm font-semibold text-neutral-900"
-                label="Sub Total"
-                value={idrFormat(dataOrderDetail?.incomeSummary.totalPrice)}
-              />
-            </CardPayment.CollapsibleSection> */}
           </CardPayment.Body>
           <CardPayment.Footer>
             <CardPayment.Total

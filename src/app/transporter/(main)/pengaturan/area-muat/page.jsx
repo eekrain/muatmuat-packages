@@ -358,10 +358,17 @@ export default function Page() {
   );
 
   const finalProvinces = showSelectedOnly
-    ? searchFilteredProvinces.filter((province) =>
-        province.kota.some((city) => city.isSelected)
-      )
-    : searchFilteredProvinces;
+    ? searchFilteredProvinces
+        .map((province) => ({
+          ...province,
+          totalCities: province.kota.length, // Store total before filtering
+          kota: province.kota.filter((city) => city.isSelected),
+        }))
+        .filter((province) => province.kota.length > 0)
+    : searchFilteredProvinces.map((province) => ({
+        ...province,
+        totalCities: province.kota.length,
+      }));
 
   const hasSelectedCities = provinceData.some((province) =>
     province.kota.some((city) => city.isSelected)
@@ -525,7 +532,9 @@ export default function Page() {
                           <Checkbox
                             checked={
                               province.kota.length > 0 &&
-                              province.kota.every((city) => city.isSelected)
+                              province.kota.every((city) => city.isSelected) &&
+                              (!showSelectedOnly ||
+                                province.kota.length === province.totalCities)
                             }
                             onChange={(e) =>
                               handleSelectAllProvince(

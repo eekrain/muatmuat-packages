@@ -10,6 +10,8 @@ import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -20,6 +22,7 @@ export const ModalDetailPembayaran = ({
   dataRingkasanPembayaran,
   isShowWaitFleetAlert,
 }) => {
+  const { t } = useTranslation();
   const isRingkasanTransaksi =
     dataRingkasanPembayaran?.orderStatus === OrderStatusEnum.COMPLETED ||
     dataRingkasanPembayaran?.orderStatus ===
@@ -45,31 +48,57 @@ export const ModalDetailPembayaran = ({
           className="h-8"
           type="button"
         >
-          Detail Pembayaran
+          {t(
+            "ModalDetailPembayaran.paymentDetailButton",
+            {},
+            "Detail Pembayaran"
+          )}
         </Button>
       </ModalTrigger>
       <ModalContent type="muatmuat" className="py-8 pl-6 pr-[11px]">
         <h2 className="mb-6 text-center text-base font-bold leading-[1.2] text-neutral-900">
-          Detail Pembayaran
+          {t("ModalDetailPembayaran.modalTitle", {}, "Detail Pembayaran")}
         </h2>
         <div className="flex max-h-[483px] w-[424px] flex-col">
           <CardPayment.Root className="flex-1 rounded-none shadow-none">
             <CardPayment.Header className="h-auto min-h-[43px] items-start px-0">
               {isRingkasanTransaksi
-                ? "Ringkasan Transaksi"
-                : "Ringkasan Pembayaran"}
+                ? t(
+                    "ModalDetailPembayaran.transactionSummary",
+                    {},
+                    "Ringkasan Transaksi"
+                  )
+                : t(
+                    "ModalDetailPembayaran.paymentSummary",
+                    {},
+                    "Ringkasan Pembayaran"
+                  )}
             </CardPayment.Header>
 
             <CardPayment.Body className="pl-0 pr-2">
-              <CardPayment.CollapsibleSection title="Detail Pesanan">
+              <CardPayment.CollapsibleSection
+                title={t(
+                  "ModalDetailPembayaran.orderDetails",
+                  {},
+                  "Detail Pesanan"
+                )}
+              >
                 <CardPayment.LineItem
-                  label="Waktu Pembayaran"
+                  label={t(
+                    "ModalDetailPembayaran.paymentTime",
+                    {},
+                    "Waktu Pembayaran"
+                  )}
                   value={formatDate(
                     dataRingkasanPembayaran?.paymentDueDateTime
                   )}
                 />
                 <CardPayment.LineItem
-                  label="Opsi Pembayaran"
+                  label={t(
+                    "ModalDetailPembayaran.paymentOption",
+                    {},
+                    "Opsi Pembayaran"
+                  )}
                   valueClassName="flex items-center gap-2"
                   value={
                     <>
@@ -85,11 +114,22 @@ export const ModalDetailPembayaran = ({
                   }
                 />
 
-                <CardPayment.Section title="Biaya Pesan Jasa Angkut">
+                <CardPayment.Section
+                  title={t(
+                    "ModalDetailPembayaran.transportServiceFee",
+                    {},
+                    "Biaya Pesan Jasa Angkut"
+                  )}
+                >
                   <CardPayment.LineItem
                     label={
                       <span>
-                        Nominal Pesan Jasa Angkut <br />
+                        {t(
+                          "ModalDetailPembayaran.transportServiceNominal",
+                          {},
+                          "Nominal Pesan Jasa Angkut"
+                        )}{" "}
+                        <br />
                         (1 Unit)
                       </span>
                     }
@@ -98,18 +138,38 @@ export const ModalDetailPembayaran = ({
                 </CardPayment.Section>
 
                 {dataRingkasanPembayaran?.insuranceFee > 0 && (
-                  <CardPayment.Section title="Biaya Asuransi Barang">
+                  <CardPayment.Section
+                    title={t(
+                      "ModalDetailPembayaran.insuranceFee",
+                      {},
+                      "Biaya Asuransi Barang"
+                    )}
+                  >
                     <CardPayment.LineItem
-                      label="Nominal Premi Asuransi (1 Unit)"
+                      label={t(
+                        "ModalDetailPembayaran.insurancePremiumNominal",
+                        {},
+                        "Nominal Premi Asuransi (1 Unit)"
+                      )}
                       value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
                     />
                   </CardPayment.Section>
                 )}
 
-                <CardPayment.Section title="Biaya Layanan Tambahan">
+                <CardPayment.Section
+                  title={t(
+                    "ModalDetailPembayaran.additionalServicesFee",
+                    {},
+                    "Biaya Layanan Tambahan"
+                  )}
+                >
                   <div className="flex flex-col gap-1">
                     <CardPayment.LineItem
-                      label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+                      label={t(
+                        "ModalDetailPembayaran.documentShippingNominal",
+                        {},
+                        "Nominal Kirim Bukti Fisik Penerimaan Barang"
+                      )}
                       value={idrFormat(
                         dataRingkasanPembayaran?.documentShippingDetail
                           ?.totalPrice
@@ -120,7 +180,11 @@ export const ModalDetailPembayaran = ({
                     />
                   </div>
                   <CardPayment.LineItem
-                    label="Nominal Bantuan Tambahan"
+                    label={t(
+                      "ModalDetailPembayaran.additionalHelpNominal",
+                      {},
+                      "Nominal Bantuan Tambahan"
+                    )}
                     value={idrFormat(
                       dataRingkasanPembayaran?.otherAdditionalService
                         ?.totalPrice
@@ -129,9 +193,19 @@ export const ModalDetailPembayaran = ({
                 </CardPayment.Section>
 
                 {dataRingkasanPembayaran?.voucherDiscount > 0 && (
-                  <CardPayment.Section title="Diskon Voucher">
+                  <CardPayment.Section
+                    title={t(
+                      "ModalDetailPembayaran.voucherDiscount",
+                      {},
+                      "Diskon Voucher"
+                    )}
+                  >
                     <CardPayment.LineItem
-                      label="Voucher (DISKONPENGGUNABARU)"
+                      label={t(
+                        "ModalDetailPembayaran.voucherLabel",
+                        {},
+                        "Voucher (DISKONPENGGUNABARU)"
+                      )}
                       variant="danger"
                       value={`-${idrFormat(
                         dataRingkasanPembayaran.voucherDiscount
@@ -140,27 +214,51 @@ export const ModalDetailPembayaran = ({
                   </CardPayment.Section>
                 )}
 
-                <CardPayment.Section title="Biaya Lainnya">
+                <CardPayment.Section
+                  title={t(
+                    "ModalDetailPembayaran.otherFees",
+                    {},
+                    "Biaya Lainnya"
+                  )}
+                >
                   <CardPayment.LineItem
-                    label="Admin Layanan"
+                    label={t(
+                      "ModalDetailPembayaran.adminFee",
+                      {},
+                      "Admin Layanan"
+                    )}
                     value={idrFormat(dataRingkasanPembayaran?.adminFee)}
                   />
                   <CardPayment.LineItem
-                    label="Pajak"
+                    label={t("ModalDetailPembayaran.tax", {}, "Pajak")}
                     value={idrFormat(dataRingkasanPembayaran?.tax)}
                   />
                 </CardPayment.Section>
               </CardPayment.CollapsibleSection>
 
-              <CardPayment.CollapsibleSection title="Detail Tambahan Biaya">
+              <CardPayment.CollapsibleSection
+                title={t(
+                  "ModalDetailPembayaran.additionalCostDetails",
+                  {},
+                  "Detail Tambahan Biaya"
+                )}
+              >
                 <CardPayment.LineItem
-                  label="Waktu Pembayaran"
+                  label={t(
+                    "ModalDetailPembayaran.paymentTime",
+                    {},
+                    "Waktu Pembayaran"
+                  )}
                   value={formatDate(
                     dataRingkasanPembayaran?.paymentDueDateTime
                   )}
                 />
                 <CardPayment.LineItem
-                  label="Opsi Pembayaran"
+                  label={t(
+                    "ModalDetailPembayaran.paymentOption",
+                    {},
+                    "Opsi Pembayaran"
+                  )}
                   valueClassName="flex items-center gap-2"
                   value={
                     <>
@@ -174,33 +272,66 @@ export const ModalDetailPembayaran = ({
                     </>
                   }
                 />
-                <CardPayment.Section title="Biaya Waktu Tunggu">
+                <CardPayment.Section
+                  title={t(
+                    "ModalDetailPembayaran.waitingTimeFee",
+                    {},
+                    "Biaya Waktu Tunggu"
+                  )}
+                >
                   <div className="flex flex-col gap-1">
                     <CardPayment.LineItem
-                      label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
+                      label={t(
+                        "ModalDetailPembayaran.waitingTimeNominal",
+                        { driverCount: waitingFee.totalDriver },
+                        `Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`
+                      )}
                       value={idrFormat(waitingFee.totalAmount)}
                     />
                     <ModalDetailWaktuTunggu drivers={waitingTimeData} />
                   </div>
                 </CardPayment.Section>
-                <CardPayment.Section title="Biaya Overload Muatan">
+                <CardPayment.Section
+                  title={t(
+                    "ModalDetailPembayaran.overloadFee",
+                    {},
+                    "Biaya Overload Muatan"
+                  )}
+                >
                   <div className="flex flex-col gap-1">
                     <CardPayment.LineItem
-                      label={`Nominal Overload Muatan (${Number(
-                        overloadFee.totalWeight
-                      ).toLocaleString("id-ID")} ${overloadFee.weightUnit})`}
+                      label={t(
+                        "ModalDetailPembayaran.overloadNominal",
+                        {
+                          weight: Number(
+                            overloadFee.totalWeight
+                          ).toLocaleString("id-ID"),
+                          unit: overloadFee.weightUnit,
+                        },
+                        `Nominal Overload Muatan (${Number(overloadFee.totalWeight).toLocaleString("id-ID")} ${overloadFee.weightUnit})`
+                      )}
                       value={idrFormat(overloadFee.totalAmount)}
                     />
                     <ModalDetailOverloadMuatan drivers={overloadData} />
                   </div>
                 </CardPayment.Section>
-                <CardPayment.Section title="Biaya Lainnya">
+                <CardPayment.Section
+                  title={t(
+                    "ModalDetailPembayaran.otherFeesAdditional",
+                    {},
+                    "Biaya Lainnya"
+                  )}
+                >
                   <CardPayment.LineItem
-                    label="Admin Layanan"
+                    label={t(
+                      "ModalDetailPembayaran.adminFee",
+                      {},
+                      "Admin Layanan"
+                    )}
                     value={idrFormat(dataRingkasanPembayaran?.adminFee)}
                   />
                   <CardPayment.LineItem
-                    label="Pajak"
+                    label={t("ModalDetailPembayaran.tax", {}, "Pajak")}
                     value={idrFormat(dataRingkasanPembayaran?.tax)}
                   />
                 </CardPayment.Section>
@@ -209,7 +340,7 @@ export const ModalDetailPembayaran = ({
             <div className="pr-[13px]">
               <CardPayment.Footer className="border-t border-neutral-400 px-0 pt-4 shadow-none">
                 <CardPayment.Total
-                  label="Total"
+                  label={t("ModalDetailPembayaran.total", {}, "Total")}
                   value={idrFormat(
                     dataRingkasanPembayaran?.totalPrice + totalCharge
                   )}
@@ -228,7 +359,11 @@ export const ModalDetailPembayaran = ({
               className="h-8 w-full"
               type="button"
             >
-              Unduh Bukti Pembayaran
+              {t(
+                "ModalDetailPembayaran.downloadPaymentProof",
+                {},
+                "Unduh Bukti Pembayaran"
+              )}
             </Button>
           </div>
         </div>

@@ -6,6 +6,9 @@ import { ChevronRight } from "lucide-react";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
+import { InformasiMuatanModal } from "@/container/Shipper/SewaArmada/Web/InformasiMuatan";
+import { InformasiMuatanTable } from "@/container/Shipper/SewaArmada/Web/InformasiMuatan/InformasiMuatanTable";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import { compareArraysByNameOnly } from "@/lib/utils/array";
@@ -16,9 +19,6 @@ import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
-
-import { InformasiMuatanModal } from "../InformasiMuatan";
-import { InformasiMuatanTable } from "../InformasiMuatan/InformasiMuatanTable";
 
 export const InformasiMuatan = ({ onFetchTrucks }) => {
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =

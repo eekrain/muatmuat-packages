@@ -6,6 +6,8 @@ import { Alert } from "@/components/Alert/Alert";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 
+import { useTranslation } from "@/hooks/use-translation";
+
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -21,6 +23,7 @@ export const ModalDetailWaktuTunggu = ({
   onOpenChange,
   drivers = [],
 }) => {
+  const { t } = useTranslation();
   // Use an array of booleans to track expanded state for each driver
   const [expandedDrivers, setExpandedDrivers] = useState(
     drivers.map(() => false)
@@ -51,7 +54,11 @@ export const ModalDetailWaktuTunggu = ({
             type="button"
             className="w-fit text-xs font-medium leading-[14.4px] text-primary-700"
           >
-            Lihat Detail Waktu Tunggu
+            {t(
+              "ModalDetailWaktuTunggu.viewDetailButton",
+              {},
+              "Lihat Detail Waktu Tunggu"
+            )}
           </button>
         </ModalTrigger>
       ) : null}
@@ -62,12 +69,15 @@ export const ModalDetailWaktuTunggu = ({
       >
         {/* Header */}
         <h2 className="text-center text-base font-bold text-neutral-900">
-          Detail Waktu Tunggu
+          {t("ModalDetailWaktuTunggu.modalTitle", {}, "Detail Waktu Tunggu")}
         </h2>
 
         <Alert variant="secondary" className="h-[30px] text-xs font-semibold">
-          Free untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari 12
-          jam
+          {t(
+            "ModalDetailWaktuTunggu.waitingTimeAlert",
+            {},
+            "Free untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari 12 jam"
+          )}
         </Alert>
 
         <div className="flex max-h-[291px] flex-col gap-y-6">
@@ -91,7 +101,11 @@ export const ModalDetailWaktuTunggu = ({
                 >
                   <div className="flex flex-col items-start gap-2">
                     <h3 className="text-sm font-semibold text-neutral-900">
-                      {`Driver : ${driver.name}`}
+                      {t(
+                        "ModalDetailWaktuTunggu.driverLabel",
+                        { driverName: driver.name },
+                        `Driver : ${driver.name}`
+                      )}
                     </h3>
                     {/* {driver.durasiTotal && !expandedDrivers[idx] && (
                     <span className="capsize text-xs font-medium text-neutral-600">
@@ -125,7 +139,19 @@ export const ModalDetailWaktuTunggu = ({
                       className="flex flex-col gap-y-2 text-xs font-medium"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-neutral-900">{`${item.detail} : ${formatDuration(item.startDate, item.endDate)}`}</span>
+                        <span className="text-neutral-900">
+                          {t(
+                            "ModalDetailWaktuTunggu.detailLabel",
+                            {
+                              detail: item.detail,
+                              duration: formatDuration(
+                                item.startDate,
+                                item.endDate
+                              ),
+                            },
+                            `${item.detail} : ${formatDuration(item.startDate, item.endDate)}`
+                          )}
+                        </span>
                         <span className="text-neutral-900">
                           {idrFormat(item.totalPrice)}
                         </span>
@@ -141,7 +167,9 @@ export const ModalDetailWaktuTunggu = ({
             ))}
           </div>
           <div className="flex items-center justify-between text-base font-bold text-neutral-900">
-            <span className="">Total</span>
+            <span className="">
+              {t("ModalDetailWaktuTunggu.total", {}, "Total")}
+            </span>
             <span className="">{idrFormat(totalAmount)}</span>
           </div>
         </div>

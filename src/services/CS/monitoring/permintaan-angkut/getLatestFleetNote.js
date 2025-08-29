@@ -3,7 +3,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const IS_MOCK = true;
+const IS_MOCK = false;
 
 const apiResultLatestFleetNote = {
   Message: {
@@ -18,7 +18,7 @@ const apiResultLatestFleetNote = {
       status: "active",
       current: 10,
       total: 11,
-      inactivityStatus: "TRANSPORTER_IDLE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
+      inactivityStatus: "ARMADA_INACTIVE", // [ARMADA_INACTIVE, TRANSPORTER_IDLE, TRANSPORTER_INACTIVE]
 
       history: {
         reportedAt: "2025-01-15T10:00:00Z",
@@ -206,6 +206,9 @@ export const fetcherLatestFleetNote = async (id, params = {}) => {
   const queryParams = new URLSearchParams();
   if (params.page) queryParams.append("page", params.page);
   if (params.limit) queryParams.append("limit", params.limit);
+  if (params.search) queryParams.append("search", params.search);
+  if (params.sort) queryParams.append("sort", params.sort);
+  if (params.order) queryParams.append("order", params.order);
 
   const queryString = queryParams.toString();
   const endpoint = queryString

@@ -25,14 +25,22 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
 
-  // Get available fleet data for the selected order (using a mock orderId for now)
+  // Ambil orderId dari URL params
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const orderId = searchParams?.get("id") || "";
+
+  // Get available fleet data for the selected order
   const { data: fleetData, isLoading: fleetLoading } = useGetAvailableFleet(
-    "order-uuid-1",
+    orderId,
     {
       search: searchValue,
       operationalStatus: selectedFilter ? [selectedFilter] : undefined,
     }
   );
+  console.log("fleetData", fleetData);
 
   const columns = [
     {
@@ -391,12 +399,6 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="relative flex h-16 items-center gap-3 px-4">
-        <div className="absolute left-1/2 top-4 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-          <IconComponent
-            src="/icons/draggable-button.svg"
-            className={cn("h-4 w-14 cursor-pointer")}
-          />
-        </div>
         <div className="flex items-center gap-2">
           <h3 className="whitespace-nowrap text-xs font-bold">
             {t(

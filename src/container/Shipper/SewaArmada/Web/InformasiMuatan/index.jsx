@@ -15,10 +15,10 @@ import { Select } from "@/components/Form/Select";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 
-import { useTranslation } from "@/hooks/use-translation";
+import { DropdownSearch } from "@/container/Shipper/SewaArmada/Web/InformasiMuatan/InformasiMuatanDropdown";
+import { ModalNamaMuatan } from "@/container/Shipper/SewaArmada/Web/InformasiMuatan/ModalNamaMuatan";
 
-import { DropdownSearch } from "./InformasiMuatanDropdown";
-import { ModalNamaMuatan } from "./ModalNamaMuatan";
+import { useTranslation } from "@/hooks/use-translation";
 
 const defaultInformasiMuatan = {
   namaMuatan: {
@@ -291,7 +291,7 @@ export const InformasiMuatanModal = ({
                                   "Pilih Muatan"
                                 )}
                                 options={[
-                                  ...cargoNames,
+                                  ...(cargoNames ? cargoNames : []),
                                   ...listCustomNamaMuatan,
                                 ]}
                                 value={field.value}

@@ -4,10 +4,12 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 
 import { cn } from "@/lib/utils";
 
 const MultilevelSelect = ({ options, value, onChange, disabled }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeFirstLevelItem, setActiveFirstLevelItem] = useState(null);
   const dropdownRef = useRef(null);
@@ -83,7 +85,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
               onClick={() => !hasChildren && handleSelect(option)}
             >
               <div className="max-w-[148px] truncate text-xs font-semibold leading-[14.4px] text-neutral-900">
-                {option.label}
+                {t(`MultilevelSelect.${option.key}`, {}, option.label)}
               </div>
               {hasChildren && <IconComponent src="/icons/chevron-right.svg" />}
             </div>
@@ -134,7 +136,11 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
               >
                 <RadioButton
                   name="statusFilter"
-                  label={option.label}
+                  label={t(
+                    `MultilevelSelect.${activeFirstLevelItem.key}.${option.key}`,
+                    {},
+                    option.label
+                  )}
                   checked={isSelected}
                 />
               </div>
@@ -179,7 +185,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
             isActive ? "text-primary-700" : "text-neutral-600"
           )}
         >
-          Filter
+          {t("MultilevelSelect.filterButton", {}, "Filter")}
         </div>
         <IconComponent
           className={cn(

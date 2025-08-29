@@ -6,10 +6,13 @@ import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSe
 import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
 import { useGetOrderChangeHistory } from "@/services/Shipper/detailpesanan/getOrderChangeHistory";
 import { useGetRefundInfo } from "@/services/Shipper/detailpesanan/getRefundInfo";
+import { useStatusDriver } from "@/services/Shipper/detailpesanan/getStatusDriver";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 
 // import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
+
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
@@ -31,14 +34,18 @@ import { WaitFleetSearchModal } from "./StatusPesanan/WaitFleetSearch";
 const DetailPesananWeb = () => {
   const navigation = useRouter();
   const params = useParams();
+  const { t } = useTranslation();
   const isUpdateOrderSuccess = useSewaArmadaStore(
     (state) => state.isUpdateOrderSuccess
   );
   const { setUpdateOrderSuccess } = useSewaArmadaActions();
 
   const breadCrumbData = [
-    { name: "Daftar Pesanan", href: "/daftarpesanan" },
-    { name: "Detail Pesanan" },
+    {
+      name: t("DetailPesananWeb.orderList", {}, "Daftar Pesanan"),
+      href: "/daftarpesanan",
+    },
+    { name: t("DetailPesananWeb.orderDetail", {}, "Detail Pesanan") },
   ];
 
   const {
@@ -76,7 +83,9 @@ const DetailPesananWeb = () => {
 
   useEffect(() => {
     if (isUpdateOrderSuccess) {
-      toast.success("Berhasil Ubah Pesanan");
+      toast.success(
+        t("DetailPesananWeb.updateOrderSuccess", {}, "Berhasil Ubah Pesanan")
+      );
       setUpdateOrderSuccess(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,8 +101,12 @@ const DetailPesananWeb = () => {
     if (error) {
       toast.error(
         error.response.status === 404
-          ? "Pesanan tidak ditemukan"
-          : "Gagal mengambil data pesanan"
+          ? t("DetailPesananWeb.orderNotFound", {}, "Pesanan tidak ditemukan")
+          : t(
+              "DetailPesananWeb.failedFetchOrder",
+              {},
+              "Gagal mengambil data pesanan"
+            )
       );
       navigation.replace("/daftarpesanan");
     }
@@ -110,10 +123,15 @@ const DetailPesananWeb = () => {
   const { data: oldDriverData } = useGetOldDriver(
     shouldFetchOldDriver ? params.orderId : null,
     shouldFetchOldDriver
-      ? dataDetailPesanan?.dataStatusPesanan.driverStatus[0].driverId
+      ? dataDetailPesanan?.dataStatusPesanan?.driverStatus[0]?.driverId
       : null
   );
   const { data: orderChangeHistory } = useGetOrderChangeHistory(params.orderId);
+
+  const { data: statusDriver } = useStatusDriver(
+    params?.orderId,
+    dataDetailPesanan?.dataStatusPesanan?.driverStatus[0]?.driverId
+  );
 
   const isCancelled =
     dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
@@ -165,6 +183,7 @@ const DetailPesananWeb = () => {
                 isShowWaitFleetAlert={isShowWaitFleetAlert}
                 oldDriverData={oldDriverData}
                 orderChangeHistory={orderChangeHistory}
+                statusDriver={statusDriver}
               />
             )}
 
@@ -215,15 +234,21 @@ const DetailPesananWeb = () => {
           <button
             onClick={() => {
               // toast.error(
-              //   "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
+              //   t("DetailPesananWeb.minimalCancelReason", {}, "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan")
               // );
               // toast.error(
-              //   "Armada akan disiapkan ulang sesuai dengan perubahan yang dilakukan."
+              //   t("DetailPesananWeb.fleetPrepareAgain", {}, "Armada akan disiapkan ulang sesuai dengan perubahan yang dilakukan.")
               // );
-              toast.success("Berhasil membatalkan pesanan");
+              toast.success(
+                t(
+                  "DetailPesananWeb.cancelOrderSuccess",
+                  {},
+                  "Berhasil membatalkan pesanan"
+                )
+              );
             }}
           >
-            tes toast
+            {t("DetailPesananWeb.testToast", {}, "tes toast")}
           </button>
           <pre className="overflow-x-hidden">
             {JSON.stringify(dataDetailPesanan, null, 2)}

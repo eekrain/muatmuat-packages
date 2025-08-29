@@ -245,11 +245,15 @@ const DetailPesananHeader = ({
                 variant="muatparts-primary"
                 onClick={() =>
                   router.push(
-                    `/shipper/detail-pesanan/${dataStatusPesanan?.orderId}/refund`
+                    `/daftarpesanan/detailpesanan/${dataStatusPesanan?.orderId}/detail-refund`
                   )
                 }
               >
-                Detail Refund
+                {t(
+                  "DetailPesananHeader.buttonDetailRefund",
+                  {},
+                  "Detail Refund"
+                )}
               </Button>
             )}
           {showButtonConfig?.DetailRefund && (
@@ -356,14 +360,22 @@ const DetailPesananHeader = ({
         <Alert
           variant="warning"
           className="mb-4"
-          message="Pengembalian dana sedang dalam proses"
+          message={t(
+            "DetailPesananHeader.alertRefundProcessing",
+            {},
+            "Pengembalian dana sedang dalam proses"
+          )}
         />
       )}
       {refundInfo?.refundStatus === "REFUND_SUCCESS" && (
         <Alert
           variant="success"
           className="mb-4"
-          message="Pengembalian dana berhasil"
+          message={t(
+            "DetailPesananHeader.alertRefundSuccess",
+            {},
+            "Pengembalian dana berhasil"
+          )}
         />
       )}
 
@@ -371,7 +383,11 @@ const DetailPesananHeader = ({
         <Alert
           variant="warning"
           className="mb-4"
-          message="Pesanan sedang menunggu armada."
+          message={t(
+            "DetailPesananHeader.alertWaitingFleet",
+            {},
+            "Pesanan sedang menunggu armada."
+          )}
         />
       )}
 

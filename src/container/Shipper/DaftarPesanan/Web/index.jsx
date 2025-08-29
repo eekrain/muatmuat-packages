@@ -47,7 +47,7 @@ const DaftarPesananWeb = ({
         return {
           label: item.alertText,
           link: {
-            label: "Lihat Pesanan",
+            label: t("DaftarPesananWeb.viewOrder", {}, "Lihat Pesanan"),
             link:
               item.orderId.length === 1
                 ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
@@ -56,7 +56,7 @@ const DaftarPesananWeb = ({
         };
       })
       .filter(Boolean);
-  }, [settlementAlertInfo]);
+  }, [settlementAlertInfo, t]);
 
   const hasFilteredOrders = orders.length > 0;
 
@@ -140,7 +140,7 @@ const DaftarPesananWeb = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold leading-[120%] text-neutral-900">
-            Daftar Pesanan
+            {t("DaftarPesananWeb.pageTitle", {}, "Daftar Pesanan")}
           </h1>
           <DropdownPeriode
             disable={

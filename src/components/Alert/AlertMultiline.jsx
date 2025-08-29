@@ -28,6 +28,8 @@ import IconComponent from "../IconComponent/IconComponent";
  * @returns {JSX.Element}
  */
 export const AlertMultiline = ({ className, items = [] }) => {
+  const { t } = useTranslation();
+
   if (items.length === 0) {
     return null;
   }
@@ -48,7 +50,9 @@ export const AlertMultiline = ({ className, items = [] }) => {
               src="/icons/warning24.svg"
               size="medium"
             />
-            <span className="capsize font-semibold">Pemberitahuan:</span>
+            <span className="capsize font-semibold">
+              {t("AlertMultiline.notificationLabel", {}, "Pemberitahuan:")}
+            </span>
           </div>
 
           <ul className="flex w-full list-disc flex-col gap-y-1 pl-10">

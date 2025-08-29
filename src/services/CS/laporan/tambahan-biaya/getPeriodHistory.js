@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 // Mock API result for development/testing
 export const mockAPIResult = {
@@ -40,7 +40,7 @@ export const getPeriodHistory = async (url) => {
     result = await fetcherMuatrans.get(url);
   }
   return {
-    history: result?.data?.Data.history || [],
+    history: result?.data?.data.history || [],
   };
 };
 

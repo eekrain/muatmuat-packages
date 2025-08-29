@@ -121,7 +121,7 @@ const Pagination = ({
                 : "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
           )}
-          aria-label="Previous page"
+          aria-label={t("Pagination.previousPage", {}, "Previous page")}
         >
           <ChevronLeft size={20} />
         </button>
@@ -140,7 +140,11 @@ const Pagination = ({
                       ? buttonClassname
                       : "bg-none font-medium text-neutral-600"
                   )}
-                  aria-label={`Go to page ${pageNumber}`}
+                  aria-label={t(
+                    "Pagination.goToPage",
+                    { pageNumber },
+                    `Go to page ${pageNumber}`
+                  )}
                   aria-current={currentPage === pageNumber ? "page" : undefined}
                 >
                   {pageNumber}
@@ -160,7 +164,7 @@ const Pagination = ({
                 : "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
           }`}
-          aria-label="Next page"
+          aria-label={t("Pagination.nextPage", {}, "Next page")}
         >
           <ChevronRight size={20} />
         </button>
@@ -168,8 +172,7 @@ const Pagination = ({
 
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold text-neutral-600">
-          {/* {t("labelTampilkanJumlahData")} */}
-          {showPerPageLabel}
+          {t("Pagination.showPerPageLabel", {}, showPerPageLabel)}
         </span>
         <div className="flex gap-2">
           {perPageOptions.map((option) => (
@@ -182,7 +185,11 @@ const Pagination = ({
                   ? buttonClassname
                   : "bg-none font-medium text-neutral-600"
               )}
-              aria-label={`Show ${option} items per page`}
+              aria-label={t(
+                "Pagination.showItemsPerPage",
+                { count: option },
+                `Show ${option} items per page`
+              )}
               aria-pressed={perPage === option}
             >
               {option}

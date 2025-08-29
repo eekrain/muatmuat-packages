@@ -18,6 +18,7 @@ const ModalDetailTransporterTidakAktif = ({
   detail,
   latestNote,
   onClose,
+  contacts,
   _onSelesaikan,
   _onHubungi,
 }) => {
@@ -28,9 +29,14 @@ const ModalDetailTransporterTidakAktif = ({
   if (!transporter || !detail) return null;
 
   // Format durasi ke jam
-  const formatDuration = (minutes) => {
-    if (!minutes) return "-";
-    const jam = Math.floor(minutes / 60);
+  const formatDuration = (durationString) => {
+    if (!durationString) return "-";
+    // Handle both string format ("6 hari") and number format (minutes)
+    if (typeof durationString === "string") {
+      return durationString;
+    }
+    // If it's minutes, convert to hours
+    const jam = Math.floor(durationString / 60);
     return t("ModalDetailTransporterTidakAktif.textJam", { jam }, `${jam} Jam`);
   };
 
@@ -139,9 +145,9 @@ const ModalDetailTransporterTidakAktif = ({
                   )}
                 </p>
                 <p className="text-xs font-medium text-neutral-900">
-                  {latestNote?.history?.reportedAt
+                  {latestNote?.relatedEntities?.reportedAt
                     ? new Date(
-                        latestNote.history.reportedAt
+                        latestNote.relatedEntities.reportedAt
                       ).toLocaleDateString("id-ID", {
                         day: "2-digit",
                         month: "long",
@@ -159,7 +165,7 @@ const ModalDetailTransporterTidakAktif = ({
                   )}
                 </p>
                 <p className="text-xs font-medium text-neutral-900">
-                  {latestNote?.history?.notes || "-"}
+                  {latestNote?.relatedEntities?.noteResolve || "-"}
                 </p>
               </div>
               <div className="mb-3 flex flex-col gap-2">
@@ -171,9 +177,7 @@ const ModalDetailTransporterTidakAktif = ({
                   )}
                 </p>
                 <LightboxProvider
-                  images={
-                    latestNote?.history?.photos?.map((photo) => photo.url) || []
-                  }
+                  images={latestNote?.attachments || []}
                   title={t(
                     "ModalDetailTransporterTidakAktif.titleFotoPendukung",
                     {},
@@ -181,11 +185,11 @@ const ModalDetailTransporterTidakAktif = ({
                   )}
                 >
                   <div className="flex flex-row gap-2">
-                    {latestNote?.history?.photos?.length > 0 ? (
-                      latestNote.history.photos.map((photo, idx) => (
+                    {latestNote?.attachments?.length > 0 ? (
+                      latestNote.attachments.map((photoUrl, idx) => (
                         <LightboxPreview
                           key={idx}
-                          image={photo.url}
+                          image={photoUrl}
                           index={idx}
                           className="h-10 w-10 flex-shrink-0 rounded-[4px] border object-cover"
                           alt={t(
@@ -250,13 +254,12 @@ const ModalDetailTransporterTidakAktif = ({
       <HubungiModal
         isOpen={showHubungiModal}
         onClose={() => setShowHubungiModal(false)}
-        transporterData={transporter}
+        contacts={contacts}
       />
       <ModalCatatanPenyelesaian
         isOpen={showCatatanModal}
         onClose={() => setShowCatatanModal(false)}
-        onConfirm={() => setShowCatatanModal(false)}
-        fleetNoteData={{ Data: { latestNote: latestNote } }}
+        fleetNoteData={{ latestNote: latestNote }}
       />
     </>
   );

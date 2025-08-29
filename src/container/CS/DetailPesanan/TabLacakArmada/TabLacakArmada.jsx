@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 import Button from "@/components/Button/Button";
@@ -24,6 +26,7 @@ export const TabLacakArmada = (props) => {
 };
 
 export const Inner = () => {
+  const params = useParams();
   const { t } = useTranslation();
   const {
     data,
@@ -124,16 +127,20 @@ export const Inner = () => {
                     "Ubah Transporter"
                   )}
                 </Button>
-                <Button
-                  variant="muattrans-primary"
-                  className="h-8 min-w-[174px] !rounded-full !text-sm"
+                <Link
+                  href={`/monitoring?lihat-posisi-armada=${params.orderId}`}
                 >
-                  {t(
-                    "TabLacakArmada.buttonLihatPosisiArmada",
-                    {},
-                    "Lihat Posisi Armada"
-                  )}
-                </Button>
+                  <Button
+                    variant="muattrans-primary"
+                    className="h-8 min-w-[174px] !rounded-full !text-sm"
+                  >
+                    {t(
+                      "TabLacakArmada.buttonLihatPosisiArmada",
+                      {},
+                      "Lihat Posisi Armada"
+                    )}
+                  </Button>
+                </Link>
               </div>
             ) : data?.length > 0 && isEdit ? (
               <div className="flex items-center gap-3">

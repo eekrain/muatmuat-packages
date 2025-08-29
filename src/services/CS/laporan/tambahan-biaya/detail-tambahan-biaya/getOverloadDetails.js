@@ -2,84 +2,91 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
+import { isValidUUID } from "@/utils/testUUIDs";
+
+// Flag untuk switch antara mock data dan real API
 const useMockData = true;
 
-// Mock API result for development/testing
+// Mock API result sesuai dengan API contract
 export const mockAPIResult = {
+  success: true,
   data: {
-    success: true,
-    Data: {
-      drivers: [
-        {
-          id: "driver-uuid",
-          name: "Driver Name",
-          license_plate: "B 1234 XYZ",
-          transporter_name: "PT Transporter ABC",
-          overload_locations: [
-            {
-              location_type: "Lokasi Muat 1",
-              overload_weight: 1000,
-              weight_unit: "kg",
-              cost: 50000,
-              loading_date: "2025-01-15T10:00:00Z",
-            },
-            {
-              location_type: "Lokasi Muat 2",
-              overload_weight: 1000,
-              weight_unit: "kg",
-              cost: 50000,
-              loading_date: "2025-01-15T10:00:00Z",
-            },
-          ],
-          total_cost: 100000,
-        },
-        {
-          id: "driver-uuid",
-          name: "Noel Alexandre",
-          license_plate: "L 1234 CAM",
-          transporter_name: " CV Moga Jaya Abadi",
-          overload_locations: [
-            {
-              location_type: "Lokasi Muat 1",
-              overload_weight: 1000,
-              weight_unit: "kg",
-              cost: 50000,
-              loading_date: "2025-01-15T10:00:00Z",
-            },
-            {
-              location_type: "Lokasi Muat 2",
-              overload_weight: 1000,
-              weight_unit: "kg",
-              cost: 50000,
-              loading_date: "2025-01-15T10:00:00Z",
-            },
-          ],
-          total_cost: 100000,
-        },
-      ],
-      grand_total: 200000,
-    },
+    drivers: [
+      {
+        id: "driver-uuid-1",
+        name: "John Smith",
+        license_plate: "B 1234 XYZ",
+        transporter_name: "PT Transporter ABC",
+        overload_locations: [
+          {
+            location_type: "LOKASI MUAT 1",
+            overload_weight: 500,
+            weight_unit: "kg",
+            cost: 75000,
+            loading_date: "2025-01-15T10:00:00Z",
+          },
+        ],
+        total_cost: 75000,
+      },
+      {
+        id: "driver-uuid-2",
+        name: "Sarah Johnson",
+        license_plate: "L 5678 DEF",
+        transporter_name: "CV Moga Jaya Abadi",
+        overload_locations: [
+          {
+            location_type: "LOKASI MUAT 1",
+            overload_weight: 300,
+            weight_unit: "kg",
+            cost: 45000,
+            loading_date: "2025-01-15T11:00:00Z",
+          },
+          {
+            location_type: "LOKASI MUAT 2",
+            overload_weight: 400,
+            weight_unit: "kg",
+            cost: 60000,
+            loading_date: "2025-01-15T12:00:00Z",
+          },
+        ],
+        total_cost: 105000,
+      },
+    ],
+    grand_total: 180000,
   },
 };
 
-// Fetcher function for overload details
-export const getOverloadDetails = async (url) => {
-  let result;
+// Fetcher function
+export const getOverloadDetails = async (cacheKey) => {
+  const reportId = cacheKey.split("/")[1];
+
+  // Switch antara mock data dan real API berdasarkan flag
   if (useMockData) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    result = mockAPIResult;
-  } else {
-    result = await fetcherMuatrans.get(url);
+    // Simulasi delay untuk mock data
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return mockAPIResult;
   }
-  return {
-    drivers: result?.data?.Data.drivers || [],
-    grandTotal: result?.data?.Data.grand_total || 0,
-  };
+
+  // Validasi UUID sebelum melakukan API call
+  if (!isValidUUID(reportId)) {
+    console.error("Invalid UUID format:", reportId);
+    // Return mock data jika UUID tidak valid
+    return mockAPIResult;
+  }
+
+  // Real API call
+  const result = await fetcherMuatrans.get(
+    `/v1/cs/additional-cost-reports/${reportId}/overload-details`
+  );
+
+  // Jika API response kosong atau tidak ada drivers, fallback ke mock data
+  if (!result?.data?.drivers || result.data.drivers.length === 0) {
+    return mockAPIResult;
+  }
+
+  return result?.data;
 };
 
-// SWR hook for overload details
-export const useGetOverloadDetails = (id) =>
-  useSWR(
-    `/v1/cs/additional-cost-reports/${id}/overload-details`,
-    getOverloadDetails
-  );
+// SWR hook for GET request
+export const useGetOverloadDetails = (reportId) =>
+  useSWR(reportId ? `overload-details/${reportId}` : null, getOverloadDetails);

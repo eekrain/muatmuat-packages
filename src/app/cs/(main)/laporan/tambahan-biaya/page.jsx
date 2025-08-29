@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { useGetAdditionalCostReports } from "@/services/CS/laporan/tambahan-biaya/getAdditionalCostReports";
 import { useGetFilterOptions } from "@/services/CS/laporan/tambahan-biaya/getFilterOptions";
+import { useGetPaymentOptions } from "@/services/CS/laporan/tambahan-biaya/getPaymentOptions";
 import { useGetPeriodHistory } from "@/services/CS/laporan/tambahan-biaya/getPeriodHistory";
 
 import LaporanTambahanBiaya from "@/container/CS/LaporanTambahanBiaya/LaporanTambahanBiaya";
@@ -27,7 +28,7 @@ const Page = () => {
     startDate: null,
     endDate: null,
     shipperId: null,
-    paymentMethodId: null,
+    paymentMethodId: "",
     sort: "",
     order: "",
   };
@@ -36,7 +37,6 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState("active");
   const [hasNoReports, setHasNoReports] = useState(false);
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
-
   const additionalCostReportsQueryString = useShallowMemo(() => {
     const params = new URLSearchParams();
 
@@ -49,19 +49,25 @@ const Page = () => {
     }
     // Handle dates - both can be provided individually
     if (queryParams.startDate) {
-      params.append("startDate", queryParams.startDate);
+      params.append("start_date", queryParams.startDate);
     }
     if (queryParams.endDate) {
-      params.append("endDate", queryParams.endDate);
+      params.append("end_date", queryParams.endDate);
     }
     if (queryParams.search) {
       params.append("search", queryParams.search);
     }
     if (queryParams.sort) {
-      params.append("sort", queryParams.sort);
+      params.append("sort_by", queryParams.sort);
     }
     if (queryParams.order) {
-      params.append("order", queryParams.order);
+      params.append("sort_direction", queryParams.order);
+    }
+    if (queryParams.shipperId) {
+      params.append("shipper_id", queryParams.shipperId);
+    }
+    if (queryParams.paymentMethodId) {
+      params.append("payment_method_id", queryParams.paymentMethodId);
     }
     return params.toString();
   }, [queryParams]);
@@ -72,13 +78,16 @@ const Page = () => {
     return params.toString();
   }, [activeTab]);
 
-  const { data: { reports = [], pagination = null } = {}, isLoading } =
-    useGetAdditionalCostReports(additionalCostReportsQueryString);
+  const { data: { reports, pagination, statusCount } = {}, isLoading } =
+    useGetAdditionalCostReports(additionalCostReportsQueryString, activeTab);
   const {
     data: { history: periodHistory = [] } = {},
     mutate: refetchPeriodHistory,
   } = useGetPeriodHistory();
   const { data: filterOptions = null } = useGetFilterOptions(
+    filterOptionsQueryString
+  );
+  const { data: paymentOptions } = useGetPaymentOptions(
     filterOptionsQueryString
   );
   const { trigger: savePeriodHistory, isMutating: isUploadingLogo } =
@@ -138,8 +147,8 @@ const Page = () => {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       isLoading={isLoading}
-      reports={reports}
-      pagination={pagination}
+      reports={reports || []}
+      pagination={pagination || {}}
       periodHistory={periodHistory}
       filterOptions={filterOptions}
       hasNoReports={hasNoReports}
@@ -149,6 +158,8 @@ const Page = () => {
       setCurrentPeriodValue={setCurrentPeriodValue}
       onChangeQueryParams={handleChangeQueryParams}
       onSavePeriodHistory={handleSavePeriodHistory}
+      statusCount={statusCount}
+      paymentOptions={paymentOptions}
     />
   );
 };

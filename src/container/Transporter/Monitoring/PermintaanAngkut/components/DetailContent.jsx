@@ -20,6 +20,8 @@ const DetailContent = ({
 }) => {
   const { t } = useTranslation();
 
+  console.log("Estrimasi jartak:", displayData?.estimatedDistance);
+
   return (
     <div
       className={cn(
@@ -372,9 +374,10 @@ const DetailContent = ({
             >
               {t(
                 "DetailContent.labelEstimatedDistance",
-                { distance: displayData?.estimatedDistance || 0 },
-                `Estimasi Jarak: ${displayData?.estimatedDistance || 0} km`
+                { distance: displayData?.estimatedDistance ?? "-" },
+                `Estimasi Jarak: ${displayData?.estimatedDistance ?? "-"} km`
               )}
+              <p>{displayData?.estimatedDistance} km</p>
             </span>
           </div>
 
