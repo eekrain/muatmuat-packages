@@ -1,0 +1,27 @@
+{
+  "name": "@muatmuat/hooks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "use-auth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "fast-shallow-equal": "^1.0.0",
+    "lodash": "^4.17.21"
+  },
+  "peerDependencies": {
+    "@hookform/resolvers": "^5.2.1",
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-hook-form": "^7.0.0",
+    "swr": "^2.0.0",
+    "xior": "^0.3.0",
+    "zustand": "^4.0.0"
+  }
+}
