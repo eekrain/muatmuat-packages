@@ -408,13 +408,13 @@ const Page = () => {
                       : `calc(100vh - 92px - 16px - 16px - 64px)`,
                 width:
                   panels.leftPanelMode === "posisi"
-                    ? "calc(100% - 438px)"
+                    ? "calc(100% - 480px + 12px)"
                     : panels.showLeftPanel
                       ? "calc(100% - 332px)"
                       : "100%",
                 marginLeft:
                   panels.leftPanelMode === "posisi"
-                    ? "438px"
+                    ? "calc(480px - 12px)"
                     : panels.showLeftPanel
                       ? "332px"
                       : "0",
@@ -463,7 +463,7 @@ const Page = () => {
             <div
               className={cn(
                 "absolute left-0 top-0 z-10 h-full rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
-                panels.leftPanelMode === "posisi" ? "w-[450px]" : "w-[350px]",
+                panels.leftPanelMode === "posisi" ? "w-[480px]" : "w-[350px]",
                 panels.showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
