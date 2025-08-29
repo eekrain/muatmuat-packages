@@ -27,7 +27,6 @@ import AssignArmadaModal from "@/container/Shared/OrderModal/AssignArmadaModal";
 import BatalkanArmadaModal from "@/container/Shared/OrderModal/BatalkanArmadaModal";
 import BatalkanPesananModal from "@/container/Shared/OrderModal/BatalkanPesananModal";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
-import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
 
 import { useTranslation } from "@/hooks/use-translation";
@@ -41,6 +40,7 @@ import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 import OrderChangeInfoModal from "../../../daftar-pesanan/components/OrderChangeInfoModal";
 import AlasanPembatalanArmadaModal from "../../components/AlasanPembatalanArmadaModal";
 import LihatArmadaModal from "../../components/LihatArmadaModal";
+import PilihArmadaBatalkan from "../../components/PilihArmadaBatalkanModal";
 import RespondChangeModal from "../../components/RespondChangeModal";
 import Onboarding from "../Onboarding/Onboarding";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
@@ -274,6 +274,7 @@ const DaftarPesananAktif = ({
       // });
 
       // Show success toast notification
+      console.log("submitCancellation", cancellationData);
       const fleetCount = cancellationData.selectedFleets.length;
       toast.success(
         t(
@@ -305,6 +306,7 @@ const DaftarPesananAktif = ({
 
   const handleCancelSelectedFleets = async (cancellationData) => {
     // Open AlasanPembatalanArmadaModal instead of directly calling API
+    console.log("canellationData", cancellationData);
     setSelectedOrder(cancellationData.order);
     setSelectedFleetsForCancellation(cancellationData.selectedFleets);
     setAlasanPembatalanArmadaModalOpen(true);
@@ -364,6 +366,7 @@ const DaftarPesananAktif = ({
       // });
 
       // Show success toast notification
+      console.log("cancelOrder", order);
       toast.success(
         t(
           "DaftarPesananAktif.toast.cancelOrderSuccess",
@@ -1008,16 +1011,6 @@ const DaftarPesananAktif = ({
         orderData={selectedOrder}
       />
 
-      <BatalkanArmadaModal
-        isOpen={batalkanArmadaModalOpen}
-        onClose={() => {
-          setBatalkanArmadaModalOpen(false);
-          setSelectedOrder(null);
-        }}
-        order={selectedOrder}
-        onOpenFleetModal={handleOpenFleetModal}
-      />
-
       {/* Batalkan Pesanan Modal */}
       <BatalkanPesananModal
         isOpen={batalkanPesananModalOpen}
@@ -1029,11 +1022,19 @@ const DaftarPesananAktif = ({
         onOpenAlasanModal={handleOpenAlasanModal}
       />
 
+      <BatalkanArmadaModal
+        isOpen={batalkanArmadaModalOpen}
+        onClose={() => {
+          setBatalkanArmadaModalOpen(false);
+        }}
+        order={selectedOrder}
+        onOpenFleetModal={handleOpenFleetModal}
+      />
+
       <PilihArmadaBatalkan
         isOpen={pilihArmadaBatalkanModalOpen}
         onClose={() => {
           setPilihArmadaBatalkanModalOpen(false);
-          setSelectedOrder(null);
         }}
         order={selectedOrder}
         fleetList={
@@ -1061,17 +1062,6 @@ const DaftarPesananAktif = ({
         onConfirm={handleCancelSelectedFleets}
       />
 
-      {/* Ubah Jumlah Unit Modal */}
-      <UbahJumlahUnitModal
-        isOpen={ubahJumlahUnitModalOpen}
-        onClose={() => {
-          setUbahJumlahUnitModalOpen(false);
-          setSelectedOrder(null);
-        }}
-        orderData={selectedOrder}
-        onConfirm={handleChangeUnitCount}
-      />
-
       {/* Alasan Pembatalan Armada Modal */}
       <AlasanPembatalanArmadaModal
         isOpen={alasanPembatalanArmadaModalOpen}
@@ -1083,6 +1073,17 @@ const DaftarPesananAktif = ({
         order={selectedOrder}
         selectedFleets={selectedFleetsForCancellation}
         onConfirm={handleCancelArmadaWithReason}
+      />
+
+      {/* Ubah Jumlah Unit Modal */}
+      <UbahJumlahUnitModal
+        isOpen={ubahJumlahUnitModalOpen}
+        onClose={() => {
+          setUbahJumlahUnitModalOpen(false);
+          setSelectedOrder(null);
+        }}
+        orderData={selectedOrder}
+        onConfirm={handleChangeUnitCount}
       />
 
       {/* Order Change Info Modal */}
