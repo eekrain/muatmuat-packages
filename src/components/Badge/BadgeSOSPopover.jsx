@@ -1,14 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
 import Button from "@/components/Button/Button";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTrigger,
-} from "@/components/Modal/Modal";
 import {
   Popover,
   PopoverContent,
@@ -18,8 +10,6 @@ import {
 import { useTranslation } from "@/hooks/use-translation";
 
 import { getStatusPesananMetadataCS } from "@/lib/normalizers/CS/getStatusPesananMetadata";
-
-import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 
 import IconComponent from "../IconComponent/IconComponent";
 import { NewTimelineItem, TimelineContainer } from "../Timeline";
@@ -32,6 +22,7 @@ export const BadgeSOSPopover = ({
   onViewDetail = () => {},
   onViewHistory = () => {},
   onConfirm = () => {},
+  footer,
 }) => {
   const { t } = useTranslation();
 
@@ -48,7 +39,7 @@ export const BadgeSOSPopover = ({
     <Popover open={Boolean(data)} onOpenChange={onClose}>
       <PopoverTrigger className="invisible text-xs">popover sos</PopoverTrigger>
       <PopoverContent
-        className="w-[305px] place-content-center rounded-xl border-none bg-white p-0 shadow-none"
+        className="z-20 w-[305px] place-content-center rounded-xl border-none bg-white p-0 shadow-none"
         align="start"
         side="top"
         sideOffset={-18}
@@ -83,14 +74,14 @@ export const BadgeSOSPopover = ({
         <div className="mt-[14px] max-h-[388px] flex-1 space-y-3 overflow-y-auto px-3">
           {/* Incident Details */}
           <div className="space-y-3">
-            {data?.incidentCategory || data?.incidentDescription ? (
+            {data?.category || data?.description ? (
               <div>
                 <p className="text-xs font-semibold leading-none text-error-400">
-                  {data?.incidentCategory || "-"}
+                  {data?.category || "-"}
                 </p>
-                {data?.incidentDescription && (
+                {data?.description && (
                   <p className="mt-1.5 text-xs font-medium text-neutral-900">
-                    {data?.incidentDescription}
+                    {data?.description}
                   </p>
                 )}
               </div>
@@ -210,9 +201,7 @@ export const BadgeSOSPopover = ({
         </div>
 
         {/* Footer Button */}
-        <div className="mt-4 px-3 pb-3">
-          <ModalHubungi />
-        </div>
+        <div className="mt-4 px-3 pb-3">{footer}</div>
       </PopoverContent>
     </Popover>
   );
@@ -235,70 +224,3 @@ const InfoRow = ({ icon, label, value }) => (
     </div>
   </div>
 );
-
-/**
- * Represents a single contact option button within the modal.
- * @param {{
- * label: string;
- * imageSrc: string;
- * altText: string;
- * }} props
- */
-const ContactOption = ({ label, image, onClick }) => (
-  <button
-    onClick={onClick}
-    className="group flex w-full items-center rounded-md border border-neutral-400 bg-neutral-50 text-left transition-colors hover:border-muat-trans-primary-400"
-  >
-    <div className="flex h-[72px] w-[72px] flex-shrink-0 items-center justify-center rounded-l-md bg-neutral-100 group-hover:bg-muat-trans-primary-400">
-      <img
-        src={image}
-        alt="icon contact"
-        className="h-10 w-10 rounded-full object-cover"
-      />
-    </div>
-    <div className="px-4">
-      <p className="text-xs font-bold leading-tight text-black">{label}</p>
-    </div>
-  </button>
-);
-
-const ModalHubungi = () => {
-  const [mode, setMode] = useState(null);
-
-  return (
-    <>
-      <Modal>
-        <ModalTrigger asChild>
-          <Button variant="muattrans-primary" className="w-full">
-            Hubungi Transporter/Driver
-          </Button>
-        </ModalTrigger>
-        <ModalContent className="w-[438px]" type="muatmuat">
-          <ModalHeader />
-
-          {/* Modal Body */}
-          <div className="flex flex-col items-center gap-6 px-6 py-9">
-            <h2 className="text-center text-sm font-bold text-[#1B1B1B]">
-              Hubungi
-            </h2>
-            <div className="flex w-full flex-col gap-4">
-              <ContactOption
-                label="Hubungi Transporter"
-                image="/img/modal-hubungi-sos/transporter.png"
-                altText="Hubungi Transporter Icon"
-                onClick={() => setMode("transporter")}
-              />
-              <ContactOption
-                label="Hubungi Driver"
-                image="/img/modal-hubungi-sos/driver.png"
-                altText="Hubungi Driver Icon"
-                onClick={() => setMode("driver")}
-              />
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
-      <HubungiModal isOpen={Boolean(mode)} onClose={() => setMode(null)} />
-    </>
-  );
-};

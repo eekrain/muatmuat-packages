@@ -23,34 +23,35 @@ import { formatPhoneNumber } from "@/lib/utils/phoneFormatter";
 const HubungiModal = ({
   isOpen,
   onClose,
-  contacts = {
-    pics: [
-      {
-        name: "John Doe", // [dbm_mt_transporter.picName] (PIC 1 - existing)
-        position: "Manager", // [dbm_mt_transporter.picPosition] (PIC 1 - existing)
-        phoneNumber: "+628123456789", // [dbm_mt_transporter.picPhone] (PIC 1 - existing),
-        Level: 1,
-      },
-      {
-        name: "Jane Smith", // [dbm_mt_transporter.picName2]
-        position: "Supervisor", // [dbm_mt_transporter.picPosition2]
-        phoneNumber: "+628234567890", // [dbm_mt_transporter.picPhone2],
-        Level: 2,
-      },
-      {
-        name: "Bob Wilson", // [dbm_mt_transporter.picName3]
-        position: "Coordinator", // [dbm_mt_transporter.picPosition3]
-        phoneNumber: "+628345678901", // [dbm_mt_transporter.picPhone3],
-        Level: 3,
-      },
-    ],
-    emergencyContact: {
-      name: "John Doe", // [dbm_mt_user.fullName]
-      position: "Registrant", // Default value
-      phoneNumber: "+628123456789", // [dbm_mt_user.phoneNumber]
-    },
-    companyContact: "081234567890",
-  }, //for dev purpose change to [] for production
+  contacts,
+  // = {
+  //   pics: [
+  //     {
+  //       name: "John Doe", // [dbm_mt_transporter.picName] (PIC 1 - existing)
+  //       position: "Manager", // [dbm_mt_transporter.picPosition] (PIC 1 - existing)
+  //       phoneNumber: "+628123456789", // [dbm_mt_transporter.picPhone] (PIC 1 - existing),
+  //       Level: 1,
+  //     },
+  //     {
+  //       name: "Jane Smith", // [dbm_mt_transporter.picName2]
+  //       position: "Supervisor", // [dbm_mt_transporter.picPosition2]
+  //       phoneNumber: "+628234567890", // [dbm_mt_transporter.picPhone2],
+  //       Level: 2,
+  //     },
+  //     {
+  //       name: "Bob Wilson", // [dbm_mt_transporter.picName3]
+  //       position: "Coordinator", // [dbm_mt_transporter.picPosition3]
+  //       phoneNumber: "+628345678901", // [dbm_mt_transporter.picPhone3],
+  //       Level: 3,
+  //     },
+  //   ],
+  //   emergencyContact: {
+  //     name: "John Doe", // [dbm_mt_user.fullName]
+  //     position: "Registrant", // Default value
+  //     phoneNumber: "+628123456789", // [dbm_mt_user.phoneNumber]
+  //   },
+  //   companyContact: "081234567890",
+  // }, //for dev purpose change to [] for production
 }) => {
   const { t } = useTranslation();
   const [modalView, setModalView] = useState("initial"); // 'initial', 'options', 'details'
@@ -85,7 +86,7 @@ const HubungiModal = ({
     if (!isOpen) setModalView("initial");
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !contacts) return null;
 
   // View 3: Contact Details
   if (modalView === "details") {

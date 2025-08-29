@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
@@ -8,6 +8,7 @@ import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPrefere
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
+import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { FirstTimer } from "@/container/Shipper/SewaArmada/Web/FirstTimer/FirstTimer";
 import LoginModal from "@/container/Shipper/SewaArmada/Web/FirstTimer/LoginModal";
@@ -30,6 +31,7 @@ import DeskripsiMuatan from "@/container/Shipper/SewaArmada/Web/Form/DeskripsiMu
 import SelectArmadaModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import SertifikasiHalal from "@/container/Shipper/SewaArmada/Web/Form/SertifikasiHalal";
 import { CreateOrderSummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/CreateOrderSummaryPanel";
+import UpdateOrderSummaryPanel from "@/container/Shipper/SewaArmada/Web/SummaryPanel/UpdateOrderSummaryPanel";
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
@@ -39,8 +41,6 @@ import { useTranslation } from "@/hooks/use-translation";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
-
-import UpdateOrderSummaryPanel from "./SummaryPanel/UpdateOrderSummaryPanel";
 
 export default function SewaArmadaWeb({
   settlementAlertInfo,
@@ -57,6 +57,7 @@ export default function SewaArmadaWeb({
   orderStatus,
   onFetchTrucks,
 }) {
+  const router = useRouter();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -131,6 +132,18 @@ export default function SewaArmadaWeb({
   return (
     <>
       <main className="mx-auto flex min-h-full max-w-[1280px] flex-col items-center gap-6 px-10 py-8">
+        {/* 25. 18 - Web - LB - 0228 */}
+        {isEditPage ? (
+          <div className="flex items-center gap-x-3 self-start">
+            <IconComponent
+              onClick={() => router.back()}
+              src="/icons/arrow-left24.svg"
+              size="medium"
+              className="text-primary-700"
+            />
+            <h1 className="text-xl font-bold leading-[1.2]">Ubah Pesanan</h1>
+          </div>
+        ) : null}
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
@@ -142,7 +155,8 @@ export default function SewaArmadaWeb({
         ) : (
           <>
             {/* Welcome Section */}
-            <WelcomeCard />
+            {/* 25. 18 - Web - LB - 0228 */}
+            {isEditPage ? null : <WelcomeCard />}
 
             <div className="relative flex w-full gap-4">
               {/* Form Container */}

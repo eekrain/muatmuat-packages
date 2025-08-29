@@ -1,9 +1,12 @@
 import { usePathname } from "next/navigation";
 
+import { differenceInCalendarDays } from "date-fns";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
 
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 
 import { OrderStatusEnum } from "@/lib/constants/Shipper/detailpesanan/detailpesanan.enum";
@@ -21,6 +24,10 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
+  // 25. 18 - Web - LB - 0228
+  const loadTimeStart = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeStart
+  );
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   const lokasiMuat = useSewaArmadaStore((state) => state.formValues.lokasiMuat);
@@ -28,6 +35,13 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
     (state) => state.formErrors?.lokasiMuat
   );
   const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
+
+  // 25. 18 - Web - LB - 0228
+  const daysToLoadTime = useShallowMemo(() => {
+    const startDate = new Date(loadTimeStart);
+    const now = new Date();
+    return differenceInCalendarDays(startDate, now);
+  }, [loadTimeStart]);
 
   const hasNotDepartedToPickupStatuses = [
     OrderStatusEnum.PREPARE_FLEET,
@@ -51,7 +65,8 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
         <TimelineField.Root
           maxLocation={maxLocation}
           disabled={
-            isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup)
+            // 25. 18 - Web - LB - 0228
+            isEditPage && !(orderType === "SCHEDULED" && daysToLoadTime > 1)
           }
           variant="muat"
           className="flex-1"
@@ -69,7 +84,8 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
           onEditLocation={(index) => {
             if (
               !isEditPage ||
-              (orderType === "SCHEDULED" && hasNotDepartedToPickup)
+              // 25. 18 - Web - LB - 0228
+              (orderType === "SCHEDULED" && daysToLoadTime > 1)
             ) {
               handleFirstTime(() => {
                 handleOpenModalLocation({

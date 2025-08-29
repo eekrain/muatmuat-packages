@@ -360,8 +360,8 @@ const Page = () => {
   useEffect(() => {
     if (lihatPosisiByOrderId) {
       const newparams = new URLSearchParams(searchParams.toString());
-      newparams.delete("lihat-posisi-armada");
-      router.replace(`/monitoring?${newparams.toString()}`);
+      // newparams.delete("lihat-posisi-armada");
+      // router.replace(`/monitoring?${newparams.toString()}`);
       panelsDispatch({
         type: PANEL_ACTIONS.SHOW_POSISI_ARMADA,
       });
@@ -370,7 +370,6 @@ const Page = () => {
         payload: { id: lihatPosisiByOrderId },
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lihatPosisiByOrderId, searchParams]);
 
   return (
