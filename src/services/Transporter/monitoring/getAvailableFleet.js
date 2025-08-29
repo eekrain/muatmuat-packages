@@ -56,13 +56,8 @@ const apiResultAvailableFleet = {
           accuracy: 10,
         },
         route: {
-          hasRoute: true,
-          distance: 5200,
-          duration: 900,
-          coordinates: [
-            [-6.2088, 106.8456],
-            [-6.21, 106.85],
-          ],
+          latitude: -7.545862,
+          longitude: 112.2359131,
         },
         schedule: {
           hasSchedule: false,
@@ -119,13 +114,8 @@ const apiResultAvailableFleet = {
           accuracy: 8,
         },
         route: {
-          hasRoute: true,
-          distance: 7800,
-          duration: 1200,
-          coordinates: [
-            [-6.1753, 106.8266],
-            [-6.18, 106.83],
-          ],
+          latitude: -7.545862,
+          longitude: 112.2359131,
         },
         schedule: {
           hasSchedule: true,

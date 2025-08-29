@@ -26,17 +26,29 @@ const PermintaanAngkut = ({
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
-  // Get data based on active tab
+  // Get data based on active tab, tambahkan query param 'tab', 'search', 'page', 'limit'
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
+  // Handler for Enter key in search input
+  // No need for custom keydown/input handler, Search handles Enter
   const params = useMemo(() => {
+    const baseParams = {
+      tab: activeTab,
+      search:
+        searchValue && searchValue.trim().length >= 3 ? searchValue : undefined,
+      page,
+      limit,
+    };
     switch (activeTab) {
       case "halal_logistik":
-        return { isHalalLogistics: true };
+        return { ...baseParams, isHalalLogistics: true };
       case "disimpan":
-        return { isSaved: true };
+        return { ...baseParams, isSaved: true };
       default:
-        return {};
+        return baseParams;
     }
-  }, [activeTab]);
+  }, [activeTab, searchValue, page, limit]);
 
   const { data, error, isLoading } = useGetTransportRequestList(params);
   console.log("Transport Request List:", data);
@@ -252,10 +264,8 @@ const PermintaanAngkut = ({
                   {},
                   "Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
                 )}
-                onSearch={handleSearch}
-                autoSearch={true}
-                debounceTime={300}
                 defaultValue={searchValue}
+                onSearch={handleSearch}
                 disabled={data?.userStatus?.isSuspended}
                 inputClassName="w-full"
               />
@@ -399,6 +409,7 @@ const PermintaanAngkut = ({
               onShowDetail={handleShowDetail}
               searchValue={searchValue}
               onAcceptRequest={onAcceptRequest}
+              data={data}
             />
           </div>
         </>
@@ -419,6 +430,7 @@ const RequestList = ({
   onShowDetail,
   searchValue,
   onAcceptRequest,
+  data,
 }) => {
   const { t } = useTranslation();
   if (isLoading) {
@@ -441,57 +453,13 @@ const RequestList = ({
     );
   }
 
-  if (!requests || requests.length === 0) {
-    // Different empty states based on active tab
-    const getEmptyStateConfig = () => {
-      switch (activeTab) {
-        case "halal_logistik":
-          return {
-            title: t(
-              "PermintaanAngkut.requestListEmptyTitleHalal",
-              {},
-              "Belum Ada Permintaan Halal Logistik"
-            ),
-            subtitle: t(
-              "PermintaanAngkut.requestListEmptySubtitlePleaseWait",
-              {},
-              "Mohon bersabar untuk menanti permintaan baru."
-            ),
-            icon: "/icons/halal.svg",
-          };
-        case "disimpan":
-          return {
-            title: t(
-              "PermintaanAngkut.requestListEmptyTitleSaved",
-              {},
-              "Belum Ada Permintaan Tersimpan"
-            ),
-            subtitle: t(
-              "PermintaanAngkut.requestListEmptySubtitleSaved",
-              {},
-              "Anda belum menyimpan permintaan angkut apapun. Simpan permintaan yang menarik dengan menekan ikon bookmark untuk melihatnya di sini."
-            ),
-            icon: "/icons/bookmark.svg",
-          };
-        default:
-          return {
-            title: t(
-              "PermintaanAngkut.requestListEmptyTitleDefault",
-              {},
-              "Oops, belum ada permintaan jasa angkut"
-            ),
-            subtitle: t(
-              "PermintaanAngkut.requestListEmptySubtitleDefault",
-              {},
-              "Mohon bersabar untuk menanti permintaan baru"
-            ),
-            icon: "/icons/truck-jenis.svg",
-          };
-      }
-    };
+  // Jika tab aktif dan tabCounts untuk tab tersebut bernilai 0, tampilkan DataNotFound
+  const tabCountsZero =
+    (activeTab === "tersedia" && data?.tabCounts?.tersedia === 0) ||
+    (activeTab === "halal_logistik" && data?.tabCounts?.halal_logistik === 0) ||
+    (activeTab === "disimpan" && data?.tabCounts?.disimpan === 0);
 
-    const emptyConfig = getEmptyStateConfig();
-
+  if (tabCountsZero) {
     return (
       <div className="mt-[100px] flex-1 overflow-y-auto p-4">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
@@ -508,27 +476,35 @@ const RequestList = ({
                 "PermintaanAngkut.requestListEmptySubtitleDefault",
                 {},
                 "Mohon bersabar untuk menanti permintaan baru"
-              )}{" "}
+              )}
             </p>
           </div>
         </DataNotFound>
       </div>
     );
   }
+  // ...existing code...
 
-  // Apply search filter and removed items filter
-  const filteredRequests = requests
-    .filter((request) => !removedItems.has(request.id)) // Filter removed items
-    .filter((request) => {
-      // If no search value, show all
-      if (!searchValue || searchValue.trim() === "") {
-        return true;
-      }
-      // Filter by orderCode (case insensitive)
-      return request.orderCode
-        .toLowerCase()
-        .includes(searchValue.toLowerCase());
-    });
+  // Apply tab filter, search filter, and removed items filter
+  let filteredRequests = requests.filter(
+    (request) => !removedItems.has(request.id)
+  );
+
+  // Tab filter (frontend safety, in case API returns more than expected)
+  if (activeTab === "halal_logistik") {
+    filteredRequests = filteredRequests.filter(
+      (request) => request.isHalalLogistics
+    );
+  } else if (activeTab === "disimpan") {
+    filteredRequests = filteredRequests.filter((request) => request.isSaved);
+  }
+
+  // Search filter
+  if (searchValue && searchValue.trim() !== "") {
+    filteredRequests = filteredRequests.filter((request) =>
+      request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }
 
   // Check if search returned no results
   const hasSearchResults =

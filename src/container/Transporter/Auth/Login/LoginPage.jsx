@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -81,7 +80,6 @@ const LoginPage = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
-  const router = useRouter();
   const [formErrors, setFormErrors] = useState({
     emailOrPhone: "",
     password: "",
@@ -97,7 +95,7 @@ const LoginPage = () => {
     try {
       const basicAuth = btoa("az_muattrans:Zci01Y4zh2IHCupULvXbTdDM");
       const response = await xior.post(
-        "https://apimtrans-az.assetlogistik.com/v1/transporter/auth/login",
+        `${process.env.NEXT_PUBLIC_MUATRANS_API}v1/transporter/auth/login`,
         {
           loginId: data.emailOrPhone,
           password: data.password,

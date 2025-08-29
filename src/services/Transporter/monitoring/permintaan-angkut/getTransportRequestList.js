@@ -24,7 +24,7 @@ const apiResultTransportRequestList = {
           orderType: "INSTANT",
           orderStatus: "PREPARE_FLEET",
           isNew: true,
-          isHalalLogistics: true,
+          isHalalLogistics: false,
           isSaved: false,
           isTaken: false,
           loadTimeStart: "2025-01-15T09:00:00+07:00",
@@ -538,7 +538,7 @@ const apiResultTransportRequestList = {
       tabCounts: {
         tersedia: 10,
         halal_logistik: 3,
-        disimpan: 2,
+        disimpan: 0,
       },
       userStatus: {
         isSuspended: false,

@@ -7,6 +7,7 @@ import { useGetAvailableFleet } from "@/services/Transporter/monitoring/getAvail
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetUrgentIssueCount } from "@/services/Transporter/monitoring/getUrgentIssues";
 
+import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   MonitoringTabTrigger,
   MonitoringTabs,
@@ -413,13 +414,16 @@ const Page = () => {
           {/* Bottom Panel - PilihArmada and Daftar Pesanan Aktif */}
           {panels.leftPanelMode !== "posisi" && (
             <div
+              id="draggable-bottom-panel"
               className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
-              style={{
-                height: panels.isBottomExpanded
-                  ? "calc((100vh - 92px - 16px - 16px) / 2)"
-                  : "calc(64px)",
-              }}
             >
+              <div className="relative flex cursor-grab select-none justify-center">
+                <IconComponent
+                  src="/icons/draggable-button.svg"
+                  className={cn("absolute top-2 h-4 w-14")}
+                />
+              </div>
+
               <PilihArmada
                 onToggleExpand={handleTogglePilihArmada}
                 isExpanded={panels.isBottomExpanded}
