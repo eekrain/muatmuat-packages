@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/hooks/use-translation";
 
-import { useLoadingStore } from "@/store/Shared/loadingStore";
+import { useLoadingStore } from "@/store/loadingStore";
 
 export default function LoadingInteractive() {
   const isGlobalLoading = useLoadingStore((state) => state.isGlobalLoading);

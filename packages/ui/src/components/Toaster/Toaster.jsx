@@ -11,7 +11,7 @@ import useDevice from "@/hooks/use-device";
 
 import { cn } from "@/lib/utils";
 
-import { useToastStore } from "@/store/Shipper/toastStore";
+import { useToastStore } from "@/store/toastStore";
 
 const Toaster = ({ className }) => {
   const dataToast = useToastStore((state) => state.dataToast);
