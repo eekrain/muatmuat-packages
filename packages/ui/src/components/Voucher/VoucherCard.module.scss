@@ -1,0 +1,124 @@
+.voucher-card {
+  position: relative;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  overflow: hidden;
+}
+
+.voucher-card--active {
+  border-color: #3b82f6; /* blue-500 */
+}
+
+.voucher-card--inactive {
+  border-color: #e5e7eb; /* gray-200 */
+}
+
+.voucher-card--out-of-stock {
+  opacity: 0.7;
+}
+
+.voucher-icon {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  overflow: hidden;
+  border-radius: 0.25rem;
+}
+
+.voucher-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.voucher-progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 9999px;
+  background-color: #e5e7eb; /* gray-200 */
+  overflow: hidden;
+}
+
+.voucher-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #3b82f6; /* blue-500 */
+  transition: width 0.3s ease;
+}
+
+.voucher-button {
+  border-radius: 0.25rem;
+  padding: 0.25rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.voucher-button--active {
+  background-color: white;
+  color: #3b82f6; /* blue-500 */
+}
+
+.voucher-button--active:hover {
+  background-color: #eff6ff; /* blue-50 */
+}
+
+.voucher-button--disabled {
+  background-color: #d1d5db; /* gray-300 */
+  color: #6b7280; /* gray-500 */
+  cursor: not-allowed;
+}
+
+.voucher-out-of-stock-banner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.25rem 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #fee2e2; /* red-50 */
+  border-top: 1px solid #fecaca; /* red-300 */
+  color: #ef4444; /* red-500 */
+}
+
+/* Search input styles */
+.search-input-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.search-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 2.5rem;
+  padding-left: 2.5rem;
+  padding-right: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db; /* gray-300 */
+}
+
+.search-input:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6; /* blue-500 */
+}

@@ -1,0 +1,71 @@
+.ImageUploader {
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 500;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.ImageUploaderError {
+  border-radius: 12px;
+  border-color: #ee4343 !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ImageUploader:hover,
+.ImageUploaderError:hover {
+  path {
+    stroke: var(--primary-700);
+  }
+}
+
+.ImageUploaderNull {
+  border-color: #ee4343 !important;
+}
+
+.borderDashed {
+  border: 1px dashed #9d9d9d;
+}
+
+.borderImage {
+  border: 1px solid #c4c4c4;
+}
+
+@keyframes rotate360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate_image {
+  animation: rotate360 2s linear infinite;
+}
+
+.div_with_arrow::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 17px;
+  height: 12px;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+  background: white;
+  /* Use the same box-shadow as parent, but adjust the values for the arrow */
+  filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.15));
+}

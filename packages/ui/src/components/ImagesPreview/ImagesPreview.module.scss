@@ -1,0 +1,17 @@
+.icon_primary {
+  path {
+    fill: var(--primary-700);
+    stroke: var(--primary-700);
+  }
+}
+
+.icon_white {
+  path {
+    stroke: var(--neutral-50);
+    fill: var(--neutral-50);
+  }
+}
+
+.images_container {
+  scrollbar-width: none;
+}
